@@ -1,0 +1,15 @@
+{
+  "name": "GreatHerald",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Arcyvilk",
+  "license": "Arcyvilk",
+  "dependencies": {
+    "discord.io": "^2.4.2",
+    "winston": "^2.3.1"
+  }
+}
