@@ -23,13 +23,13 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	{
 		if (m.startsWith('!'))
 		{
-			if (m.startsWith('!matchup')!=-1) //MATCHUP COMMANDS
+			if (m.startsWith('!matchup')) //MATCHUP COMMANDS
 			{
 				bot.sendMessage({
 					to: channelID,
 					message: matchup(((m.slice(9)).trim()).toLowerCase())});
 			}
-			if (m.startsWith('!iam')!=-1) //SERVER ASSIGN COMMANDS
+			if (m.startsWith('!iam')) //SERVER ASSIGN COMMANDS
 			{
 				add_role(m, userID, channelID);
 			}
