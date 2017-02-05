@@ -14,7 +14,7 @@ bot.on('ready', function(event) {
 bot.on('disconnect', function(errMsg, code) { 
 	console.log('Failure detected: '+code+' - '+errMsg);
 });
-bot.on('presence', function(user, userID, status, game, event) { //!!!!! SERVER AND ROLE ID HARDCODED - CHANGE IT TO BE RESPONSIVE
+bot.on('presence', function(user, userID, status, game, event) {
 	add_streaming_role(user, userID, status, game);
 });
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
@@ -23,15 +23,21 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	{
 		if (m.startsWith('!'))
 		{
-			if (m.indexOf('!matchup')!=-1) //MATCHUP COMMANDS
+			if (m.startsWith('!matchup')!=-1) //MATCHUP COMMANDS
 			{
 				bot.sendMessage({
 					to: channelID,
-					message: matchup((m.slice(9)).trim())});
+					message: matchup(((m.slice(9)).trim()).toLowerCase())});
 			}
-			if (m.indexOf('server')!=-1) //SERVER ASSIGN COMMANDS
+			if (m.startsWith('!iam')!=-1) //SERVER ASSIGN COMMANDS
 			{
 				add_role(m, userID, channelID);
+			}
+			if (m=="!meow")
+			{
+				bot.sendMessage({
+					to: channelID,
+					message: return_cat("http://random.cat/meow")});
 			}
 			if (commands(m)!=0)
 			{
@@ -55,21 +61,23 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 
 function commands(m) //COMMANDS STARTING WITH "!"
 {	
-	if (m==="!commands" || m==="!help" || m==="!h")
-		return "- **Informational:** !build | !matchup [champion_name] | !clubs\n- **Streams:** !dun \n- **Other stuff:** hello | notice me senpai | !beep | !meow";
+	m=m.toLowerCase();
+	if (m=="!commands" || m=="!help" || m=="!h")
+		return "- **Informational:** !build | !matchup [champion_name] | !clubs"+
+					"\n- **Streams:** !dun \n- **Other stuff:** hello | notice me senpai | !beep | !meow";
 	else if (m=="!roles")
-		return "**List of servers:**\n- BR \n- EUW \n- EUNE \n- NA \n- JP \n- Garena \n- KR \n- LAN \n- LAS \n- OCE \n- RU \n- TR";
-	else if (m==="!dun")
+		return "**Self-assignable roles:** \n\n"+
+					"- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n"+
+					"- are you a Viktor streamer? Type !iam Viktor Streamer";
+	else if (m=="!dun")
 		return "http://twitch.tv/dunlol - Challenger Viktor main";	
-	else if	(m==="!meow")
-		return "Meow! :3";
-	else if (m==="!beep")
+	else if (m=="!beep")
 		return "_sighs deeply_ \nBeep. Boop.";
-	else if (m==="!joke")
+	else if (m=="!joke")
 		return "I won't waste my precious time for the sake of your personal amusement.";
-	else if (m==="!clubs")
+	else if (m=="!clubs")
 		return "https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.";
-	else if (m==="!build")
+	else if (m=="!build")
 		return "**♥ GLORIOUS MINIGUIDE TO BUILD ♥**\n"+
 					"-------------------------------\n"+
 					"○ **First back:**\n\n"+
@@ -86,17 +94,18 @@ function commands(m) //COMMANDS STARTING WITH "!"
 
 function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
 {
-	if ((m.indexOf("Notice me")!=-1 || m.indexOf("notice me")!=-1) && m.indexOf("senpai")!=-1)	
+	m=m.toLowerCase();
+	if ((m.indexOf("notice me")!=-1) && m.indexOf("senpai")!=-1)	
 		return "_looks away, unamused_";
-	else if	(m.indexOf("ily viktor")!=-1 || m.indexOf("ily Viktor")!=-1 || m.indexOf("Ily viktor")!=-1 || m.indexOf("Ily Viktor")!=-1)	
+	else if	(m.indexOf("ily viktor")!=-1)	
 		return "http://i.imgur.com/yuXRObM.png";
-	else if (m.indexOf("hello")!=-1 || m.indexOf("Hello")!=-1)
+	else if (m.indexOf("hello")!=-1)
 		return "Greetings, inferior construct!";
 	else if (m.indexOf(":questionmark:")!=-1)
 		return "<:questionmark:244535324737273857>";
-	else if (m.indexOf("build")!=-1 && (m.indexOf("Viktor")!=-1 || m.indexOf("viktor")!=-1 || m.indexOf("vik")!=-1 || m.indexOf("Vik")!=-1))
+	else if (m.indexOf("build")!=-1 && (m.indexOf("viktor")!=-1 || m.indexOf("vik")!=-1))
 		return "It's highly adviced to check the !build command.";
-	else if ((m.indexOf("club")!=-1 || m.indexOf("clubs")!=-1) && (m.indexOf("Viktor")!=-1 || m.indexOf("viktor")!=-1))
+	else if ((m.indexOf("club")!=-1 || m.indexOf("clubs")!=-1) && (m.indexOf("viktor")!=-1))
 		return "https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.";
 	else return 0;
 }
@@ -121,10 +130,13 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 		case "fizz":
 			return "https://www.reddit.com/r/viktormains/comments/5hzr7p/weekly_matchup_discussion_19_viktor_vs_fizz/ - patch 6.24";
 		case "gangplank": 
+		case "gp":
 			return "https://www.reddit.com/r/viktormains/comments/5qvxtj/weekly_matchup_discussion_23_viktor_vs_gangplank/ - patch 7.2";
 		case "katarina":
+		case "kata":
 			return "https://www.reddit.com/r/viktormains/comments/4yiayv/weekly_matchup_discussion_10_viktor_vs_katarina/ - patch 6.16";
 		case "leblanc": 
+		case "lb":
 			return "https://www.reddit.com/r/viktormains/comments/5o0qs8/weekly_matchup_discussion_21_viktor_vs_leblanc/ - patch 7.1";
 		case "lux":
 			return "https://www.reddit.com/r/viktormains/comments/4slxkv/weekly_matchup_discussion_8_viktor_vs_lux/ - patch 6.13";
@@ -137,10 +149,14 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 		case "taliyah":
 			return "https://www.reddit.com/r/viktormains/comments/5pmxq6/weekly_matchup_discussion_21_viktor_vs_taliyah/ - patch 7.1";
 		case "twistedfate": 
+		case "tf":
+		case "twisted fate":
 			return "https://www.reddit.com/r/viktormains/comments/4oes5m/weekly_matchup_discussion_5_viktor_vs_twisted_fate/ - patch 6.12";
 		case "veigar": 
 			return "https://www.reddit.com/r/viktormains/comments/5bmlxc/weekly_matchup_discussion_16_viktor_vs_veigar/ - patch 6.21";
 		case "velkoz":
+		case "vk":
+		case "vel'koz":
 			return "https://www.reddit.com/r/viktormains/comments/53vaa6/weekly_matchup_discussion_12_viktor_vs_velkoz/ - patch 6.17";
 		case "yasuo":
 			return "https://www.reddit.com/r/viktormains/comments/4m9ydy/weekly_matchup_discussion_3_viktor_vs_yasuo/ - patch 6.11";
@@ -155,13 +171,46 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 	}
 }
 
+//----------------------------------------------------//
+//.............EXTERNAL API RELATED STUFF.............//
+//----------------------------------------------------//
+
+function return_cat(url)
+{
+	//make it so it extracts cat photo url from the given API and returns it as a string
+	
+	var cat=return_api(url, "a cat");
+	return "Cat photo posting function is not implemented yet. What about a neko Viktor picture instead? \n\n";
+}
+
+function return_api(url, api_topic) //make it return the JSON formatted url content
+{
+	try
+	{
+		var http = require('http');
+
+		var client = http.request(80, url);
+		request = client.request();
+		request.on('response', function( res ) {
+			res.on('data', function( data ) {
+				return JSON.parse( data.toString() );
+				} );
+			} );
+		request.end();
+	}
+	catch (err)
+	{
+		return "Can't get " + api_topic + " because " + err +".";
+	}
+}
+
 //---------------------------------------------------------//
 //.............FUNCTIONS ASSOCIATED WITH ROLES.............//
 //---------------------------------------------------------//
 
 function add_role(m, userID, channelID)
 {
-	var r=m.slice(7); //JUST THE ROLE NAME
+	var r=m.slice(4); //JUST THE ROLE NAME - !IAM
 		r=r.trim();					
 	var r_id=0;
 	var done=false;	
@@ -236,22 +285,25 @@ function checkrole(m, cid, uid, r_id) //CHECKS IF USER HAS A ROLE
 	return false;
 }
 
-function add_streaming_role(user, userID, status, game)
+function add_streaming_role(user, userID, status, game) //SERVER+ROLE ID HARDCODED; CHANGE TO BE MORE RESPONSIVE
 {
 	try
 	{
-		if(game && game.url)
+		for (var i in bot.servers['207732593733402624'].members[userID].roles)
 		{
-			bot.addToRole({
-				serverID: "207732593733402624",
-				userID: bot.users[userID].id,
-				roleID: "277436330609344513"});
-			bot.sendMessage({
-				to: "247501730336604163", //CHANNEL OFFTOPIC'S ID
-				message: user +" started streaming! "+game.url});
-				
-			console.log(user+" - streams");
-		}	
+			if (bot.servers['207732593733402624'].members[bot.users[userID].id].roles[i]=="277867725122961408") //CHECKS IF USER HAS VIKTOR STREAMER ROLE
+			{
+				if(game && game.url)
+				{
+					bot.addToRole({
+						serverID: "207732593733402624",
+						userID: bot.users[userID].id,
+						roleID: "277436330609344513"});
+						
+					console.log(user+" - streams \'"+ game.name);
+				}
+			}
+		}		
 	}
 	catch(err)
 	{console.log(err);}
@@ -260,9 +312,9 @@ function add_streaming_role(user, userID, status, game)
 	{
 		if (!game || (game && !game.url)) //IF ISN'T IN GAME; OR IS IN GAME BUT DOESN'T STREAM
 		{
-			for (var i in bot.servers['207732593733402624'].members[userID].roles) //CHECKS FOR "STREAMING" ROLE
+			for (var i in bot.servers['207732593733402624'].members[userID].roles) 
 			{
-				if (bot.servers['207732593733402624'].members[bot.users[userID].id].roles[i]=="277436330609344513")
+				if (bot.servers['207732593733402624'].members[bot.users[userID].id].roles[i]=="277436330609344513") //CHECKS FOR "STREAMING" ROLE
 				{
 					bot.removeFromRole({ //REMOVES "STREAMING" ROLE IF ONE HAD IT
 						serverID: '207732593733402624', 
