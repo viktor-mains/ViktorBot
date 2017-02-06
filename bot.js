@@ -23,7 +23,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	{
 		if (m.startsWith('!'))
 		{
-			if (m.startsWith('!matchup')) //MATCHUP COMMANDS
+			if ((m.toLowerCase()).startsWith('!matchup')) //MATCHUP COMMANDS
 			{
 				bot.sendMessage({
 					to: channelID,
@@ -33,11 +33,34 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 			{
 				add_role(m, userID, channelID);
 			}
-			if (m=="!meow")
+			if (m.startsWith('!rank'))
 			{
+				//add_rank
+			}
+			if (m.startsWith('!opgg'))
+			{
+				var p=((m.slice(5)).trim()).split('|');
 				bot.sendMessage({
 					to: channelID,
-					message: return_cat("http://random.cat/meow")});
+					message: "https://"+p[0]+".op.gg/summoner/userName="+p[1]});
+			}
+			if (m.toLowerCase()=="!meow")
+			{
+				var cat= "Can't get a cat because ";
+				return_api("http://random.cat/meow", cat, function(api){
+					bot.sendMessage({
+						to: channelID,
+						message: (JSON.parse(api)).file + " :cat: :3"});
+				});
+			}
+			if (m.toLowerCase()=="!woof")
+			{
+				var cat= "Can't get a cat because ";
+				return_api("http://random.dog/woof", cat, function(api){
+					bot.sendMessage({
+						to: channelID,
+						message: "http://random.dog/"+api + " :dog: :3"});
+				});
 			}
 			if (commands(m)!=0)
 			{
@@ -63,8 +86,10 @@ function commands(m) //COMMANDS STARTING WITH "!"
 {	
 	m=m.toLowerCase();
 	if (m=="!commands" || m=="!help" || m=="!h")
-		return "- **Informational:** !build | !matchup [champion_name] | !clubs"+
-					"\n- **Streams:** !dun \n- **Other stuff:** hello | notice me senpai | !beep | !meow";
+		return "- **Viktor related stuff:** !build | !matchup [champion_name] | !clubs"+
+					"\n- **Streams:** !dun"+
+					"\n- **Useful:** !opgg [server]|[ign] (example: !opgg euw|arcyvilk)"+
+					"\n- **Other stuff:** hello | notice me senpai | !beep | !meow | !woof";
 	else if (m=="!roles")
 		return "**Self-assignable roles:** \n\n"+
 					"- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n"+
@@ -97,7 +122,7 @@ function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
 	m=m.toLowerCase();
 	if ((m.indexOf("notice me")!=-1) && m.indexOf("senpai")!=-1)	
 		return "_looks away, unamused_";
-	else if	(m.indexOf("ily viktor")!=-1)	
+	else if	(m.indexOf("ily")!=-1 && m.indexOf("viktor")!=-1)	
 		return "http://i.imgur.com/yuXRObM.png";
 	else if (m.indexOf("hello")!=-1)
 		return "Greetings, inferior construct!";
@@ -175,33 +200,20 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 //.............EXTERNAL API RELATED STUFF.............//
 //----------------------------------------------------//
 
-function return_cat(url)
+function return_api(url, topic, callback)
 {
-	//make it so it extracts cat photo url from the given API and returns it as a string
-	
-	var cat=return_api(url, "a cat");
-	return "Cat photo posting function is not implemented yet. What about a neko Viktor picture instead? \n\n";
-}
-
-function return_api(url, api_topic) //make it return the JSON formatted url content
-{
-	try
+	var request = require('request');
+	request(url, function (error, response, body) 
 	{
-		var http = require('http');
-
-		var client = http.request(80, url);
-		request = client.request();
-		request.on('response', function( res ) {
-			res.on('data', function( data ) {
-				return JSON.parse( data.toString() );
-				} );
-			} );
-		request.end();
-	}
-	catch (err)
-	{
-		return "Can't get " + api_topic + " because " + err +".";
-	}
+		if (!error && response.statusCode == 200) 
+		{
+			return callback(body);
+		}
+		else
+		{		
+			return callback(topic+" "+error);
+		}
+	});
 }
 
 //---------------------------------------------------------//
