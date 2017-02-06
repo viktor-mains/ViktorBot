@@ -39,41 +39,81 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 			}
 			if (m.startsWith('!opgg'))
 			{
-				var p=((m.slice(5)).trim()).split('|');
-				bot.sendMessage({
-					to: channelID,
-					message: "https://"+p[0]+".op.gg/summoner/userName="+p[1]});
+				try
+				{
+					var p=(((m.slice(5)).trim()).replace(/ /g,"+")).split('|');
+					bot.sendMessage({
+						to: channelID,
+						message: "https://"+p[0]+".op.gg/summoner/userName="+(p[1])});
+				}
+				catch(err)
+				{
+					bot.sendMessage({
+						to: channelID,
+						message: "I failed to retrieve the desired data, though, it probably wasn't anything interesting anyway."});
+				}
 			}
 			if (m.toLowerCase()=="!meow")
 			{
-				var cat= "Can't get a cat because ";
-				return_api("http://random.cat/meow", cat, function(api){
+				try
+				{
+					var cat= "Can't get a cat because ";
+					return_api("http://random.cat/meow", cat, function(api){
+						bot.sendMessage({
+							to: channelID,
+							message: (JSON.parse(api)).file + " :cat: :3"});
+					});
+				}
+				catch(err)
+				{
 					bot.sendMessage({
 						to: channelID,
-						message: (JSON.parse(api)).file + " :cat: :3"});
-				});
+						message: "You have been given an oppretunity to ask me, an evoluted being, for anything; and you ask for a cat photo. _Really?_"});
+				}
 			}
 			if (m.toLowerCase()=="!woof")
 			{
-				var cat= "Can't get a cat because ";
-				return_api("http://random.dog/woof", cat, function(api){
+				try
+				{
+					var cat= "Can't get a cat because ";
+					return_api("http://random.dog/woof", cat, function(api){
+						bot.sendMessage({
+							to: channelID,
+							message: "You have been given an oppretunity to ask me, an evoluted being, for anything; and you ask for a puppy photo. _Really?_"});
+					});
+				}
+				catch(err)
+				{
 					bot.sendMessage({
 						to: channelID,
-						message: "http://random.dog/"+api + " :dog: :3"});
-				});
+						message: "You stand besides "});
+				}
 			}
 			if (commands(m)!=0)
 			{
-				bot.sendMessage({
-					to: channelID,
-					message: commands(m)});
+				try{
+					bot.sendMessage({
+						to: channelID,
+						message: commands(m)});
+				}
+				catch (err)
+				{
+					bot.sendMessage({
+						to: channelID,
+						message: "I refuse to execute your petty command."});
+				}
 			}
 		}
 		if (answers(m)!=0)
 		{
+			try
+			{
 			bot.sendMessage({
 				to: channelID,
 				message: answers(m)});
+			}
+			catch(err)
+			{}
 		}
 	}
 });
