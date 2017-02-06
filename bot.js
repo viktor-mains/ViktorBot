@@ -68,7 +68,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 				{
 					bot.sendMessage({
 						to: channelID,
-						message: "You have been given an oppretunity to ask me, an evoluted being, for anything; and you ask for a cat photo. _Really?_"});
+						message: "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a cat photo. _Really?_"});
 				}
 			}
 			if (m.toLowerCase()=="!woof")
@@ -79,14 +79,14 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 					return_api("http://random.dog/woof", cat, function(api){
 						bot.sendMessage({
 							to: channelID,
-							message: "You have been given an oppretunity to ask me, an evoluted being, for anything; and you ask for a puppy photo. _Really?_"});
+							message: "http://random.dog/"+api + " :dog: :3"});
 					});
 				}
 				catch(err)
 				{
 					bot.sendMessage({
 						to: channelID,
-						message: "You stand besides "});
+						message: "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really?_"});
 				}
 			}
 			if (commands(m)!=0)
