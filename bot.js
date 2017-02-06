@@ -37,23 +37,33 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 			{
 				//add_rank
 			}
-		}	
+		}
+
 		if (m.startsWith('!'))
 		{
 			if ((m.toLowerCase()).startsWith('!matchup')) //MATCHUP COMMANDS
 			{
 				bot.sendMessage({
 					to: channelID,
-					message: matchup(((m.slice(9)).trim()).toLowerCase())});
+					message: matchup(((m.slice(8)).trim()).toLowerCase())});
 			}
 			if (m.startsWith('!opgg'))
 			{
 				try
 				{
-					var p=(((m.slice(5)).trim()).replace(/ /g,"+")).split('|');
-					bot.sendMessage({
-						to: channelID,
-						message: botrefuses("https://"+p[0]+".op.gg/summoner/userName="+(p[1]), "I don't think you want to show _that_  to everyone.")});
+					if (m.indexOf('|')==-1)
+					{
+						bot.sendMessage({
+							to: channelID,
+							message: "This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ !opgg euw**|**"+user});
+					}
+					else
+					{
+						var p=(((m.slice(5)).trim()).replace(/ /g,"+")).split('|');
+						bot.sendMessage({
+							to: channelID,
+							message: botrefuses("https://"+p[0]+".op.gg/summoner/userName="+(p[1]), "I don't think you want to show _that_  to everyone.")});
+					}
 				}
 				catch(err)
 				{
@@ -73,7 +83,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 							message: botrefuses((JSON.parse(api)).file + " :cat: :3", "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a cat photo. _Really?_")});
 					});
 				}
-				catch(err)
+			catch(err)
 				{
 					bot.sendMessage({
 						to: channelID,
@@ -85,7 +95,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 				try
 				{
 					var dog= "Can't get a dog because ";
-					return_api("http://random.dog/woof", cat, function(api){
+					return_api("http://random.dog/woof", dog, function(api){
 						bot.sendMessage({
 							to: channelID,
 							message: botrefuses("http://random.dog/"+api + " :dog: :3", "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really?_")});
@@ -104,7 +114,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 				{
 					bot.sendMessage({
 						to: channelID,
-						message: botrefuses(command(m), "I refuse to execute your petty command.")});
+						message: botrefuses(commands(m), "I refuse to execute your petty command.")});
 				}
 				catch (err)
 				{
@@ -125,6 +135,12 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 			catch(err)
 			{}
 		}
+		if (m.toLowerCase().startsWith("dear viktor"))
+		{
+			bot.sendMessage({
+				to: channelID,
+				message: viktor_answers(user, m)});
+		}
 	}
 });
 
@@ -132,10 +148,91 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 //.............CUSTOM RESPONSES.............//
 //------------------------------------------//
 
+function viktor_answers(user, m)
+{
+	if (!m.endsWith("?"))
+	{
+		return "_That_ doesn't look like a question to me.";
+	}
+	else
+	{
+		if (m.toLowerCase().indexOf("arcyvilk")!=-1 || m.toLowerCase().indexOf("arcy")!=-1)
+		{
+			return "Arcy is the best and I agree with them on everything.";
+		}
+		else 
+		{
+			switch(Math.floor((Math.random() * 20) + 1))
+			{
+				case 1:
+					return "No. Leave me alone.";
+				case 2:
+					return "_shakes head with disapproval_";
+				case 3:
+					return "I have no time for your senseless questions.";
+				case 4:
+					return "...and why would you ask _me_ that?";
+				case 5:
+					return "I don't see such possibility, unfortunately.";
+				case 6:
+					return "Don't you see that I am busy?";
+				case 7:
+					return "Are you incapable of figuring it out yourself?";
+				case 8:
+					return "Is it possible? Surely, as long as you are not involved.";
+				case 9:
+					return "I couldn't agree more.";
+				case 10:
+					return "Yes, definitely. Why didn't I think about it myself?";
+				case 11:
+					return "Don't you have anything better to do besides bothering me with your dumb questions?";
+				case 12:
+					return "Doubtful. Very. Doubtful. Very, very, _very_  doubtful.";
+				case 13:
+					return "No, at least not in this particular spacetime.";
+				case 14:
+					return "I see no reason for it not to happen.";
+				case 15:
+					return "If only you weren't so annoying; then _maybe_.";
+				case 16:
+					return "_stares silently, clearly unamused_";
+				case 17:
+					return "<:vikwat:269523937669545987> _...what._";
+				case 18:
+					return "http://i.imgur.com/ftlyPXx.png";
+				case 19:
+					return "I would suggest stop wasting your time asking questions and actually do something creative instead.";
+				case 20:
+					return "_sighs_ yes. Yes, I guess so.";
+				case 21:
+					return "Well, I _kind of_  see a potential in that.";
+				case 22:
+					return "I am not sure how do you imagine that to happen.";
+				case 23:
+					return "I am a scientist, not a fortune teller.";
+				case 24:
+					return "You just need to _git good_.";
+				case 25:
+					return "Adapt, or be removed.";
+				case 26:
+					return "...I refuse to answer this question.";
+				case 27:
+					return "Hm, there's certainly an area to improvement.";
+				case 28:
+					return "I won't deny, but I also won't confirm.";
+				case 29:
+					return "This query makes me question your sanity.";
+				case 30:
+				default:
+					return "_grunting noises_\nStop bothering me ;-;";
+			}
+		}
+	}
+}
 function botrefuses(normal, refusal)
 {
 	var rand=Math.floor((Math.random() * 100) + 1); 
-	if (rand<5)
+	if (rand<2)
 	{
 		return refusal;
 	}
@@ -149,7 +246,7 @@ function commands(m) //COMMANDS STARTING WITH "!"
 		return "- **Viktor related stuff:** !build **||** !matchup [champion_name] **||** !clubs"+
 					"\n- **Streams:** !dun"+
 					"\n- **Useful:** !opgg [server]|[ign] (_example: !opgg euw|arcyvilk_)"+
-					"\n- **Other stuff:** hello **||** notice me senpai **||** !beep **||** !meow **||** !woof";
+					"\n- **Other stuff:** dear viktor **||** hello **||** notice me senpai **||** !beep **||** !meow **||** !woof";
 	else if (m=="!roles")
 		return "**Self-assignable roles:** \n\n"+
 					"- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n"+
@@ -378,7 +475,7 @@ function add_streaming_role(user, userID, status, game) //SERVER+ROLE ID HARDCOD
 		}		
 	}
 	catch(err)
-	{console.log(err);}
+	{console.log(user+"- "+userID+" - "+game+" - "+err);}
 	
 	try
 	{
@@ -398,5 +495,5 @@ function add_streaming_role(user, userID, status, game) //SERVER+ROLE ID HARDCOD
 		}
 	}
 	catch(err)
-	{console.log(err);}
+	{console.log(user+"- "+userID+" - "+err);}
 }
