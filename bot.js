@@ -7,9 +7,14 @@ var bot = new Discord.Client({
 //--------------------------------//
 //.............EVENTS.............//
 //--------------------------------//
-
 bot.on('ready', function(event) {
     console.log('Logged in as %s - %s\n', bot.username, bot.id);
+	bot.setPresence({
+		idle_since: null,
+		game: {
+			name: "Glorious Evolution - !h for help"
+		}
+	});
 });
 bot.on('disconnect', function(errMsg, code) { 
 	console.log('Failure detected: '+code+' - '+errMsg);
@@ -19,8 +24,20 @@ bot.on('presence', function(user, userID, status, game, event) {
 });
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	var m=message;
+	
 	if (userID!="276781276898525184") //STOPS BOT FROM RESPONDING TO HIMSELF
 	{
+		if (channelID=="268354627781656577") //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
+		{
+			if (m.startsWith('!iam')) 
+			{
+				add_role(m, userID, channelID);
+			}
+			if (m.startsWith('!rank'))
+			{
+				//add_rank
+			}
+		}	
 		if (m.startsWith('!'))
 		{
 			if ((m.toLowerCase()).startsWith('!matchup')) //MATCHUP COMMANDS
@@ -29,14 +46,6 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 					to: channelID,
 					message: matchup(((m.slice(9)).trim()).toLowerCase())});
 			}
-			if (m.startsWith('!iam')) //SERVER ASSIGN COMMANDS
-			{
-				add_role(m, userID, channelID);
-			}
-			if (m.startsWith('!rank'))
-			{
-				//add_rank
-			}
 			if (m.startsWith('!opgg'))
 			{
 				try
@@ -44,7 +53,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 					var p=(((m.slice(5)).trim()).replace(/ /g,"+")).split('|');
 					bot.sendMessage({
 						to: channelID,
-						message: "https://"+p[0]+".op.gg/summoner/userName="+(p[1])});
+						message: botrefuses("https://"+p[0]+".op.gg/summoner/userName="+(p[1]), "I don't think you want to show _that_  to everyone.")});
 				}
 				catch(err)
 				{
@@ -61,7 +70,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 					return_api("http://random.cat/meow", cat, function(api){
 						bot.sendMessage({
 							to: channelID,
-							message: (JSON.parse(api)).file + " :cat: :3"});
+							message: botrefuses((JSON.parse(api)).file + " :cat: :3", "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a cat photo. _Really?_")});
 					});
 				}
 				catch(err)
@@ -75,11 +84,11 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 			{
 				try
 				{
-					var cat= "Can't get a cat because ";
+					var dog= "Can't get a dog because ";
 					return_api("http://random.dog/woof", cat, function(api){
 						bot.sendMessage({
 							to: channelID,
-							message: "http://random.dog/"+api + " :dog: :3"});
+							message: botrefuses("http://random.dog/"+api + " :dog: :3", "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really?_")});
 					});
 				}
 				catch(err)
@@ -91,10 +100,11 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 			}
 			if (commands(m)!=0)
 			{
-				try{
+				try
+				{
 					bot.sendMessage({
 						to: channelID,
-						message: commands(m)});
+						message: botrefuses(command(m), "I refuse to execute your petty command.")});
 				}
 				catch (err)
 				{
@@ -122,14 +132,24 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 //.............CUSTOM RESPONSES.............//
 //------------------------------------------//
 
+function botrefuses(normal, refusal)
+{
+	var rand=Math.floor((Math.random() * 100) + 1); 
+	if (rand<5)
+	{
+		return refusal;
+	}
+	else return normal;
+}
+
 function commands(m) //COMMANDS STARTING WITH "!"
 {	
 	m=m.toLowerCase();
 	if (m=="!commands" || m=="!help" || m=="!h")
-		return "- **Viktor related stuff:** !build | !matchup [champion_name] | !clubs"+
+		return "- **Viktor related stuff:** !build **||** !matchup [champion_name] **||** !clubs"+
 					"\n- **Streams:** !dun"+
-					"\n- **Useful:** !opgg [server]|[ign] (example: !opgg euw|arcyvilk)"+
-					"\n- **Other stuff:** hello | notice me senpai | !beep | !meow | !woof";
+					"\n- **Useful:** !opgg [server]|[ign] (_example: !opgg euw|arcyvilk_)"+
+					"\n- **Other stuff:** hello **||** notice me senpai **||** !beep **||** !meow **||** !woof";
 	else if (m=="!roles")
 		return "**Self-assignable roles:** \n\n"+
 					"- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n"+
