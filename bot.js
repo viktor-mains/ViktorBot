@@ -23,132 +23,54 @@ bot.on('presence', function(user, userID, status, game, event) {
 	add_streaming_role(user, userID, status, game);
 });
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
-	var m=message;
-	
+	var m=message;	
 	if (userID!="276781276898525184") //STOPS BOT FROM RESPONDING TO HIMSELF
 	{
-		if (channelID=="268354627781656577") //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
-		{
-			if (m.startsWith('!iam')) 
-			{
-				add_role(m, userID, channelID);
-			}
-			if (m.startsWith('!rank'))
-			{
-				//add_rank
-			}
-		}
-
 		if (m.startsWith('!'))
 		{
-			if ((m.toLowerCase()).startsWith('!matchup')) //MATCHUP COMMANDS
+			if (channelID=="268354627781656577") //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
 			{
-				bot.sendMessage({
-					to: channelID,
-					message: matchup(((m.slice(8)).trim()).toLowerCase())});
-			}
-			if (m.startsWith('!opgg'))
+				if (m.startsWith('!iam')) 
+					add_role(m, userID, channelID);
+				if (m.startsWith('!rank')) {}
+			}			
+			else if ((m.toLowerCase()).startsWith('!matchup')) //MATCHUP COMMANDS
+				send(channelID, matchup(((m.slice(8)).trim()).toLowerCase()));			
+			else if (commands(channelID, m)!=0)
 			{
-				try
+				if (m!="!meow" && m!="!woof") //THOSE TWO ARE SPECIAL CASES AND SEND FROM THE BODY OF FUNCTION
 				{
-					if (m.indexOf('|')==-1)
-					{
-						bot.sendMessage({
-							to: channelID,
-							message: "This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ !opgg euw**|**"+user});
-					}
-					else
-					{
-						var p=(((m.slice(5)).trim()).replace(/ /g,"+")).split('|');
-						bot.sendMessage({
-							to: channelID,
-							message: botrefuses("https://"+p[0]+".op.gg/summoner/userName="+(p[1]), "I don't think you want to show _that_  to everyone.")});
-					}
-				}
-				catch(err)
-				{
-					bot.sendMessage({
-						to: channelID,
-						message: "I failed to retrieve the desired data, though, it probably wasn't anything interesting anyway."});
-				}
-			}
-			if (m.toLowerCase()=="!meow")
-			{
-				try
-				{
-					var cat= "Can't get a cat because ";
-					return_api("http://random.cat/meow", cat, function(api){
-						bot.sendMessage({
-							to: channelID,
-							message: botrefuses((JSON.parse(api)).file + " :cat: :3", "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a cat photo. _Really?_")});
-					});
-				}
-			catch(err)
-				{
-					bot.sendMessage({
-						to: channelID,
-						message: "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a cat photo. _Really?_"});
-				}
-			}
-			if (m.toLowerCase()=="!woof")
-			{
-				try
-				{
-					var dog= "Can't get a dog because ";
-					return_api("http://random.dog/woof", dog, function(api){
-						bot.sendMessage({
-							to: channelID,
-							message: botrefuses("http://random.dog/"+api + " :dog: :3", "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really?_")});
-					});
-				}
-				catch(err)
-				{
-					bot.sendMessage({
-						to: channelID,
-						message: "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really?_"});
-				}
-			}
-			if (commands(m)!=0)
-			{
-				try
-				{
-					bot.sendMessage({
-						to: channelID,
-						message: botrefuses(commands(m), "I refuse to execute your petty command.")});
-				}
-				catch (err)
-				{
-					bot.sendMessage({
-						to: channelID,
-						message: "I refuse to execute your petty command."});
+					try
+					{	send(channelID, botrefuses(commands(m), "I refuse to execute your petty command."));}
+					catch (err)
+					{	send(channelID, "I refuse to execute your petty command.\n"+err);}
 				}
 			}
 		}
-		if (answers(m)!=0)
+		else if (answers(m)!=0)
 		{
 			try
-			{
-			bot.sendMessage({
-				to: channelID,
-				message: answers(m)});
-			}
+			{	send(channelID, answers(m));}
 			catch(err)
 			{}
 		}
-		if (m.toLowerCase().startsWith("dear viktor"))
-		{
-			bot.sendMessage({
-				to: channelID,
-				message: viktor_answers(user, m)});
-		}
+		else if (m.toLowerCase().startsWith("dear viktor"))
+			send(channelID, viktor_answers(m));
 	}
 });
+
+function send(cid, m)
+{
+	bot.sendMessage({
+		to: cid,
+		message: m});
+}
 
 //------------------------------------------//
 //.............CUSTOM RESPONSES.............//
 //------------------------------------------//
 
-function viktor_answers(user, m)
+function viktor_answers(m)
 {
 	if (!m.endsWith("?"))
 	{
@@ -238,14 +160,14 @@ function botrefuses(normal, refusal)
 	}
 	else return normal;
 }
-
-function commands(m) //COMMANDS STARTING WITH "!"
+function commands(cid, m) //COMMANDS STARTING WITH "!"
 {	
 	m=m.toLowerCase();
 	if (m=="!commands" || m=="!help" || m=="!h")
 		return "- **Viktor related stuff:** !build **||** !matchup [champion_name] **||** !clubs"+
 					"\n- **Streams:** !dun"+
 					"\n- **Useful:** !opgg [server]|[ign] (_example: !opgg euw|arcyvilk_)"+
+					"\n- **Role assign:** visit <#268354627781656577> room for more info"+
 					"\n- **Other stuff:** dear viktor **||** hello **||** notice me senpai **||** !beep **||** !meow **||** !woof";
 	else if (m=="!roles")
 		return "**Self-assignable roles:** \n\n"+
@@ -259,6 +181,45 @@ function commands(m) //COMMANDS STARTING WITH "!"
 		return "I won't waste my precious time for the sake of your personal amusement.";
 	else if (m=="!clubs")
 		return "https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.";
+	else if (m.startsWith('!opgg'))
+	{
+		try
+		{
+			if (m.indexOf('|')==-1)
+				return "This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ !opgg euw**|**"+user;
+			else
+			{
+				var p=(((m.slice(5)).trim()).replace(/ /g,"+")).split('|');
+				return botrefuses("https://"+p[0]+".op.gg/summoner/userName="+(p[1]), "I don't think you want to show _that_  to everyone.");
+			}
+		}
+		catch(err)
+		{
+			return "I failed to retrieve the desired data, though, it probably wasn't anything interesting anyway.";
+		}
+	}
+	else if (m.toLowerCase()=="!meow") //SPECIAL CASE - SENDS FROM HERE
+	{
+		try
+		{
+			return_api("http://random.cat/meow", "Can't get a cat because ", function(api){
+				send(cid, botrefuses((JSON.parse(api)).file + " :cat: :3", "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a cat photo. _Really?_"));
+			});
+		}
+		catch(err)
+		{	send(cid,"You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a cat photo. _Really?_\n"+err);}
+	}
+	else if (m.toLowerCase()=="!woof") //SPECIAL CASE - SENDS FROM HERE
+	{
+		try
+		{
+			return_api("http://random.dog/woof", "Can't get a dog because ", function(api){
+				send(cid, botrefuses("http://random.dog/"+api + " :dog: :3", "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really?_"));
+			});
+		}
+		catch(err)
+		{	send(cid, "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really?_\n"+err);}
+	}
 	else if (m=="!build")
 		return "**♥ GLORIOUS MINIGUIDE TO BUILD ♥**\n"+
 					"-------------------------------\n"+
