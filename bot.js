@@ -28,12 +28,14 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	{
 		if (m.startsWith('!'))
 		{
-			if (channelID=="268354627781656577") //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
+			if (m.startsWith('!iam')) 
 			{
-				if (m.startsWith('!iam')) 
+				if (channelID=="268354627781656577") //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
 					add_role(m, userID, channelID);
-				if (m.startsWith('!rank')) {}
-			}			
+				else
+					send(channelID, "You can be anything you want, I'm not giving you any flair outside of the <#268354627781656577> room.");
+			}
+			else if (m.startsWith('!rank')) {} //IMPLEMENT
 			else if ((m.toLowerCase()).startsWith('!matchup')) //MATCHUP COMMANDS
 				send(channelID, matchup(((m.slice(8)).trim()).toLowerCase()));			
 			else if (commands(channelID, m)!=0)
@@ -164,11 +166,12 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 {	
 	m=m.toLowerCase();
 	if (m=="!commands" || m=="!help" || m=="!h")
-		return "- **Viktor related stuff:** !build **||** !matchup [champion_name] **||** !clubs"+
-					"\n- **Streams:** !dun"+
-					"\n- **Useful:** !opgg [server]|[ign] (_example: !opgg euw|arcyvilk_)"+
-					"\n- **Other commands:** dear viktor **||** hello **||** notice me senpai **||** !beep **||** !meow **||** !woof"+
-					"\n\n- **Role assign:** server, rank and stream roles - visit <#268354627781656577> room for more info";
+		return "- **Viktor related stuff:** !build **||** !matchup [champion_name] **||** !clubs\n"+
+					"- **Streams:** !dun\n"+
+					"- **Useful:** !opgg [server]|[ign] (_example: !opgg euw|arcyvilk_)\n"+
+					"- **Other commands:** dear viktor **||** hello **||** notice me senpai **||** !beep **||** !meow **||** !woof\n\n"+
+					"- **Role assign:** server, rank and stream roles - visit <#268354627781656577> room for more info\n\n"+
+					"In case of any bugs occuring, contact Arcyvilk#5460.";
 	else if (m=="!roles")
 		return "**Self-assignable roles:** \n\n"+
 					"- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n"+
@@ -245,7 +248,13 @@ function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
 	else if (m.indexOf("hello")!=-1)
 		return "Greetings, inferior construct!";
 	else if (m.indexOf(":questionmark:")!=-1)
-		return "<:questionmark:244535324737273857>";
+	{	
+		var qm="";
+		var rand=Math.floor((Math.random() * 10) + 1);
+		for (var i=1; i<=rand; i++)
+			qm=qm+"<:questionmark:244535324737273857>";
+		return qm;
+	}
 	else if (m.indexOf("build")!=-1 && (m.indexOf("viktor")!=-1 || m.indexOf("vik")!=-1))
 		return "It's highly adviced to check the !build command.";
 	else if ((m.indexOf("club")!=-1 || m.indexOf("clubs")!=-1) && (m.indexOf("viktor")!=-1))
@@ -359,16 +368,10 @@ function add_role(m, userID, channelID)
 	}
 	catch(err)
 	{
-		bot.sendMessage({
-			to: channelID,
-			message: err.toString()});
+		send(channelID, err.toString());
 	}
 	if (r_id==0) //IF DESIRED ROLE DOES NOT EXIST
-	{
-		bot.sendMessage({
-			to: channelID,
-			message: 'Such role doesn\'t exist. Check spelling.'});
-	}
+		send(channelID,'Such role doesn\'t exist. Check spelling.');
 	else //IF DESIRED ROLE EXISTS
 	{
 		if (!checkrole('You already have the **'+r+'** role.', channelID, userID, r_id)) //IF USER DIDN'T HAVE THIS ROLE BEFORE
@@ -381,19 +384,12 @@ function add_role(m, userID, channelID)
 					roleID: r_id});
 							
 				setTimeout(function(){
-					if (!checkrole('Role **'+r+'** assigned with utmost efficiency.', channelID, userID, r_id)) //FAILED TO ASSIGN ROLE
-					{
-						bot.sendMessage({
-							to: channelID,
-							message: 'Failed to assign the **'+r+'** role.'});
-					}
+					send(channelID, 'Failed to assign the **'+r+'** role.');
 				}, 1000);
 			}
 			catch(err)
 			{
-				bot.sendMessage({
-					to: channelID,
-					message: 'Failed to assign the **'+r+'** role. ' + err});
+				send(channelID, 'Failed to assign the **'+r+'** role. ' + err);
 			}
 		}
 	}
@@ -405,9 +401,7 @@ function checkrole(m, cid, uid, r_id) //CHECKS IF USER HAS A ROLE
 	{
 		if (bot.servers[bot.channels[cid].guild_id].members[uid].roles[i]==r_id)
 		{
-			bot.sendMessage({
-				to: cid,
-				message: m});
+			send(cid, m);
 			return true;
 			break;
 		}
