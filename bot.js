@@ -28,12 +28,19 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	{
 		if (m.startsWith('!'))
 		{
-			if (m.startsWith('!iam')) 
+			if (m.startsWith("!iam") && !(m.startsWith("!iamnot"))) 
 			{
 				if (channelID=="268354627781656577") //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
 					add_role(m, userID, channelID);
 				else
 					send(channelID, "You can be anything you want, I'm not giving you any flair outside of the <#268354627781656577> room.");
+			}
+			else if (m.startsWith("!iamnot")) 
+			{
+				if (channelID=="268354627781656577") //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
+					remove_role(m, userID, channelID);
+				else
+					send(channelID, "That's great to hear, but go to <#268354627781656577> room if you want to have it removed.");
 			}
 			else if (m.startsWith('!rank')) {} //IMPLEMENT
 			else if ((m.toLowerCase()).startsWith('!matchup')) //MATCHUP COMMANDS
@@ -354,6 +361,56 @@ function add_role(m, userID, channelID)
 	var r_id=0;
 	var done=false;	
 	var hasrole=false;
+
+	if (r.toLowerCase()=="bad" || r.toLowerCase()=="noob" || r.toLowerCase()=="retard" || r.toLowerCase()=="retarded") //SOME INNOCENT TROLLING
+		send(channelID, "Indeed. You are.");
+	if (r.toLowerCase()=="bronze")
+		send(channelID, "You aren't, but you truly deserve it.");
+	
+	for (var i in bot.servers[bot.channels[channelID].guild_id].roles)
+	{
+		if (bot.servers[bot.channels[channelID].guild_id].roles[i].name==r) 
+		{
+			r_id=bot.servers[bot.channels[channelID].guild_id].roles[i].id;
+			break;
+		}
+	}
+	if (r_id==0) //IF DESIRED ROLE DOES NOT EXIST
+		send(channelID, "Such role doesn\'t exist. Check spelling.");
+	else //IF DESIRED ROLE EXISTS
+	{
+		if (!checkrole(channelID, userID, r_id)) //IF USER DIDN'T HAVE THIS ROLE BEFORE
+		{
+			try
+			{
+				bot.addToRole({
+					serverID: bot.channels[channelID].guild_id,
+					userID: bot.users[userID].id,
+					roleID: r_id});
+							
+				setTimeout(function(){
+					if (!checkrole(channelID, userID, r_id)) //FAILED TO ASSIGN ROLE
+						send(channelID, "Failed to assign the **"+r+"** role.");
+					else
+						send(channelID, "Role **"+r+"** assigned with utmost efficiency.");
+				}, 1000);
+			}
+			catch(err)
+			{
+				send(channelID, "Failed to assign the **"+r+"** role. " + err);
+			}
+		}
+		else
+			send(channelID, "You already have the **"+r+"** role.");
+	}
+}
+function remove_role(m, userID, channelID)
+{
+	var r=m.slice(7); //JUST THE ROLE NAME - !IAMNOT
+		r=r.trim();					
+	var r_id=0;
+	var done=false;	
+	var hasrole=false;
 	
 	try
 	{
@@ -374,41 +431,32 @@ function add_role(m, userID, channelID)
 		send(channelID,'Such role doesn\'t exist. Check spelling.');
 	else //IF DESIRED ROLE EXISTS
 	{
-		if (!checkrole('You already have the **'+r+'** role.', channelID, userID, r_id)) //IF USER DIDN'T HAVE THIS ROLE BEFORE
+		if (checkrole(channelID, userID, r_id)) //IF USER DOES HAVE THIS ROLE
 		{
 			try
 			{
-				bot.addToRole({
+				bot.removeFromRole({
 					serverID: bot.channels[channelID].guild_id,
 					userID: bot.users[userID].id,
 					roleID: r_id});
 							
 				setTimeout(function(){
-					send(channelID, 'Failed to assign the **'+r+'** role.');
+					if (checkrole(channelID, userID, r_id)) //IF FAILED TO REMOVE FROM ROLE
+						send(channelID, "Failed to assign the **"+r+"** role.");
+					else
+						send(channelID, "Role **"+r+"** removed succesfully.");
 				}, 1000);
 			}
 			catch(err)
 			{
-				send(channelID, 'Failed to assign the **'+r+'** role. ' + err);
+				send(channelID, "Failed to assign the **"+r+"** role. " + err);
 			}
 		}
+		else
+			send(channelID, "Indeed, you aren't.");
 	}
+	
 }
-
-function checkrole(m, cid, uid, r_id) //CHECKS IF USER HAS A ROLE
-{
-	for (var i in bot.servers[bot.channels[cid].guild_id].members[uid].roles)
-	{
-		if (bot.servers[bot.channels[cid].guild_id].members[uid].roles[i]==r_id)
-		{
-			send(cid, m);
-			return true;
-			break;
-		}
-	}
-	return false;
-}
-
 function add_streaming_role(user, userID, status, game) //SERVER+ROLE ID HARDCODED; CHANGE TO BE MORE RESPONSIVE
 {
 	try
@@ -451,4 +499,13 @@ function add_streaming_role(user, userID, status, game) //SERVER+ROLE ID HARDCOD
 	}
 	catch(err)
 	{console.log(user+"- "+userID+" - "+err);}
+}
+function checkrole(cid, uid, r_id) //CHECKS IF USER HAS A ROLE
+{
+	for (var i in bot.servers[bot.channels[cid].guild_id].members[uid].roles)
+	{
+		if (bot.servers[bot.channels[cid].guild_id].members[uid].roles[i]==r_id)
+			return true;
+	}
+	return false;
 }
