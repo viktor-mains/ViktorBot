@@ -41,7 +41,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 				if (m!="!meow" && m!="!woof") //THOSE TWO ARE SPECIAL CASES AND SEND FROM THE BODY OF FUNCTION
 				{
 					try
-					{	send(channelID, botrefuses(commands(m), "I refuse to execute your petty command."));}
+					{	send(channelID, botrefuses(commands(channelID, m), "I refuse to execute your petty command."));}
 					catch (err)
 					{	send(channelID, "I refuse to execute your petty command.\n"+err);}
 				}
@@ -167,8 +167,8 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 		return "- **Viktor related stuff:** !build **||** !matchup [champion_name] **||** !clubs"+
 					"\n- **Streams:** !dun"+
 					"\n- **Useful:** !opgg [server]|[ign] (_example: !opgg euw|arcyvilk_)"+
-					"\n- **Role assign:** visit <#268354627781656577> room for more info"+
-					"\n- **Other stuff:** dear viktor **||** hello **||** notice me senpai **||** !beep **||** !meow **||** !woof";
+					"\n- **Other commands:** dear viktor **||** hello **||** notice me senpai **||** !beep **||** !meow **||** !woof"+
+					"\n\n- **Role assign:** server, rank and stream roles - visit <#268354627781656577> room for more info";
 	else if (m=="!roles")
 		return "**Self-assignable roles:** \n\n"+
 					"- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n"+
@@ -198,7 +198,7 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 			return "I failed to retrieve the desired data, though, it probably wasn't anything interesting anyway.";
 		}
 	}
-	else if (m.toLowerCase()=="!meow") //SPECIAL CASE - SENDS FROM HERE
+	else if (m=="!meow") //SPECIAL CASE - SENDS FROM HERE
 	{
 		try
 		{
@@ -209,7 +209,7 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 		catch(err)
 		{	send(cid,"You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a cat photo. _Really?_\n"+err);}
 	}
-	else if (m.toLowerCase()=="!woof") //SPECIAL CASE - SENDS FROM HERE
+	else if (m=="!woof") //SPECIAL CASE - SENDS FROM HERE
 	{
 		try
 		{
