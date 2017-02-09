@@ -93,7 +93,7 @@ function viktor_answers(m)
 		}
 		else 
 		{
-			switch(Math.floor((Math.random() * 20) + 1))
+			switch(Math.floor((Math.random() * 30) + 1))
 			{
 				case 1:
 					return "No. Leave me alone.";
@@ -136,7 +136,7 @@ function viktor_answers(m)
 				case 20:
 					return "_sighs_ yes. Yes, I guess so.";
 				case 21:
-					return "Well, I _kind of_  see a potential in that.";
+					return "Well, I _kind of_  see some potential in that.";
 				case 22:
 					return "I am not sure how do you imagine that to happen.";
 				case 23:
@@ -159,15 +159,6 @@ function viktor_answers(m)
 			}
 		}
 	}
-}
-function botrefuses(normal, refusal)
-{
-	var rand=Math.floor((Math.random() * 100) + 1); 
-	if (rand<2)
-	{
-		return refusal;
-	}
-	else return normal;
 }
 function commands(cid, m) //COMMANDS STARTING WITH "!"
 {	
@@ -238,13 +229,12 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 					"< 1250 g: <:doran:277494945261027328> + <:potion:277494945332592640>\n"+
 					"< 1250 g vs LB, Kata, Syndra etc: <:negatron:277494945432993792> + <:potion:277494945332592640>\n"+
 					"-------------------------------\n"+
-					"○ **Standard build:** <:hc1:242831892427177995> → <:sheen:277494945500233728>/<:hc2:242831893051998218> → "+
+					"○ **Default build:** <:hc1:242831892427177995> → <:sheen:277494945500233728>/<:hc2:242831893051998218> → "+
 					"<:sheen:277494945500233728>/<:hc2:242831893051998218> → <:hc3:242831893509308416> → <:lichbane:242831894134128650> → "+
 					"<:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → <:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → "+
-					"<:ga:273939560130674691>";	
+					"<:zhonya:242831893953773569>/<:ga:273939560130674691>";
 	else return 0;
 }
-
 function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
 {
 	m=m.toLowerCase();
@@ -268,7 +258,6 @@ function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
 		return "https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.";
 	else return 0;
 }
-
 function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 {
 	var champ=m.toLowerCase();
@@ -307,6 +296,8 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 			return "https://www.reddit.com/r/viktormains/comments/4vi9nw/weekly_matchup_discussion_9_viktor_vs_syndra/ - patch 6.15";
 		case "taliyah":
 			return "https://www.reddit.com/r/viktormains/comments/5pmxq6/weekly_matchup_discussion_21_viktor_vs_taliyah/ - patch 7.1";
+		case "talon":
+			return "https://www.reddit.com/r/viktormains/comments/5srelp/weekly_matchup_discussion_24_viktor_vs_talon/ - patch 7.2";
 		case "twistedfate": 
 		case "tf":
 		case "twisted fate":
@@ -329,7 +320,15 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 			return "Code name ["+ champ.toUpperCase() +"]: missing data. This matchup hasn\'t been discussed yet, it seems.";
 	}
 }
-
+function botrefuses(normal, refusal)
+{
+	var rand=Math.floor((Math.random() * 100) + 1); 
+	if (rand<2)
+	{
+		return refusal;
+	}
+	else return normal;
+}
 //----------------------------------------------------//
 //.............EXTERNAL API RELATED STUFF.............//
 //----------------------------------------------------//
@@ -385,7 +384,7 @@ function add_role(m, userID, channelID)
 			{
 				bot.addToRole({
 					serverID: bot.channels[channelID].guild_id,
-					userID: bot.users[userID].id,
+					userID: userID,
 					roleID: r_id});
 							
 				setTimeout(function(){
@@ -425,7 +424,7 @@ function remove_role(m, userID, channelID)
 	}
 	catch(err)
 	{
-		send(channelID, err.toString());
+		send(channelID, "Finding role for user "+bot.members[userID].name +" - error detected: "+err.toString());
 	}
 	if (r_id==0) //IF DESIRED ROLE DOES NOT EXIST
 		send(channelID,'Such role doesn\'t exist. Check spelling.');
@@ -459,46 +458,45 @@ function remove_role(m, userID, channelID)
 }
 function add_streaming_role(user, userID, status, game) //SERVER+ROLE ID HARDCODED; CHANGE TO BE MORE RESPONSIVE
 {
-	try
+	if(game && game.url) //IF USER IS DETECTED AS STREAMING
 	{
-		for (var i in bot.servers['207732593733402624'].members[userID].roles)
+		try
 		{
-			if (bot.servers['207732593733402624'].members[bot.users[userID].id].roles[i]=="277867725122961408") //CHECKS IF USER HAS VIKTOR STREAMER ROLE
+			for (var i in bot.servers['207732593733402624'].members[userID].roles)
 			{
-				if(game && game.url)
+				if (bot.servers['207732593733402624'].members[userID].roles[i]=="277867725122961408") //CHECKS IF USER HAS VIKTOR STREAMER ROLE
 				{
 					bot.addToRole({
 						serverID: "207732593733402624",
-						userID: bot.users[userID].id,
+						userID: userID,
 						roleID: "277436330609344513"});
 						
 					console.log(user+" - streams \'"+ game.name);
 				}
 			}
 		}		
+		catch(err)
+		{console.log(user+"- "+userID+" - "+game+" - presence change, streaming detected error - "+err);}
 	}
-	catch(err)
-	{console.log(user+"- "+userID+" - "+game+" - "+err);}
-	
-	try
+	if (!game || (game && !game.url)) //IF ISN'T IN GAME; OR IS IN GAME BUT DOESN'T STREAM
 	{
-		if (!game || (game && !game.url)) //IF ISN'T IN GAME; OR IS IN GAME BUT DOESN'T STREAM
+		try
 		{
 			for (var i in bot.servers['207732593733402624'].members[userID].roles) 
 			{
-				if (bot.servers['207732593733402624'].members[bot.users[userID].id].roles[i]=="277436330609344513") //CHECKS FOR "STREAMING" ROLE
+				if (bot.servers['207732593733402624'].members[userID].roles[i]=="277436330609344513") //CHECKS FOR "STREAMING" ROLE
 				{
 					bot.removeFromRole({ //REMOVES "STREAMING" ROLE IF ONE HAD IT
 						serverID: '207732593733402624', 
-						userID: bot.users[userID].id,
+						userID: userID,
 						roleID: '277436330609344513'});
-					console.log(user+" stopped streaming.");
+					console.log(user+" stopped streaming.");			
 				}
 			}
 		}
+		catch(err)
+		{console.log(user+" - "+userID+" - presence change, streaming undetected error - "+err);}
 	}
-	catch(err)
-	{console.log(user+"- "+userID+" - "+err);}
 }
 function checkrole(cid, uid, r_id) //CHECKS IF USER HAS A ROLE
 {
