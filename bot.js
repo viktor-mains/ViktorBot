@@ -93,7 +93,7 @@ function viktor_answers(m)
 		}
 		else 
 		{
-			switch(Math.floor((Math.random() * 30) + 1))
+			switch(Math.floor((Math.random() * 31) + 1))
 			{
 				case 1:
 					return "No. Leave me alone.";
@@ -142,7 +142,7 @@ function viktor_answers(m)
 				case 23:
 					return "I am a scientist, not a fortune teller.";
 				case 24:
-					return "You just need to _git good_.";
+					return "You just need to get good.";
 				case 25:
 					return "Adapt, or be removed.";
 				case 26:
@@ -154,6 +154,8 @@ function viktor_answers(m)
 				case 29:
 					return "This query makes me question your sanity.";
 				case 30:
+					return "Hypothetically, everything is possible.";
+				case 31:
 				default:
 					return "_grunting noises_\nStop bothering me ;-;";
 			}
@@ -476,7 +478,7 @@ function add_streaming_role(user, userID, status, game) //SERVER+ROLE ID HARDCOD
 			}
 		}		
 		catch(err)
-		{console.log(user+"- "+userID+" - "+game+" - presence change, streaming detected error - "+err);}
+		{console.log("- "+user+"- "+userID+" - "+game+" - presence change, streaming detected error - "+err);}
 	}
 	if (!game || (game && !game.url)) //IF ISN'T IN GAME; OR IS IN GAME BUT DOESN'T STREAM
 	{
@@ -495,7 +497,7 @@ function add_streaming_role(user, userID, status, game) //SERVER+ROLE ID HARDCOD
 			}
 		}
 		catch(err)
-		{console.log(user+" - "+userID+" - presence change, streaming undetected error - "+err);}
+		{console.log("- "+user+" - "+userID+" - presence change, streaming undetected error - "+err);}
 	}
 }
 function checkrole(cid, uid, r_id) //CHECKS IF USER HAS A ROLE
