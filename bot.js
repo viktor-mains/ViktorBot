@@ -1,7 +1,7 @@
 var Discord = require('discord.io');
 var bot = new Discord.Client({
     autorun: true,
-    token: API_KEY
+    token: process.env.API_KEY
 });
 
 //--------------------------------//
