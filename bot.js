@@ -205,8 +205,11 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 	{
 		try
 		{
-			return_api("http://random.cat/meow", "Can't get a cat because ", function(api){
-				send(cid, botrefuses((JSON.parse(api)).file + " :cat: :3", "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a cat photo. _Really?_"));
+			return_api("http://random.cat/meow", function(api){
+				if (api!="error")
+					send(cid, botrefuses((JSON.parse(api)).file + " :cat: :3", "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a cat photo. _Really?_"));
+				else 
+					send(cid, "Can't get a cat.");
 			});
 		}
 		catch(err)
@@ -216,8 +219,11 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 	{
 		try
 		{
-			return_api("http://random.dog/woof", "Can't get a dog because ", function(api){
-				send(cid, botrefuses("http://random.dog/"+api + " :dog: :3", "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really?_"));
+			return_api("http://random.dog/woof", function(api){
+				if (api!="error")
+					send(cid, botrefuses("http://random.dog/"+api + " :dog: :3", "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really?_"));
+				else
+					send(cid, "Can't get a dog.");
 			});
 		}
 		catch(err)
@@ -335,18 +341,23 @@ function botrefuses(normal, refusal)
 //.............EXTERNAL API RELATED STUFF.............//
 //----------------------------------------------------//
 
-function return_api(url, topic, callback)
+function return_api(url, callback)
 {
 	var request = require('request');
 	request(url, function (error, response, body) 
 	{
-		if (!error && response.statusCode == 200) 
-		{
+		if (!error && response.statusCode == 200)
 			return callback(body);
-		}
 		else
-		{		
-			return callback(topic+" "+error);
+		{
+			try
+			{
+				return callback("error "+response.statusCode);
+			}
+			catch(err)
+			{
+				return callback("error "+err);
+			}
 		}
 	});
 }
@@ -370,7 +381,7 @@ function add_role(m, userID, channelID)
 	
 	for (var i in bot.servers[bot.channels[channelID].guild_id].roles)
 	{
-		if (bot.servers[bot.channels[channelID].guild_id].roles[i].name==r) 
+		if ((bot.servers[bot.channels[channelID].guild_id].roles[i].name).toLowerCase()==r.toLowerCase()) 
 		{
 			r_id=bot.servers[bot.channels[channelID].guild_id].roles[i].id;
 			break;
