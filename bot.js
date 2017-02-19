@@ -26,10 +26,6 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	var m=message;	
 	if (userID!="276781276898525184") //STOPS BOT FROM RESPONDING TO HIMSELF
 	{
-		if (m.length>=20 && m.toUpperCase()===m)
-		{
-			send(cid, ":popcorn:");
-		}
 		if (m.startsWith('!'))
 		{
 			if (m.startsWith("!iam") && !(m.startsWith("!iamnot"))) 
@@ -69,6 +65,11 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 		}
 		else if (m.toLowerCase().startsWith("dear viktor"))
 			send(channelID, viktor_answers(m));
+		else if (m.length>=20 && m===m.toUpperCase())
+		{
+			if (((Math.floor((Math.random() * 4) + 1)))%4==0)
+				send(channelID, ":popcorn:");
+		}
 	}
 });
 
