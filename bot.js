@@ -26,6 +26,10 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	var m=message;	
 	if (userID!="276781276898525184") //STOPS BOT FROM RESPONDING TO HIMSELF
 	{
+		if (m.length>=20 && m.toUpperCase()===m)
+		{
+			send(cid, ":popcorn:");
+		}
 		if (m.startsWith('!'))
 		{
 			if (m.startsWith("!iam") && !(m.startsWith("!iamnot"))) 
