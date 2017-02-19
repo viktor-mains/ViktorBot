@@ -67,7 +67,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 			send(channelID, viktor_answers(m));
 		else if (m.length>=20 && m===m.toUpperCase())
 		{
-			if (((Math.floor((Math.random() * 4) + 1)))%4==0)
+			if (((Math.floor((Math.random() * 2) + 1)))%2==0)
 				send(channelID, ":popcorn:");
 		}
 	}
@@ -170,7 +170,9 @@ function viktor_answers(m)
 function commands(cid, m) //COMMANDS STARTING WITH "!"
 {	
 	m=m.toLowerCase();
-	if (m=="!commands" || m=="!help" || m=="!h")
+	if (m=="!version")
+		return "The Great Herald beta 1.23: The Popcorn Patch";
+	else if (m=="!commands" || m=="!help" || m=="!h")
 		return "- **Viktor related stuff:** !build **||** !matchup [champion_name] **||** !clubs\n"+
 					"- **Streams:** !dun\n"+
 					"- **Useful:** !opgg [server]|[ign] (_example: !opgg euw|arcyvilk_)\n"+
