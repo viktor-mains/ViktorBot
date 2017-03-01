@@ -171,7 +171,7 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 {	
 	m=m.toLowerCase();
 	if (m=="!version")
-		return "The Great Herald beta 1.23: The Popcorn Patch";
+		return "The Great Herald beta 1.23.3: Corki matchup";
 	else if (m=="!commands" || m=="!help" || m=="!h")
 		return "- **Viktor related stuff:** !build **||** !matchup [champion_name] **||** !clubs\n"+
 					"- **Streams:** !dun\n"+
@@ -261,11 +261,9 @@ function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
 		return "Greetings, inferior construct!";
 	else if (m.indexOf(":questionmark:")!=-1)
 	{	
-		var qm="";
-		var rand=Math.floor((Math.random() * 10) + 1);
-		for (var i=1; i<=rand; i++)
-			qm=qm+"<:questionmark:244535324737273857>";
-		return qm;
+		var rand=Math.floor((Math.random() * 5) + 1);
+		if (rand==5)
+			return "<:questionmark:244535324737273857>";
 	}
 	else if (m.indexOf("build")!=-1 && (m.indexOf("viktor")!=-1 || m.indexOf("vik")!=-1))
 		return "It's highly adviced to check the !build command.";
@@ -288,6 +286,8 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 			return "https://www.reddit.com/r/viktormains/comments/5age0w/weekly_matchup_discussion_15_viktor_vs_brand/ - patch 6.21";
 		case "cassiopeia":
 			return "https://www.reddit.com/r/viktormains/comments/58vglf/weekly_matchup_discussion_14_viktor_vs_cassiopeia/ - patch 6.21";
+		case "corki":
+			return "https://www.reddit.com/r/viktormains/comments/5wyrzo/weekly_matchup_discussion_26_viktor_vs_corki/ - patch 7.4";
 		case "ekko":
 			return "https://www.reddit.com/r/viktormains/comments/5ghrj9/weekly_matchup_discussion_18_viktor_vs_ekko/ - patch 6.23";
 		case "fizz":
@@ -297,7 +297,7 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 			return "https://www.reddit.com/r/viktormains/comments/5qvxtj/weekly_matchup_discussion_23_viktor_vs_gangplank/ - patch 7.2";
 		case "katarina":
 		case "kata":
-			return "https://www.reddit.com/r/viktormains/comments/4yiayv/weekly_matchup_discussion_10_viktor_vs_katarina/ - patch 6.16";
+			return "https://www.reddit.com/r/viktormains/comments/5uzaqu/weekly_matchup_discussion_25_viktor_vs_katarina_2/ - patch 7.3";
 		case "leblanc": 
 		case "lb":
 			return "https://www.reddit.com/r/viktormains/comments/5o0qs8/weekly_matchup_discussion_21_viktor_vs_leblanc/ - patch 7.1";
