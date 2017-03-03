@@ -22,6 +22,23 @@ bot.on('disconnect', function(errMsg, code) {
 bot.on('presence', function(user, userID, status, game, event) {
 	add_streaming_role(user, userID, status, game);
 });
+bot.on('guildMemberAdd', function(member, event) {
+	send(event.d.user.id, "Greetings newcomer! We're glad you've decided to join the Evolution. To make your first steps here easier, I'll equip you with a few useful tips; I would also wish for you to glance over our **rules**.\n\n"+
+	"**Viktor Bot** is our custom bot and his commands might differ from other bots. Write !h or !help for more info.\n\n"+
+	"**Useful links for newcomers:**\n"+
+	"- _Viktor in-game clubs_ - https://www.reddit.com/r/viktormains/wiki/clubs\n"+
+	"- _Viktor streams/guides/fanarts_ - https://www.reddit.com/r/viktormains/wiki/content\n"+
+	"- _frequently asked questions_ - https://www.reddit.com/r/viktormains/wiki/faq\n\n"+
+	"**Rules:**\n"+
+	"1. Treat everyone with respect. Cursing is allowed as long as it is not directed towards other members of the discord in an offensive manner.\n"+
+	"2. Please keep any saltiness in the designated room: #salt_mine.\n"+
+	"3. Keep conversations not related to Viktor or League of Legends in #off_topic.\n"+
+	"4. No racism not hate speech.\n"+
+	"5. No posting any pictures that include nudity or extreme gore.\n"+
+	"6. No spam.\n\n"+
+	"Moderators reserve the right to kick/bans users basing on judgement calls."
+	);
+});
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	var m=message;	
 	if (userID!="276781276898525184") //STOPS BOT FROM RESPONDING TO HIMSELF
@@ -171,7 +188,7 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 {	
 	m=m.toLowerCase();
 	if (m=="!version")
-		return "The Great Herald beta 1.23.3: Corki matchup";
+		return "The Great Herald beta 1.23.4: Welcome message";
 	else if (m=="!commands" || m=="!help" || m=="!h")
 		return "- **Viktor related stuff:** !build **||** !matchup [champion_name] **||** !clubs\n"+
 					"- **Streams:** !dun\n"+
