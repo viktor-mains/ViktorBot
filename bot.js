@@ -84,8 +84,14 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 			send(channelID, viktor_answers(m));
 		else if (m.length>=20 && m===m.toUpperCase())
 		{
-			if (((Math.floor((Math.random() * 2) + 1)))%2==0)
-				send(channelID, ":popcorn:");
+			var rand=(Math.floor((Math.random() * 18) + 1));
+			if (rand%6==0) //6, 12 or 18 - effectively 1/6th chance
+			{
+				if (rand==1)
+					send(channelID, ":monkey:");
+				else
+					send(channelID, ":popcorn:");
+			}
 		}
 	}
 });
