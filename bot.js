@@ -194,7 +194,7 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 {	
 	m=m.toLowerCase();
 	if (m=="!version")
-		return "The Great Herald beta 1.23.4: Welcome message";
+		return "The Great Herald beta 1.23.5: Viktor now shrugs properly.";
 	else if (m=="!commands" || m=="!help" || m=="!h")
 		return "- **Viktor related stuff:** !build **||** !matchup [champion_name] **||** !clubs\n"+
 					"- **Streams:** !dun\n"+
@@ -288,6 +288,8 @@ function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
 		if (rand==5)
 			return "<:questionmark:244535324737273857>";
 	}
+	else if (m==":vikshrug:")
+		return "¯\\\\_ <:vik:235056514686124033> \\_/¯";
 	else if (m.indexOf("build")!=-1 && (m.indexOf("viktor")!=-1 || m.indexOf("vik")!=-1))
 		return "It's highly adviced to check the !build command.";
 	else if ((m.indexOf("club")!=-1 || m.indexOf("clubs")!=-1) && (m.indexOf("viktor")!=-1))
