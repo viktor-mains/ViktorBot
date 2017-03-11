@@ -289,7 +289,7 @@ function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
 			return "<:questionmark:244535324737273857>";
 	}
 	else if (m==":vikshrug:")
-		return "¯\\\\_ <:vik:235056514686124033> \\_/¯";
+		return "¯\\\\_ <:viktor:232941841815830536> \\_/¯";
 	else if (m.indexOf("build")!=-1 && (m.indexOf("viktor")!=-1 || m.indexOf("vik")!=-1))
 		return "It's highly adviced to check the !build command.";
 	else if ((m.indexOf("club")!=-1 || m.indexOf("clubs")!=-1) && (m.indexOf("viktor")!=-1))
