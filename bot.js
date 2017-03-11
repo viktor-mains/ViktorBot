@@ -288,7 +288,7 @@ function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
 		if (rand==5)
 			return "<:questionmark:244535324737273857>";
 	}
-	else if (m==":vikshrug:")
+	else if (m.indexOf("shrug")!=-1)
 		return "¯\\\\_ <:viktor:232941841815830536> \\_/¯";
 	else if (m.indexOf("build")!=-1 && (m.indexOf("viktor")!=-1 || m.indexOf("vik")!=-1))
 		return "It's highly adviced to check the !build command.";
