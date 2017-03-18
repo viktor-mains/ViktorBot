@@ -280,6 +280,8 @@ function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
 		return "_looks away, unamused_";
 	else if	(m.indexOf("ily")!=-1 && m.indexOf("viktor")!=-1)	
 		return "http://i.imgur.com/yuXRObM.png";
+	else if (m.indexOf("expirence")!=-1)
+		return "_**e x p e r i e n c e**_ <:JustDieAlready:288399448176853012>";
 	else if (m.indexOf("hello")!=-1)
 		return "Greetings, inferior construct!";
 	else if (m.indexOf(":questionmark:")!=-1)
