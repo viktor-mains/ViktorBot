@@ -283,7 +283,9 @@ function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
 	else if (m.indexOf("expirence")!=-1)
 		return "_**e x p e r i e n c e**_ <:JustDieAlready:288399448176853012>";
 	else if (m.indexOf("hello")!=-1)
-		return "Greetings, inferior construct!";
+		var rand=Math.floor((Math.random() * 3) + 1);
+		if (rand==3)
+			return "Greetings, inferior construct!";
 	else if (m.indexOf(":questionmark:")!=-1)
 	{	
 		var rand=Math.floor((Math.random() * 5) + 1);
@@ -291,8 +293,8 @@ function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
 			return "<:questionmark:244535324737273857>";
 	}
 	else if (m.indexOf("shrug")!=-1)
-		var rand=Math.floor((Math.random() * 5) + 1);
-		if (rand==5)
+		var rand=Math.floor((Math.random() * 3) + 1);
+		if (rand==3)
 			return "¯\\\\_ <:viktor:232941841815830536> \\_/¯";
 	else if (m.indexOf("build")!=-1 && (m.indexOf("viktor")!=-1 || m.indexOf("vik")!=-1))
 		return "It's highly adviced to check the !build command.";
