@@ -291,7 +291,9 @@ function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
 			return "<:questionmark:244535324737273857>";
 	}
 	else if (m.indexOf("shrug")!=-1)
-		return "¯\\\\_ <:viktor:232941841815830536> \\_/¯";
+		var rand=Math.floor((Math.random() * 5) + 1);
+		if (rand==5)
+			return "¯\\\\_ <:viktor:232941841815830536> \\_/¯";
 	else if (m.indexOf("build")!=-1 && (m.indexOf("viktor")!=-1 || m.indexOf("vik")!=-1))
 		return "It's highly adviced to check the !build command.";
 	else if ((m.indexOf("club")!=-1 || m.indexOf("clubs")!=-1) && (m.indexOf("viktor")!=-1))
@@ -356,6 +358,8 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 			return "https://www.reddit.com/r/viktormains/comments/4m9ydy/weekly_matchup_discussion_3_viktor_vs_yasuo/ - patch 6.11";
 		case "zed":
 			return "https://www.reddit.com/r/viktormains/comments/4rc76d/weekly_matchup_discussion_7_viktor_vs_zed/ - patch 6.13";
+		case "ziggs":
+			return "https://www.reddit.com/r/viktormains/comments/60flq2/weekly_matchup_discussion_28_viktor_vs_ziggs/ - patch 7.5";
 		case "zyra":
 			return "https://www.reddit.com/r/viktormains/comments/4q0r3f/weekly_matchup_discussion_6_viktor_vs_zyra/ - patch 6.12";	
 		case "asshole":
