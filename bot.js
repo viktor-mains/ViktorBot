@@ -1,4 +1,5 @@
 var Discord = require('discord.io');
+var RITO_KEY=process.env.RITO_KEY;
 var bot = new Discord.Client({
     autorun: true,
     token: process.env.API_KEY
