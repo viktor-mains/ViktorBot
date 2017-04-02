@@ -109,6 +109,13 @@ function send(cid, m)
 		to: cid,
 		message: m});
 }
+function sendEmbed(cid, tid, m)
+{
+	bot.sendMessage({
+		to: cid,
+        embed: {color: 0xfdc000, title: tid, description: m}
+		});
+}
 
 //------------------------------------------//
 //.............CUSTOM RESPONSES.............//
@@ -393,7 +400,7 @@ function diamondrace(cid)
 				data=JSON.parse(arcy);
 				var arcyDiv=romanToInt((data["30090754"][0]).entries[0].division);
 				var arcyLp=(data["30090754"][0]).entries[0].leaguePoints;
-				var arcyV="**Arcyvilk**: "+(data["30090754"][0]).tier + " " +arcyDiv + ", "+arcyLp +" LP";
+				var arcyV="Arcyvilk - "+(data["30090754"][0]).tier + " " +arcyDiv + ", "+arcyLp +" LP";
 				
 				return_api("https://euw.api.riotgames.com/api/lol/EUW/v2.5/league/by-summoner/30608030/entry?api_key="+RITO_KEY, function(solar) {
 					if (solar.startsWith("error"))
@@ -403,7 +410,7 @@ function diamondrace(cid)
 						data=JSON.parse(solar);
 						var solarDiv=romanToInt((data["30608030"][0]).entries[0].division);
 						var solarLp=(data["30608030"][0]).entries[0].leaguePoints;
-						var solarV="**Solar**: "+(data["30608030"][0]).tier + " " +solarDiv + ", "+solarLp+" LP";
+						var solarV="Solar - "+(data["30608030"][0]).tier + " " +solarDiv + ", "+solarLp+" LP";
 					
 						return_api("https://eune.api.riotgames.com/api/lol/EUNE/v2.5/league/by-summoner/32262869/entry?api_key="+RITO_KEY, function(george) {
 							if (george.startsWith("error"))
@@ -413,7 +420,7 @@ function diamondrace(cid)
 								data=JSON.parse(george);
 								var georgeDiv=romanToInt((data["32262869"][0]).entries[0].division);
 								var georgeLp=(data["32262869"][0]).entries[0].leaguePoints;
-								var georgeV="**Georgepan**: "+(data["32262869"][0]).tier + " " +georgeDiv + ", "+georgeLp+" LP";
+								var georgeV="Georgepan - "+(data["32262869"][0]).tier + " " +georgeDiv + ", "+georgeLp+" LP";
 								
 								return_api("https://na.api.riotgames.com/api/lol/NA/v2.5/league/by-summoner/23715695/entry?api_key="+RITO_KEY, function(nieve) {
 									if (nieve.startsWith("error"))
@@ -423,7 +430,7 @@ function diamondrace(cid)
 										data=JSON.parse(nieve);	
 										var nieveDiv=romanToInt((data["23715695"][0]).entries[0].division);
 										var nieveLp=(data["23715695"][0]).entries[0].leaguePoints;
-										var nieveV="**Nieve**: "+(data["23715695"][0]).tier + " " +nieveDiv + ", "+nieveLp+" LP";
+										var nieveV="Nieve - "+(data["23715695"][0]).tier + " " +nieveDiv + ", "+nieveLp+" LP";
 										
 										var participants=new Array();
 										participants[0]=new Array(100*arcyDiv-arcyLp, arcyV);
@@ -432,9 +439,9 @@ function diamondrace(cid)
 										participants[3]=new Array(100*nieveDiv-nieveLp, nieveV);
 										try
 										{
-											for (var j=0; j<3; j++)
+											for (var j=0; j<participants.length-1; j++)
 											{
-												for (var i=0; i<3; i++)
+												for (var i=0; i<participants.length-1; i++)
 												{
 													if (participants[i][0] > participants[i+1][0])
 													{
@@ -448,7 +455,10 @@ function diamondrace(cid)
 												}
 											}
 											setTimeout(function(){
-												send(cid, "\n#1: " + participants[0][1] + "\n#2: " + participants[1][1] + "\n#3: " + participants[2][1] + "\n#4: " + participants[3][1]);
+												var m="\n";
+												for (var i=0; i<participants.length; i++)
+													m+="\n**#"+(i+1)+"**: "+participants[i][1];
+												sendEmbed(cid, ":trophy: Diamond Race!", m+"\n\nTo join the Diamond Race, contact Arcyvilk#5460 . Disclaimer: you have to be Platinum.");
 												}, 2000);
 										}
 										catch(err)
