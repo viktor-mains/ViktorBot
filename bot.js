@@ -59,7 +59,13 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 				else
 					send(channelID, "That's great to hear, but go to <#268354627781656577> room if you want to have it removed.");
 			}
-			else if (m.startsWith('!rank')) {} //IMPLEMENT
+			else if (m.startsWith("!rank")) {} //IMPLEMENT
+			else if (m.startsWith("!player"))
+			{
+				player_data(channelID, m);
+			}
+			else if (m=="!diamondrace")
+				diamondrace(channelID);
 			else if ((m.toLowerCase()).startsWith('!matchup')) //MATCHUP COMMANDS
 				send(channelID, matchup(((m.slice(8)).trim()).toLowerCase()));			
 			else if (commands(channelID, m)!=0)
@@ -356,6 +362,8 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 		case "vk":
 		case "vel'koz":
 			return "https://www.reddit.com/r/viktormains/comments/53vaa6/weekly_matchup_discussion_12_viktor_vs_velkoz/ - patch 6.17";
+		case "xerath":
+			return "https://www.reddit.com/r/viktormains/comments/61nzof/weekly_matchup_discussion_29_viktor_vs_xerath/ - patch 7.6.";
 		case "yasuo":
 			return "https://www.reddit.com/r/viktormains/comments/4m9ydy/weekly_matchup_discussion_3_viktor_vs_yasuo/ - patch 6.11";
 		case "zed":
@@ -369,6 +377,109 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 		default:
 			return "Code name ["+ champ.toUpperCase() +"]: missing data. This matchup hasn\'t been discussed yet, it seems.";
 	}
+}
+function diamondrace(cid)
+{
+	var data;
+	send(cid, ":hourglass_flowing_sand: Getting the **Diamond Race** data. This might take a while...");
+	try
+	{
+		return_api("https://euw.api.riotgames.com/api/lol/EUW/v2.5/league/by-summoner/30090754/entry?api_key="+RITO_KEY, function(arcy) {
+			if (arcy.startsWith("error"))
+				send(cid, ":x: Unable to retrieve data for Arcy because " + arcy.toString());
+			else
+			{
+				data=JSON.parse(arcy);
+				var arcyDiv=romanToInt((data["30090754"][0]).entries[0].division);
+				var arcyLp=(data["30090754"][0]).entries[0].leaguePoints;
+				var arcyV="**Arcyvilk**: "+(data["30090754"][0]).tier + " " +arcyDiv + ", "+arcyLp +" LP";
+				
+				return_api("https://euw.api.riotgames.com/api/lol/EUW/v2.5/league/by-summoner/30608030/entry?api_key="+RITO_KEY, function(solar) {
+					if (solar.startsWith("error"))
+						send(cid, ":x: Unable to retrieve data for Solar because " + solar.toString());
+					else
+					{
+						data=JSON.parse(solar);
+						var solarDiv=romanToInt((data["30608030"][0]).entries[0].division);
+						var solarLp=(data["30608030"][0]).entries[0].leaguePoints;
+						var solarV="**Solar**: "+(data["30608030"][0]).tier + " " +solarDiv + ", "+solarLp+" LP";
+					
+						return_api("https://eune.api.riotgames.com/api/lol/EUNE/v2.5/league/by-summoner/32262869/entry?api_key="+RITO_KEY, function(george) {
+							if (george.startsWith("error"))
+								send(cid, ":x: Unable to retrieve data for George because " + george.toString());
+							else
+							{
+								data=JSON.parse(george);
+								var georgeDiv=romanToInt((data["32262869"][0]).entries[0].division);
+								var georgeLp=(data["32262869"][0]).entries[0].leaguePoints;
+								var georgeV="**Georgepan**: "+(data["32262869"][0]).tier + " " +georgeDiv + ", "+georgeLp+" LP";
+								
+								return_api("https://na.api.riotgames.com/api/lol/NA/v2.5/league/by-summoner/23715695/entry?api_key="+RITO_KEY, function(nieve) {
+									if (nieve.startsWith("error"))
+										send(cid, ":x: Unable to retrieve data for Nieve because " + nieve.toString());
+									else
+									{
+										data=JSON.parse(nieve);	
+										var nieveDiv=romanToInt((data["23715695"][0]).entries[0].division);
+										var nieveLp=(data["23715695"][0]).entries[0].leaguePoints;
+										var nieveV="**Nieve**: "+(data["23715695"][0]).tier + " " +nieveDiv + ", "+nieveLp+" LP";
+										
+										var participants=new Array();
+										participants[0]=new Array(100*arcyDiv-arcyLp, arcyV);
+										participants[1]=new Array(100*solarDiv-solarLp, solarV);
+										participants[2]=new Array(100*georgeDiv-georgeLp, georgeV);;
+										participants[3]=new Array(100*nieveDiv-nieveLp, nieveV);
+										try
+										{
+											for (var j=0; j<3; j++)
+											{
+												for (var i=0; i<3; i++)
+												{
+													if (participants[i][0] > participants[i+1][0])
+													{
+														var pom0 = participants[i][0]; 
+														var pom1 = participants[i][1];
+														participants[i][0] = participants[i+1][0]; 
+														participants[i][1] = participants[i+1][1]; 
+														participants[i+1][0] = pom0;
+														participants[i+1][1] = pom1;
+													}
+												}
+											}
+											setTimeout(function(){
+												send(cid, "\n#1: " + participants[0][1] + "\n#2: " + participants[1][1] + "\n#3: " + participants[2][1] + "\n#4: " + participants[3][1]);
+												}, 2000);
+										}
+										catch(err)
+										{
+											send(cid, err);
+										}
+									}
+								})
+							}
+						})
+					}
+				})
+			}
+		});
+	}
+	catch(err)
+	{
+		send(cid, err);
+	}
+}
+function romanToInt(number)
+{
+	if (number=="I")
+		return 1;
+	else if (number=="II")
+		return 2;
+	else if (number=="III")
+		return 3;
+	else if (number=="IV")
+		return 4;
+	else if (number=="V")
+		return 5;
 }
 function botrefuses(normal, refusal)
 {
