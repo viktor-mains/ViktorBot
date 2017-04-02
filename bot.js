@@ -12,7 +12,7 @@ bot.on('ready', function(event) {
 	bot.setPresence({
 		idle_since: null,
 		game: {
-			name: "defending tomorrow!"
+			name: "Glorious Evolution - !h for help!"
 		}
 	});
 });
