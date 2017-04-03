@@ -67,6 +67,21 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 			}
 			else if (m=="!diamondrace")
 				diamondrace(channelID);
+			else if (m=="!build")
+				sendEmbed(channelID, "**♥ GLORIOUS MINIGUIDE TO BUILD ♥**\n",
+					"_______________\n\n"+
+					"○ **First back:**\n\n"+
+					"> 1250 g: <:hc1:242831892427177995> + <:potion:277494945332592640>\n"+
+					"< 1250 g: <:doran:277494945261027328> + <:potion:277494945332592640> / <:darkseal:298575845977620502> + <:potion:277494945332592640>\n"+
+					"< 1250 g vs LB, Kata, Syndra etc: <:negatron:277494945432993792> + <:potion:277494945332592640>"+
+					"\n____________\n\n"+
+					"○ **Default build:**\n\n <:hc1:242831892427177995> → <:sheen:277494945500233728>/<:hc2:242831893051998218> → "+
+					"<:sheen:277494945500233728>/<:hc2:242831893051998218> → <:hc3:242831893509308416> → <:lichbane:242831894134128650> → "+
+					"<:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → <:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → "+
+					"<:zhonya:242831893953773569>/<:abyssal:242831892334903296>/<:ga:273939560130674691>\n"+
+					"\n\n○ **New experimental build:**\n\n <:hc1:242831892427177995> → <:morello:298575846464159754> → <:liandry:298576316108767232> → "+
+					"<:voidstaff:242831893899247616> -> <:zhonya:242831893953773569>/<:rabadon:242831892854865922> (<:hc3:242831893509308416> somewhere inbetween)"	
+					);
 			else if ((m.toLowerCase()).startsWith('!matchup')) //MATCHUP COMMANDS
 				send(channelID, matchup(((m.slice(8)).trim()).toLowerCase()));			
 			else if (commands(channelID, m)!=0)
