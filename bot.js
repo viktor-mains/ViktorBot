@@ -306,18 +306,6 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 		catch(err)
 		{	send(cid, "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really?_\n"+err);}
 	}
-	else if (m=="!build")
-		return "**♥ GLORIOUS MINIGUIDE TO BUILD ♥**\n"+
-					"-------------------------------\n"+
-					"○ **First back:**\n\n"+
-					"> 1250 g: <:hc1:242831892427177995> + <:potion:277494945332592640>\n"+
-					"< 1250 g: <:doran:277494945261027328> + <:potion:277494945332592640>\n"+
-					"< 1250 g vs LB, Kata, Syndra etc: <:negatron:277494945432993792> + <:potion:277494945332592640>\n"+
-					"-------------------------------\n"+
-					"○ **Default build:** <:hc1:242831892427177995> → <:sheen:277494945500233728>/<:hc2:242831893051998218> → "+
-					"<:sheen:277494945500233728>/<:hc2:242831893051998218> → <:hc3:242831893509308416> → <:lichbane:242831894134128650> → "+
-					"<:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → <:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → "+
-					"<:zhonya:242831893953773569>/<:ga:273939560130674691>";
 	else return 0;
 }
 function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
