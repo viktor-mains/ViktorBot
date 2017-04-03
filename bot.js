@@ -135,7 +135,7 @@ function viktor_answers(m)
 		}
 		else 
 		{
-			switch(Math.floor((Math.random() * 31) + 1))
+			switch(Math.floor((Math.random() * 40) + 1))
 			{
 				case 1:
 					return "No. Leave me alone.";
@@ -198,6 +198,24 @@ function viktor_answers(m)
 				case 30:
 					return "Hypothetically, everything is possible.";
 				case 31:
+					return "Oh. So you actually _are_  able to have a good idea once in a while!";
+				case 32:
+					return "Heh. So _naive_.";
+				case 33:
+					return "...this... Actually... Might be true. Perhaps.";
+				case 34:
+					return "If this ever happens, what I hope will not, it just _has_ to end with a disaster.";
+				case 35:
+					return "It's actually not _that_  bad of an idea...";
+				case 36:
+					return "I hope it will never happen in my close proximity.";
+				case 37:
+					return "My prognosis are rather... pessimistic.";
+				case 38:
+					return "I am entirely sure this is doomed to fail in an instant it happens. If it ever does. What I highly doubt, by the way.";
+				case 39:
+					return "The chance for it to happen equals to about 0.00019%, according to my calculations.";
+				case 40:
 				default:
 					return "_grunting noises_\nStop bothering me ;-;";
 			}
@@ -297,22 +315,22 @@ function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
 	else if (m.indexOf("expirence")!=-1)
 		return "_**e x p e r i e n c e**_ <:JustDieAlready:288399448176853012>";
 	else if (m.indexOf("hello")!=-1)
-		var rand=Math.floor((Math.random() * 3) + 1);
-		if (rand==3)
+		var rand=Math.floor((Math.random() * 2) + 1);
+		if (rand==2)
 			return "Greetings, inferior construct!";
 	else if (m.indexOf(":questionmark:")!=-1)
 	{	
-		var rand=Math.floor((Math.random() * 5) + 1);
-		if (rand==5)
+		var rand=Math.floor((Math.random() * 2) + 1);
+		if (rand==2)
 			return "<:questionmark:244535324737273857>";
 	}
 	else if (m.indexOf("shrug")!=-1)
-		var rand=Math.floor((Math.random() * 3) + 1);
-		if (rand==3)
+		var rand=Math.floor((Math.random() * 2) + 1);
+		if (rand==2)
 			return "¯\\\\_ <:viktor:232941841815830536> \\_/¯";
 	else if (m.indexOf("build")!=-1 && (m.indexOf("viktor")!=-1 || m.indexOf("vik")!=-1))
 		return "It's highly adviced to check the !build command.";
-	else if ((m.indexOf("club")!=-1 || m.indexOf("clubs")!=-1) && (m.indexOf("viktor")!=-1))
+	else if ((m.indexOf("club")!=-1 || m.indexOf("clubs")!=-1) && (m.indexOf("viktor")!=-1 || m.indexOf("vik")!=-1))
 		return "https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.";
 	else return 0;
 }
