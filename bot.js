@@ -450,39 +450,52 @@ function diamondrace(cid)
 										var nieveLp=(data["23715695"][0]).entries[0].leaguePoints;
 										var nieveV="Nieve - "+(data["23715695"][0]).tier + " " +nieveDiv + ", "+nieveLp+" LP";
 										
-										var participants=new Array();
-										participants[0]=new Array(100*arcyDiv-arcyLp, arcyV);
-										participants[1]=new Array(100*solarDiv-solarLp, solarV);
-										participants[2]=new Array(100*georgeDiv-georgeLp, georgeV);;
-										participants[3]=new Array(100*nieveDiv-nieveLp, nieveV);
-										try
-										{
-											for (var j=0; j<participants.length-1; j++)
+										return_api("https://na.api.riotgames.com/api/lol/NA/v2.5/league/by-summoner/61951614/entry?api_key="+RITO_KEY, function(lolzie) {
+											if (lolzie.startsWith("error"))
+												send(cid, ":x: Unable to retrieve data for Lolzie because " + lolzie.toString());
+											else
 											{
-												for (var i=0; i<participants.length-1; i++)
+												data=JSON.parse(lolzie);
+												var lolzieDiv=romanToInt((data["61951614"][0]).entries[0].division);
+												var lolzieLp=(data["61951614"][0]).entries[0].leaguePoints;
+												var lolzieV="Lolzie - "+(data["61951614"][0]).tier + " " +lolzieDiv + ", "+lolzieLp +" LP";
+										
+												var participants=new Array();
+												participants[0]=new Array(100*arcyDiv-arcyLp, arcyV);
+												participants[1]=new Array(100*solarDiv-solarLp, solarV);
+												participants[2]=new Array(100*georgeDiv-georgeLp, georgeV);;
+												participants[3]=new Array(100*nieveDiv-nieveLp, nieveV);
+												participants[4]=new Array(100*lolzieDiv-lolzieLp, lolzieV);
+												try
 												{
-													if (participants[i][0] > participants[i+1][0])
+													for (var j=0; j<participants.length-1; j++)
 													{
-														var pom0 = participants[i][0]; 
-														var pom1 = participants[i][1];
-														participants[i][0] = participants[i+1][0]; 
-														participants[i][1] = participants[i+1][1]; 
-														participants[i+1][0] = pom0;
-														participants[i+1][1] = pom1;
+														for (var i=0; i<participants.length-1; i++)
+														{
+															if (participants[i][0] > participants[i+1][0]) 
+															{
+																var pom0 = participants[i][0]; 
+																var pom1 = participants[i][1];
+																participants[i][0] = participants[i+1][0]; 
+																participants[i][1] = participants[i+1][1]; 
+																participants[i+1][0] = pom0;
+																participants[i+1][1] = pom1;
+															}
+														}
 													}
+													setTimeout(function(){
+														var m="\n";
+														for (var i=0; i<participants.length; i++)
+															m+="\n**#"+(i+1)+"**: "+participants[i][1];
+														sendEmbed(cid, ":trophy: Diamond Race!", m+"\n\nTo join the Diamond Race, contact Arcyvilk#5460 . Disclaimer: you have to be Platinum.");
+														}, 2000);
+												}
+												catch(err)
+												{
+													send(cid, err);
 												}
 											}
-											setTimeout(function(){
-												var m="\n";
-												for (var i=0; i<participants.length; i++)
-													m+="\n**#"+(i+1)+"**: "+participants[i][1];
-												sendEmbed(cid, ":trophy: Diamond Race!", m+"\n\nTo join the Diamond Race, contact Arcyvilk#5460 . Disclaimer: you have to be Platinum.");
-												}, 2000);
-										}
-										catch(err)
-										{
-											send(cid, err);
-										}
+										})
 									}
 								})
 							}
