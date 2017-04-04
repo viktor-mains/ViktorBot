@@ -40,6 +40,34 @@ bot.on('guildMemberAdd', function(member, event) {
 	"Moderators reserve the right to kick/bans users basing on judgement calls."
 	);
 });
+bot.on('guildMemberRemove', function(member, event) {
+	var m='';
+	switch(Math.floor((Math.random() * 10) + 1))
+	{
+		case 1:
+			m="Seems that not everyone is able to endure the tough process of evolving oneself.";
+		case 2:
+			m="Probably requalified as a dirty Yasuo main. _Ew_.";
+		case 3:
+			m="Not that I had any hopes tied to them anyway.";
+		case 4:
+			m="Not a big loss, though.";
+		case 5:
+			m="One annoying human less.";
+		case 6:
+			m="Pity, they _really_  needed to upgrade some parts of themselves.";
+		case 7:
+			m="For the better, they weren't able to fully embrace the Evolution.";
+		case 8:
+			m="Pity, who will clean the toilets now?";
+		case 9:
+			m="Weird choice, but who I am to judge.";
+		case 10:
+		default:
+			m="Almost as if they didn't want to improve all those abundant flaws of theirs.";
+	}
+	send("268354627781656577", event.d.user.username+" left the server. "+m);
+});
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	var m=message;	
 	if (userID!="276781276898525184") //STOPS BOT FROM RESPONDING TO HIMSELF
