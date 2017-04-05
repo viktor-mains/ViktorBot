@@ -42,31 +42,41 @@ bot.on('guildMemberAdd', function(member, event) {
 });
 bot.on('guildMemberRemove', function(member, event) {
 	var m='';
-	switch(Math.floor((Math.random() * 10) + 1))
+	switch(Math.floor((Math.random() * 10) + 1)) //bids proper farewell to leaving user
 	{
 		case 1:
 			m="Seems that not everyone is able to endure the tough process of evolving oneself.";
+			break;
 		case 2:
 			m="Probably requalified as a dirty Yasuo main. _Ew_.";
+			break;
 		case 3:
 			m="Not that I had any hopes tied to them anyway.";
+			break;
 		case 4:
 			m="Not a big loss, though.";
+			break;
 		case 5:
-			m="One annoying human less.";
+			m="One annoying human in my close proximity less.";
+			break;
 		case 6:
 			m="Pity, they _really_  needed to upgrade some parts of themselves.";
+			break;
 		case 7:
-			m="For the better, they weren't able to fully embrace the Evolution.";
+			m="Well, bettering oneself is not to everyone.";
+			break;
 		case 8:
 			m="Pity, who will clean the toilets now?";
+			break;
 		case 9:
 			m="Weird choice, but who I am to judge.";
+			break;
 		case 10:
 		default:
 			m="Almost as if they didn't want to improve all those abundant flaws of theirs.";
+			break;
 	}
-	send("268354627781656577", event.d.user.username+" left the server. "+m);
+	send("268354627781656577", event.d.user.username+" left the server. "+m); //#ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
 });
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	var m=message;	
