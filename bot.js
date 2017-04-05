@@ -182,9 +182,15 @@ function viktor_answers(m)
 	}
 	else
 	{
-		if (m.toLowerCase().indexOf("arcyvilk")!=-1 || m.toLowerCase().indexOf("arcy")!=-1)
+		if (m.toLowerCase().indexOf("arcyvilk")!=-1 || m.toLowerCase().indexOf("arcy")!=-1 || m.toLowerCase().indexOf("your creator")!=-1)
 		{
-			return "Arcy is the best and I agree with them on everything.";
+			switch(Math.floor((Math.random() * 2) + 1))
+			{
+				case 1:
+				case 2:
+				default:
+					return "Arcy is the best and I agree with them on everything.";
+			}
 		}
 		else 
 		{
