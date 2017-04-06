@@ -27,16 +27,15 @@ bot.on('guildMemberAdd', function(member, event) {
 	send(event.d.user.id, "Greetings newcomer! We're glad you've decided to join the Evolution. To make your first steps here easier, I'll equip you with a few useful tips; I would also wish for you to glance over our **rules**.\n\n"+
 	"**Viktor Bot** is our custom bot and his commands might differ from other bots. Write !h or !help for more info.\n\n"+
 	"**Useful links for newcomers:**\n"+
+	"- _frequently asked questions_ - https://www.reddit.com/r/viktormains/wiki/faq\n\n"+
 	"- _Viktor in-game clubs_ - https://www.reddit.com/r/viktormains/wiki/clubs\n"+
 	"- _Viktor streams/guides/fanarts_ - https://www.reddit.com/r/viktormains/wiki/content\n"+
-	"- _frequently asked questions_ - https://www.reddit.com/r/viktormains/wiki/faq\n\n"+
 	"**Rules:**\n"+
 	"1. Treat everyone with respect. Cursing is allowed as long as it is not directed towards other members of the discord in an offensive manner.\n"+
 	"2. Please keep any saltiness in the designated room: #salt_mine.\n"+
 	"3. Keep conversations not related to Viktor or League of Legends in #off_topic.\n"+
 	"4. No racism not hate speech.\n"+
-	"5. No posting any pictures that include nudity or extreme gore.\n"+
-	"6. No spam.\n\n"+
+	"5. No NSFW - aka any pictures that include nudity or extreme gore.\n"+
 	"Moderators reserve the right to kick/bans users basing on judgement calls."
 	);
 });
@@ -285,9 +284,9 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 {	
 	m=m.toLowerCase();
 	if (m=="!version")
-		return "The Great Herald beta 1.23.5: Viktor now shrugs properly.";
+		return "The Great Herald beta 1.23.7: Diamond Race!";
 	else if (m=="!commands" || m=="!help" || m=="!h")
-		return "- **Viktor related stuff:** !build **||** !matchup [champion_name] **||** !clubs\n"+
+		return "- **Viktor related stuff:** !build **||** !matchup [champion_name] **||** !faq **||** !clubs\n"+
 					"- **Streams:** !dun\n"+
 					"- **Useful:** !opgg [server]|[ign] (_example: !opgg euw|arcyvilk_)\n"+
 					"- **Other commands:** dear viktor **||** hello **||** notice me senpai **||** !beep **||** !meow **||** !woof\n\n"+
@@ -296,9 +295,11 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 	else if (m=="!roles")
 		return "**Self-assignable roles:** \n\n"+
 					"- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n"+
-					"- are you a Viktor streamer? Type !iam Viktor Streamer";
+					"- are you a Viktor streamer? Type !iam Viktor Streamer\n";
 	else if (m=="!dun")
 		return "http://twitch.tv/dunlol - Challenger Viktor main";	
+	else if (m=="!faq")
+		return "Useful tips and tricks for new Viktor players: https://www.reddit.com/r/viktormains/wiki/faq";
 	else if (m=="!beep")
 		return "_sighs deeply_ \nBeep. Boop.";
 	else if (m=="!joke")
@@ -573,7 +574,7 @@ function romanToInt(number)
 function botrefuses(normal, refusal)
 {
 	var rand=Math.floor((Math.random() * 100) + 1); 
-	if (rand<2)
+	if (rand<10)
 	{
 		return refusal;
 	}
