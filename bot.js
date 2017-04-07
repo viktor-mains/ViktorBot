@@ -36,6 +36,7 @@ bot.on('guildMemberAdd', function(member, event) {
 	"3. Keep conversations not related to Viktor or League of Legends in #off_topic.\n"+
 	"4. No racism not hate speech.\n"+
 	"5. No NSFW - aka any pictures that include nudity or extreme gore.\n"+
+	"6. No spam. Memes in healthy dose please.\n\n"+
 	"Moderators reserve the right to kick/bans users basing on judgement calls."
 	);
 });
@@ -75,7 +76,7 @@ bot.on('guildMemberRemove', function(member, event) {
 			m="Almost as if they didn't want to improve all those abundant flaws of theirs.";
 			break;
 	}
-	send("268354627781656577", event.d.user.username+" left the server. "+m); //#ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
+	send("290601371370127361", event.d.user.username+" left the server. "+m); //#BOT_SPAM ROOM - WARNING: HARDCODED!!!
 });
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	var m=message;	
@@ -617,46 +618,51 @@ function add_role(m, userID, channelID)
 	var done=false;	
 	var hasrole=false;
 
-	if (r.toLowerCase()=="bad" || r.toLowerCase()=="noob" || r.toLowerCase()=="retard" || r.toLowerCase()=="retarded") //SOME INNOCENT TROLLING
+	if (r.toLowerCase()=="bad" || r.toLowerCase()=="noob" || r.toLowerCase()=="retard" || r.toLowerCase()=="retarded" || r.toLowerCase()=="moron" || r.toLowerCase()=="idiot") //SOME INNOCENT TROLLING
 		send(channelID, "Indeed. You are.");
-	if (r.toLowerCase()=="bronze")
-		send(channelID, "You aren't, but you truly deserve it.");
-	
-	for (var i in bot.servers[bot.channels[channelID].guild_id].roles)
+	else
 	{
-		if ((bot.servers[bot.channels[channelID].guild_id].roles[i].name).toLowerCase()==r.toLowerCase()) 
-		{
-			r_id=bot.servers[bot.channels[channelID].guild_id].roles[i].id;
-			break;
-		}
-	}
-	if (r_id==0) //IF DESIRED ROLE DOES NOT EXIST
-		send(channelID, "Such role doesn\'t exist. Check spelling.");
-	else //IF DESIRED ROLE EXISTS
-	{
-		if (!checkrole(channelID, userID, r_id)) //IF USER DIDN'T HAVE THIS ROLE BEFORE
-		{
-			try
-			{
-				bot.addToRole({
-					serverID: bot.channels[channelID].guild_id,
-					userID: userID,
-					roleID: r_id});
-							
-				setTimeout(function(){
-					if (!checkrole(channelID, userID, r_id)) //FAILED TO ASSIGN ROLE
-						send(channelID, "Failed to assign the **"+r+"** role.");
-					else
-						send(channelID, "Role **"+r+"** assigned with utmost efficiency.");
-				}, 1000);
-			}
-			catch(err)
-			{
-				send(channelID, "Failed to assign the **"+r+"** role. " + err);
-			}
-		}
+		if (r.toLowerCase()=="bronze")
+			send(channelID, "You aren't, but you truly deserve it.");
 		else
-			send(channelID, "You already have the **"+r+"** role.");
+		{	
+			for (var i in bot.servers[bot.channels[channelID].guild_id].roles)
+			{
+				if ((bot.servers[bot.channels[channelID].guild_id].roles[i].name).toLowerCase()==r.toLowerCase()) 
+				{
+					r_id=bot.servers[bot.channels[channelID].guild_id].roles[i].id;
+					break;
+					}
+			}
+			if (r_id==0) //IF DESIRED ROLE DOES NOT EXIST
+				send(channelID, "Such role doesn\'t exist. Check spelling.");
+			else //IF DESIRED ROLE EXISTS
+			{
+				if (!checkrole(channelID, userID, r_id)) //IF USER DIDN'T HAVE THIS ROLE BEFORE
+				{
+					try
+					{
+						bot.addToRole({
+							serverID: bot.channels[channelID].guild_id,
+							userID: userID,
+							roleID: r_id});
+									
+						setTimeout(function(){
+							if (!checkrole(channelID, userID, r_id)) //FAILED TO ASSIGN ROLE
+								send(channelID, "Failed to assign the **"+r+"** role.");
+							else
+								send(channelID, "Role **"+r+"** assigned with utmost efficiency.");
+						}, 1000);
+					}
+					catch(err)
+					{
+						send(channelID, "Failed to assign the **"+r+"** role. " + err);
+					}
+				}
+				else
+					send(channelID, "You already have the **"+r+"** role.");
+			}
+		}
 	}
 }
 function remove_role(m, userID, channelID)
@@ -667,50 +673,54 @@ function remove_role(m, userID, channelID)
 	var done=false;	
 	var hasrole=false;
 	
-	try
+	if (r.toLowerCase()=="bronze")
+		send(channelID, "...did you really think you can, like, just stop being Bronze like that? That's... quite amusing.");
+	else
 	{
-		for (var i in bot.servers[bot.channels[channelID].guild_id].roles)
+		try
 		{
-			if (bot.servers[bot.channels[channelID].guild_id].roles[i].name==r) 
+			for (var i in bot.servers[bot.channels[channelID].guild_id].roles)
 			{
-				r_id=bot.servers[bot.channels[channelID].guild_id].roles[i].id;
-				break;
+				if (bot.servers[bot.channels[channelID].guild_id].roles[i].name==r) 
+				{
+					r_id=bot.servers[bot.channels[channelID].guild_id].roles[i].id;
+					break;
+				}
 			}
 		}
-	}
-	catch(err)
-	{
-		send(channelID, "Finding role for user "+bot.members[userID].name +" - error detected: "+err.toString());
-	}
-	if (r_id==0) //IF DESIRED ROLE DOES NOT EXIST
-		send(channelID,'Such role doesn\'t exist. Check spelling.');
-	else //IF DESIRED ROLE EXISTS
-	{
-		if (checkrole(channelID, userID, r_id)) //IF USER DOES HAVE THIS ROLE
+		catch(err)
 		{
-			try
-			{
-				bot.removeFromRole({
-					serverID: bot.channels[channelID].guild_id,
-					userID: bot.users[userID].id,
-					roleID: r_id});
-							
-				setTimeout(function(){
-					if (checkrole(channelID, userID, r_id)) //IF FAILED TO REMOVE FROM ROLE
-						send(channelID, "Failed to assign the **"+r+"** role.");
-					else
-						send(channelID, "Role **"+r+"** removed succesfully.");
-				}, 1000);
-			}
-			catch(err)
-			{
-				send(channelID, "Failed to assign the **"+r+"** role. " + err);
-			}
+			send(channelID, "Finding role for user "+bot.members[userID].name +" - error detected: "+err.toString());
 		}
-		else
-			send(channelID, "Indeed, you aren't.");
+		if (r_id==0) //IF DESIRED ROLE DOES NOT EXIST
+			send(channelID,'Such role doesn\'t exist. Check spelling.');
+		else //IF DESIRED ROLE EXISTS
+		{
+			if (checkrole(channelID, userID, r_id)) //IF USER DOES HAVE THIS ROLE
+			{
+				try
+				{
+					bot.removeFromRole({
+						serverID: bot.channels[channelID].guild_id,
+						userID: bot.users[userID].id,
+						roleID: r_id});
+								
+					setTimeout(function(){
+						if (checkrole(channelID, userID, r_id)) //IF FAILED TO REMOVE FROM ROLE
+							send(channelID, "Failed to assign the **"+r+"** role.");
+						else
+							send(channelID, "Role **"+r+"** removed succesfully.");
+					}, 1000);
+				}
+				catch(err)
+				{
+					send(channelID, "Failed to assign the **"+r+"** role. " + err);
+					}
+			}
+			else
+				send(channelID, "Indeed, you aren't.");
+		}
 	}
-	
 }
 function add_streaming_role(user, userID, status, game) //SERVER+ROLE ID HARDCODED; CHANGE TO BE MORE RESPONSIVE
 {
