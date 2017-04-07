@@ -707,15 +707,15 @@ function remove_role(m, userID, channelID)
 								
 					setTimeout(function(){
 						if (checkrole(channelID, userID, r_id)) //IF FAILED TO REMOVE FROM ROLE
-							send(channelID, "Failed to assign the **"+r+"** role.");
+							send(channelID, "Failed to remove the **"+r+"** role.");
 						else
 							send(channelID, "Role **"+r+"** removed succesfully.");
 					}, 1000);
 				}
 				catch(err)
 				{
-					send(channelID, "Failed to assign the **"+r+"** role. " + err);
-					}
+					send(channelID, "Failed to remove the **"+r+"** role. " + err);
+				}
 			}
 			else
 				send(channelID, "Indeed, you aren't.");
