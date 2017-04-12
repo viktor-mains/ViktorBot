@@ -39,44 +39,74 @@ bot.on('guildMemberAdd', function(member, event) {
 	"6. No spam. Memes in healthy dose please.\n\n"+
 	"Moderators reserve the right to kick/bans users basing on judgement calls."
 	);
-});
-bot.on('guildMemberRemove', function(member, event) {
+	/*
 	var m='';
-	switch(Math.floor((Math.random() * 10) + 1)) //bids proper farewell to leaving user
+	switch(Math.floor((Math.random() * 10) + 1)) //welcomes new user
 	{
 		case 1:
-			m="Seems that not everyone is able to endure the tough process of evolving oneself.";
-			break;
+			m="Greetings, "+event.d.user.username+"! Glad to see you here.";
 		case 2:
-			m="Probably requalified as a dirty Yasuo main. _Ew_.";
-			break;
+			m="Seems that "+event.d.user.username+" just joined the Evolution. Greet them like they deserve.";
 		case 3:
-			m="Not that I had any hopes tied to them anyway.";
-			break;
+			m="Greetings, "+event.d.user.username+". You've come to the right place.";
 		case 4:
-			m="Not a big loss, though.";
-			break;
+			m="Why hello there, "+event.d.user.username+". Make yourself in home.";
 		case 5:
-			m="One annoying human in my close proximity less.";
-			break;
+			m="";
 		case 6:
 			m="Pity, they _really_  needed to upgrade some parts of themselves.";
-			break;
 		case 7:
-			m="Well, bettering oneself is not to everyone.";
-			break;
+			m="For the better, they weren't able to fully embrace the Evolution.";
 		case 8:
 			m="Pity, who will clean the toilets now?";
-			break;
 		case 9:
 			m="Weird choice, but who I am to judge.";
-			break;
 		case 10:
 		default:
 			m="Almost as if they didn't want to improve all those abundant flaws of theirs.";
-			break;
 	}
+	send("268354627781656577", m);*/  //#ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
+});
+bot.on('guildMemberRemove', function(member, event) {
+	if (event.d.guild.name=="Viktor mains")
+	{
+		var m='';
+		switch(Math.floor((Math.random() * 10) + 1)) //bids proper farewell to leaving user
+		{
+			case 1:
+				m="Seems that not everyone is able to endure the tough process of evolving oneself.";
+				break;
+			case 2:
+				m="Probably requalified as a dirty Yasuo main. _Ew_.";
+				break;
+			case 3:
+				m="Not that I had any hopes tied to them anyway.";
+				break;
+			case 4:
+				m="Not a big loss, though.";
+				break;
+			case 5:
+				m="One annoying human in my close proximity less.";
+				break;
+			case 6:
+				m="Pity, they _really_  needed to upgrade some parts of themselves.";
+				break;
+			case 7:
+				m="Well, bettering oneself is not to everyone.";
+				break;
+			case 8:
+				m="Pity, who will clean the toilets now?";
+				break;
+			case 9:
+				m="Weird choice, but who I am to judge.";
+				break;
+			case 10:
+			default:
+				m="Almost as if they didn't want to improve all those abundant flaws of theirs.";
+				break;
+		}
 	send("290601371370127361", event.d.user.username+" left the server. "+m); //#BOT_SPAM ROOM - WARNING: HARDCODED!!!
+	}
 });
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	var m=message;	
@@ -103,8 +133,12 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 			{
 				player_data(channelID, m);
 			}
-			else if (m=="!diamondrace")
-				diamondrace(channelID);
+			else if (m.startsWith("!diamondrace"))
+				race(channelID, user, m, "Diamond", "Platinum");
+			else if (m.startsWith("!platinumrace"))
+				race(channelID, user, m, "Platinum", "Gold");
+			else if (m.startsWith("!goldrace"))
+				race(channelID, user, m, "Gold", "Silver");
 			else if (m=="!build")
 				sendEmbed(channelID, "**♥ GLORIOUS MINIGUIDE TO BUILD ♥**\n",
 					"_______________\n\n"+
@@ -453,110 +487,180 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 			return "Code name ["+ champ.toUpperCase() +"]: missing data. This matchup hasn\'t been discussed yet, it seems.";
 	}
 }
-function diamondrace(cid)
+//------------------------------------------//
+//................RACE STUFF................//
+//------------------------------------------//
+
+function race(cid, user, m, div, divlow)
 {
-	var data;
-	send(cid, ":hourglass_flowing_sand: Getting the **Diamond Race** data. This might take a while...");
-	try
+	var l=div.length+6;
+	if (m.length>l) //adding players, other admin stuffs
 	{
-		return_api("https://euw.api.riotgames.com/api/lol/EUW/v2.5/league/by-summoner/30090754/entry?api_key="+RITO_KEY, function(arcy) {
-			if (arcy.startsWith("error"))
-				send(cid, ":x: Unable to retrieve data for Arcy because " + arcy.toString());
-			else
+		m=m.slice(l).trim();
+		if (m.startsWith("add"))
+		{
+			m=m.slice(3).trim();
+			if (m.indexOf("|")!=-1)
 			{
-				data=JSON.parse(arcy);
-				var arcyDiv=romanToInt((data["30090754"][0]).entries[0].division);
-				var arcyLp=(data["30090754"][0]).entries[0].leaguePoints;
-				var arcyV="Arcyvilk - "+(data["30090754"][0]).tier + " " +arcyDiv + ", "+arcyLp +" LP";
-				
-				return_api("https://euw.api.riotgames.com/api/lol/EUW/v2.5/league/by-summoner/30608030/entry?api_key="+RITO_KEY, function(solar) {
-					if (solar.startsWith("error"))
-						send(cid, ":x: Unable to retrieve data for Solar because " + solar.toString());
-					else
+				var p=m.split("|"); //0 to nick, 1 to serwer
+				p[0]=(p[0].toLowerCase()).replace(/ /g,"");
+				try //add an exception to situation a person writes down server which doesnt exist
+				{
+				return_api("https://"+p[1]+".api.riotgames.com/api/lol/"+p[1]+"/v1.4/summoner/by-name/"+p[0]+"?api_key="+RITO_KEY, function(id_api) { 
+					if (id_api.startsWith("error"))
+						send(cid, ":warning: Such player doesn't exist.");
+					else 
 					{
-						data=JSON.parse(solar);
-						var solarDiv=romanToInt((data["30608030"][0]).entries[0].division);
-						var solarLp=(data["30608030"][0]).entries[0].leaguePoints;
-						var solarV="Solar - "+(data["30608030"][0]).tier + " " +solarDiv + ", "+solarLp+" LP";
-					
-						return_api("https://eune.api.riotgames.com/api/lol/EUNE/v2.5/league/by-summoner/32262869/entry?api_key="+RITO_KEY, function(george) {
-							if (george.startsWith("error"))
-								send(cid, ":x: Unable to retrieve data for George because " + george.toString());
+						var player=JSON.parse(id_api);
+						var pid=(player[p[0]]).id;
+						return_api("https://"+p[1]+".api.riotgames.com/api/lol/"+p[1]+"/v2.5/league/by-summoner/"+pid+"/entry?api_key="+RITO_KEY, function(div_api) {
+							if (div_api.startsWith("error"))
+								send(cid, ":x: Unable to retrieve data for "+p[0]+", try again in a few moments.");
 							else
 							{
-								data=JSON.parse(george);
-								var georgeDiv=romanToInt((data["32262869"][0]).entries[0].division);
-								var georgeLp=(data["32262869"][0]).entries[0].leaguePoints;
-								var georgeV="Georgepan - "+(data["32262869"][0]).tier + " " +georgeDiv + ", "+georgeLp+" LP";
-								
-								return_api("https://na.api.riotgames.com/api/lol/NA/v2.5/league/by-summoner/23715695/entry?api_key="+RITO_KEY, function(nieve) {
-									if (nieve.startsWith("error"))
-										send(cid, ":x: Unable to retrieve data for Nieve because " + nieve.toString());
-									else
-									{
-										data=JSON.parse(nieve);	
-										var nieveDiv=romanToInt((data["23715695"][0]).entries[0].division);
-										var nieveLp=(data["23715695"][0]).entries[0].leaguePoints;
-										var nieveV="Nieve - "+(data["23715695"][0]).tier + " " +nieveDiv + ", "+nieveLp+" LP";
-										
-										return_api("https://na.api.riotgames.com/api/lol/NA/v2.5/league/by-summoner/61951614/entry?api_key="+RITO_KEY, function(lolzie) {
-											if (lolzie.startsWith("error"))
-												send(cid, ":x: Unable to retrieve data for Lolzie because " + lolzie.toString());
+								var data=JSON.parse(div_api);
+								if (((data[pid][0]).tier).toLowerCase()!=divlow.toLowerCase())
+									send(cid, ":no_entry: Player "+p[0].toUpperCase()+" is not "+divlow+" and therefore can not participate. Sob.")
+								else
+								{
+									var newparticipant=p[0].trim().toUpperCase()+"|"+(player[p[0]]).id+"|"+p[1].trim().toUpperCase();
+									fs = require('fs');									
+									fs.readFile(div.toLowerCase()+"race.vik", 'utf8', function (err,data) { //a check, if a player isn't already registered in the race
+										if (err)
+											send(cid, ":x: An unexpected error occured - "+err+" - while getting acces to the Race data. Please try again in a few minutes. ");
+										else
+										{
+											if (data.indexOf(pid)!=-1) //if a player with given ID is already registered in this race
+												send(cid, ":x: Player "+p[0].toUpperCase()+" is already registered in the "+div+" race.");
 											else
 											{
-												data=JSON.parse(lolzie);
-												var lolzieDiv=romanToInt((data["61951614"][0]).entries[0].division);
-												var lolzieLp=(data["61951614"][0]).entries[0].leaguePoints;
-												var lolzieV="Lolzie - "+(data["61951614"][0]).tier + " " +lolzieDiv + ", "+lolzieLp +" LP";
-										
-												var participants=new Array();
-												participants[0]=new Array(100*arcyDiv-arcyLp, arcyV);
-												participants[1]=new Array(100*solarDiv-solarLp, solarV);
-												participants[2]=new Array(100*georgeDiv-georgeLp, georgeV);;
-												participants[3]=new Array(100*nieveDiv-nieveLp, nieveV);
-												participants[4]=new Array(100*lolzieDiv-lolzieLp, lolzieV);
-												try
-												{
-													for (var j=0; j<participants.length-1; j++)
+												fs.appendFile(div.toLowerCase()+"race.vik", newparticipant+"#", function (err) {
+													if (err) 
+														send(cid, ":x: An unexpected error occured - "+err+" - while trying to add new participant to the race. Please try again in a few minutes. ");
+													else
 													{
-														for (var i=0; i<participants.length-1; i++)
-														{
-															if (participants[i][0] > participants[i+1][0]) 
-															{
-																var pom0 = participants[i][0]; 
-																var pom1 = participants[i][1];
-																participants[i][0] = participants[i+1][0]; 
-																participants[i][1] = participants[i+1][1]; 
-																participants[i+1][0] = pom0;
-																participants[i+1][1] = pom1;
-															}
-														}
+														console.log("New "+div+" race participant: "+newparticipant);
+														send(cid, ":information_source: New participant: "+p[0].toUpperCase());
 													}
-													setTimeout(function(){
-														var m="\n";
-														for (var i=0; i<participants.length; i++)
-															m+="\n**#"+(i+1)+"**: "+participants[i][1];
-														sendEmbed(cid, ":trophy: Diamond Race!", m+"\n\nTo join the Diamond Race, contact Arcyvilk#5460 . Disclaimer: you have to be Platinum.");
-														}, 2000);
-												}
-												catch(err)
+												});
+											}
+										}
+									});
+								}
+							}
+						});						
+					}
+				});
+				}
+				catch(err)
+				{
+					send(cid, ":x: An unexpected error occured. "+err);
+				}
+			}
+			else 
+				send (cid, "Incorrect format of input.");
+		}
+	}
+	else //only race info
+	{
+		send(cid, ":hourglass_flowing_sand: Getting the **"+div+" Race** data. This might take a while...");
+		var data;
+		var p=new Array();
+		fs = require('fs');
+		fs.readFile(div.toLowerCase()+"race.vik", 'utf8', function (err,data) {
+			if (err)
+				return console.log(err);
+			else
+			{
+				var fetched=data.split("#");
+				m=""; //fetched info here
+				
+				function SplitLoop(i) //recursive function being an alternative to for loop
+				{
+					if (i<fetched.length-1) //-1 as the last array is always empty (need to find a more decent way to overcome this somehow)
+					{
+						var p1=fetched[i].split("|");
+						p[i]=new Array(p1[0],p1[1],p1[2], "0", "0"); //0=nick, 1=id, 2=server, 3=points towards classification, 4=description
+						return SplitLoop(i+1);
+					}
+					else
+					{
+						function ApiLoop(i)
+						{
+							if (i<p.length)
+							{
+								var pid=p[i][1];
+								return_api("https://"+p[i][2]+".api.riotgames.com/api/lol/"+p[i][2]+"/v2.5/league/by-summoner/"+pid+"/entry?api_key="+RITO_KEY, function(player) {
+									if (player.startsWith("error"))
+										send(cid, ":x: Unable to retrieve data for "+p[i][0].toUpperCase()+".");
+									else
+									{
+										data=JSON.parse(player);
+										var pDiv=romanToInt((data[pid][0]).entries[0].division);
+										var pLp=(data[pid][0]).entries[0].leaguePoints;
+										p[i][4]=p[i][0]+" - "+(data[pid][0]).tier + " " +pDiv + ", "+pLp +" LP";
+										if (((data[pid][0]).tier).toLowerCase()==divlow.toLowerCase())
+											p[i][3]=100*pDiv-pLp;
+										else 
+											p[i][3]=999;
+										
+										return ApiLoop(i+1);
+									}
+								});
+							}
+							else
+							{
+								try
+								{
+									var m="\n";
+									function JLoop(j)
+									{
+										if (j<p.length-1)
+										{
+											function ILoop(i)
+											{
+												if (i<p.length-1)
 												{
-													send(cid, err);
+													if (p[i][3] > p[i+1][3]) 
+													{
+														var pom = p[i];
+														p[i] = p[i+1]; 
+														p[i+1] = pom;
+													}
+													return ILoop(i+1);
 												}
 											}
-										})
+											ILoop(0);
+											return JLoop(j+1);
+										}
+										else
+										{
+											function WriteLoop(k) 
+											{
+												if (k<p.length)
+												{
+													m+="\n**#"+(k+1)+"**: "+p[k][4];
+													return WriteLoop(k+1);
+												}
+											}
+											WriteLoop(0);
+										}
 									}
-								})
+									JLoop(0);
+									sendEmbed(cid, ":trophy: "+div+" Race!", m+"\n\nTo join the "+div+" Race, write !"+div.toLowerCase()+"race add _nick_|_server_ . Disclaimer: you have to be "+divlow+".");
+								}
+								catch(err)
+								{
+									send(cid, err);
+								}
 							}
-						})
+						}
+						ApiLoop(0);
 					}
-				})
+				}
+				SplitLoop(0);
 			}
 		});
-	}
-	catch(err)
-	{
-		send(cid, err);
 	}
 }
 function romanToInt(number)
@@ -575,7 +679,7 @@ function romanToInt(number)
 function botrefuses(normal, refusal)
 {
 	var rand=Math.floor((Math.random() * 100) + 1); 
-	if (rand<10)
+	if (rand<5)
 	{
 		return refusal;
 	}
@@ -600,7 +704,7 @@ function return_api(url, callback)
 			}
 			catch(err)
 			{
-				return callback("error "+err);
+				return callback("error"+err);
 			}
 		}
 	});
