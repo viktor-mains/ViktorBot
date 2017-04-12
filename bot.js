@@ -319,11 +319,12 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 {	
 	m=m.toLowerCase();
 	if (m=="!version")
-		return "The Great Herald beta 1.23.7: Diamond Race!";
+		return "The Great Herald beta 1.24: Unified Races!";
 	else if (m=="!commands" || m=="!help" || m=="!h")
 		return "- **Viktor related stuff:** !build **||** !matchup [champion_name] **||** !faq **||** !clubs\n"+
 					"- **Streams:** !dun\n"+
 					"- **Useful:** !opgg [server]|[ign] (_example: !opgg euw|arcyvilk_)\n"+
+					"- **Races:** !goldrace **||** !platinumrace **||** !diamondrace\n"+
 					"- **Other commands:** dear viktor **||** hello **||** notice me senpai **||** !beep **||** !meow **||** !woof\n\n"+
 					"- **Role assign:** server, rank and stream roles - visit <#268354627781656577> room for more info\n\n"+
 					"In case of any bugs occuring, contact Arcyvilk#5460.";
