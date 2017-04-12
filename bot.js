@@ -133,12 +133,16 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 			{
 				player_data(channelID, m);
 			}
+			else if (m.startsWith("!masterrace"))
+				race(channelID, user, m, "Master", "Diamond");
 			else if (m.startsWith("!diamondrace"))
 				race(channelID, user, m, "Diamond", "Platinum");
 			else if (m.startsWith("!platinumrace"))
 				race(channelID, user, m, "Platinum", "Gold");
 			else if (m.startsWith("!goldrace"))
 				race(channelID, user, m, "Gold", "Silver");
+			else if (m.startsWith("!silverrace"))
+				race(channelID, user, m, "Silver", "Bronze");
 			else if (m=="!build")
 				sendEmbed(channelID, "**♥ GLORIOUS MINIGUIDE TO BUILD ♥**\n",
 					"_______________\n\n"+
@@ -324,7 +328,7 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 		return "- **Viktor related stuff:** !build **||** !matchup [champion_name] **||** !faq **||** !clubs\n"+
 					"- **Streams:** !dun\n"+
 					"- **Useful:** !opgg [server]|[ign] (_example: !opgg euw|arcyvilk_)\n"+
-					"- **Races:** !goldrace **||** !platinumrace **||** !diamondrace\n"+
+					"- **Races:** !silverrace *||** !goldrace **||** !platinumrace **||** !diamondrace **||** !masterrace\n"+
 					"- **Other commands:** dear viktor **||** hello **||** notice me senpai **||** !beep **||** !meow **||** !woof\n\n"+
 					"- **Role assign:** server, rank and stream roles - visit <#268354627781656577> room for more info\n\n"+
 					"In case of any bugs occuring, contact Arcyvilk#5460.";
