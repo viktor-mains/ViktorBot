@@ -322,16 +322,19 @@ function viktor_answers(m)
 function commands(cid, m) //COMMANDS STARTING WITH "!"
 {	
 	m=m.toLowerCase();
+	var version="The Great Herald beta 1.24: Unified Races";
 	if (m=="!version")
-		return "The Great Herald beta 1.24: Unified Races!";
+		return version;
 	else if (m=="!commands" || m=="!help" || m=="!h")
-		return "- **Viktor related stuff:** !build **||** !matchup [champion_name] **||** !faq **||** !clubs\n"+
-					"- **Streams:** !dun\n"+
-					"- **Useful:** !opgg [server]|[ign] (_example: !opgg euw|arcyvilk_)\n"+
-					"- **Races:** !silverrace *||** !goldrace **||** !platinumrace **||** !diamondrace **||** !masterrace\n"+
-					"- **Other commands:** dear viktor **||** hello **||** notice me senpai **||** !beep **||** !meow **||** !woof\n\n"+
-					"- **Role assign:** server, rank and stream roles - visit <#268354627781656577> room for more info\n\n"+
-					"In case of any bugs occuring, contact Arcyvilk#5460.";
+		return "\n**"+version+"**\n\nCommand list:"+
+					"```Viktor gameplay questions - !build | !matchup <champion_name> | !faq\n"+
+					"Clubs, op.gg              - !clubs | !opgg <server> | <ign> (example: !opgg euw|arcyvilk)\n"+
+					"Streams                   - !dun\n"+
+					"Ranked races              - !silverrace | !goldrace | !platinumrace | !diamondrace | !masterrace\n"+
+					"Role assign               - server, rank and stream roles - visit <#268354627781656577> room for more info\n"+
+					"Talking with Viktor bot   - dear viktor <text> ? | hello | notice me senpai | !beep\n"+
+					"Random pet photo          - !meow | !woof\n\n"+
+					"In case of any bugs occuring, contact Arcyvilk#5460.```";
 	else if (m=="!roles")
 		return "**Self-assignable roles:** \n\n"+
 					"- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n"+
