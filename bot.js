@@ -399,7 +399,9 @@ function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
 	if ((m.indexOf("notice me")!=-1) && m.indexOf("senpai")!=-1)	
 		return "_looks away, unamused_";
 	else if	(m.indexOf("ily")!=-1 && m.indexOf("viktor")!=-1)	
-		return "http://i.imgur.com/yuXRObM.png";
+		var rand=Math.floor((Math.random() * 5) + 1);
+		if (rand==5)
+			return "http://i.imgur.com/yuXRObM.png";
 	else if (m.indexOf("expirence")!=-1)
 		return "_**e x p e r i e n c e**_ <:JustDieAlready:288399448176853012>";
 	else if (m.indexOf("hello")!=-1)
