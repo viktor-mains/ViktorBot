@@ -535,7 +535,7 @@ function race(cid, user, m, div, divlow)
 								{
 									var newparticipant=p[0].trim().toUpperCase()+"|"+(player[p[0]]).id+"|"+p[1].trim().toUpperCase();
 									fs = require('fs');									
-									fs.readFile("\\race_data\\"+div.toLowerCase()+"race.vik", 'utf8', function (err,data) { //a check, if a player isn't already registered in the race
+									fs.readFile("race_data/"+div.toLowerCase()+"race.vik", 'utf8', function (err,data) { //a check, if a player isn't already registered in the race
 										if (err)
 											send(cid, ":x: An unexpected error occured - "+err+" - while getting acces to the Race data. Please try again in a few minutes. ");
 										else
@@ -544,7 +544,7 @@ function race(cid, user, m, div, divlow)
 												send(cid, ":x: Player "+p[0].toUpperCase()+" is already registered in the "+div+" race.");
 											else
 											{
-												fs.appendFile("\\race_data\\"+div.toLowerCase()+"race.vik", newparticipant+"#", function (err) {
+												fs.appendFile("race_data/"+div.toLowerCase()+"race.vik", newparticipant+"#", function (err) {
 													if (err) 
 														send(cid, ":x: An unexpected error occured - "+err+" - while trying to add new participant to the race. Please try again in a few minutes. ");
 													else
@@ -577,7 +577,7 @@ function race(cid, user, m, div, divlow)
 		var data;
 		var p=new Array();
 		fs = require('fs');
-		fs.readFile("\\race_data\\"+div.toLowerCase()+"race.vik", 'utf8', function (err,data) {
+		fs.readFile("race_data/"+div.toLowerCase()+"race.vik", 'utf8', function (err,data) {
 			if (err)
 				return console.log(err);
 			else
