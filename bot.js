@@ -326,15 +326,15 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 	if (m=="!version")
 		return version;
 	else if (m=="!commands" || m=="!help" || m=="!h")
-		return "\n**"+version+"**\n\nCommand list:"+
+		return "\n**"+version+"**\n\nCommand list:\n"+
 					"```Viktor gameplay questions - !build | !matchup <champion_name> | !faq\n"+
 					"Clubs, op.gg              - !clubs | !opgg <server> | <ign> (example: !opgg euw|arcyvilk)\n"+
 					"Streams                   - !dun\n"+
 					"Ranked races              - !silverrace | !goldrace | !platinumrace | !diamondrace | !masterrace\n"+
-					"Role assign               - server, rank and stream roles - visit <#268354627781656577> room for more info\n"+
 					"Talking with Viktor bot   - dear viktor <text> ? | hello | notice me senpai | !beep\n"+
-					"Random pet photo          - !meow | !woof\n\n"+
-					"In case of any bugs occuring, contact Arcyvilk#5460.```";
+					"Random pet photo          - !meow | !woof```\n"+
+					"Server, rank and stream roles - visit <#268354627781656577> room for more info.\n\n"+
+					"In case of any bugs occuring, contact Arcyvilk#5460.";
 	else if (m=="!roles")
 		return "**Self-assignable roles:** \n\n"+
 					"- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n"+
