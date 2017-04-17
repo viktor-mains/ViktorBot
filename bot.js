@@ -1,6 +1,7 @@
 var Discord = require('discord.io');
 var RITO_KEY=process.env.RITO_KEY;
 var server_id="207732593733402624"; //'207732593733402624 vikmains ID
+var log_id="303638628486086657";
 var bot = new Discord.Client({
     autorun: true,
     token: process.env.API_KEY
@@ -9,6 +10,24 @@ var bot = new Discord.Client({
 //--------------------------------//
 //.............EVENTS.............//
 //--------------------------------//
+bot.on('messageUpdate', function(oldMsg, newMsg) {
+	if (newMsg.edited_timestamp!=undefined)
+	{
+		try
+		{
+			sendEmbed(log_id, "LOG - user edits message",
+							"\n**Author** - "+oldMsg.author.username+"#"+oldMsg.author.discriminator+
+							"\n**Old message** - "+oldMsg.content+
+							"\n**New message** - "+newMsg.content+
+							"\n**Channel**     - <#"+newMsg.channel_id+">"+
+							"\n**Timestamp**   - "+newMsg.edited_timestamp);	
+		}
+		catch (err)
+		{
+			send(log_id, err + " - error while acquiring edited message data.");
+		}
+	}
+});
 bot.on('ready', function(event) {
     console.log('Logged in as %s - %s\n', bot.username, bot.id);
 	bot.setPresence({
@@ -22,7 +41,8 @@ bot.on('disconnect', function(errMsg, code) {
 	console.log('Failure detected: '+code+' - '+errMsg);
 });
 bot.on('presence', function(user, userID, status, game, event) {
-	add_streaming_role(user, userID, status, game);
+	//console.log(event);
+	add_streaming_role(user, userID, status, game, event);
 });
 bot.on('guildMemberAdd', function(member, event) {
 	if (event.d.guild_id==server_id)
@@ -70,6 +90,7 @@ bot.on('guildMemberAdd', function(member, event) {
 				m="Almost as if they didn't want to improve all those abundant flaws of theirs.";
 		}*/
 		send("290601371370127361", m);  //#ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
+		sendEmbed(log_id, "LOG - user joins server", "**New user** - "+event.d.user.username);
 	}
 });
 bot.on('guildMemberRemove', function(member, event) {
@@ -111,6 +132,7 @@ bot.on('guildMemberRemove', function(member, event) {
 				break;
 		}
 		send("290601371370127361", event.d.user.username+" left the server. "+m); //#BOT_SPAM ROOM - WARNING: HARDCODED!!!
+		sendEmbed(log_id, "LOG - user leaves server", "**Leaver** - "+event.d.user.username);
 	}
 });
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
@@ -134,10 +156,6 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 					send(channelID, "That's great to hear, but go to <#268354627781656577> room if you want to have it removed.");
 			}
 			else if (m.startsWith("!rank")) {} //IMPLEMENT
-			else if (m.startsWith("!player"))
-			{
-				player_data(channelID, m);
-			}
 			else if (m.startsWith("!masterrace"))
 				race(channelID, user, m, "Master", "Diamond");
 			else if (m.startsWith("!diamondrace"))
@@ -147,7 +165,11 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 			else if (m.startsWith("!goldrace"))
 				race(channelID, user, m, "Gold", "Silver");
 			else if (m.startsWith("!silverrace"))
-				race(channelID, user, m, "Silver", "Bronze");
+				race(channelID, user, m, "Silver", "Bronze");		
+			else if (m.startsWith("!player"))
+			{
+				player_data(channelID, m);
+			}
 			else if (m=="!build")
 				sendEmbed(channelID, "**♥ GLORIOUS MINIGUIDE TO BUILD ♥**\n",
 					"_______________\n\n"+
@@ -225,13 +247,16 @@ function viktor_answers(m)
 	}
 	else
 	{
-		if (m.toLowerCase().indexOf("arcyvilk")!=-1 || m.toLowerCase().indexOf("arcy")!=-1 || m.toLowerCase().indexOf("your creator")!=-1 ||
-				 m.toLowerCase().indexOf("person who made you") || m.toLowerCase().indexOf("man who made you") || m.toLowerCase().indexOf("guy who made you"))
+		if (m.toLowerCase().indexOf("arcyvilk")!=-1 || m.toLowerCase().indexOf("arcy")!=-1 || m.toLowerCase().indexOf("your creator")!=-1 || m.toLowerCase().indexOf("your maker")!=-1 ||
+				 m.toLowerCase().indexOf("person who made you")!=-1 || m.toLowerCase().indexOf("man who made you")!=-1 || m.toLowerCase().indexOf("guy who made you")!=-1)
 		{
-			switch(Math.floor((Math.random() * 2) + 1))
+			switch(Math.floor((Math.random() * 3) + 1))
 			{
 				case 1:
+					return "You mean Arcy? That's, like, the single best person in existence.";
 				case 2:
+					return "I'm sorry, I can't hear you over my creator's pure _awesomeness_.";
+				case 3:
 				default:
 					return "Arcy is the best and I agree with them on everything.";
 			}
@@ -849,15 +874,15 @@ function remove_role(m, userID, channelID)
 		}
 	}
 }
-function add_streaming_role(user, userID, status, game) //SERVER+ROLE ID HARDCODED; CHANGE TO BE MORE RESPONSIVE
+function add_streaming_role(user, userID, status, game, event) //SERVER+ROLE ID HARDCODED; CHANGE TO BE MORE RESPONSIVE
 {
 	if(game && game.url) //IF USER IS DETECTED AS STREAMING
 	{
 		try
 		{
-			for (var i in bot.servers[server_id].members[userID].roles)
+			for (var i in event.d.roles)
 			{
-				if (bot.servers[server_id].members[userID].roles[i]=="277867725122961408") //CHECKS IF USER HAS VIKTOR STREAMER ROLE
+				if (event.d.roles[i]=="277867725122961408") //CHECKS IF USER HAS VIKTOR STREAMER ROLE
 				{
 					bot.addToRole({
 						serverID: server_id,
@@ -875,9 +900,9 @@ function add_streaming_role(user, userID, status, game) //SERVER+ROLE ID HARDCOD
 	{
 		try
 		{
-			for (var i in bot.servers[server_id].members[userID].roles) 
+			for (var i in event.d.roles) 
 			{
-				if (bot.servers[server_id].members[userID].roles[i]=="277436330609344513") //CHECKS FOR "STREAMING" ROLE
+				if (event.d.roles[i]=="277436330609344513") //CHECKS FOR "STREAMING" ROLE
 				{
 					bot.removeFromRole({ //REMOVES "STREAMING" ROLE IF ONE HAD IT
 						serverID: server_id, 
