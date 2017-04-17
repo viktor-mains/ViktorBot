@@ -39,9 +39,10 @@ bot.on('guildMemberAdd', function(member, event) {
 	"6. No spam. Memes in healthy dose please.\n\n"+
 	"Moderators reserve the right to kick/bans users basing on judgement calls."
 	);
-	/*
+
 	var m='';
-	switch(Math.floor((Math.random() * 10) + 1)) //welcomes new user
+	m="+event.d.user.username+" just joined the Evolution. Welcome!";
+	/*switch(Math.floor((Math.random() * 10) + 1)) //welcomes new user
 	{
 		case 1:
 			m="Greetings, "+event.d.user.username+"! Glad to see you here.";
@@ -64,8 +65,8 @@ bot.on('guildMemberAdd', function(member, event) {
 		case 10:
 		default:
 			m="Almost as if they didn't want to improve all those abundant flaws of theirs.";
-	}
-	send("268354627781656577", m);*/  //#ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
+	}*/
+	send("268354627781656577", m);  //#ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
 });
 bot.on('guildMemberRemove', function(member, event) {
 	if (event.d.guild.name=="Viktor mains")
@@ -156,7 +157,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 					"<:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → <:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → "+
 					"<:zhonya:242831893953773569>/<:abyssal:242831892334903296>/<:ga:273939560130674691>\n"+
 					"\n\n○ **New experimental build:**\n\n <:hc1:242831892427177995> → <:morello:298575846464159754> → <:liandry:298576316108767232> → "+
-					"<:voidstaff:242831893899247616> -> <:zhonya:242831893953773569>/<:rabadon:242831892854865922> (<:hc3:242831893509308416> somewhere inbetween)"	
+					"<:voidstaff:242831893899247616> → <:zhonya:242831893953773569>/<:rabadon:242831892854865922> (<:hc3:242831893509308416> somewhere inbetween)"	
 					);
 			else if ((m.toLowerCase()).startsWith('!matchup')) //MATCHUP COMMANDS
 				send(channelID, matchup(((m.slice(8)).trim()).toLowerCase()));			
@@ -438,6 +439,13 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 			return "https://www.reddit.com/r/viktormains/comments/577drz/weekly_matchup_discussion_13_viktor_vs_anivia/ - patch 6.20";
 		case "annie":
 			return "https://www.reddit.com/r/viktormains/comments/5z1tsn/weekly_matchup_discussion_27_viktor_vs_annie/ - patch 7.5";
+		case "aurelion":
+		case "aurelion sol":
+		case "asol":
+		case "ao shin":
+		case "aoshin":
+		case "space dragon":
+			return "https://www.reddit.com/r/viktormains/comments/64hgp7/weekly_matchup_discussion_30_viktor_vs_aurelion/ - patch 7.7";
 		case "azir":
 			return "https://www.reddit.com/r/viktormains/comments/4n9zim/weekly_matchup_discussion_4_viktor_vs_azir/ - patch 6.11";
 		case "brand":
