@@ -41,7 +41,7 @@ bot.on('guildMemberAdd', function(member, event) {
 	);
 
 	var m='';
-	m="+event.d.user.username+" just joined the Evolution. Welcome!";
+	m=event.d.user.username+" just joined the Evolution. Welcome!";
 	/*switch(Math.floor((Math.random() * 10) + 1)) //welcomes new user
 	{
 		case 1:
