@@ -225,7 +225,8 @@ function viktor_answers(m)
 	}
 	else
 	{
-		if (m.toLowerCase().indexOf("arcyvilk")!=-1 || m.toLowerCase().indexOf("arcy")!=-1 || m.toLowerCase().indexOf("your creator")!=-1)
+		if (m.toLowerCase().indexOf("arcyvilk")!=-1 || m.toLowerCase().indexOf("arcy")!=-1 || m.toLowerCase().indexOf("your creator")!=-1 ||
+				 m.toLowerCase().indexOf("person who made you") || m.toLowerCase().indexOf("man who made you") || m.toLowerCase().indexOf("guy who made you"))
 		{
 			switch(Math.floor((Math.random() * 2) + 1))
 			{
