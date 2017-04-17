@@ -1,5 +1,6 @@
 var Discord = require('discord.io');
 var RITO_KEY=process.env.RITO_KEY;
+var server_id="207732593733402624"; //'207732593733402624 vikmains ID
 var bot = new Discord.Client({
     autorun: true,
     token: process.env.API_KEY
@@ -24,52 +25,55 @@ bot.on('presence', function(user, userID, status, game, event) {
 	add_streaming_role(user, userID, status, game);
 });
 bot.on('guildMemberAdd', function(member, event) {
-	send(event.d.user.id, "Greetings newcomer! We're glad you've decided to join the Evolution. To make your first steps here easier, I'll equip you with a few useful tips; I would also wish for you to glance over our **rules**.\n\n"+
-	"**Viktor Bot** is our custom bot and his commands might differ from other bots. Write !h or !help for more info.\n\n"+
-	"**Useful links for newcomers:**\n"+
-	"- _frequently asked questions_ - https://www.reddit.com/r/viktormains/wiki/faq\n\n"+
-	"- _Viktor in-game clubs_ - https://www.reddit.com/r/viktormains/wiki/clubs\n"+
-	"- _Viktor streams/guides/fanarts_ - https://www.reddit.com/r/viktormains/wiki/content\n"+
-	"**Rules:**\n"+
-	"1. Treat everyone with respect. Cursing is allowed as long as it is not directed towards other members of the discord in an offensive manner.\n"+
-	"2. Please keep any saltiness in the designated room: #salt_mine.\n"+
-	"3. Keep conversations not related to Viktor or League of Legends in #off_topic.\n"+
-	"4. No racism not hate speech.\n"+
-	"5. No NSFW - aka any pictures that include nudity or extreme gore.\n"+
-	"6. No spam. Memes in healthy dose please.\n\n"+
-	"Moderators reserve the right to kick/bans users basing on judgement calls."
-	);
-
-	var m='';
-	m=event.d.user.username+" just joined the Evolution. Welcome!";
-	/*switch(Math.floor((Math.random() * 10) + 1)) //welcomes new user
+	if (event.d.guild_id==server_id)
 	{
-		case 1:
-			m="Greetings, "+event.d.user.username+"! Glad to see you here.";
-		case 2:
-			m="Seems that "+event.d.user.username+" just joined the Evolution. Greet them like they deserve.";
-		case 3:
-			m="Greetings, "+event.d.user.username+". You've come to the right place.";
-		case 4:
-			m="Why hello there, "+event.d.user.username+". Make yourself in home.";
-		case 5:
-			m="";
-		case 6:
-			m="Pity, they _really_  needed to upgrade some parts of themselves.";
-		case 7:
-			m="For the better, they weren't able to fully embrace the Evolution.";
-		case 8:
-			m="Pity, who will clean the toilets now?";
-		case 9:
-			m="Weird choice, but who I am to judge.";
-		case 10:
-		default:
-			m="Almost as if they didn't want to improve all those abundant flaws of theirs.";
-	}*/
-	send("268354627781656577", m);  //#ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
+		send(event.d.user.id, "Greetings newcomer! We're glad you've decided to join the Evolution. To make your first steps here easier, I'll equip you with a few useful tips; I would also wish for you to glance over our **rules**.\n\n"+
+		"**Viktor Bot** is our custom bot and his commands might differ from other bots. Write !h or !help for more info.\n\n"+
+		"**Useful links for newcomers:**\n"+
+		"- _frequently asked questions_ - https://www.reddit.com/r/viktormains/wiki/faq\n\n"+
+		"- _Viktor in-game clubs_ - https://www.reddit.com/r/viktormains/wiki/clubs\n"+
+		"- _Viktor streams/guides/fanarts_ - https://www.reddit.com/r/viktormains/wiki/content\n"+
+		"**Rules:**\n"+
+		"1. Treat everyone with respect. Cursing is allowed as long as it is not directed towards other members of the discord in an offensive manner.\n"+
+		"2. Please keep any saltiness in the designated room: #salt_mine.\n"+
+		"3. Keep conversations not related to Viktor or League of Legends in #off_topic.\n"+
+		"4. No racism not hate speech.\n"+
+		"5. No NSFW - aka any pictures that include nudity or extreme gore.\n"+
+		"6. No spam. Memes in healthy dose please.\n\n"+
+		"Moderators reserve the right to kick/bans users basing on judgement calls."
+		);
+
+		var m=''; 
+		m=event.d.user.username+" just joined the Evolution. Welcome!";
+		/*switch(Math.floor((Math.random() * 10) + 1)) //welcomes new user
+		{
+			case 1:
+				m="Greetings, "+event.d.user.username+"! Glad to see you here.";
+			case 2:
+				m="Seems that "+event.d.user.username+" just joined the Evolution. Greet them like they deserve.";
+			case 3:
+				m="Greetings, "+event.d.user.username+". You've come to the right place.";
+			case 4:
+				m="Why hello there, "+event.d.user.username+". Make yourself in home.";
+			case 5:
+				m="";
+			case 6:
+				m="Pity, they _really_  needed to upgrade some parts of themselves.";
+			case 7:
+				m="For the better, they weren't able to fully embrace the Evolution.";
+			case 8:
+				m="Pity, who will clean the toilets now?";
+			case 9:
+				m="Weird choice, but who I am to judge.";
+			case 10:
+			default:
+				m="Almost as if they didn't want to improve all those abundant flaws of theirs.";
+		}*/
+		send("290601371370127361", m);  //#ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
+	}
 });
 bot.on('guildMemberRemove', function(member, event) {
-	if (event.d.guild.name=="Viktor mains")
+	if (event.d.guild_id==server_id)
 	{
 		var m='';
 		switch(Math.floor((Math.random() * 10) + 1)) //bids proper farewell to leaving user
@@ -106,7 +110,7 @@ bot.on('guildMemberRemove', function(member, event) {
 				m="Almost as if they didn't want to improve all those abundant flaws of theirs.";
 				break;
 		}
-	send("290601371370127361", event.d.user.username+" left the server. "+m); //#BOT_SPAM ROOM - WARNING: HARDCODED!!!
+		send("290601371370127361", event.d.user.username+" left the server. "+m); //#BOT_SPAM ROOM - WARNING: HARDCODED!!!
 	}
 });
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
@@ -765,24 +769,24 @@ function add_role(m, userID, channelID)
 					try
 					{
 						bot.addToRole({
-							serverID: bot.channels[channelID].guild_id,
+							serverID: server_id,
 							userID: userID,
 							roleID: r_id});
 									
 						setTimeout(function(){
 							if (!checkrole(channelID, userID, r_id)) //FAILED TO ASSIGN ROLE
-								send(channelID, "Failed to assign the **"+r+"** role.");
+								send(channelID, "Failed to assign the **"+r.toUpperCase()+"** role.");
 							else
-								send(channelID, "Role **"+r+"** assigned with utmost efficiency.");
+								send(channelID, "Role **"+r.toUpperCase()+"** assigned with utmost efficiency.");
 						}, 1000);
 					}
 					catch(err)
 					{
-						send(channelID, "Failed to assign the **"+r+"** role. " + err);
+						send(channelID, "Failed to assign the **"+r.toUpperCase()+"** role. " + err);
 					}
 				}
 				else
-					send(channelID, "You already have the **"+r+"** role.");
+					send(channelID, "You already have the **"+r.toUpperCase()+"** role.");
 			}
 		}
 	}
@@ -823,20 +827,20 @@ function remove_role(m, userID, channelID)
 				try
 				{
 					bot.removeFromRole({
-						serverID: bot.channels[channelID].guild_id,
+						serverID: server_id,
 						userID: bot.users[userID].id,
 						roleID: r_id});
 								
 					setTimeout(function(){
 						if (checkrole(channelID, userID, r_id)) //IF FAILED TO REMOVE FROM ROLE
-							send(channelID, "Failed to remove the **"+r+"** role.");
+							send(channelID, "Failed to remove the **"+r.toUpperCase()+"** role.");
 						else
-							send(channelID, "Role **"+r+"** removed succesfully.");
+							send(channelID, "Role **"+r.toUpperCase()+"** removed succesfully.");
 					}, 1000);
 				}
 				catch(err)
 				{
-					send(channelID, "Failed to remove the **"+r+"** role. " + err);
+					send(channelID, "Failed to remove the **"+r.toUpperCase()+"** role. " + err);
 				}
 			}
 			else
@@ -850,12 +854,12 @@ function add_streaming_role(user, userID, status, game) //SERVER+ROLE ID HARDCOD
 	{
 		try
 		{
-			for (var i in bot.servers['207732593733402624'].members[userID].roles)
+			for (var i in bot.servers[server_id].members[userID].roles)
 			{
-				if (bot.servers['207732593733402624'].members[userID].roles[i]=="277867725122961408") //CHECKS IF USER HAS VIKTOR STREAMER ROLE
+				if (bot.servers[server_id].members[userID].roles[i]=="277867725122961408") //CHECKS IF USER HAS VIKTOR STREAMER ROLE
 				{
 					bot.addToRole({
-						serverID: "207732593733402624",
+						serverID: server_id,
 						userID: userID,
 						roleID: "277436330609344513"});
 						
@@ -870,12 +874,12 @@ function add_streaming_role(user, userID, status, game) //SERVER+ROLE ID HARDCOD
 	{
 		try
 		{
-			for (var i in bot.servers['207732593733402624'].members[userID].roles) 
+			for (var i in bot.servers[server_id].members[userID].roles) 
 			{
-				if (bot.servers['207732593733402624'].members[userID].roles[i]=="277436330609344513") //CHECKS FOR "STREAMING" ROLE
+				if (bot.servers[server_id].members[userID].roles[i]=="277436330609344513") //CHECKS FOR "STREAMING" ROLE
 				{
 					bot.removeFromRole({ //REMOVES "STREAMING" ROLE IF ONE HAD IT
-						serverID: '207732593733402624', 
+						serverID: server_id, 
 						userID: userID,
 						roleID: '277436330609344513'});
 					console.log(user+" stopped streaming.");			
@@ -883,7 +887,7 @@ function add_streaming_role(user, userID, status, game) //SERVER+ROLE ID HARDCOD
 			}
 		}
 		catch(err)
-		{console.log("- "+user+" - "+userID+" - presence change, streaming undetected error - "+err);}
+		{console.log("- "+user+" - "+userID+" - presence change, streaming undetected error - "+err+": "+bot.servers[server_id].members[userID]);}
 	}
 }
 function checkrole(cid, uid, r_id) //CHECKS IF USER HAS A ROLE
