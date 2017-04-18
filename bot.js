@@ -11,7 +11,6 @@ var bot = new Discord.Client({
 //.............EVENTS.............//
 //--------------------------------//
 bot.on('any', function(event) {
-	if (event.t="MESSAGE_DELETE" && event.d.content!=undefined)
 	if (event.t="MESSAGE_DELETE")// && event.d.content!=undefined)
 	{
 		try
@@ -42,9 +41,9 @@ bot.on('messageUpdate', function(oldMsg, newMsg) {
 		}
 		catch (err)
 		{
-			send(log_id, err + " - error while acquiring edited message data.");
+			send(log_id, err + " - error while acquiring _edited_ message data.");
 		}
-	}
+	}*/
 });
 bot.on('ready', function(event) {
     console.log('Logged in as %s - %s\n', bot.username, bot.id);
