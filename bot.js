@@ -10,6 +10,23 @@ var bot = new Discord.Client({
 //--------------------------------//
 //.............EVENTS.............//
 //--------------------------------//
+bot.on('any', function(event) {
+	if (event.t="MESSAGE_DELETE" && event.d.content!=undefined)
+	{
+		try
+		{
+			sendEmbed(log_id, "LOG - user edits message",
+							"\n**Author** - "+event.d.author.username+"#"+event.d.author.discriminator+
+							"\n**Deleted message** - "+event.d.content+
+							"\n**Channel**     - <#"+event.d.channel_id+">"+
+							"\n**Timestamp**   - "+event.d.timestamp);	
+		}
+		catch (err)
+		{
+			send(log_id, err + " - error while acquiring _deleted_ message data.");
+		}
+	}
+});
 bot.on('messageUpdate', function(oldMsg, newMsg) {
 	if (newMsg.edited_timestamp!=undefined)
 	{
