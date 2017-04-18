@@ -12,6 +12,7 @@ var bot = new Discord.Client({
 //--------------------------------//
 bot.on('any', function(event) {
 	if (event.t="MESSAGE_DELETE" && event.d.content!=undefined)
+	if (event.t="MESSAGE_DELETE")// && event.d.content!=undefined)
 	{
 		try
 		{
