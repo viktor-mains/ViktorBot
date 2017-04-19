@@ -1,7 +1,8 @@
 var Discord = require('discord.io');
 var RITO_KEY=process.env.RITO_KEY;
-var server_id="207732593733402624"; //'207732593733402624 vikmains ID
-var log_id="303638628486086657";
+var server_id="207732593733402624"; //server's id
+var log_id="303638628486086657"; //log rom id
+var flair_id="268354627781656577"; //flair room id
 var bot = new Discord.Client({
     autorun: true,
     token: process.env.API_KEY
@@ -10,42 +11,6 @@ var bot = new Discord.Client({
 //--------------------------------//
 //.............EVENTS.............//
 //--------------------------------//
-bot.on('any', function(event) {
-	/*
-	if (event.t="MESSAGE_DELETE")// && event.d.content!=undefined)
-	{
-		try
-		{
-			sendEmbed(log_id, "LOG - user edits message",
-							"\n**Author** - "+event.d.author.username+"#"+event.d.author.discriminator+
-							"\n**Deleted message** - "+event.d.content+
-							"\n**Channel**     - <#"+event.d.channel_id+">"+
-							"\n**Timestamp**   - "+event.d.timestamp);	
-		}
-		catch (err)
-		{
-			send(log_id, err + " - error while acquiring _deleted_ message data.");
-		}
-	}*/
-});
-bot.on('messageUpdate', function(oldMsg, newMsg) {
-	if (newMsg.edited_timestamp!=undefined)
-	{
-		try
-		{
-			sendEmbed(log_id, "LOG - user edits message",
-							"\n**Author** - "+oldMsg.author.username+"#"+oldMsg.author.discriminator+
-							"\n**Old message** - "+oldMsg.content+
-							"\n**New message** - "+newMsg.content+
-							"\n**Channel**     - <#"+newMsg.channel_id+">"+
-							"\n**Timestamp**   - "+newMsg.edited_timestamp);	
-		}
-		catch (err)
-		{
-			send(log_id, err + " - error while acquiring _edited_ message data.");
-		}
-	}
-});
 bot.on('ready', function(event) {
     console.log('Logged in as %s - %s\n', bot.username, bot.id);
 	bot.setPresence({
@@ -57,6 +22,82 @@ bot.on('ready', function(event) {
 });
 bot.on('disconnect', function(errMsg, code) { 
 	console.log('Failure detected: '+code+' - '+errMsg);
+});
+bot.on('any', function(event) {
+	/*
+	var type=event.t;
+	var ignored=["MESSAGE_CREATE", "PRESENCE_UPDATE", "GUILD_CREATE", "GUILD_DELETE", "GUILD_ROLE_CREATE", "GUILD_ROLE_UPDATE", "GUILD_ROLE_DELETE", "CHANNEL_CREATE", "CHANNEL_UPDATE", "CHANNEL_DELETE",
+		"VOICE_STATE_UPDATE", "VOICE_SERVER_UPDATE", "GUILD_MEMBERS_CHUNK", "TYPING_START"];
+	var toIgnore=false;
+	for (var i in ignored)
+	{
+		if (type==ignored[i])
+			toIgnore=true;
+	}
+	if (!toIgnore)	
+	{
+		var theLog="";
+		var title="";
+		switch (type)
+		{
+			case "MESSAGE_UPDATE":
+			{
+				//console.log(event);
+				title="LOG - message edited"
+				theLog="**"+event.d.author.username + "** - "+event.d.content ;
+				break;
+			}
+			default:
+			{
+				//console.log(event);
+				//title="???"
+				//theLog="???";
+				break;
+			}
+		}
+		sendEmbed(log_id, title, theLog);
+	}
+	
+	if (event.t=="MESSAGE_DELETE")
+	{
+		//if (event.d.content)
+		{
+			console.log(event);
+			try
+			{
+				sendEmbed(log_id, "LOG - user edits message",
+								"\n**Author** - "+event.d.author.username+"#"+event.d.author.discriminator+
+								"\n**Deleted message** - "+event.d.content+
+								"\n**Channel**     - <#"+event.d.channel_id+">"+
+								"\n**Timestamp**   - "+event.d.timestamp);	
+			}
+			catch (err)
+			{
+				send(log_id, err + " - error while acquiring _deleted_ message data.");
+			}
+		}
+	}*/
+});
+bot.on('messageUpdate', function(oldMsg, newMsg) {
+	if (true)
+	{
+		if (newMsg.edited_timestamp!=undefined)
+		{
+			try
+			{
+				sendEmbed(log_id, "LOG - user edits message",
+								"\n**Author** - "+oldMsg.author.username+"#"+oldMsg.author.discriminator+
+								"\n**Old message** - "+oldMsg.content+
+								"\n**New message** - "+newMsg.content+
+								"\n**Channel**     - <#"+newMsg.channel_id+">"+
+								"\n**Timestamp**   - "+newMsg.edited_timestamp);	
+			}
+			catch (err)
+			{
+				send(log_id, err + " - error while acquiring _edited_ message data.");
+			}
+		}
+	}
 });
 bot.on('presence', function(user, userID, status, game, event) {
 	//console.log(event);
@@ -159,60 +200,39 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	{
 		if (m.startsWith('!'))
 		{
-			if (m.startsWith("!iam") && !(m.startsWith("!iamnot"))) 
-			{
-				if (channelID=="268354627781656577") //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
-					add_role(m, userID, channelID);
-				else
-					send(channelID, "You can be anything you want, I'm not giving you any flair outside of the <#268354627781656577> room.");
-			}
-			else if (m.startsWith("!iamnot")) 
-			{
-				if (channelID=="268354627781656577") //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
-					remove_role(m, userID, channelID);
-				else
-					send(channelID, "That's great to hear, but go to <#268354627781656577> room if you want to have it removed.");
-			}
-			else if (m.startsWith("!rank")) {} //IMPLEMENT
-			else if (m.startsWith("!masterrace"))
-				race(channelID, user, m, "Master", "Diamond");
+			if (m.startsWith("!masterrace"))
+				return race(channelID, user, m, "Master", "Diamond");
 			else if (m.startsWith("!diamondrace"))
-				race(channelID, user, m, "Diamond", "Platinum");
+				return race(channelID, user, m, "Diamond", "Platinum");
 			else if (m.startsWith("!platinumrace"))
-				race(channelID, user, m, "Platinum", "Gold");
+				return race(channelID, user, m, "Platinum", "Gold");
 			else if (m.startsWith("!goldrace"))
-				race(channelID, user, m, "Gold", "Silver");
+				return race(channelID, user, m, "Gold", "Silver");
 			else if (m.startsWith("!silverrace"))
-				race(channelID, user, m, "Silver", "Bronze");		
-			else if (m.startsWith("!player"))
+				return race(channelID, user, m, "Silver", "Bronze");	
+			else
 			{
-				player_data(channelID, m);
-			}
-			else if (m=="!build")
-				sendEmbed(channelID, "**♥ GLORIOUS MINIGUIDE TO BUILD ♥**\n",
-					"_______________\n\n"+
-					"○ **First back:**\n\n"+
-					"> 1250 g: <:hc1:242831892427177995> + <:potion:277494945332592640>\n"+
-					"< 1250 g: <:doran:277494945261027328> + <:potion:277494945332592640> / <:darkseal:298575845977620502> + <:potion:277494945332592640>\n"+
-					"< 1250 g vs LB, Kata, Syndra etc: <:negatron:277494945432993792> + <:potion:277494945332592640>"+
-					"\n____________\n\n"+
-					"○ **Default build:**\n\n <:hc1:242831892427177995> → <:sheen:277494945500233728>/<:hc2:242831893051998218> → "+
-					"<:sheen:277494945500233728>/<:hc2:242831893051998218> → <:hc3:242831893509308416> → <:lichbane:242831894134128650> → "+
-					"<:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → <:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → "+
-					"<:zhonya:242831893953773569>/<:abyssal:242831892334903296>/<:ga:273939560130674691>\n"+
-					"\n\n○ **New experimental build:**\n\n <:hc1:242831892427177995> → <:morello:298575846464159754> → <:liandry:298576316108767232> → "+
-					"<:voidstaff:242831893899247616> → <:zhonya:242831893953773569>/<:rabadon:242831892854865922> (<:hc3:242831893509308416> somewhere inbetween)"	
-					);
-			else if ((m.toLowerCase()).startsWith('!matchup')) //MATCHUP COMMANDS
-				send(channelID, matchup(((m.slice(8)).trim()).toLowerCase()));			
-			else if (commands(channelID, m)!=0)
-			{
-				if (m!="!meow" && m!="!woof") //THOSE TWO ARE SPECIAL CASES AND SEND FROM THE BODY OF FUNCTION
+				var c=commands(channelID, m, user, userID);
+				if (c!=0)
 				{
-					try
-					{	send(channelID, botrefuses(commands(channelID, m), "I refuse to execute your petty command."));}
-					catch (err)
-					{	send(channelID, "I refuse to execute your petty command.\n"+err);}
+					console.log(c);
+					if (m!="!meow" && m!="!woof") //THOSE TWO ARE SPECIAL CASES AND SEND FROM THE BODY OF FUNCTION
+					{
+						if (c[1]==null) //NO EMBEDS
+						{
+						try
+							{	send(channelID, botrefuses(c[0], "I refuse to execute your petty command."));	}
+							catch (err)
+							{	send(channelID, "I refuse to execute your petty command.\n"+err);	}
+						}
+						else //YES EMBEDS
+						{
+							try
+							{	sendEmbed(channelID, c[1], c[0]);	}
+							catch (err)
+							{	send(channelID, "I refuse to execute your petty command.\n"+err);	}
+						}
+					}
 				}
 			}
 		}
@@ -225,7 +245,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 		}
 		else if (m.toLowerCase().startsWith("dear viktor"))
 			send(channelID, viktor_answers(m));
-		else if (m.length>=20 && m===m.toUpperCase())
+		else if (m.length>=20 && m===m.toUpperCase()) //allcaps
 		{
 			var rand=(Math.floor((Math.random() * 18) + 1));
 			if (rand%6==0) //6, 12 or 18 - effectively 1/6th chance
@@ -368,51 +388,52 @@ function viktor_answers(m)
 		}
 	}
 }
-function commands(cid, m) //COMMANDS STARTING WITH "!"
+function commands(cid, m, u, uid) //COMMANDS STARTING WITH "!"
 {	
-	m=m.toLowerCase();
 	var version="The Great Herald beta 1.24: Unified Races";
-	if (m=="!version")
-		return version;
-	else if (m=="!commands" || m=="!help" || m=="!h")
-		return "\n**"+version+"**\n\nCommand list:\n"+
+	m=m.toLowerCase();
+	
+	if (m=="!commands" || m=="!help" || m=="!h")
+		return ["\n**"+version+"**\n\nCommand list:\n"+
 					"```Viktor gameplay questions - !build | !matchup <champion_name> | !faq\n"+
-					"Clubs, op.gg              - !clubs | !opgg <server> | <ign> (example: !opgg euw|arcyvilk)\n"+
+					"Clubs, op.gg              - !clubs | !opgg <ign>|<server> (example: !opgg arcyvilk|euw)\n"+
 					"Streams                   - !dun\n"+
 					"Ranked races              - !silverrace | !goldrace | !platinumrace | !diamondrace | !masterrace\n"+
 					"Talking with Viktor bot   - dear viktor <text> ? | hello | notice me senpai | !beep\n"+
 					"Random pet photo          - !meow | !woof```\n"+
 					"Server, rank and stream roles - visit <#268354627781656577> room for more info.\n\n"+
-					"In case of any bugs occuring, contact Arcyvilk#5460.";
+					"In case of any bugs occuring, contact Arcyvilk#5460.",null];
 	else if (m=="!roles")
-		return "**Self-assignable roles:** \n\n"+
-					"- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n"+
-					"- are you a Viktor streamer? Type !iam Viktor Streamer\n";
+		return [	"- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n"+
+					"- are you a Viktor streamer? Type !iam Viktor Streamer\n","**Self-assignable roles:**"];
 	else if (m=="!dun")
-		return "http://twitch.tv/dunlol - Challenger Viktor main";	
+		return ["- OP.gg - https://na.op.gg/summoner/userName=dunv2\n"+
+				"- Stream - http://twitch.tv/dunlol","Dun, Challenger Viktor main"];
 	else if (m=="!faq")
-		return "Useful tips and tricks for new Viktor players: https://www.reddit.com/r/viktormains/wiki/faq";
+		return ["Useful tips and tricks for new Viktor players: https://www.reddit.com/r/viktormains/wiki/faq",null];
+	else if (m=="!test")
+		return ["I am a tester version of myself.",null];
 	else if (m=="!beep")
-		return "_sighs deeply_ \nBeep. Boop.";
+		return ["_sighs deeply_ \nBeep. Boop." , null];
 	else if (m=="!joke")
-		return "I won't waste my precious time for the sake of your personal amusement.";
+		return ["I won't waste my precious time for the sake of your personal amusement.",null];
 	else if (m=="!clubs")
-		return "https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.";
+		return ["https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.",null];
 	else if (m.startsWith('!opgg'))
 	{
 		try
 		{
 			if (m.indexOf('|')==-1)
-				return "This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ !opgg euw**|**"+user;
+				return ["This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ !opgg euw**|**"+u,null];
 			else
 			{
 				var p=(((m.slice(5)).trim()).replace(/ /g,"+")).split('|');
-				return botrefuses("https://"+p[0]+".op.gg/summoner/userName="+(p[1]), "I don't think you want to show _that_  to everyone.");
+				return [botrefuses("https://"+p[1]+".op.gg/summoner/userName="+(p[0]), "I don't think you want to show _that_  to everyone."),null];
 			}
 		}
 		catch(err)
 		{
-			return "I failed to retrieve the desired data, though, it probably wasn't anything interesting anyway.";
+			return ["I failed to retrieve the desired data, though, it probably wasn't anything interesting anyway.",null];
 		}
 	}
 	else if (m=="!meow") //SPECIAL CASE - SENDS FROM HERE
@@ -443,6 +464,41 @@ function commands(cid, m) //COMMANDS STARTING WITH "!"
 		catch(err)
 		{	send(cid, "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really?_\n"+err);}
 	}
+	else if (m.startsWith("!iam") && !(m.startsWith("!iamnot"))) 
+	{
+		if (cid==flair_id) //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
+			add_role(m, uid, cid);
+		else
+			return ["You can be anything you want, I'm not giving you any flair outside of the <#"+flair_id+"> room.",null];
+	}
+	else if (m.startsWith("!iamnot")) 
+	{
+		if (cid==flair_id) //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
+			remove_role(m, uid, cid);
+		else
+			return ["That's great to hear, but go to <#"+flair_id+"> room if you want to have it removed.",null];
+	}
+	else if (m.startsWith("!rank")) {} //IMPLEMENT	
+	else if (m.startsWith("!player"))
+	{
+		//player_data(cid, m);
+	}
+	else if (m=="!build")
+		return["○ **First back:**\n\n"+
+			"> 1250 g: <:hc1:242831892427177995> + <:potion:277494945332592640>\n"+
+			"< 1250 g: <:doran:277494945261027328> + <:potion:277494945332592640> / <:darkseal:298575845977620502> + <:potion:277494945332592640>\n"+
+			"< 1250 g vs LB, Kata, Syndra etc: <:negatron:277494945432993792> + <:potion:277494945332592640>"+
+			"\n____________\n\n"+
+			"○ **Default build:**\n\n <:hc1:242831892427177995> → <:sheen:277494945500233728>/<:hc2:242831893051998218> → "+
+			"<:sheen:277494945500233728>/<:hc2:242831893051998218> → <:hc3:242831893509308416> → <:lichbane:242831894134128650> → "+
+			"<:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → <:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → "+
+			"<:zhonya:242831893953773569>/<:abyssal:242831892334903296>/<:ga:273939560130674691>\n"+
+			"\n\n○ **New experimental build:**\n\n <:hc1:242831892427177995> → <:morello:298575846464159754> → <:liandry:298576316108767232> → "+
+			"<:voidstaff:242831893899247616> → <:zhonya:242831893953773569>/<:rabadon:242831892854865922> (<:hc3:242831893509308416> somewhere inbetween)" , "**♥ GLORIOUS MINIGUIDE TO BUILD ♥**"];
+	else if ((m.toLowerCase()).startsWith('!matchup')) //MATCHUP COMMANDS
+		return [matchup(((m.slice(8)).trim()).toLowerCase()),null];
+	else if (m=="!version")
+		return [version,null];
 	else return 0;
 }
 function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
@@ -553,6 +609,19 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 			return "Code name ["+ champ.toUpperCase() +"]: missing data. This matchup hasn\'t been discussed yet, it seems.";
 	}
 }
+function player_data(cid, m)
+{
+	//TODO
+}
+function botrefuses(normal, refusal)
+{
+	var rand=Math.floor((Math.random() * 100) + 1); 
+	if (rand<5)
+	{
+		return refusal;
+	}
+	else return normal;
+}
 //------------------------------------------//
 //................RACE STUFF................//
 //------------------------------------------//
@@ -586,14 +655,14 @@ function race(cid, user, m, div, divlow)
 							{
 								var data=JSON.parse(div_api);
 								if (((data[pid][0]).tier).toLowerCase()!=divlow.toLowerCase())
-									send(cid, ":no_entry: Player "+p[0].toUpperCase()+" is not "+divlow+" and therefore can not participate. Sob.")
+									send(cid, ":no_entry: Player "+p[0].toUpperCase()+" is not "+divlow+" and therefore can not participate. Sob.");
 								else
 								{
 									var newparticipant=p[0].trim().toUpperCase()+"|"+(player[p[0]]).id+"|"+p[1].trim().toUpperCase();
 									fs = require('fs');									
 									fs.readFile("race_data/"+div.toLowerCase()+"race.vik", 'utf8', function (err,data) { //a check, if a player isn't already registered in the race
 										if (err)
-											send(cid, ":x: An unexpected error occured - "+err+" - while getting acces to the Race data. Please try again in a few minutes. ");
+											send(cid, ":x: An unexpected error occured - "+err+" - while getting acces to the Race data. Please try again in a few minutes.");
 										else
 										{
 											if (data.indexOf(pid)!=-1) //if a player with given ID is already registered in this race
@@ -624,7 +693,7 @@ function race(cid, user, m, div, divlow)
 				}
 			}
 			else 
-				send (cid, "Incorrect format of input.");
+				send(cid, ":x: Incorrect format of input.");
 		}
 	}
 	else //only race info
@@ -635,7 +704,7 @@ function race(cid, user, m, div, divlow)
 		fs = require('fs');
 		fs.readFile("race_data/"+div.toLowerCase()+"race.vik", 'utf8', function (err,data) {
 			if (err)
-				return console.log(err);
+				send(cid, "Oops. "+err);
 			else
 			{
 				var fetched=data.split("#");
@@ -717,7 +786,7 @@ function race(cid, user, m, div, divlow)
 								}
 								catch(err)
 								{
-									send(cid, err);
+									send(cid, "Oops. "+err);
 								}
 							}
 						}
@@ -741,15 +810,6 @@ function romanToInt(number)
 		return 4;
 	else if (number=="V")
 		return 5;
-}
-function botrefuses(normal, refusal)
-{
-	var rand=Math.floor((Math.random() * 100) + 1); 
-	if (rand<5)
-	{
-		return refusal;
-	}
-	else return normal;
 }
 //----------------------------------------------------//
 //.............EXTERNAL API RELATED STUFF.............//
