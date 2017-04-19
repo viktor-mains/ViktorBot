@@ -390,10 +390,26 @@ function viktor_answers(m)
 }
 function commands(cid, m, u, uid) //COMMANDS STARTING WITH "!"
 {	
-	var version="The Great Herald beta 1.24: Unified Races";
+	var version="The Great Herald beta 1.25: Removing the Chaos";
 	m=m.toLowerCase();
 	
-	if (m=="!commands" || m=="!help" || m=="!h")
+	if (m=="!beep")
+		return ["_sighs deeply_ \nBeep. Boop." , null];
+	else if (m=="!build")
+		return["○ **First back:**\n\n"+
+			"> 1250 g: <:hc1:242831892427177995> + <:potion:277494945332592640>\n"+
+			"< 1250 g: <:doran:277494945261027328> + <:potion:277494945332592640> / <:darkseal:298575845977620502> + <:potion:277494945332592640>\n"+
+			"< 1250 g vs LB, Kata, Syndra etc: <:negatron:277494945432993792> + <:potion:277494945332592640>"+
+			"\n____________\n\n"+
+			"○ **Default build:**\n\n <:hc1:242831892427177995> → <:sheen:277494945500233728>/<:hc2:242831893051998218> → "+
+			"<:sheen:277494945500233728>/<:hc2:242831893051998218> → <:hc3:242831893509308416> → <:lichbane:242831894134128650> → "+
+			"<:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → <:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → "+
+			"<:zhonya:242831893953773569>/<:abyssal:242831892334903296>/<:ga:273939560130674691>\n"+
+			"\n\n○ **New experimental build:**\n\n <:hc1:242831892427177995> → <:morello:298575846464159754> → <:liandry:298576316108767232> → "+
+			"<:voidstaff:242831893899247616> → <:zhonya:242831893953773569>/<:rabadon:242831892854865922> (<:hc3:242831893509308416> somewhere inbetween)" , "**♥ GLORIOUS MINIGUIDE TO BUILD ♥**"];
+	else if (m=="!clubs")
+		return ["https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.",null];
+	else if (m=="!commands" || m=="!help" || m=="!h")
 		return ["\n**"+version+"**\n\nCommand list:\n"+
 					"```Viktor gameplay questions - !build | !matchup <champion_name> | !faq\n"+
 					"Clubs, op.gg              - !clubs | !opgg <ign>|<server> (example: !opgg arcyvilk|euw)\n"+
@@ -403,22 +419,27 @@ function commands(cid, m, u, uid) //COMMANDS STARTING WITH "!"
 					"Random pet photo          - !meow | !woof```\n"+
 					"Server, rank and stream roles - visit <#268354627781656577> room for more info.\n\n"+
 					"In case of any bugs occuring, contact Arcyvilk#5460.",null];
-	else if (m=="!roles")
-		return [	"- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n"+
-					"- are you a Viktor streamer? Type !iam Viktor Streamer\n","**Self-assignable roles:**"];
 	else if (m=="!dun")
 		return ["- OP.gg - https://na.op.gg/summoner/userName=dunv2\n"+
 				"- Stream - http://twitch.tv/dunlol","Dun, Challenger Viktor main"];
 	else if (m=="!faq")
 		return ["Useful tips and tricks for new Viktor players: https://www.reddit.com/r/viktormains/wiki/faq",null];
-	else if (m=="!test")
-		return ["I am a tester version of myself.",null];
-	else if (m=="!beep")
-		return ["_sighs deeply_ \nBeep. Boop." , null];
+	else if (m.startsWith("!iam") && !(m.startsWith("!iamnot"))) 
+	{
+		if (cid==flair_id) //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
+			add_role(m, uid, cid);
+		else
+			return ["You can be anything you want, I'm not giving you any flair outside of the <#"+flair_id+"> room.",null];
+	}
+	else if (m.startsWith("!iamnot")) 
+	{
+		if (cid==flair_id) //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
+			remove_role(m, uid, cid);
+		else
+			return ["That's great to hear, but go to <#"+flair_id+"> room if you want to have it removed.",null];
+	}
 	else if (m=="!joke")
 		return ["I won't waste my precious time for the sake of your personal amusement.",null];
-	else if (m=="!clubs")
-		return ["https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.",null];
 	else if (m.startsWith('!opgg'))
 	{
 		try
@@ -436,7 +457,20 @@ function commands(cid, m, u, uid) //COMMANDS STARTING WITH "!"
 			return ["I failed to retrieve the desired data, though, it probably wasn't anything interesting anyway.",null];
 		}
 	}
-	else if (m=="!meow") //SPECIAL CASE - SENDS FROM HERE
+	else if ((m.toLowerCase()).startsWith('!matchup')) //MATCHUP COMMANDS
+		return [matchup(((m.slice(8)).trim()).toLowerCase()),null];
+	else if (m.startsWith("!rank")) {} //IMPLEMENT		
+	else if (m=="!roles")
+		return [	"- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n"+
+					"- are you a Viktor streamer? Type !iam Viktor Streamer\n","**Self-assignable roles:**"];
+	else if (m=="!test")
+		return ["I am a tester version of myself.",null];
+	else if (m=="!version")
+		return [version,null];
+	
+	//SPECIALCASES
+	
+	else if (m=="!meow") 
 	{
 		try
 		{
@@ -450,7 +484,7 @@ function commands(cid, m, u, uid) //COMMANDS STARTING WITH "!"
 		catch(err)
 		{	send(cid,"You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a cat photo. _Really?_\n"+err);}
 	}
-	else if (m=="!woof") //SPECIAL CASE - SENDS FROM HERE
+	else if (m=="!woof")
 	{
 		try
 		{
@@ -464,41 +498,6 @@ function commands(cid, m, u, uid) //COMMANDS STARTING WITH "!"
 		catch(err)
 		{	send(cid, "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really?_\n"+err);}
 	}
-	else if (m.startsWith("!iam") && !(m.startsWith("!iamnot"))) 
-	{
-		if (cid==flair_id) //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
-			add_role(m, uid, cid);
-		else
-			return ["You can be anything you want, I'm not giving you any flair outside of the <#"+flair_id+"> room.",null];
-	}
-	else if (m.startsWith("!iamnot")) 
-	{
-		if (cid==flair_id) //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
-			remove_role(m, uid, cid);
-		else
-			return ["That's great to hear, but go to <#"+flair_id+"> room if you want to have it removed.",null];
-	}
-	else if (m.startsWith("!rank")) {} //IMPLEMENT	
-	else if (m.startsWith("!player"))
-	{
-		//player_data(cid, m);
-	}
-	else if (m=="!build")
-		return["○ **First back:**\n\n"+
-			"> 1250 g: <:hc1:242831892427177995> + <:potion:277494945332592640>\n"+
-			"< 1250 g: <:doran:277494945261027328> + <:potion:277494945332592640> / <:darkseal:298575845977620502> + <:potion:277494945332592640>\n"+
-			"< 1250 g vs LB, Kata, Syndra etc: <:negatron:277494945432993792> + <:potion:277494945332592640>"+
-			"\n____________\n\n"+
-			"○ **Default build:**\n\n <:hc1:242831892427177995> → <:sheen:277494945500233728>/<:hc2:242831893051998218> → "+
-			"<:sheen:277494945500233728>/<:hc2:242831893051998218> → <:hc3:242831893509308416> → <:lichbane:242831894134128650> → "+
-			"<:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → <:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → "+
-			"<:zhonya:242831893953773569>/<:abyssal:242831892334903296>/<:ga:273939560130674691>\n"+
-			"\n\n○ **New experimental build:**\n\n <:hc1:242831892427177995> → <:morello:298575846464159754> → <:liandry:298576316108767232> → "+
-			"<:voidstaff:242831893899247616> → <:zhonya:242831893953773569>/<:rabadon:242831892854865922> (<:hc3:242831893509308416> somewhere inbetween)" , "**♥ GLORIOUS MINIGUIDE TO BUILD ♥**"];
-	else if ((m.toLowerCase()).startsWith('!matchup')) //MATCHUP COMMANDS
-		return [matchup(((m.slice(8)).trim()).toLowerCase()),null];
-	else if (m=="!version")
-		return [version,null];
 	else return 0;
 }
 function answers(m) //ANSWERS FIND RANDOM WORDS IN SENTENCES AND REACT TO THEM
