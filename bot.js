@@ -210,6 +210,8 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 				return race(channelID, user, m, "Gold", "Silver");
 			else if (m.startsWith("!silverrace"))
 				return race(channelID, user, m, "Silver", "Bronze");	
+			else if (m.startsWith('!mastery'))
+				return mastery(channelID, m);
 			else
 			{
 				var c=commands(channelID, m, user, userID);
@@ -390,7 +392,7 @@ function viktor_answers(m)
 }
 function commands(cid, m, u, uid) //COMMANDS STARTING WITH "!"
 {	
-	var version="The Great Herald beta 1.25: Removing the Chaos";
+	var version="The Great Herald beta 1.25.1: Mastery Points Data";
 	m=m.toLowerCase();
 	
 	if (m=="!beep")
@@ -412,9 +414,11 @@ function commands(cid, m, u, uid) //COMMANDS STARTING WITH "!"
 	else if (m=="!commands" || m=="!help" || m=="!h")
 		return ["\n**"+version+"**\n\nCommand list:\n"+
 					"```Viktor gameplay questions - !build | !matchup <champion_name> | !faq\n"+
-					"Clubs, op.gg              - !clubs | !opgg <ign>|<server> (example: !opgg arcyvilk|euw)\n"+
-					"Streams                   - !dun\n"+
-					"Ranked races              - !silverrace | !goldrace | !platinumrace | !diamondrace | !masterrace\n"+
+					"Clubs                     - !clubs\n"+
+					"Streams                   - !dun\n\n"+
+					"OP.gg  				   - !opgg <ign>|<server> (example: !opgg arcyvilk|euw)\n"+
+					"Mastery points 		   - !mastery <ign>|<server> (example: !mastery arcyvilk|euw)\n"+
+					"Ranked races              - !silverrace | !goldrace | !platinumrace | !diamondrace | !masterrace\n\n"+
 					"Talking with Viktor bot   - dear viktor <text> ? | hello | notice me senpai | !beep\n"+
 					"Random pet photo          - !meow | !woof```\n"+
 					"Server, rank and stream roles - visit <#268354627781656577> room for more info.\n\n"+
@@ -458,7 +462,7 @@ function commands(cid, m, u, uid) //COMMANDS STARTING WITH "!"
 		}
 	}
 	else if ((m.toLowerCase()).startsWith('!matchup')) //MATCHUP COMMANDS
-		return [matchup(((m.slice(8)).trim()).toLowerCase()),null];
+		return [matchup(((m.slice(8)).trim()).toLowerCase()), null];
 	else if (m.startsWith("!rank")) {} //IMPLEMENT		
 	else if (m=="!roles")
 		return [	"- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n"+
@@ -608,9 +612,90 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 			return "Code name ["+ champ.toUpperCase() +"]: missing data. This matchup hasn\'t been discussed yet, it seems.";
 	}
 }
-function player_data(cid, m)
+function mastery(cid,m)
 {
-	//TODO
+	m=m.slice(8).trim().toLowerCase();
+	if (m.indexOf("|")!=-1)
+	{
+		var p=m.split("|"); // 0=ign, 1=serv
+		p[0]=(p[0].toLowerCase()).replace(/ /g,"");
+		return_api("https://"+p[1]+".api.riotgames.com/api/lol/"+p[1]+"/v1.4/summoner/by-name/"+p[0]+"?api_key="+RITO_KEY, function(pid) { 
+			if (pid.startsWith("error"))
+				send(cid, ":warning: Such player doesn't exist.");
+			else
+			{
+				var player=((JSON.parse(pid))[p[0]]).id;
+				return_api ("https://"+p[1]+".api.riotgames.com/championmastery/location/"+p[1]+"1/player/"+player+"/champion/112?api_key="+RITO_KEY, function(mid) {
+					if (mid.startsWith("error"))
+						send(cid, "The linked person didn't play a single game of me. _Phew_.");
+					else
+					{
+						var mastery=JSON.parse(mid);
+						var level=mastery.championLevel;
+						var points=mastery.championPoints;						
+						var chest=mastery.chestGranted;						
+						var comment="";
+							if (!chest) comment="...how the hell you don't have a chest yet? <:vikwat:269523937669545987>";
+							if (level<=4) comment="...only level "+level+"? Come on. You need to step up your game.";
+							if (points>="500000") comment="Your dedication... is admirable.";
+							if (points>="1000000") comment="You're amongst the most loyal acolytes. You deserve a cookie. :cookie:";
+							if (points>="100000" && level<6) comment="Over 100k points and yet, still no level 7. _sighs heavily_";
+						
+						switch(level)
+						{
+							case 1: 
+							{	
+								level=":one:";
+								break;
+							}
+							case 2: 
+							{	
+								level=":two:";
+								break;
+							}
+							case 3: 
+							{	
+								level=":three:";
+								break;
+							}
+							case 4: 
+							{	
+								level=":four:";
+								break;
+							}
+							case 5: 
+							{	
+								level=":five:";
+								break;
+							}
+							case 6: 
+							{	
+								level=":six:";
+								break;
+							}
+							case 7: 
+							{	
+								level=":seven:";
+								break;
+							}
+							default:break;
+						}
+						if (chest==true)
+							chest=":white_check_mark:";
+						else chest=":negative_squared_cross_mark:";
+						
+						var summary="\n**Level**: "+level+
+									"\n**Points**: "+points+
+									"\n**Chest**: "+chest+
+									"\n\n"+comment;						
+						sendEmbed(cid, "<:viktorgod:269479031009837056> Viktor mastery points for "+p[0].toUpperCase(), summary);
+					}
+				});
+			}
+		});
+	}
+	else
+		send(cid, "Incorrect input. You've missed the \"|\" separator.");
 }
 function botrefuses(normal, refusal)
 {
@@ -624,7 +709,6 @@ function botrefuses(normal, refusal)
 //------------------------------------------//
 //................RACE STUFF................//
 //------------------------------------------//
-
 function race(cid, user, m, div, divlow)
 {
 	var l=div.length+6;
