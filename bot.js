@@ -20,8 +20,14 @@ bot.on('ready', function(event) {
 		}
 	});
 });
-bot.on('disconnect', function(errMsg, code) { 
+bot.on('disconnect', function(errMsg, code) {	
 	console.log('Failure detected: '+code+' - '+errMsg);
+	bot.setPresence({
+		idle_since: null,
+		game: {
+			name: "crashed halp pls"
+		}
+	});
 });
 bot.on('any', function(event) {
 	/*
@@ -196,6 +202,8 @@ bot.on('guildMemberRemove', function(member, event) {
 });
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	var m=message;	
+	if (channelID="276781276898525184" && userID=="165962236009906176" && m.startsWith("%"))
+		send("247501730336604163", m.slice(1).trim());  //little trolling with DM's
 	if (userID!="276781276898525184") //STOPS BOT FROM RESPONDING TO HIMSELF
 	{
 		if (m.startsWith('!'))
