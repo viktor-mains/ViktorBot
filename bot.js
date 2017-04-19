@@ -625,7 +625,7 @@ function mastery(cid,m)
 			else
 			{
 				var player=((JSON.parse(pid))[p[0]]).id;
-				return_api ("https://"+p[1]+".api.riotgames.com/championmastery/location/"+p[1]+"1/player/"+player+"/champion/112?api_key="+RITO_KEY, function(mid) {
+				return_api ("https://"+p[1]+".api.riotgames.com/championmastery/location/"+endpoints(p[1])+"/player/"+player+"/champion/112?api_key="+RITO_KEY, function(mid) {
 					if (mid.startsWith("error"))
 						send(cid, "The linked person didn't play a single game of me. _Phew_.");
 					else
@@ -917,6 +917,37 @@ function return_api(url, callback)
 			}
 		}
 	});
+}
+function endpoints(server)
+{
+	switch(server.toLowerCase())
+	{
+		case "br":
+			return "br1";
+		case "eune":
+			return "eun1";
+		case "euw":
+			return "euw1";
+		case "jp":
+			return "jp1";
+		case "kr":
+			return "kr";
+		case "lan":
+			return "la1";
+		case "las":
+			return "la2";
+		case "na":
+			return "na1";
+		case "oce":
+			return "oc1";
+		case "tr":
+			return "tr1";
+		case "ru":
+			return "ru";
+		case "pbe":
+			return "pbe1";
+		default: return 0;
+	}
 }
 
 //---------------------------------------------------------//
