@@ -202,12 +202,20 @@ bot.on('guildMemberRemove', function(member, event) {
 });
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	var m=message;	
-	if (channelID=="276781276898525184" && userID=="165962236009906176" && m.startsWith("%"))
-			send("247501730336604163", m.slice(1).trim());  //little trolling with DM's
 	
 	if (userID!="276781276898525184") //STOPS BOT FROM RESPONDING TO HIMSELF
 	{
-		if (m.startsWith('!'))
+		if (m.startsWith("%"))
+		{
+			console.log(channelID);
+			if (channelID=="282917811578339329")
+			{
+				console.log("DM detected.");
+				if (userID=="165962236009906176")
+					send("301546635991842827", m.slice(1).trim());  //little trolling with DM's
+			}
+		}
+		else if (m.startsWith('!'))
 		{
 			if (m.startsWith("!masterrace"))
 				return race(channelID, user, m, "Master", "Diamond");
