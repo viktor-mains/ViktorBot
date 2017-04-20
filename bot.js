@@ -729,9 +729,9 @@ function ingame(cid,m)
 			{
 				var player=((JSON.parse(pid))[p[0]]).id;
 				return_api("https://"+p[1]+".api.riotgames.com/observer-mode/rest/consumer/getSpectatorGameInfo/"+endpoints(p[1])+"/"+player+"?api_key="+RITO_KEY, function(mid) {
-					send(cid, "https://"+p[1]+".api.riotgames.com/observer-mode/rest/consumer/getSpectatorGameInfo/"+endpoints(p[1])+"/"+player+"?api_key="+RITO_KEY);
+					//send(cid, "https://"+p[1]+".api.riotgames.com/observer-mode/rest/consumer/getSpectatorGameInfo/"+endpoints(p[1])+"/"+player+"?api_key="+RITO_KEY);
 					if (mid.startsWith("error"))
-						send(cid, "This person either is not in the game, or you did something wrong.\n"+mid);
+						send(cid, "This person either is not in the game, or you did something wrong.");
 					else
 					{
 						var game=JSON.parse(mid);
