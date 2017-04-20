@@ -229,6 +229,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 			else if (m.startsWith("!mastery"))
 				return mastery(channelID, m);
 			else if (m.startsWith("!ingame"))
+				return ingame(channelID, m);
 			else
 			{
 				var c=commands(channelID, m, user, userID);
