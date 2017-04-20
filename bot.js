@@ -202,9 +202,7 @@ bot.on('guildMemberRemove', function(member, event) {
 });
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	var m=message;	
-	if (channelID=="276781276898525184" && userID=="165962236009906176" && m.startsWith("%"))
-		send("247501730336604163", m.slice(1).trim());  //little trolling with DM's
-	else if (userID!="276781276898525184") //STOPS BOT FROM RESPONDING TO HIMSELF
+	if (userID!="276781276898525184") //STOPS BOT FROM RESPONDING TO HIMSELF
 	{
 		if (m.startsWith('!'))
 		{
@@ -266,6 +264,11 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 					send(channelID, ":popcorn:");
 			}
 		}
+	}
+	else
+	{
+		if (channelID=="276781276898525184" && userID=="165962236009906176" && m.startsWith("%"))
+			send("247501730336604163", m.slice(1).trim());  //little trolling with DM's
 	}
 });
 
