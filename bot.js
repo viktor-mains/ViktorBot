@@ -202,9 +202,9 @@ bot.on('guildMemberRemove', function(member, event) {
 });
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	var m=message;	
-	if (channelID="276781276898525184" && userID=="165962236009906176" && m.startsWith("%"))
+	if (channelID=="276781276898525184" && userID=="165962236009906176" && m.startsWith("%"))
 		send("247501730336604163", m.slice(1).trim());  //little trolling with DM's
-	if (userID!="276781276898525184") //STOPS BOT FROM RESPONDING TO HIMSELF
+	else if (userID!="276781276898525184") //STOPS BOT FROM RESPONDING TO HIMSELF
 	{
 		if (m.startsWith('!'))
 		{
@@ -704,6 +704,7 @@ function mastery(cid,m)
 	}
 	else
 		send(cid, "Incorrect input. You've missed the \"|\" separator.");
+		send(cid, "Incorrect input. It needs to be ``!mastery <ign>|<server>``");
 }
 function botrefuses(normal, refusal)
 {
