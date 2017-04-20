@@ -208,11 +208,10 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 		if (m.startsWith("%"))
 		{
 			console.log(channelID);
-			if (channelID=="282917811578339329")
+			if (channelID=="278186932029095937") //warning: this is different than the bot's ID
 			{
-				console.log("DM detected.");
 				if (userID=="165962236009906176")
-					send("301546635991842827", m.slice(1).trim());  //little trolling with DM's
+					send("247501730336604163", m.slice(1).trim());  //little trolling with DM's
 			}
 		}
 		else if (m.startsWith('!'))
@@ -227,8 +226,9 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 				return race(channelID, user, m, "Gold", "Silver");
 			else if (m.startsWith("!silverrace"))
 				return race(channelID, user, m, "Silver", "Bronze");	
-			else if (m.startsWith('!mastery'))
+			else if (m.startsWith("!mastery"))
 				return mastery(channelID, m);
+			else if (m.startsWith("!ingame"))
 			else
 			{
 				var c=commands(channelID, m, user, userID);
@@ -712,8 +712,52 @@ function mastery(cid,m)
 		});
 	}
 	else
-		send(cid, "Incorrect input. You've missed the \"|\" separator.");
 		send(cid, "Incorrect input. It needs to be ``!mastery <ign>|<server>``");
+}
+function ingame(cid,m)
+{
+	m=m.slice(7).trim().toLowerCase();
+	if (m.indexOf("|")!=-1)
+	{
+		var p=m.split("|"); // 0=ign, 1=serv
+		p[0]=(p[0].toLowerCase()).replace(/ /g,"");
+		return_api("https://"+p[1]+".api.riotgames.com/api/lol/"+p[1]+"/v1.4/summoner/by-name/"+p[0]+"?api_key="+RITO_KEY, function(pid) { 
+			if (pid.startsWith("error"))
+				send(cid, ":warning: Such player doesn't exist.");
+			else
+			{
+				var player=((JSON.parse(pid))[p[0]]).id;
+				return_api("https://"+p[1]+".api.riotgames.com/observer-mode/rest/consumer/getSpectatorGameInfo/"+endpoints(p[1])+"/"+player+"?api_key="+RITO_KEY, function(mid) {
+					send(cid, "https://"+p[1]+".api.riotgames.com/observer-mode/rest/consumer/getSpectatorGameInfo/"+endpoints(p[1])+"/"+player+"?api_key="+RITO_KEY);
+					if (mid.startsWith("error"))
+						send(cid, "This person either is not in the game, or you did something wrong.\n"+mid);
+					else
+					{
+						var game=JSON.parse(mid);
+						var m="";
+						
+						function ILoop(i)
+						{
+							if (i<=(game.participants.length-1))
+							{
+								if (game.participants[i].teamId=="100") 
+									m+=":large_blue_circle: ";
+								else 
+									m+=":red_circle: ";							
+								m+=game.participants[i].summonerName.toUpperCase()+" - "+game.participants[i].championId+"\n";
+								return ILoop(i+1);
+							}
+							else
+								sendEmbed(cid, ":game_die: Live game of "+p[0].toUpperCase(), m);
+						}
+						ILoop(0);
+					}
+				});
+			}
+		});
+	}
+	else
+		send(cid, "Incorrect input. It needs to be ``!ingame <ign>|<server>``");
 }
 function botrefuses(normal, refusal)
 {
