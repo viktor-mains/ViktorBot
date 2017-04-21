@@ -1,8 +1,12 @@
 var Discord = require('discord.io');
 var RITO_KEY=process.env.RITO_KEY;
+
 var server_id="207732593733402624"; //server's id
 var log_id="303638628486086657"; //log rom id
 var flair_id="268354627781656577"; //flair room id
+
+var version="The Great Herald beta 1.26: Live Game Data";
+
 var bot = new Discord.Client({
     autorun: true,
     token: process.env.API_KEY
@@ -216,7 +220,20 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 		}
 		else if (m.startsWith('!'))
 		{
-			if (m.startsWith("!masterrace"))
+			if (m=="!commands" || m=="!help" || m=="!h")
+			send(userID, "\n**"+version+"**\n\nCommand list:\n"+
+					"```Viktor gameplay questions - !build | !matchup <champion_name> | !faq\n"+
+					"Clubs                     - !clubs\n"+
+					"Streams                   - !dun\n\n"+
+					"Live game data            - !ingame <ign>|<server> (example: !iname arcyvilk|euw)\n"+
+					"OP.gg  				   - !opgg <ign>|<server> (example: !opgg arcyvilk|euw)\n"+
+					"Mastery points 		   - !mastery <ign>|<server> (example: !mastery arcyvilk|euw)\n"+
+					"Ranked races              - !silverrace | !goldrace | !platinumrace | !diamondrace | !masterrace\n\n"+
+					"Talking with Viktor bot   - dear viktor <text> ? | hello | notice me senpai | !beep\n"+
+					"Random pet photo          - !meow | !woof```\n"+
+					"Server, rank and stream roles - visit <#268354627781656577> room for more info.\n\n"+
+					"In case of any bugs occuring, contact Arcyvilk#5460.");
+			else if (m.startsWith("!masterrace"))
 				return race(channelID, user, m, "Master", "Diamond");
 			else if (m.startsWith("!diamondrace"))
 				return race(channelID, user, m, "Diamond", "Platinum");
@@ -358,11 +375,10 @@ function viktor_answers(m)
 }
 function commands(cid, m, u, uid) //COMMANDS STARTING WITH "!"
 {	
-	var version="The Great Herald beta 1.26: Live Game Data";
 	m=m.toLowerCase();
 	
 	if (m=="!beep")
-		return ["_sighs deeply_ \nBeep. Boop." , null];
+		return ["_sighs deeply_ \nBeep. Boop." , null];	
 	else if (m=="!build")
 		return["○ **First back:**\n\n"+
 			"> 1250 g: <:hc1:242831892427177995> + <:potion:277494945332592640>\n"+
@@ -377,19 +393,6 @@ function commands(cid, m, u, uid) //COMMANDS STARTING WITH "!"
 			"<:voidstaff:242831893899247616> → <:zhonya:242831893953773569>/<:rabadon:242831892854865922> (<:hc3:242831893509308416> somewhere inbetween)" , "**♥ GLORIOUS MINIGUIDE TO BUILD ♥**"];
 	else if (m=="!clubs")
 		return ["https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.",null];
-	else if (m=="!commands" || m=="!help" || m=="!h")
-		return ["\n**"+version+"**\n\nCommand list:\n"+
-					"```Viktor gameplay questions - !build | !matchup <champion_name> | !faq\n"+
-					"Clubs                     - !clubs\n"+
-					"Streams                   - !dun\n\n"+
-					"Live game data            - !ingame <ign>|<server> (example: !iname arcyvilk|euw)"+
-					"OP.gg  				   - !opgg <ign>|<server> (example: !opgg arcyvilk|euw)\n"+
-					"Mastery points 		   - !mastery <ign>|<server> (example: !mastery arcyvilk|euw)\n"+
-					"Ranked races              - !silverrace | !goldrace | !platinumrace | !diamondrace | !masterrace\n\n"+
-					"Talking with Viktor bot   - dear viktor <text> ? | hello | notice me senpai | !beep\n"+
-					"Random pet photo          - !meow | !woof```\n"+
-					"Server, rank and stream roles - visit <#268354627781656577> room for more info.\n\n"+
-					"In case of any bugs occuring, contact Arcyvilk#5460.",null];
 	else if (m=="!dun")
 		return ["- OP.gg - https://na.op.gg/summoner/userName=dunv2\n"+
 				"- Stream - http://twitch.tv/dunlol","Dun, Challenger Viktor main"];
