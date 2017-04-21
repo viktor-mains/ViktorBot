@@ -308,109 +308,57 @@ function viktor_answers(m)
 		if (m.toLowerCase().indexOf("arcyvilk")!=-1 || m.toLowerCase().indexOf("arcy")!=-1 || m.toLowerCase().indexOf("your creator")!=-1 || m.toLowerCase().indexOf("your maker")!=-1 ||
 				 m.toLowerCase().indexOf("person who made you")!=-1 || m.toLowerCase().indexOf("man who made you")!=-1 || m.toLowerCase().indexOf("guy who made you")!=-1)
 		{
-			switch(Math.floor((Math.random() * 3) + 1))
-			{
-				case 1:
-					return "You mean Arcy? That's, like, the single best person in existence.";
-				case 2:
-					return "I'm sorry, I can't hear you over my creator's pure _awesomeness_.";
-				case 3:
-				default:
-					return "Arcy is the best and I agree with them on everything.";
-			}
+			var arrayOfArcyanswers=["", "You mean Arcy? That's, like, the single best person in existence.",
+										"I'm sorry, I can't hear you over my creator's pure _awesomeness_.",
+										"Arcy is the best and I agree with them on everything."];
+			return arrayOfArcyanswers[Math.floor((Math.random() * (arrayOfArcyanswers.length-1)) + 1)];
 		}
-		else 
-		{
-			switch(Math.floor((Math.random() * 40) + 1))
-			{
-				case 1:
-					return "No. Leave me alone.";
-				case 2:
-					return "_shakes head with disapproval_";
-				case 3:
-					return "I have no time for your senseless questions.";
-				case 4:
-					return "...and why would you ask _me_ that?";
-				case 5:
-					return "I don't see such possibility, unfortunately.";
-				case 6:
-					return "Don't you see that I am busy?";
-				case 7:
-					return "Are you incapable of figuring it out yourself?";
-				case 8:
-					return "Is it possible? Surely, as long as you are not involved.";
-				case 9:
-					return "I couldn't agree more.";
-				case 10:
-					return "Yes, definitely. Why didn't I think about it myself?";
-				case 11:
-					return "Don't you have anything better to do besides bothering me with your dumb questions?";
-				case 12:
-					return "Doubtful. Very. Doubtful. Very, very, _very_  doubtful.";
-				case 13:
-					return "No, at least not in this particular spacetime.";
-				case 14:
-					return "I see no reason for it not to happen.";
-				case 15:
-					return "If only you weren't so annoying; then _maybe_.";
-				case 16:
-					return "_stares silently, clearly unamused_";
-				case 17:
-					return "<:vikwat:269523937669545987> _...what._";
-				case 18:
-					return "http://i.imgur.com/ftlyPXx.png";
-				case 19:
-					return "I would suggest stop wasting your time asking questions and actually do something creative instead.";
-				case 20:
-					return "_sighs_ yes. Yes, I guess so.";
-				case 21:
-					return "Well, I _kind of_  see some potential in that.";
-				case 22:
-					return "I am not sure how do you imagine that to happen.";
-				case 23:
-					return "I am a scientist, not a fortune teller.";
-				case 24:
-					return "You just need to get good.";
-				case 25:
-					return "Adapt, or be removed.";
-				case 26:
-					return "...I refuse to answer this question.";
-				case 27:
-					return "Hm, there's certainly an area to improvement.";
-				case 28:
-					return "I won't deny, but I also won't confirm.";
-				case 29:
-					return "This query makes me question your sanity.";
-				case 30:
-					return "Hypothetically, everything is possible.";
-				case 31:
-					return "Oh. So you actually _are_  able to have a good idea once in a while!";
-				case 32:
-					return "Heh. So _naive_.";
-				case 33:
-					return "...this... Actually... Might be true. Perhaps.";
-				case 34:
-					return "If this ever happens, what I hope will not, it just _has_ to end with a disaster.";
-				case 35:
-					return "It's actually not _that_  bad of an idea...";
-				case 36:
-					return "I hope it will never happen in my close proximity.";
-				case 37:
-					return "My prognosis are rather... pessimistic.";
-				case 38:
-					return "I am entirely sure this is doomed to fail in an instant it happens. If it ever does. What I highly doubt, by the way.";
-				case 39:
-					return "The chance for it to happen equals to about 0.00019%, according to my calculations.";
-				case 40:
-				default:
-					return "_grunting noises_\nStop bothering me ;-;";
-			}
-		}
+		var arrayOfAnswers=["", "No. Leave me alone.",
+								"_shakes head with disapproval_",
+								"I have no time for your senseless questions.",
+								"...and why would you ask _me_ that?",
+								"I don't see such possibility, unfortunately.",
+								"Don't you see that I am busy?",
+								"Are you incapable of figuring it out yourself?",
+								"Is it possible? Surely, as long as you are not involved.",
+								"I couldn't agree more.",
+								"Yes, definitely. Why didn't I think about it myself?",
+								"Don't you have anything better to do besides bothering me with your dumb questions?",
+								"Doubtful. Very. Doubtful. Very, very, _very_  doubtful.",
+								"No, at least not in this particular spacetime.",
+								"I see no reason for it not to happen.",
+								"If only you weren't so annoying; then _maybe_.",
+								"_stares silently, clearly unamused_",
+								"<:vikwat:269523937669545987> _...what._",
+								"http://i.imgur.com/ftlyPXx.png",
+								"I would suggest stop wasting your time asking questions and actually do something creative instead.",
+								"_sighs_ yes. Yes, I guess so.",
+								"Well, I _kind of_  see some potential in that.",
+								"I am not sure how do you imagine that to happen.",
+								"I am a scientist, not a fortune teller.",
+								"You just need to get good.",
+								"Adapt, or be removed.",
+								"...I refuse to answer this question.",
+								"Hm, there's certainly an area to improvement.",
+								"I won't deny, but I also won't confirm.",
+								"This query makes me question your sanity.",
+								"Hypothetically, everything is possible.",
+								"Oh. So you actually _are_  able to have a good idea once in a while!",
+								"Heh. So _naive_.",
+								"...this... Actually... Might be true. Perhaps.",
+								"If this ever happens, what I hope will not, it just _has_ to end with a disaster.",
+								"It's actually not _that_  bad of an idea...",
+								"I hope it will never happen in my close proximity.",
+								"My prognosis are rather... pessimistic.",
+								"I am entirely sure this is doomed to fail in an instant it happens. If it ever does. What I highly doubt, by the way.",
+								"The chance for it to happen equals to about 0.00019%, according to my calculations.",
+								"_grunting noises_\nStop bothering me ;-;"]
+			return arrayOfAnswers[(Math.floor((Math.random() * (arrayOfAnswers.length-1)) + 1))];
 	}
 }
 function commands(cid, m, u, uid) //COMMANDS STARTING WITH "!"
 {	
-	var version="The Great Herald beta 1.25.1: Mastery Points Data";
+	var version="The Great Herald beta 1.26: Live Game Data";
 	m=m.toLowerCase();
 	
 	if (m=="!beep")
@@ -434,6 +382,7 @@ function commands(cid, m, u, uid) //COMMANDS STARTING WITH "!"
 					"```Viktor gameplay questions - !build | !matchup <champion_name> | !faq\n"+
 					"Clubs                     - !clubs\n"+
 					"Streams                   - !dun\n\n"+
+					"Live game data            - !ingame <ign>|<server> (example: !iname arcyvilk|euw)"+
 					"OP.gg  				   - !opgg <ign>|<server> (example: !opgg arcyvilk|euw)\n"+
 					"Mastery points 		   - !mastery <ign>|<server> (example: !mastery arcyvilk|euw)\n"+
 					"Ranked races              - !silverrace | !goldrace | !platinumrace | !diamondrace | !masterrace\n\n"+
@@ -637,12 +586,12 @@ function mastery(cid,m)
 	{
 		var p=m.split("|"); // 0=ign, 1=serv
 		p[0]=(p[0].toLowerCase()).replace(/ /g,"");
-		return_api("https://"+p[1]+".api.riotgames.com/api/lol/"+p[1]+"/v1.4/summoner/by-name/"+p[0]+"?api_key="+RITO_KEY, function(pid) { 
+		return_api("https://"+endpoints(p[1])+".api.riotgames.com/lol/summoner/v3/summoners/by-name/"+p[0]+"?api_key="+RITO_KEY, function(pid) { 
 			if (pid.startsWith("error"))
 				send(cid, ":warning: Such player doesn't exist.");
 			else
 			{
-				var player=((JSON.parse(pid))[p[0]]).id;
+				var player=(JSON.parse(pid)).id;
 				return_api ("https://"+p[1]+".api.riotgames.com/championmastery/location/"+endpoints(p[1])+"/player/"+player+"/champion/112?api_key="+RITO_KEY, function(mid) {
 					if (mid.startsWith("error"))
 						send(cid, "The linked person didn't play a single game of me. _Phew_.");
@@ -717,41 +666,92 @@ function mastery(cid,m)
 }
 function ingame(cid,m)
 {
+	send(cid, ":hourglass_flowing_sand: Getting the Live Game data. This might take a while...");
 	m=m.slice(7).trim().toLowerCase();
 	if (m.indexOf("|")!=-1)
 	{
 		var p=m.split("|"); // 0=ign, 1=serv
 		p[0]=(p[0].toLowerCase()).replace(/ /g,"");
-		return_api("https://"+p[1]+".api.riotgames.com/api/lol/"+p[1]+"/v1.4/summoner/by-name/"+p[0]+"?api_key="+RITO_KEY, function(pid) { 
+		return_api("https://"+endpoints(p[1])+".api.riotgames.com/lol/summoner/v3/summoners/by-name/"+p[0]+"?api_key="+RITO_KEY, function(pid) { 
 			if (pid.startsWith("error"))
-				send(cid, ":warning: Such player doesn't exist.");
+			{
+				if (p[0].trim()=="thekiłłingjoké")
+					send (cid, ":x: Get a normal nickname.");
+				else 
+					send(cid, ":warning: Such player doesn't exist.");
+			}
 			else
 			{
-				var player=((JSON.parse(pid))[p[0]]).id;
-				return_api("https://"+p[1]+".api.riotgames.com/observer-mode/rest/consumer/getSpectatorGameInfo/"+endpoints(p[1])+"/"+player+"?api_key="+RITO_KEY, function(mid) {
-					//send(cid, "https://"+p[1]+".api.riotgames.com/observer-mode/rest/consumer/getSpectatorGameInfo/"+endpoints(p[1])+"/"+player+"?api_key="+RITO_KEY);
+				var player=(JSON.parse(pid)).id;
+				return_api("https://"+endpoints(p[1])+".api.riotgames.com/lol/spectator/v3/active-games/by-summoner/"+player+"?api_key="+RITO_KEY, function(mid) {
 					if (mid.startsWith("error"))
-						send(cid, "This person either is not in the game, or you did something wrong.");
+						send(cid, ":x: This person either is not in game, or you did something wrong.");
 					else
 					{
 						var game=JSON.parse(mid);
-						var m="";
-						
-						function ILoop(i)
-						{
-							if (i<=(game.participants.length-1))
-							{
-								if (game.participants[i].teamId=="100") 
-									m+=":large_blue_circle: ";
-								else 
-									m+=":red_circle: ";							
-								m+=game.participants[i].summonerName.toUpperCase()+" - "+game.participants[i].championId+"\n";
-								return ILoop(i+1);
-							}
+						return_api("https://"+endpoints(p[1])+".api.riotgames.com/lol/static-data/v3/champions?dataById=true&api_key="+RITO_KEY, function(chid) {
+							if (chid.startsWith("error"))
+								send(cid, ":x: Error retrieving champion data.");
 							else
-								sendEmbed(cid, ":game_die: Live game of "+p[0].toUpperCase(), m);
-						}
-						ILoop(0);
+							{
+								var ids="";
+								for (var i=0;i<game.participants.length; i++)
+									ids+=","+game.participants[i].summonerId;
+								return_api("https://"+p[1]+".api.riotgames.com/api/lol/"+p[1]+"/v2.5/league/by-summoner/3"+ids.slice(1)+"/entry?api_key="+RITO_KEY, function(rid){
+									if (rid.startsWith("error"))
+										send(cid, ":x: Error retrieving ranks data.");
+									else
+									{
+										var champs=JSON.parse(chid);
+										var ranks=JSON.parse(rid);
+										var m="\n\n";
+										var temp="";
+										var teams=new Array(["",""],["",""],["",""],["",""],["",""]);
+										for (var i=0; i<=game.participants.length; i++)
+										{
+											if (i==game.participants.length)
+											{
+												for (var j=0; j<teams.length; j++)
+												{
+													for (var k=0; k<2; k++)
+														m+=teams[j][k];
+												}
+												send(cid, ":game_die: **Live game of "+p[0].toUpperCase()+" | "+game.gameMode + " - " + game.gameType+"**"+m);
+											}
+											else
+											{
+												var nick=game.participants[i].summonerName.toUpperCase().trim().replace(/ /g,"");
+												var rank="--";
+												if (ranks[game.participants[i].summonerId]!=undefined)
+													rank=ranks[game.participants[i].summonerId][0].tier.substring(0,1)+romanToInt(ranks[game.participants[i].summonerId][0].entries[0].division);
+												temp="";
+												if (game.participants[i].teamId%200!=0)//blue
+												{
+													temp+=nick + " ("+champs.data[game.participants[i].championId].name+")";
+													if (nick.toLowerCase().trim()==p[0].toLowerCase().trim())
+														temp+=" ◄";
+													temp+="``";
+													while(temp.length<=34)
+														temp="."+temp;	
+													temp="``["+rank+"]"+temp+":large_blue_circle:";
+												}
+												else
+												{
+													temp+="("+champs.data[game.participants[i].championId].name+") "+nick;
+													if (nick.toLowerCase().trim()==p[0].toLowerCase().trim())
+														temp="► "+temp;
+													temp="``"+temp;
+													while(temp.length<=34)
+														temp+=".";
+													temp=":red_circle: "+temp+"["+rank+"]``\n";	
+												}
+												teams[i%5][(game.participants[i].teamId-100)/100]=temp;
+											}
+										}
+									}
+								});
+							}
+						});
 					}
 				});
 			}
@@ -764,10 +764,8 @@ function botrefuses(normal, refusal)
 {
 	var rand=Math.floor((Math.random() * 100) + 1); 
 	if (rand<5)
-	{
 		return refusal;
-	}
-	else return normal;
+	return normal;
 }
 //------------------------------------------//
 //................RACE STUFF................//
@@ -787,13 +785,12 @@ function race(cid, user, m, div, divlow)
 				p[0]=(p[0].toLowerCase()).replace(/ /g,"");
 				try //add an exception to situation a person writes down server which doesnt exist
 				{
-				return_api("https://"+p[1]+".api.riotgames.com/api/lol/"+p[1]+"/v1.4/summoner/by-name/"+p[0]+"?api_key="+RITO_KEY, function(id_api) { 
+				return_api("https://"+endpoints(p[1])+".api.riotgames.com/lol/summoner/v3/summoners/by-name/"+p[0]+"?api_key="+RITO_KEY, function(id_api) { 
 					if (id_api.startsWith("error"))
 						send(cid, ":warning: Such player doesn't exist.");
 					else 
 					{
-						var player=JSON.parse(id_api);
-						var pid=(player[p[0]]).id;
+						var pid=(JSON.parse(id_api)).id;
 						return_api("https://"+p[1]+".api.riotgames.com/api/lol/"+p[1]+"/v2.5/league/by-summoner/"+pid+"/entry?api_key="+RITO_KEY, function(div_api) {
 							if (div_api.startsWith("error"))
 								send(cid, ":x: Unable to retrieve data for "+p[0]+", try again in a few moments.");
@@ -804,7 +801,7 @@ function race(cid, user, m, div, divlow)
 									send(cid, ":no_entry: Player "+p[0].toUpperCase()+" is not "+divlow+" and therefore can not participate. Sob.");
 								else
 								{
-									var newparticipant=p[0].trim().toUpperCase()+"|"+(player[p[0]]).id+"|"+p[1].trim().toUpperCase();
+									var newparticipant=p[0].trim().toUpperCase()+"|"+pid+"|"+p[1].trim().toUpperCase();
 									fs = require('fs');									
 									fs.readFile("race_data/"+div.toLowerCase()+"race.vik", 'utf8', function (err,data) { //a check, if a player isn't already registered in the race
 										if (err)
