@@ -220,7 +220,21 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 		}
 		else if (m.startsWith('!'))
 		{
-			if (m=="!commands" || m=="!help" || m=="!h")
+			if (m.startsWith("!iam") && !(m.startsWith("!iamnot"))) 
+			{
+				if (channelID==flair_id) //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM
+					add_role(m, userID, channelID);
+				else
+					send(channelID,"You can be anything you want, I'm not giving you any flair outside of the <#"+flair_id+"> room.");
+			}
+			else if (m.startsWith("!iamnot")) 
+			{
+				if (channelID==flair_id) //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM
+					remove_role(m, userID, channelID);
+				else
+					send(channelID, "That's great to hear, but go to <#"+flair_id+"> room if you want to have it removed.");
+			}
+			else if (m=="!commands" || m=="!help" || m=="!h")
 			send(userID, "\n**"+version+"**\n\nCommand list:\n"+
 					"```Viktor gameplay questions - !build | !matchup <champion_name> | !faq\n"+
 					"Clubs                     - !clubs\n"+
@@ -398,20 +412,6 @@ function commands(cid, m, u, uid) //COMMANDS STARTING WITH "!"
 				"- Stream - http://twitch.tv/dunlol","Dun, Challenger Viktor main"];
 	else if (m=="!faq")
 		return ["Useful tips and tricks for new Viktor players: https://www.reddit.com/r/viktormains/wiki/faq",null];
-	else if (m.startsWith("!iam") && !(m.startsWith("!iamnot"))) 
-	{
-		if (cid==flair_id) //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
-			add_role(m, uid, cid);
-		else
-			return ["You can be anything you want, I'm not giving you any flair outside of the <#"+flair_id+"> room.",null];
-	}
-	else if (m.startsWith("!iamnot")) 
-	{
-		if (cid==flair_id) //ASSIGN COMMANDS - ONLY IN #ASSIGN_FLAIR ROOM - WARNING: HARDCODED!!!
-			remove_role(m, uid, cid);
-		else
-			return ["That's great to hear, but go to <#"+flair_id+"> room if you want to have it removed.",null];
-	}
 	else if (m=="!joke")
 		return ["I won't waste my precious time for the sake of your personal amusement.",null];
 	else if (m.startsWith('!opgg'))
