@@ -656,7 +656,7 @@ function ingame(cid,m)
 								var ids="";
 								for (var i=0;i<game.participants.length; i++)
 									ids+=","+game.participants[i].summonerId;
-								return_api("https://"+p[1]+".api.riotgames.com/api/lol/"+p[1]+"/v2.5/league/by-summoner/3"+ids.slice(1)+"/entry?api_key="+RITO_KEY, function(rid){
+								return_api("https://"+p[1]+".api.riotgames.com/api/lol/"+p[1]+"/v2.5/league/by-summoner/"+ids.slice(1)+"/entry?api_key="+RITO_KEY, function(rid){
 									if (rid.startsWith("error"))
 										send(cid, ":x: Error retrieving ranks data.");
 									else
