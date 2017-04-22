@@ -611,50 +611,11 @@ function mastery(cid,m)
 							if (points>="1000000") comment="You're amongst the most loyal acolytes. You deserve a cookie. :cookie:";
 							if (points>="100000" && level<6) comment="Over 100k points and yet, still no level 7. _sighs heavily_";
 						
-						switch(level)
-						{
-							case 1: 
-							{	
-								level=":one:";
-								break;
-							}
-							case 2: 
-							{	
-								level=":two:";
-								break;
-							}
-							case 3: 
-							{	
-								level=":three:";
-								break;
-							}
-							case 4: 
-							{	
-								level=":four:";
-								break;
-							}
-							case 5: 
-							{	
-								level=":five:";
-								break;
-							}
-							case 6: 
-							{	
-								level=":six:";
-								break;
-							}
-							case 7: 
-							{	
-								level=":seven:";
-								break;
-							}
-							default:break;
-						}
 						if (chest==true)
 							chest=":white_check_mark:";
 						else chest=":negative_squared_cross_mark:";
 						
-						var summary="\n**Level**: "+level+
+						var summary="\n**Level**: "+getLevel(level)+
 									"\n**Points**: "+points+
 									"\n**Chest**: "+chest+
 									"\n\n"+comment;						
@@ -939,19 +900,6 @@ function race(cid, user, m, div, divlow)
 		});
 	}
 }
-function romanToInt(number)
-{
-	if (number=="I")
-		return 1;
-	else if (number=="II")
-		return 2;
-	else if (number=="III")
-		return 3;
-	else if (number=="IV")
-		return 4;
-	else if (number=="V")
-		return 5;
-}
 //----------------------------------------------------//
 //.............EXTERNAL API RELATED STUFF.............//
 //----------------------------------------------------//
@@ -1029,6 +977,12 @@ function gamemodes(modeid)
 			return " - Coop vs AI Beginner Bots";
 		case 33:
 			return " - Coop vs AI Intermediate Bots";
+		case 400:
+			return " - Normal Draft Pick 5v5";
+		case 410:
+			return " - Ranked Draft Pick 5v5";
+		case 420:
+			return " - Ranked Solo/Duo 5v5";
 		case 440:
 			return " - Ranked Flex 5v5";
 		case 52:
@@ -1036,7 +990,40 @@ function gamemodes(modeid)
 		default: return "";
 	}
 }
-
+function romanToInt(number)
+{
+	if (number=="I")
+		return 1;
+	else if (number=="II")
+		return 2;
+	else if (number=="III")
+		return 3;
+	else if (number=="IV")
+		return 4;
+	else if (number=="V")
+		return 5;
+}
+function getLevel(level)
+{
+	switch(level)
+	{
+		case 1: 
+			return ":one:";
+		case 2: 
+			return ":two:";
+		case 3: 
+			return ":three:";
+		case 4: 
+			return ":four:";
+		case 5: 
+			return ":five:";
+		case 6: 
+			return ":six:";
+		case 7: 
+			return ":seven:";
+		default:return "?";
+	}
+}
 //---------------------------------------------------------//
 //.............FUNCTIONS ASSOCIATED WITH ROLES.............//
 //---------------------------------------------------------//
