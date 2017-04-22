@@ -719,7 +719,7 @@ function ingame(cid,m)
 													for (var k=0; k<2; k++)
 														m+=teams[j][k];
 												}
-												send(cid, ":game_die: **Live game of "+p[0].toUpperCase()+" | "+game.gameMode + " - " + game.gameType+"**"+m);
+												send(cid, ":game_die: **Live game of "+p[0].toUpperCase()+" | "+game.gameMode + gamemodes(game.gameQueueConfigId)+"**"+m);
 											}
 											else
 											{
@@ -1010,6 +1010,35 @@ function endpoints(server)
 		case "pbe":
 			return "pbe1";
 		default: return 0;
+	}
+}
+function gamemodes(modeid)
+{ 
+	switch(modeid)
+	{
+		case 0:
+			return " - Custom game";
+		case 8:
+			return " - Normal Twisted Treeline";
+		case 2:
+			return " - Normal Blind Pick 5v5";
+		case 14:
+			return " - Normal Draft Pick 5v5";
+		case 4:
+			return " - Ranked Solo 5v5";
+		case 42:
+			return " - Ranked Team 5v5";
+		case 31:
+			return " - Coop vs AI Intro Bots";
+		case 32:
+			return " - Coop vs AI Beginner Bots";
+		case 33:
+			return " - Coop vs AI Intermediate Bots";
+		case 440:
+			return " - Ranked Flex 5v5";
+		case 52:
+			return " - Coop vs AI Twisted Treeline";
+		default: return "";
 	}
 }
 
