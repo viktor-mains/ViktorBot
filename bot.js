@@ -588,8 +588,8 @@ function mastery(cid,m)
 	if (m.indexOf("|")!=-1)
 	{
 		var p=m.split("|"); // 0=ign, 1=serv
-		p[0]=(p[0].toLowerCase()).replace(/ /g,"");
-		return_api("https://"+endpoints(p[1])+".api.riotgames.com/lol/summoner/v3/summoners/by-name/"+p[0]+"?api_key="+RITO_KEY, function(pid) { 
+		p[0]=((p[0].toLowerCase()).replace(/ /g,""));
+		return_api("https://"+endpoints(p[1])+".api.riotgames.com/lol/summoner/v3/summoners/by-name/"+encodeURIComponent(p[0])+"?api_key="+RITO_KEY, function(pid) { 
 			if (pid.startsWith("error"))
 				send(cid, ":warning: Such player doesn't exist.");
 			else
@@ -675,14 +675,9 @@ function ingame(cid,m)
 	{
 		var p=m.split("|"); // 0=ign, 1=serv
 		p[0]=(p[0].toLowerCase()).replace(/ /g,"");
-		return_api("https://"+endpoints(p[1])+".api.riotgames.com/lol/summoner/v3/summoners/by-name/"+p[0]+"?api_key="+RITO_KEY, function(pid) { 
+		return_api("https://"+endpoints(p[1])+".api.riotgames.com/lol/summoner/v3/summoners/by-name/"+encodeURIComponent(p[0])+"?api_key="+RITO_KEY, function(pid) { 
 			if (pid.startsWith("error"))
-			{
-				if (p[0].trim()=="thekiłłingjoké")
-					send (cid, ":x: Get a normal nickname.");
-				else 
-					send(cid, ":warning: Such player doesn't exist.");
-			}
+				send(cid, ":warning: Such player doesn't exist.");
 			else
 			{
 				var player=(JSON.parse(pid)).id;
@@ -788,7 +783,7 @@ function race(cid, user, m, div, divlow)
 				p[0]=(p[0].toLowerCase()).replace(/ /g,"");
 				try //add an exception to situation a person writes down server which doesnt exist
 				{
-				return_api("https://"+endpoints(p[1])+".api.riotgames.com/lol/summoner/v3/summoners/by-name/"+p[0]+"?api_key="+RITO_KEY, function(id_api) { 
+				return_api("https://"+endpoints(p[1])+".api.riotgames.com/lol/summoner/v3/summoners/by-name/"+encodeURIComponent(p[0])+"?api_key="+RITO_KEY, function(id_api) { 
 					if (id_api.startsWith("error"))
 						send(cid, ":warning: Such player doesn't exist.");
 					else 
