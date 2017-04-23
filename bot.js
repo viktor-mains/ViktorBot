@@ -298,14 +298,11 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 			send(channelID, viktor_answers(m));
 		else if (m.length>=20 && m===m.toUpperCase()) //allcaps
 		{
-			var rand=(Math.floor((Math.random() * 18) + 1));
-			if (rand%6==0) //6, 12 or 18 - effectively 1/6th chance
-			{
-				if (rand==1)
-					send(channelID, ":monkey:");
-				else
-					send(channelID, ":popcorn:");
-			}
+			var rand=Math.floor((Math.random() * 10) + 1); 
+				if (rand<5)
+					react(channelID, rawEvent.d.id, "🍿");
+				else if (rand==5)
+					react(channelID, rawEvent.d.id, ":ahaok:288392049873518602");
 		}
 	}
 });
@@ -321,6 +318,14 @@ function sendEmbed(cid, tid, m)
 	bot.sendMessage({
 		to: cid,
         embed: {color: 0xfdc000, title: tid, description: m}
+		});
+}
+function react(cid, mid, rid)
+{
+	bot.addReaction({
+		channelID: cid,
+		messageID: mid,
+		reaction: rid
 		});
 }
 
@@ -665,7 +670,7 @@ function ingame(cid,m)
 										var ranks=JSON.parse(rid);
 										var m="\n\n";
 										var temp="";
-										var teams=new Array(["",""],["",""],["",""],["",""],["",""]);
+										var teams=new Array(["",""],["",""],["",""],["",""],["",""],["",""]);
 										for (var i=0; i<=game.participants.length; i++)
 										{
 											if (i==game.participants.length)
@@ -722,13 +727,15 @@ function ingame(cid,m)
 function botrefuses(normal, refusal)
 {
 	var rand=Math.floor((Math.random() * 100) + 1); 
-	if (rand<5)
+	if (rand<2)
 		return refusal;
 	return normal;
 }
-//------------------------------------------//
-//................RACE STUFF................//
-//------------------------------------------//
+
+//-----------------------------------------------------//
+//.............ROLES, RACES, OTHER ASSIGNS.............//
+//-----------------------------------------------------//
+
 function race(cid, user, m, div, divlow)
 {
 	var l=div.length+6;
@@ -900,134 +907,6 @@ function race(cid, user, m, div, divlow)
 		});
 	}
 }
-//----------------------------------------------------//
-//.............EXTERNAL API RELATED STUFF.............//
-//----------------------------------------------------//
-
-function return_api(url, callback)
-{
-	var request = require('request');
-	request(url, function (error, response, body) 
-	{
-		if (!error && response.statusCode == 200)
-			return callback(body);
-		else
-		{
-			try
-			{
-				return callback("error "+response.statusCode);
-			}
-			catch(err)
-			{
-				return callback("error"+err);
-			}
-		}
-	});
-}
-function endpoints(server)
-{
-	switch(server.toLowerCase())
-	{
-		case "br":
-			return "br1";
-		case "eune":
-			return "eun1";
-		case "euw":
-			return "euw1";
-		case "jp":
-			return "jp1";
-		case "kr":
-			return "kr";
-		case "lan":
-			return "la1";
-		case "las":
-			return "la2";
-		case "na":
-			return "na1";
-		case "oce":
-			return "oc1";
-		case "tr":
-			return "tr1";
-		case "ru":
-			return "ru";
-		case "pbe":
-			return "pbe1";
-		default: return 0;
-	}
-}
-function gamemodes(modeid)
-{ 
-	switch(modeid)
-	{
-		case 0:
-			return " - Custom game";
-		case 8:
-			return " - Normal Twisted Treeline";
-		case 2:
-			return " - Normal Blind Pick 5v5";
-		case 14:
-			return " - Normal Draft Pick 5v5";
-		case 4:
-			return " - Ranked Solo 5v5";
-		case 42:
-			return " - Ranked Team 5v5";
-		case 31:
-			return " - Coop vs AI Intro Bots";
-		case 32:
-			return " - Coop vs AI Beginner Bots";
-		case 33:
-			return " - Coop vs AI Intermediate Bots";
-		case 400:
-			return " - Normal Draft Pick 5v5";
-		case 410:
-			return " - Ranked Draft Pick 5v5";
-		case 420:
-			return " - Ranked Solo/Duo 5v5";
-		case 440:
-			return " - Ranked Flex 5v5";
-		case 52:
-			return " - Coop vs AI Twisted Treeline";
-		default: return "";
-	}
-}
-function romanToInt(number)
-{
-	if (number=="I")
-		return 1;
-	else if (number=="II")
-		return 2;
-	else if (number=="III")
-		return 3;
-	else if (number=="IV")
-		return 4;
-	else if (number=="V")
-		return 5;
-}
-function getLevel(level)
-{
-	switch(level)
-	{
-		case 1: 
-			return ":one:";
-		case 2: 
-			return ":two:";
-		case 3: 
-			return ":three:";
-		case 4: 
-			return ":four:";
-		case 5: 
-			return ":five:";
-		case 6: 
-			return ":six:";
-		case 7: 
-			return ":seven:";
-		default:return "?";
-	}
-}
-//---------------------------------------------------------//
-//.............FUNCTIONS ASSOCIATED WITH ROLES.............//
-//---------------------------------------------------------//
-
 function add_role(m, userID, channelID)
 {
 	var r=m.slice(4); //JUST THE ROLE NAME - !IAM
@@ -1190,4 +1069,129 @@ function checkrole(cid, uid, r_id) //CHECKS IF USER HAS A ROLE
 			return true;
 	}
 	return false;
+}
+
+//----------------------------------------------------//
+//..........RETURNING API AND OTHER CONSTANTS.........//
+//----------------------------------------------------//
+
+function return_api(url, callback)
+{
+	var request = require('request');
+	request(url, function (error, response, body) 
+	{
+		if (!error && response.statusCode == 200)
+			return callback(body);
+		else
+		{
+			try
+			{
+				return callback("error "+response.statusCode);
+			}
+			catch(err)
+			{
+				return callback("error"+err);
+			}
+		}
+	});
+}
+function endpoints(server)
+{
+	switch(server.toLowerCase())
+	{
+		case "br":
+			return "br1";
+		case "eune":
+			return "eun1";
+		case "euw":
+			return "euw1";
+		case "jp":
+			return "jp1";
+		case "kr":
+			return "kr";
+		case "lan":
+			return "la1";
+		case "las":
+			return "la2";
+		case "na":
+			return "na1";
+		case "oce":
+			return "oc1";
+		case "tr":
+			return "tr1";
+		case "ru":
+			return "ru";
+		case "pbe":
+			return "pbe1";
+		default: return 0;
+	}
+}
+function gamemodes(modeid)
+{ 
+	switch(modeid)
+	{
+		case 0:
+			return " - Custom game";
+		case 8:
+			return " - Normal Twisted Treeline";
+		case 2:
+			return " - Normal Blind Pick 5v5";
+		case 14:
+			return " - Normal Draft Pick 5v5";
+		case 4:
+			return " - Ranked Solo 5v5";
+		case 42:
+			return " - Ranked Team 5v5";
+		case 31:
+			return " - Coop vs AI Intro Bots";
+		case 32:
+			return " - Coop vs AI Beginner Bots";
+		case 33:
+			return " - Coop vs AI Intermediate Bots";
+		case 400:
+			return " - Normal Draft Pick 5v5";
+		case 410:
+			return " - Ranked Draft Pick 5v5";
+		case 420:
+			return " - Ranked Solo/Duo 5v5";
+		case 440:
+			return " - Ranked Flex 5v5";
+		case 52:
+			return " - Coop vs AI Twisted Treeline";
+		default: return "";
+	}
+}
+function romanToInt(number)
+{
+	if (number=="I")
+		return 1;
+	else if (number=="II")
+		return 2;
+	else if (number=="III")
+		return 3;
+	else if (number=="IV")
+		return 4;
+	else if (number=="V")
+		return 5;
+}
+function getLevel(level)
+{
+	switch(level)
+	{
+		case 1: 
+			return ":one:";
+		case 2: 
+			return ":two:";
+		case 3: 
+			return ":three:";
+		case 4: 
+			return ":four:";
+		case 5: 
+			return ":five:";
+		case 6: 
+			return ":six:";
+		case 7: 
+			return ":seven:";
+		default:return "?";
+	}
 }
