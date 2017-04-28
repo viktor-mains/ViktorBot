@@ -517,6 +517,8 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 	{
 		case "ahri":
 			return "https://www.reddit.com/r/viktormains/comments/4jz0os/weekly_matchup_discussion_1_viktor_vs_ahri/ - patch 6.10";
+		case "akali":
+			return "https://www.reddit.com/r/viktormains/comments/665z6g/weekly_matchup_discussion_31_viktor_vs_akali/ - patch 7.8";
 		case "anivia":
 			return "https://www.reddit.com/r/viktormains/comments/577drz/weekly_matchup_discussion_13_viktor_vs_anivia/ - patch 6.20";
 		case "annie":
