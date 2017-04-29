@@ -28,11 +28,13 @@ bot.on('disconnect', function(errMsg, code) {
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
 	if(userID!=bot.id)
 	{
-		response.getMessage(message);
-		response.getMessageID(rawEvent.d.id);
-		response.getUser(user);
-		response.getUserID(userID);
-		response.getChannelID(channelID);
+		var response=new Response();
+		
+		response.setMessage(message);
+		response.setMessageID(rawEvent.d.id);
+		response.setUser(user);
+		response.setUserID(userID);
+		response.setChannelID(channelID);
 		
 		if (response.hasCommandTrigger())
 			response.toCommand();
@@ -52,120 +54,121 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 //............RESPONSE FUNCTIONS............//
 //------------------------------------------//
 
-var response=new function() 
+function Response() 
 {
 		//VARS
-	this.message="";
-	this.messageID="";
-	this.user="";
-	this.userID="";
-	this.channelID="";
+	var response=this;
+	response.message="!matchup taliyah";
+	response.messageID="";
+	response.user="";
+	response.userID="";
+	response.channelID="";
 	
-		//GETTERS - RENAME TO SETTERS CUZ IM DUMB
-	this.getMessage=function(fetchedMessage) 		{ this.message=fetchedMessage; }
-	this.getMessageID=function(fetchedMessageID)	{ this.messageID=fetchedMessageID; }
-	this.getUser=function(fetchedUser) 				{ this.user=fetchedUser; }
-	this.getUserID=function(fetchedUserID) 			{ this.userID=fetchedUserID; }
-	this.getChannelID=function(fetchedChannelID) 	{ this.channelID=fetchedChannelID; }
+		//SETTERS
+	response.setMessage=function(fetchedMessage) 		{ response.message=fetchedMessage; }
+	response.setMessageID=function(fetchedMessageID)	{ response.messageID=fetchedMessageID; }
+	response.setUser=function(fetchedUser) 				{ response.user=fetchedUser; }
+	response.setUserID=function(fetchedUserID) 			{ response.userID=fetchedUserID; }
+	response.setChannelID=function(fetchedChannelID) 	{ response.channelID=fetchedChannelID; }
 	
 		//TRIGGERS
-	this.hasCommandTrigger=function()
+	response.hasCommandTrigger=function()
 	{
-		if (this.message.startsWith("!"))
+		if (response.message.startsWith("!"))
 			return true;
 		return false;
 	}
-	this.hasManualResponseTrigger=function()
+	response.hasManualResponseTrigger=function()
 	{
-		if (this.message.startsWith("%") && this.userID==adminID)// && this.channelID==bot.id)
+		if (response.message.startsWith("%") && response.userID==adminID)// && response.channelID==bot.id)
 			return true;
 		return false;
 	}
-	this.hasCapsLockTrigger=function()
+	response.hasCapsLockTrigger=function()
 	{
-		if (this.message==this.message.toUpperCase() && this.message.length>=20)
+		if (response.message==response.message.toUpperCase() && response.message.length>=20)
 			return true;
 		return false;
 	}
-	this.hasSmallTalkTrigger=function()
+	response.hasSmallTalkTrigger=function()
 	{
-		if (this.message.toLowerCase().startsWith("dear viktor"))
+		if (response.message.toLowerCase().startsWith("dear viktor"))
 			return true;
 		return false;
 	}
-	this.hasStatusChangeRequest=function()
+	response.hasStatusChangeRequest=function()
 	{
-		if (this.message.startsWith("#") && this.userID==adminID)// && this.channelID==bot.id)
+		if (response.message.startsWith("#") && response.userID==adminID)// && response.channelID==bot.id)
 			return true;
 		return false;
 	}
-	//function this.hasKeywordsTrigger() {}
+	//function response.hasKeywordsTrigger() {}
 	
 		//ARCY
-	this.arcyHappened=function() 
+	response.arcyHappened=function() 
 	{
 		var arrayOfArcy=["arcyvilk", "arcy", "your creator", "your maker", "person who made you", "man who made you", "guy who made you", "artsee", "artzy", "arzy", "4rcy"];
 		for (var i=0; i<arrayOfArcy.length-1; i++)
 		{
-			if (this.message.toLowerCase().indexOf(arrayOfArcy[i])!=-1)
+			if (response.message.toLowerCase().indexOf(arrayOfArcy[i])!=-1)
 				return true;
 		}
 		return false;
 	}
 	
 		//ANSWERS
-	this.toCapsLock=function()
+	response.toCapsLock=function()
 	{
 		if (RNG.chanceToHappen(10))
-			return send.react(this.channelID, this.messageID, ":ahaok:288392049873518602");
+			return send.react(response.channelID, response.messageID, ":ahaok:288392049873518602");
 		if (RNG.chanceToHappen(40))
-			return send.react(this.channelID, this.messageID, "🍿");
+			return send.react(response.channelID, response.messageID, "🍿");
 	}
-	this.toCommand=function()
+	response.toCommand=function()
 	{
-		var command=this.message.slice(1);
+		var command=response.message.slice(1);
 		if (command.indexOf(" ")!=-1)
 			command=command.slice(0, command.indexOf(" ")).trim();
-		for (var i=0; i<this.arrayOfCommands.length; i++)
+		for (var i=0; i<response.arrayOfCommands.length; i++)
 		{
-			if (this.arrayOfCommands[i][0]==command)
+			if (response.arrayOfCommands[i][0]==command)
 			{
-				if (this.arrayOfCommands[i][2]!=null) //title is present, aka embed
-					return send.embed(this.channelID, this.arrayOfCommands[i][1], this.arrayOfCommands[i][2]);
-				return send.normal(this.channelID, this.arrayOfCommands[i][1]);
+				if (response.arrayOfCommands[i][2]!=null) //title is present, aka embed
+					return send.embed(response.channelID, response.arrayOfCommands[i][1], response.arrayOfCommands[i][2]);
+				return send.normal(response.channelID, response.arrayOfCommands[i][1]);
 			}
 		}
 	}
-	this.toDearViktor=function() 
+	response.toDearViktor=function() 
 	{
-		if(this.arcyHappened())
-			return this.arrayOfArcyAnswers[(Math.floor((Math.random() * (this.arrayOfArcyAnswers.length-1)) + 1))];
-		return this.arrayOfDearViktorAnswers[(Math.floor((Math.random() * (this.arrayOfDearViktorAnswers.length-1)) + 1))];	
+		if(response.arcyHappened())
+			return response.arrayOfArcyAnswers[(Math.floor((Math.random() * (response.arrayOfArcyAnswers.length-1)) + 1))];
+		return response.arrayOfDearViktorAnswers[(Math.floor((Math.random() * (response.arrayOfDearViktorAnswers.length-1)) + 1))];	
 	}
-	this.toMatchup=function() //problem: docierajaca tu wiadomosc jest nullem
+	response.toMatchup=function() //problem: docierajaca tu wiadomosc jest nullem
 	{
-		var champion=this.message.slice(8).trim().toLowerCase();
+		var champion=response.message.slice(8).trim().toLowerCase();
 		if (champion)
 		{
-			for (var i=0; i<=this.arrayOfMatchups.length; i++)
+			for (var i=0; i<=response.arrayOfMatchups.length; i++)
 			{
-				if ((this.arrayOfMatchups[i][0]).indexOf(champion)!=-1) //review cases like Vi/Viktor
-					return this.arrayOfMatchups[i][1];
-				if (i==this.arrayOfMatchups.length)
+				if ((response.arrayOfMatchups[i][0]).indexOf(champion)!=-1) //review cases like Vi/Viktor
+					return response.arrayOfMatchups[i][1];
+				if (i==response.arrayOfMatchups.length)
 					return "Code name ["+champion.toUpperCase() +"]: missing data. This matchup hasn\'t been discussed yet, it seems.";	
 			}
 		}
 		else return "I can't just _guess_ what champion you have in mind.";
 	}
-	this.toOPGG=function()
+	response.toOPGG=function()
 	{
 	}
-	this.toBuild=function()
+	response.toBuild=function()
 	{
 	}
 	
 		//ARRAYS
-	this.arrayOfDearViktorAnswers=["", 
+	response.arrayOfDearViktorAnswers=["", 
 									//NOPE
 								"No. Leave me alone.",
 								"_shakes head with disapproval_",
@@ -183,7 +186,7 @@ var response=new function()
 								"_sighs_ yes. Yes, I guess so.",
 								"Well, I _kind of_  see some potential in that.",
 								"Oh. So you actually _are_  able to have a good idea once in a while!",
-								"...this... Actually... Might be true. Perhaps.",
+								"...response... Actually... Might be true. Perhaps.",
 								"It's actually not _that_  bad of an idea...",
 								"The probability of that seems... surprisingly high.",
 									//MAYBE
@@ -212,12 +215,12 @@ var response=new function()
 								"I hope it will never happen in my close proximity.",
 								"_grunting noises_\nStop bothering me ;-;"];
 								
-	this.arrayOfArcyAnswers=["", 
+	response.arrayOfArcyAnswers=["", 
 								"You mean Arcy? That's, like, the single best person in existence.",
 								"I'm sorry, I can't hear you over my creator's pure _awesomeness_.",
 								"Arcy is the best and I agree with them on everything."];
 								
-	this.arrayOfMatchups=[["ahri", "https://www.reddit.com/r/viktormains/comments/4jz0os/weekly_matchup_discussion_1_viktor_vs_ahri/ - patch 6.10"],
+	response.arrayOfMatchups=[["ahri", "https://www.reddit.com/r/viktormains/comments/4jz0os/weekly_matchup_discussion_1_viktor_vs_ahri/ - patch 6.10"],
 								["akali", "https://www.reddit.com/r/viktormains/comments/665z6g/weekly_matchup_discussion_31_viktor_vs_akali/ - patch 7.8"],
 								["anivia", "https://www.reddit.com/r/viktormains/comments/577drz/weekly_matchup_discussion_13_viktor_vs_anivia/ - patch 6.20"],
 								["annie", "https://www.reddit.com/r/viktormains/comments/5z1tsn/weekly_matchup_discussion_27_viktor_vs_annie/ - patch 7.5"],
@@ -248,14 +251,14 @@ var response=new function()
 								["asshole", "Unfortunately, we do not have a matchup discussion for Jayce yet. Sorry for inconvenience!"]
 							];
 								
-	this.arrayOfCommands=[["beep", "_sighs deeply_\nBeep. Boop.", null],
-								["build", this.toBuild, "**♥ GLORIOUS MINIGUIDE TO BUILD ♥**"],
+	response.arrayOfCommands=[["beep", "_sighs deeply_\nBeep. Boop.", null],
+								["build", response.toBuild, "**♥ GLORIOUS MINIGUIDE TO BUILD ♥**"],
 								["clubs", "https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.", null],
 								["dun", "- OP.gg - https://na.op.gg/summoner/userName=dunv2\n- Stream - http://twitch.tv/dunlol", "Dun, Challenger Viktor main"],
 								["faq", "Useful tips and tricks for new Viktor players: https://www.reddit.com/r/viktormains/wiki/faq",null],
 								["joke", "I won't waste my precious time for the sake of your personal amusement.", null],
-								["opgg", this.toOPGG(), null],
-								["matchup", _this.toMatchup(), null],
+								["opgg", response.toOPGG(), null],
+								["matchup", response.toMatchup(), null],
 								["roles",	"- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n"+
 											"- are you a Viktor streamer? Type !iam Viktor Streamer\n", "Self-assignable roles"],
 								["test", "I am a tester version of myself.", null],
