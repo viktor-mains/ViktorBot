@@ -545,6 +545,8 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 		case "gangplank": 
 		case "gp":
 			return "https://www.reddit.com/r/viktormains/comments/5qvxtj/weekly_matchup_discussion_23_viktor_vs_gangplank/ - patch 7.2";
+		case "jayce":
+			return "https://www.reddit.com/r/viktormains/comments/6bd5yt/weekly_matchup_discussion_34_viktor_vs_jayce/ - patch 7.9";
 		case "katarina":
 		case "kata":
 			return "https://www.reddit.com/r/viktormains/comments/5uzaqu/weekly_matchup_discussion_25_viktor_vs_katarina_2/ - patch 7.3";
@@ -584,7 +586,7 @@ function matchup(m) //MATCHUPS ARE... WELL, MATCHUPS
 		case "zyra":
 			return "https://www.reddit.com/r/viktormains/comments/4q0r3f/weekly_matchup_discussion_6_viktor_vs_zyra/ - patch 6.12";	
 		case "asshole":
-			return "Unfortunately, we do not have a matchup discussion for Jayce yet. Sorry for inconvenience!";
+			return "https://www.reddit.com/r/viktormains/comments/6bd5yt/weekly_matchup_discussion_34_viktor_vs_jayce/ - patch 7.9";
 		default:
 			return "Code name ["+ champ.toUpperCase() +"]: missing data. This matchup hasn\'t been discussed yet, it seems.";
 	}
@@ -980,7 +982,7 @@ function remove_role(m, userID, channelID)
 		{
 			for (var i in bot.servers[bot.channels[channelID].guild_id].roles)
 			{
-				if (bot.servers[bot.channels[channelID].guild_id].roles[i].name==r) 
+				if (bot.servers[bot.channels[channelID].guild_id].roles[i].name.toLowerCase()==r.toLowerCase()) 
 				{
 					r_id=bot.servers[bot.channels[channelID].guild_id].roles[i].id;
 					break;
