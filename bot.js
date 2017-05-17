@@ -402,14 +402,15 @@ function commands(cid, m, u, uid) //COMMANDS STARTING WITH "!"
 		return["○ **First back:**\n\n"+
 			"> 1250 g: <:hc1:242831892427177995> + <:potion:277494945332592640>\n"+
 			"< 1250 g: <:doran:277494945261027328> + <:potion:277494945332592640> / <:darkseal:298575845977620502> + <:potion:277494945332592640>\n"+
-			"< 1250 g vs LB, Kata, Syndra etc: <:negatron:277494945432993792> + <:potion:277494945332592640>"+
 			"\n____________\n\n"+
 			"○ **Default build:**\n\n <:hc1:242831892427177995> → <:sheen:277494945500233728>/<:hc2:242831893051998218> → "+
 			"<:sheen:277494945500233728>/<:hc2:242831893051998218> → <:hc3:242831893509308416> → <:lichbane:242831894134128650> → "+
 			"<:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → <:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → "+
-			"<:zhonya:242831893953773569>/<:abyssal:242831892334903296>/<:ga:273939560130674691>\n"+
-			"\n\n○ **New experimental build:**\n\n <:hc1:242831892427177995> → <:morello:298575846464159754> → <:liandry:298576316108767232> → "+
-			"<:voidstaff:242831893899247616> → <:zhonya:242831893953773569>/<:rabadon:242831892854865922> (<:hc3:242831893509308416> somewhere inbetween)" , "**♥ GLORIOUS MINIGUIDE TO BUILD ♥**"];
+			"<:zhonya:242831893953773569>/<:banshee:314477829238554635> (Ionian boots inbetween)\n\n"+
+			"Against high damage AP champions like Syndra, LB, Fizz you might consider rushing <:banshee:314477829238554635> just after <:hc1:242831892427177995>\n\n"+
+			"○ **New experimental build:**\n\n <:hc1:242831892427177995> → <:morello:298575846464159754> → <:liandry:298576316108767232> → "+
+			"<:voidstaff:242831893899247616> → <:zhonya:242831893953773569>/<:rabadon:242831892854865922> (<:hc3:242831893509308416> somewhere inbetween) (Sorcerer Boots inbetween) - "+
+			"This build focuses on maximizing the initial ER damage, when you can't afford getting to the autoattack range.", "**♥ GLORIOUS MINIGUIDE TO BUILD ♥**"];
 	else if (m=="!clubs")
 		return ["https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.",null];
 	else if (m=="!dun")
