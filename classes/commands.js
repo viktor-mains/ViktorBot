@@ -64,6 +64,11 @@ exports.Commands = function (answer) {
             typeOfResponse: `function`,
             isModCommand: false
         },
+        'impersonate': {
+            triggers: `toImpersonate`,
+            typeOfResponse: `function`,
+            isModCommand: true
+        },
         'ingame': {
             triggers: `toLiveGameRequest`,
             arguments: `:game_die:`,

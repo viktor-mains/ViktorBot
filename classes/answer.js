@@ -109,6 +109,7 @@ exports.Answer = function (data) {
     };
 
 
+
     answer.checkForModPrivileges = function (cmd) {
         if (!answer.userAllowedToUseCommand(cmd))
             return post.toDM("```You aren\'t allowed to use this command because you ain\'t cool enough.```");
@@ -142,6 +143,10 @@ exports.Answer = function (data) {
     
 
 
+    answer.toImpersonate = function () {
+        var impersonate = input.removeKeyword(data.message.content);
+        post.messageToChannel(impersonate, data.offTop);
+    };
     answer.toRace = function (fetchedRanks) {
         var race = new Race.Race(data, post);
         var rankDesiredAndCurrent = fetchedRanks.split(`+`);

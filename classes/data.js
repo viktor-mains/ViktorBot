@@ -19,6 +19,7 @@ exports.Data = function (message, bot) {
     data.logChannel = '';
     data.roleChannel = '';
     data.spamChannel = '';
+    data.offTop = '247501730336604163'; //hardcoded offtop from vikmains
 
     data.whatServer = function (serverID) {
         switch (serverID) {
@@ -27,6 +28,7 @@ exports.Data = function (message, bot) {
                     data.logChannel = '315258332749234189';
                     data.roleChannel = '268354627781656577';
                     data.spamChannel = '290601371370127361';
+                    data.offTop = '247501730336604163';
                     break;
                 }
             case '234740225782317057': //arcytesting
@@ -34,6 +36,7 @@ exports.Data = function (message, bot) {
                     data.logChannel = '310735697260707841';
                     data.roleChannel = '310735697260707841';
                     data.spamChannel = '310735697260707841';
+                    data.offTop = '310735697260707841';
                     break;
                 }
             default: return null; //zrobi? tu ?eby zwraca?o DM bota kiedy si? gada z nim przez DM
