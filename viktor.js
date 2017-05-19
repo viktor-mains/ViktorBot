@@ -13,7 +13,7 @@ const token = process.env.API_KEY;
 bot.login(token);
 bot.on('ready', () => {
     var d = new Date();
-    bot.user.setGame(`on Arcy's nerves`);
+    bot.user.setGame(`!h for help`);
     console.log(`${d} - ${bot.user.username} starts working!`);
 });
 

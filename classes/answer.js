@@ -42,11 +42,11 @@ exports.Answer = function (data) {
         `Live game data                - !ingame <ign>|<server> (example: !ingame arcyvilk|euw)\n` +
         `OP.gg  				       - !opgg <ign>|<server> (example: !opgg arcyvilk|euw)\n` +
         `Mastery points 		       - !mastery <ign>|<server> (example: !mastery arcyvilk|euw)\n` +
-        `Ranked races [*]              - !silverrace | !goldrace | !platinumrace | !diamondrace | !masterrace\n\n` +
+        `Ranked races              - !silverrace | !goldrace | !platinumrace | !diamondrace | !masterrace\n\n` +
         `Talking with Viktor bot       - dear viktor <text> ? | hello | notice me senpai | !beep\n` +
         `Can't decide between X and Y? - !choose <option1>|<option2>|<option3> ...\n` +
         `Random pet photo              - !meow | !woof\`\`\`` +
-        `**[*] Not implemented yet!**\n\n` +
+        `**Joining races is not reimplemented yet!**\n\n` +
         `Server, rank and stream roles - visit <#${data.roleChannel}> room for more info.\n` +
         `In case of any bugs occuring, contact Arcyvilk#5460.\n\n`;
 
