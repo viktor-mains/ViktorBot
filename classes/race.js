@@ -1,4 +1,4 @@
-﻿var API = require('./api.js');
+﻿var API = require('./API.js');
 var Swap = require('./swap.js');
 
 exports.Race = function (data, post) {
