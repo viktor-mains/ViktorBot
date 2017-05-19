@@ -110,6 +110,7 @@ bot.on('guildMemberAdd', GuildMember => {
 
 bot.on('guildMemberRemove', GuildMember => {
     var data = new Data.Data('', bot);
+    var d = new Date();
 
     try { data.whatServer(GuildMember.guild.id); }
     catch (err) { }//this triggers when message was sent in DM
@@ -117,7 +118,8 @@ bot.on('guildMemberRemove', GuildMember => {
     var embed = new Discord.RichEmbed()
         .setTitle(`USER LEAVES`)
         .setColor(0xFDC000)
-        .setDescription(`**User:** \`\`${GuildMember.user.username}#${GuildMember.user.discriminator}\`\``);
+        .setDescription(`**User:** \`\`${GuildMember.user.username}#${GuildMember.user.discriminator}\`\`` +
+        `\n**Leaves at:** \`\`${d}\`\``);
     bot.channels.get(data.logChannel).send({ embed });
 });
 
