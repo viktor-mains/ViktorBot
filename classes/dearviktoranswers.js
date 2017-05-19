@@ -23,7 +23,7 @@ exports.DearViktorAnswers = function () {
         "_sighs_ yes. Yes, I guess so.",
         "Well, I _kind of_  see some potential in that.",
         "Oh. So you actually _are_  able to have a good idea once in a while!",
-        "...response... Actually... Might be true. Perhaps.",
+        "...this... Actually... Might be true. Perhaps.",
         "It's actually not _that_  bad of an idea...",
         "The probability of that seems... surprisingly high.",
     //MAYBE
