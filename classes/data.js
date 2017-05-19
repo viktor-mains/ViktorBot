@@ -24,7 +24,7 @@ exports.Data = function (message, bot) {
         switch (serverID) {
             case '207732593733402624': //vikmains
                 {
-                    data.logChannel = '303638628486086657';
+                    data.logChannel = '315258332749234189';
                     data.roleChannel = '268354627781656577';
                     data.spamChannel = '290601371370127361';
                     break;
