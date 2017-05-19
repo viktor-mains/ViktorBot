@@ -1,0 +1,27 @@
+{
+  "name": "viktorbot",
+  "version": "2.0.0",
+  "description": "Custom bot for the /r/viktormains Discord channel!",
+  "main": "viktor.js",
+  "dependencies": {
+    "discord.js": "^11.1.0",
+    "es6-promise": "^4.1.0",
+    "isomorphic-fetch": "^2.2.1",
+    "request": "^2.81.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "!test"
+  },
+  "author": "Arcyvilk",
+  "license": "ISC",
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Arcyvilk/GreatHeraldRemastered.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Arcyvilk/GreatHeraldRemastered/issues"
+  },
+  "homepage": "https://github.com/Arcyvilk/GreatHeraldRemastered#readme"
+}

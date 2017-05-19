@@ -1,0 +1,1 @@
+X:\Programowanko\ViktorBot\ViktorBot\bin\Microsoft.NodejsTools.WebRole.dll
