@@ -36,8 +36,8 @@ exports.Answer = function (data) {
             `<:lichbane:315619118340505601> → <:rabadon:315619119019982848>/<:voidstaff:315619119376367635> → <:rabadon:315619119019982848>/<:voidstaff:315619119376367635>` +
             `\n\nBuild versus high AP damage threats, where MR is crucial (**LeBlanc**, **Fizz**, **Syndra**); versus **Ahri** to nullify her Charm; `+
             `versus **Kassadin** as his base damage is very low; versus **Cassiopeia** as she is unable to counter early MR with <:boot_sorcs:315619116641812481>`, false];
-        build[3] = [`Nuke build`, `<:hc1:315619117346586625> → <:morello:298575846464159754> → <:boot_sorcs:315619116641812481> → <:hc3:315619117782532098> → ` +
-            `<:liandry:298576316108767232> → <:voidstaff:315619119376367635> → <:zhonya:315619119544401920>/<:rabadon:315619119019982848>` +
+        build[3] = [`Nuke build`, `<:hc1:315619117346586625> → <:morello:315619118264877057> → <:boot_sorcs:315619116641812481> → <:hc3:315619117782532098> → ` +
+            `<:liandry:315636873647357952> → <:voidstaff:315619119376367635> → <:zhonya:315619119544401920>/<:rabadon:315619119019982848>` +
             `\n\nThis build focuses on maximizing the initial ER damage, when you can't afford getting to the autoattack range. Your DPS is lower than with default build, ` +
             `but instead you're able to evaporate a squishy with only ER. **Best with Deathfire Touch mastery.**`, false];
         
