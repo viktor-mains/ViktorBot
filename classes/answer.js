@@ -21,7 +21,7 @@ exports.Answer = function (data) {
     answer.userMessage = data.message;
 
     answer.toBuild = function (title) {
-        var build = [];/*
+        var build = [];
        
         build[0] = [`First back`, `> 1250 g: <:hc1:315619117346586625> + <:refillable:315619119007531028>\n` +
             `< 1250 g: <:doran:315619117287735306> + <:refillable:315619119007531028> / <:darkseal:315619117103316992> + <:refillable:315619119007531028>\n`, false];
