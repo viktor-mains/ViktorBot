@@ -21,17 +21,25 @@ exports.Answer = function (data) {
     answer.userMessage = data.message;
 
     answer.toBuild = function (title) {
-        var build = [];
-        build[0] = [`First back`, `> 1250 g: <:hc1:242831892427177995> + <:potion:277494945332592640>\n` +
-            `< 1250 g: <:doran:277494945261027328> + <:potion:277494945332592640> / <:darkseal:298575845977620502> + <:potion:277494945332592640>\n`, false];
-        build[1] = [`Default build`, `<:hc1:242831892427177995> → <:sheen:277494945500233728>/<:hc2:242831893051998218> → ` +
-            `<:sheen:277494945500233728>/<:hc2:242831893051998218> → <:hc3:242831893509308416> → <:lichbane:242831894134128650> → ` +
-            `<:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → <:rabadon:242831892854865922>/<:voidstaff:242831893899247616> → ` +
-            `<:zhonya:242831893953773569>/<:banshee:314477829238554635> (<:ionians:314861455860170763> inbetween)`, false];
-        build[2] = [`VS high damage AP threats`, `like Syndra, LB, Fizz, you might consider rushing <:banshee:314477829238554635> just after <:hc1:242831892427177995>`, false];
-        build[3] = [`New experimental build`, `<:hc1:242831892427177995> → <:morello:298575846464159754> → <:liandry:298576316108767232> → ` +
-            `<:voidstaff:242831893899247616> → <:zhonya:242831893953773569>/<:rabadon:242831892854865922> (<:hc3:242831893509308416> + <:sorcs:314861455889661952> inbetween) - ` +
-            `This build focuses on maximizing the initial ER damage, when you can't afford getting to the autoattack range.`, false];
+        var build = [];/*
+       
+        build[0] = [`First back`, `> 1250 g: <:hc1:315619117346586625> + <:refillable:315619119007531028>\n` +
+            `< 1250 g: <:doran:315619117287735306> + <:refillable:315619119007531028> / <:darkseal:315619117103316992> + <:refillable:315619119007531028>\n`, false];
+        build[1] = [`Default build`, `<:hc1:315619117346586625> → <:sheen:315619119133360128>/<:hc2:315619117958692864> → ` +
+            `<:sheen:315619119133360128>/<:hc2:315619117958692864> → <:hc3:315619117782532098> → <:boot_ion:315619116557795338> → <:lichbane:315619118340505601> → ` +
+            `<:rabadon:315619119019982848>/<:voidstaff:315619119376367635> → <:rabadon:315619119019982848>/<:voidstaff:315619119376367635> → ` +
+            `<:zhonya:315619119544401920>/<:banshee:315619116365119489>` +
+            `\n\nThis is default Viktor build. <:hc3:315619117782532098><:lichbane:315619118340505601> is core - rest should be adjusted depending on how the game goes ` +
+            `and how your opponents itemize. If you face a long range skillshot champion like **Xerath** or **Vel'Koz**, you can swap <:lichbane:315619118340505601>` +
+            `for <:luden:315625601627062283>`, false];
+        build[2] = [`Banshee rush build`, `<:hc1:315619117346586625> → <:banshee:315619116365119489> → <:boot_ion:315619116557795338> → <:hc3:315619117782532098> → ` +
+            `<:lichbane:315619118340505601> → <:rabadon:315619119019982848>/<:voidstaff:315619119376367635> → <:rabadon:315619119019982848>/<:voidstaff:315619119376367635>` +
+            `\n\nBuild versus high AP damage threats, where MR is crucial (**LeBlanc**, **Fizz**, **Syndra**); versus **Ahri** to nullify her Charm; `+
+            `versus **Kassadin** as his base damage is very low; versus **Cassiopeia** as she is unable to counter early MR with <:boot_sorcs:315619116641812481>`, false];
+        build[3] = [`Nuke build`, `<:hc1:315619117346586625> → <:morello:298575846464159754> → <:boot_sorcs:315619116641812481> → <:hc3:315619117782532098> → ` +
+            `<:liandry:298576316108767232> → <:voidstaff:315619119376367635> → <:zhonya:315619119544401920>/<:rabadon:315619119019982848>` +
+            `\n\nThis build focuses on maximizing the initial ER damage, when you can't afford getting to the autoattack range. Your DPS is lower than with default build, ` +
+            `but instead you're able to evaporate a squishy with only ER. **Best with Deathfire Touch mastery.**`, false];
         
         post.embed(title, build);
     }
