@@ -249,6 +249,10 @@ exports.Commands = function (answer) {
             emoteResponse: `🍿`,
             chanceOfTriggering: 2
         },
+        'smh': {
+            emoteResponse: `:vikfacepalm:305783369302802434`,
+            chanceOfTriggering: 20
+        },
         'cat': {
             emoteResponse: `🐱`,
             chanceOfTriggering: 2

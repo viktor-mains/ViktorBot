@@ -27,11 +27,12 @@ exports.Roles = function (member) {
 
     roles.addRoleToUser = function (roleName) {
         if (roles.requestedManually && !roles.allRequirementsMet('add', roleName,
-            `You can be anything you want, I'm not giving you role outside the #assign_role room.`,
-            `You already have the **[${roleName.toUpperCase()}]** role.`))
+                `You can be anything you want, I'm not giving you role outside the #assign_role room.`,
+                `You already have the **[${roleName.toUpperCase()}]** role.`))
             return;
 
         var post = new Post.Post(roles.data);
+
         member.addRole(roles.returnRoleID(roleName))
             .then(success => {
                 if (roles.requestedManually)
@@ -45,10 +46,12 @@ exports.Roles = function (member) {
         return;
     };
     roles.removeRoleFromUser = function (roleName) {
-        if (roles.requestedManually && !roles.allRequirementsMet('remove', roleName,
-            `That's great to hear, but go to <#${roles.data.roleChannel}> room if you want to have it removed.`,
-            `You don't have the **[${roleName.toUpperCase()}]** role.`))
+        if (roles.requestedManually) {
+            if (!roles.allRequirementsMet('remove', roleName,
+                `That's great to hear, but go to <#${roles.data.roleChannel}> room if you want to have it removed.`,
+                `You don't have the **[${roleName.toUpperCase()}]** role.`))
             return;
+        }
 
         var post = new Post.Post(roles.data);
         member.removeRole(roles.returnRoleID(roleName))
@@ -63,6 +66,14 @@ exports.Roles = function (member) {
             });
         return;
     };
+    roles.jokeRoleRequested = function (roleName) {
+        var jokeRoles = [`bad`, `trash`, `boosted`, `noob`, `bonobo`];
+        for (i in jokeRoles) {
+            if (jokeRoles[i] == roleName.toLowerCase())
+                return true;
+        }
+        return false;
+    };
     roles.allRequirementsMet = function (roleAction, roleName, wrongChatRoom, userHasOrHasNotRole) {
         var post = new Post.Post(roles.data);
 
@@ -70,6 +81,8 @@ exports.Roles = function (member) {
             post.message(wrongChatRoom);
             return false;
         }
+        if (roles.jokeRoleRequested(roleName) && roleAction==`add`)
+            return post.message(`Indeed. You are.`);
         if (!roles.roleExists(roleName)) {
             post.message(`Such role doesn't exist.`);
             return false;

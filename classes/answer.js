@@ -93,7 +93,10 @@ exports.Answer = function (data) {
     answer.toEmoteReactionTrigger = function () {
         var commands = new Commands.Commands(answer);
         for (property in commands.listOfEmoteReactionResponses) {
-            if (data.message.content.toLowerCase().indexOf(property) != -1 && rng.happensWithAChanceOf(commands.listOfEmoteReactionResponses[property].chanceOfTriggering))
+            var cmd = commands.listOfEmoteReactionResponses[property];
+            if (!input.allKeywordsWereFoundInString(property.toString().split('+'), data.message.content))
+                continue;
+            if (rng.happensWithAChanceOf(cmd.chanceOfTriggering))
                 return post.reactionToMessage(commands.listOfEmoteReactionResponses[property].emoteResponse);
         }
     };

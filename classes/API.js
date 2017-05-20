@@ -82,13 +82,13 @@ exports.API = function () {
         var request = require('request');
         request(url, function (error, response, body) {
             if (!error && response.statusCode == 200)
-                callback(body);
+                return callback(body);
             else {
                 try {
-                    callback("error " + response.statusCode);
+                    return callback("error " + response.statusCode);
                 }
                 catch (err) {
-                    callback("error" + err);
+                    return callback("error" + err);
                 }
             }
         });
