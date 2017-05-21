@@ -50,7 +50,7 @@ exports.Answer = function (data) {
         `Live game data                - !ingame <ign>|<server> (example: !ingame arcyvilk|euw)\n` +
         `OP.gg  				       - !opgg <ign>|<server> (example: !opgg arcyvilk|euw)\n` +
         `Mastery points 		       - !mastery <ign>|<server> (example: !mastery arcyvilk|euw)\n` +
-        `Ranked races              - !silverrace | !goldrace | !platinumrace | !diamondrace | !masterrace\n\n` +
+        `Ranked races                  - !silverrace | !goldrace | !platinumrace | !diamondrace | !masterrace\n\n` +
         `Talking with Viktor bot       - dear viktor <text> ? | hello | notice me senpai | !beep\n` +
         `Can't decide between X and Y? - !choose <option1>|<option2>|<option3> ...\n` +
         `Random pet photo              - !meow | !woof\`\`\`` +
@@ -212,6 +212,7 @@ exports.Answer = function (data) {
                             var wins = 0;
                             var losses = 0;
                             var winRatio = `---`;
+                            var summonerSpells = swap.spellIDToSpellIcon(game.participants[i].spell1Id)+swap.spellIDToSpellIcon(game.participants[i].spell2Id);
                             if (ranks[game.participants[i].summonerId] != undefined) {
                                 rank = ranks[game.participants[i].summonerId][0].tier.substring(0, 1) + swap.romanToArabic(ranks[game.participants[i].summonerId][0].entries[0].division);
 
@@ -230,8 +231,8 @@ exports.Answer = function (data) {
 
                             var nick = game.participants[i].summonerName.trim().replace(/ /g, "");
                             if (nick.toLowerCase().trim() == playerNickDecoded.toLowerCase().trim())
-                                player += `${winRatio}|\`\` __${champion} | ${nick}__`;
-                            else player += `${winRatio}|\`\` ${champion} | ${nick}`;
+                                player += `${winRatio}|\`\`${summonerSpells}__${champion} | ${nick}__`;
+                            else player += `${winRatio}|\`\`${summonerSpells}${champion} | ${nick}`;
 
                             if (game.participants[i].teamId % 200 != 0)//blue
                                 blueTeam += `${player}\n`;

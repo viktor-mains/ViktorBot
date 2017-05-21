@@ -59,6 +59,33 @@
             default: return 0;
         }
     };
+    swap.spellIDToSpellIcon = function (spellID) {
+        switch (spellID) {
+            case 1:
+                return `<:Cleanse:315829639941455872>`; 
+            case 13:
+                return `<:Clarity:315829639400652801>`;
+            case 21: 
+                return `<:Barrier:315829639589265408>`;
+            case 7:
+                return `<:Heal:315829640537047040>`;
+            case 14:
+                return `<:Ignite:315829640641904650>`;
+            case 4:
+                return `<:Flash:315829640302166016>`; 
+            case 12: 
+                return `<:Teleport:315829641057402880>`;
+            case 32:
+                return `<:Mark:315829640784510976>`;
+            case 11:
+                return `<:Smite:315829640583315457>`;
+            case 6:
+                return `<:Ghost:315829640340176896>`;
+            case 3:
+                return `<:Exhaust:315829639652179970>`;
+            default: return `❓`;
+        }
+    };
     swap.gameModeIDToName = function (gameModeID) {
         switch (gameModeID) {
             case 0:
