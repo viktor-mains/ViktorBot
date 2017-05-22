@@ -80,6 +80,11 @@ exports.Commands = function (answer) {
             typeOfResponse: `text`,
             isModCommand: false
         },
+        'lastgame': {
+            triggers: `toLastGameRequest`,
+            typeOfResponse: `function`,
+            isModCommand: false
+        },
         'h': {
             triggers: answer.toHelp,
             typeOfResponse: `text`,
@@ -246,14 +251,14 @@ exports.Commands = function (answer) {
 */
     commands.listOfEmoteReactionResponses = {
         'kys': {
-            emoteResponse: `🍿`,
+            emoteResponse: `<:salt:289489052212789250>`,
             chanceOfTriggering: 2
         },
         'smh': {
             emoteResponse: `:vikfacepalm:305783369302802434`,
             chanceOfTriggering: 20
         },
-        'cat': {
+        ' cat ': {
             emoteResponse: `🐱`,
             chanceOfTriggering: 2
         },

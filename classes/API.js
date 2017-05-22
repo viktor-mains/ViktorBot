@@ -6,6 +6,13 @@ exports.API = function () {
 
     api.RITO_KEY = process.env.RITO_KEY;
 
+
+    api.URLmatchData = function (server, matchID) {
+        return `https://${server}.api.riotgames.com/lol/match/v3/matches/${matchID}?api_key=${api.RITO_KEY}`;
+    };
+    api.URLrecentGamesData = function (server, accountID) {
+        return `https://${server}.api.riotgames.com/lol/match/v3/matchlists/by-account/${accountID}/recent?api_key=${api.RITO_KEY}`;
+    };
     api.URLsummonerID = function (server, playerIGN) {
         return `https://${server}.api.riotgames.com/lol/summoner/v3/summoners/by-name/${playerIGN}?api_key=${api.RITO_KEY}`;
     };
@@ -23,6 +30,21 @@ exports.API = function () {
     };
 
 
+    api.extractMatchData = function (server, matchID, callback) {
+        console.log(api.URLmatchData(server, matchID));
+        api.extractFromURL(api.URLmatchData(server, matchID), matchDataAPI => {
+            if (!api.everythingOkay(matchDataAPI))
+                return callback(":warning: Error retrieving match data.");
+            return callback(JSON.parse(matchDataAPI));
+        });
+    };
+    api.extractRecentGamesData = function (server, accountID, callback) {
+        api.extractFromURL(api.URLrecentGamesData(server, accountID), gamesDataAPI => {
+            if (!api.everythingOkay(gamesDataAPI))
+                return callback(":warning: Error retrieving recent games data.");
+            return callback(JSON.parse(gamesDataAPI));
+        });
+    };
     api.extractChampionData = function (server, callback) {
         api.extractFromURL(api.URLchampionData(server), championDataAPI => {
             if (!api.everythingOkay(championDataAPI))
@@ -49,6 +71,13 @@ exports.API = function () {
             if (!api.everythingOkay(playerIDAPI))
                 return callback(`:warning: Player ${decodeURIComponent(playerIGNAndServer[0]).toUpperCase()} doesn't exist.`);
             return callback((JSON.parse(playerIDAPI)).id.toString());
+        });
+    };
+    api.extractPlayerAccountID = function (server, playerIGNAndServer, callback) {
+        api.extractFromURL(api.URLsummonerID(server, playerIGNAndServer[0]), playerIDAPI => {
+            if (!api.everythingOkay(playerIDAPI))
+                return callback(`:warning: Player ${decodeURIComponent(playerIGNAndServer[0]).toUpperCase()} doesn't exist.`);
+            return callback((JSON.parse(playerIDAPI)).accountId.toString());
         });
     };
     api.extractPlayerMastery = function (server, playerID, callback) {
