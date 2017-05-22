@@ -227,12 +227,13 @@ exports.Answer = function (data) {
                             }
                             player += `\`\`|${rank}|`;
 
-                            var champion = `**${champions.data[game.participants[i].championId].name}**`;
-
                             var nick = game.participants[i].summonerName.trim().replace(/ /g, "");
+                            var championAndNick = `**${champions.data[game.participants[i].championId].name}** | ${nick}`;
+                            //if (championAndNick.length > 22)
+                            //    championAndNick = championAndNick.substring(0,22)+`...`;
                             if (nick.toLowerCase().trim() == playerNickDecoded.toLowerCase().trim())
-                                player += `${winRatio}|\`\`${summonerSpells}__${champion} | ${nick}__`;
-                            else player += `${winRatio}|\`\`${summonerSpells}${champion} | ${nick}`;
+                                player += `${winRatio}|\`\`${summonerSpells} __${championAndNick}__`;
+                            else player += `${winRatio}|\`\`${summonerSpells} ${championAndNick}`;
 
                             if (game.participants[i].teamId % 200 != 0)//blue
                                 blueTeam += `${player}\n`;

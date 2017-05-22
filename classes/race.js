@@ -22,6 +22,7 @@ exports.Race = function (data, post) {
             var swap = new Swap.Swap();
             var playerNickIDAndServer = [];
             var m = ``; //fetched info here
+            var winners = `None yet - you can be first!`;
 
             for (var i = 0; i < fetched.length; i++) {
                 if (i < fetched.length - 1) {
@@ -46,8 +47,10 @@ exports.Race = function (data, post) {
                             playerNickIDAndServer[i][4] = `${(ranksAPI[playerNickIDAndServer[i][1]][0]).tier} ${playerDivision} - ${playerLP} LP |\`\` ${playerNickIDAndServer[i][0]}`;
                             if (((ranksAPI[playerID][0]).tier).toLowerCase() == rankCurrent.toLowerCase())
                                 playerNickIDAndServer[i][3] = 100 * playerDivision - playerLP;
-                            else
+                            else {
+                                winners = `\_\_\_\n`;
                                 playerNickIDAndServer[i][3] = 999;
+                            }
                             return ApiLoop(i + 1);
                         });
                     }
@@ -56,11 +59,15 @@ exports.Race = function (data, post) {
                             for (var j = 0; j < playerNickIDAndServer.length; j++) {
                                 if (j < playerNickIDAndServer.length - 1) {
                                     for (var k = 0; k < playerNickIDAndServer.length - 1; k++) {
-                                        if (playerNickIDAndServer[k][3] > playerNickIDAndServer[k + 1][3]) {
-                                            var pom = playerNickIDAndServer[k];
-                                            playerNickIDAndServer[k] = playerNickIDAndServer[k + 1];
-                                            playerNickIDAndServer[k + 1] = pom;
+                                        if (playerNickIDAndServer[k][3] < 999) {
+                                            if (playerNickIDAndServer[k][3] > playerNickIDAndServer[k + 1][3]) {
+                                                var pom = playerNickIDAndServer[k];
+                                                playerNickIDAndServer[k] = playerNickIDAndServer[k + 1];
+                                                playerNickIDAndServer[k + 1] = pom;
+                                            }
                                         }
+                                        else
+                                            winners += `:medal: ${playerNickIDAndServer[k][0]}\n`;
                                     }
                                 }
                                 else {
@@ -69,7 +76,7 @@ exports.Race = function (data, post) {
 
                                     return post.embed(`:trophy: ${rankDesired} Race!`,
                                         [[`___`,
-                                            `${m} \n\nTo join the ${rankDesired} Race, write !${rankDesired.toLowerCase()}race add _IGN_|_server_ . Disclaimer: you have to be ${rankCurrent}.`,
+                                            `${m}`, false], [`Winners:`, `${winners}`, false], [`___`, `\n\nTo join the ${rankDesired} Race, write !${rankDesired.toLowerCase()}race add _IGN_|_server_ . Disclaimer: you have to be ${rankCurrent}.`,
                                             false]]);
                                 }
                             }
