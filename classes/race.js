@@ -48,7 +48,7 @@ exports.Race = function (data, post) {
                             if (((ranksAPI[playerID][0]).tier).toLowerCase() == rankCurrent.toLowerCase())
                                 playerNickIDAndServer[i][3] = 100 * playerDivision - playerLP;
                             else {
-                                winners = `\_\_\_\n`;
+                                winners = ``;
                                 playerNickIDAndServer[i][3] = 999;
                             }
                             return ApiLoop(i + 1);
@@ -59,20 +59,21 @@ exports.Race = function (data, post) {
                             for (var j = 0; j < playerNickIDAndServer.length; j++) {
                                 if (j < playerNickIDAndServer.length - 1) {
                                     for (var k = 0; k < playerNickIDAndServer.length - 1; k++) {
+                                        if (playerNickIDAndServer[k][3] > playerNickIDAndServer[k + 1][3]) {
+                                            var pom = playerNickIDAndServer[k];
+                                            playerNickIDAndServer[k] = playerNickIDAndServer[k + 1];
+                                            playerNickIDAndServer[k + 1] = pom;
+                                        }
+                                    }
+                                }
+                                else {
+                                    for (var k = 0; k < playerNickIDAndServer.length; k++) {
                                         if (playerNickIDAndServer[k][3] < 999) {
-                                            if (playerNickIDAndServer[k][3] > playerNickIDAndServer[k + 1][3]) {
-                                                var pom = playerNickIDAndServer[k];
-                                                playerNickIDAndServer[k] = playerNickIDAndServer[k + 1];
-                                                playerNickIDAndServer[k + 1] = pom;
-                                            }
+                                            m += `\n\`\`#${k + 1}: ${playerNickIDAndServer[k][4]}`;
                                         }
                                         else
                                             winners += `:medal: ${playerNickIDAndServer[k][0]}\n`;
                                     }
-                                }
-                                else {
-                                    for (var k = 0; k < playerNickIDAndServer.length; k++)
-                                        m += `\n\`\`#${k + 1}: ${playerNickIDAndServer[k][4]}`;
 
                                     return post.embed(`:trophy: ${rankDesired} Race!`,
                                         [[`___`,
