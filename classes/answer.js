@@ -190,22 +190,26 @@ exports.Answer = function (data) {
                     if (matchData.toString().startsWith(`:warning:`))
                         return post.message(matchData);
 
-                    var gameSummary = `${matchData.gameMode}${swap.gameModeIDToName(matchData.queueId)} [${input.convertMinutesToHoursAndMinutes(matchData.gameDuration)}] - ${answer.whichTeamWon(matchData)} team WINS`;
+                    var gameSummary = `${matchData.gameMode}${swap.gameModeIDToName(matchData.queueId)} [${input.convertMinutesToHoursAndMinutes(matchData.gameDuration)}]`;
                     var blueTeamSummary = ``;//🔵 Blue team -
                     var redTeamSummary = ``;//🔴 Red team -`;
-                    var blueTeam = ``;
-                    var redTeam = ``;
+                    var blueTeam = `\`\`.       |    KDA   |  gold |    dmg | lv |\`\`\n\`\`------------------------------------------\`\`\n`;
+                    var redTeam = `\`\`.       |    KDA   |  gold |    dmg | lv |\`\`\n\`\`------------------------------------------\`\`\n`;
 
                     blueTeamSummary += `<:turretblue:316314784532398080>${matchData.teams[0].towerKills} ` +
                         `<:inhibblue:316314783924092930> ${matchData.teams[0].inhibitorKills} ` +
                         `<:dragonblue:316314783596937218>${matchData.teams[0].dragonKills} ` +
                         `<:baronblue:316314783874023434> ${matchData.teams[0].baronKills} ` +
-                        `<:heraldblue:316314784138002442> ${matchData.teams[0].riftHeraldKills}`;
+                        `<:heraldblue:316314784138002442> ${matchData.teams[0].riftHeraldKills} `;
+                    if (answer.whichTeamWon(matchData) == `BLUE`)
+                        blueTeamSummary += `\`\`.......\`\`:trophy:`;
                     redTeamSummary += `<:turretred:316314784465420290>${matchData.teams[1].towerKills} ` +
                         `<:inhibred:316314784146653185> ${matchData.teams[1].inhibitorKills} ` +
                         `<:dragonred:316314783915835393>${matchData.teams[1].dragonKills} ` +
                         `<:baronred:316314783634685952> ${matchData.teams[1].baronKills} ` +
-                        `<:heraldred:316314784209305600> ${matchData.teams[1].riftHeraldKills}`;
+                        `<:heraldred:316314784209305600> ${matchData.teams[1].riftHeraldKills} `;
+                    if (answer.whichTeamWon(matchData) == `RED`)
+                        redTeamSummary += `\`\`.......\`\`:trophy:`;
                     api.extractChampionData(server, championData => {
                         var champions = championData;
                         for (var i = 0; i < matchData.participants.length; i++) {
@@ -225,20 +229,20 @@ exports.Answer = function (data) {
                             }
 
                             while (kda.length < 8)
-                                kda += ` `;
+                                kda = ` ${kda}`;
                             while (gold.length < 5)
-                                gold += ` `;
+                                gold = ` ${gold}`;
                             while (damage.length < 6)
-                                damage += ` `;
+                                damage = ` ${damage}`;
                             if (level.length < 2)
                                 level = ` ${level}`
                             if (player.teamId == 100) {
-                                blueTeam += `${summonerSpells} \`\`| ${kda} | \`\`:moneybag:\`\`${gold}| \`\`:crossed_swords:\`\`${damage}| ${level} | \`\` **${champions.data[player.championId].name}** ` +
-                                    `- ${playerNick} \n`;
+                                blueTeam += `${summonerSpells} \`\`| ${kda} | ${gold} | ${damage} | ${level} ` +
+                                    `| \`\` **${champions.data[player.championId].name}** - ${playerNick} \n`;
                             }
                             else {
-                                redTeam += `${summonerSpells} \`\`| ${kda} | \`\`:moneybag:\`\`${gold}| \`\`:crossed_swords:\`\`${damage}| ${level} | \`\` **${champions.data[player.championId].name}** ` +
-                                    `- ${playerNick} \n`;
+                                redTeam += `${summonerSpells} \`\`| ${kda} | ${gold} | ${damage} | ${level} ` +
+                                    `| \`\` **${champions.data[player.championId].name}** - ${playerNick} \n`;
                             }
                         };
 
@@ -255,8 +259,8 @@ exports.Answer = function (data) {
 
     answer.whichTeamWon = function (matchData) {
         if (matchData.teams[0].win == `Win`)
-            return `\`\`🔵\`\` BLUE`;
-        return `\`\`🔴\`\` RED`;
+            return `BLUE`;
+        return `RED`;
     };
 
 

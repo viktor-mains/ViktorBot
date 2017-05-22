@@ -31,7 +31,6 @@ exports.API = function () {
 
 
     api.extractMatchData = function (server, matchID, callback) {
-        console.log(api.URLmatchData(server, matchID));
         api.extractFromURL(api.URLmatchData(server, matchID), matchDataAPI => {
             if (!api.everythingOkay(matchDataAPI))
                 return callback(":warning: Error retrieving match data.");
