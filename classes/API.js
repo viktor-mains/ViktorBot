@@ -1,8 +1,10 @@
 ﻿var Swap = require('./swap.js');
+var Input = require('./input.js');
 
 exports.API = function () {
     var api = this;
     var swap = new Swap.Swap();
+    var input = new Input.Input();
 
     api.RITO_KEY = process.env.RITO_KEY;
 
@@ -104,6 +106,72 @@ exports.API = function () {
                 `\n\n ${comment}`);
         });
     };
+    api.lastGameSummary = function (matchData, server, callback) {
+        var gameSummary = `${matchData.gameMode}${swap.gameModeIDToName(matchData.queueId)} [${input.convertMinutesToHoursAndMinutes(matchData.gameDuration)}]`;
+        var blueTeam = `\`\`.       |    KDA   |  gold |    dmg | lv |\`\`\n\`\`------------------------------------------\`\`\n`;
+        var redTeam = `\`\`.       |    KDA   |  gold |    dmg | lv |\`\`\n\`\`------------------------------------------\`\`\n`;
+        api.extractChampionData(server, championData => {
+            var champions = championData;
+            for (var i = 0; i < matchData.participants.length; i++) {
+
+                var player = matchData.participants[i];
+                var kda = `${player.stats.kills}/${player.stats.deaths}/${player.stats.assists}`;
+                var level = `${player.stats.champLevel}`;
+                var gold = `${player.stats.goldEarned}`;
+                var damage = `${player.stats.totalDamageDealtToChampions}`;
+                var summonerSpells = `${swap.spellIDToSpellIcon(player.spell1Id)}${swap.spellIDToSpellIcon(player.spell2Id)}`;
+
+                var playerNick = api.returnsNickIfRankedGame(matchData);
+
+                if (player.teamId == 100) {
+                    blueTeam += `${summonerSpells} \`\`| ${input.justifyToRight(kda, 8)} | ${input.justifyToRight(gold, 5)} | ${input.justifyToRight(damage, 6)} | ${input.justifyToRight(level, 2)} ` +
+                        `| \`\` **${champions.data[player.championId].name}** ${playerNick} \n`;
+                }
+                else {
+                    redTeam += `${summonerSpells} \`\`| ${input.justifyToRight(kda, 8)} | ${input.justifyToRight(gold, 5)} | ${input.justifyToRight(damage, 6)} | ${input.justifyToRight(level, 2)} ` +
+                        `| \`\` **${champions.data[player.championId].name}** ${playerNick} \n`;
+                }
+            };
+            return callback(`${gameSummary}`,
+                [[api.blueTeamSummary(matchData), blueTeam, false],
+                [api.redTeamSummary(matchData), redTeam, false]]);
+        });
+    };
+    api.blueTeamSummary = function (matchData) {
+        var blueTeamSummary = `<:turretblue:316314784532398080>${matchData.teams[0].towerKills} ` +
+            `<:inhibblue:316314783924092930> ${matchData.teams[0].inhibitorKills} ` +
+            `<:dragonblue:316314783596937218>${matchData.teams[0].dragonKills} ` +
+            `<:baronblue:316314783874023434> ${matchData.teams[0].baronKills} ` +
+            `<:heraldblue:316314784138002442> ${matchData.teams[0].riftHeraldKills} `;
+        if (api.whichTeamWon(matchData) == `BLUE`)
+            blueTeamSummary += `\`\`.......\`\`:trophy:`;
+        return blueTeamSummary;
+    };
+    api.redTeamSummary = function (matchData) {
+        var redTeamSummary = `<:turretred:316314784465420290>${matchData.teams[1].towerKills} ` +
+            `<:inhibred:316314784146653185> ${matchData.teams[1].inhibitorKills} ` +
+            `<:dragonred:316314783915835393>${matchData.teams[1].dragonKills} ` +
+            `<:baronred:316314783634685952> ${matchData.teams[1].baronKills} ` +
+            `<:heraldred:316314784209305600> ${matchData.teams[1].riftHeraldKills} `;
+        if (api.whichTeamWon(matchData) == `RED`)
+            redTeamSummary += `\`\`.......\`\`:trophy:`;
+        return redTeamSummary;
+    };
+    api.returnsNickIfRankedGame = function (matchData) {
+        var playerNick = ``;
+        try {
+            return playerNick = `- ${matchData.participantIdentities[i].player.summonerName}`;
+        }
+        catch (err) {
+            return playerNick = ``;
+        }
+    };
+    api.whichTeamWon = function (matchData) {
+        if (matchData.teams[0].win == `Win`)
+            return `BLUE`;
+        return `RED`;
+    };
+
 
 
     api.extractFromURL = function (url, callback) {

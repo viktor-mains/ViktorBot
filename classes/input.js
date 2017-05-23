@@ -70,6 +70,18 @@
     };
 
 
+    input.justifyToRight = function (_input, desiredLength) {
+        var output = _input;
+        while (output.length < desiredLength)
+            output = ` ${output}`;
+        return output;
+    };
+    input.justifyToLeft = function (_input, desiredLength) {
+        var output = _input;
+        while (output.length < desiredLength)
+            output += ` `;
+        return output;
+    };
     input.round= function (number, digits) {
         var multiple = Math.pow(10, digits);
         var output = Math.round(number * multiple) / multiple;
