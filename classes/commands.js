@@ -168,6 +168,11 @@ exports.Commands = function (answer) {
             typeOfResponse: `function`,
             isModCommand: true
         },
+        'stats': {
+            triggers: `toStatsRequest`,
+            typeOfResponse: `function`,
+            isModCommand: true
+        },
         'test': {
             triggers: answer.toTest,
             typeOfResponse: `text`,

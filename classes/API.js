@@ -9,6 +9,9 @@ exports.API = function () {
     api.RITO_KEY = process.env.RITO_KEY;
 
 
+    api.URLstatsData = function (server, playerID) {
+        return `https://${server}.api.riotgames.com/api/lol/${server}/v1.3/stats/by-summoner/${playerID}/ranked?season=SEASON2017&api_key=${api.RITO_KEY}`;
+    };
     api.URLmatchData = function (server, matchID) {
         return `https://${server}.api.riotgames.com/lol/match/v3/matches/${matchID}?api_key=${api.RITO_KEY}`;
     };
@@ -32,6 +35,13 @@ exports.API = function () {
     };
 
 
+    api.extractStatsData = function (server, playerID, callback) {
+        api.extractFromURL(api.URLstatsData(server, playerID), statsAPI => {
+            if (!api.everythingOkay(statsAPI))
+                return callback(":warning: Error retrieving player statistics data.");
+            return callback(JSON.parse(statsAPI));
+        });
+    };
     api.extractMatchData = function (server, matchID, callback) {
         api.extractFromURL(api.URLmatchData(server, matchID), matchDataAPI => {
             if (!api.everythingOkay(matchDataAPI))
@@ -121,7 +131,7 @@ exports.API = function () {
                 var damage = `${player.stats.totalDamageDealtToChampions}`;
                 var summonerSpells = `${swap.spellIDToSpellIcon(player.spell1Id)}${swap.spellIDToSpellIcon(player.spell2Id)}`;
 
-                var playerNick = api.returnsNickIfRankedGame(matchData);
+                var playerNick = api.returnsNickIfRankedGame(matchData,i);
 
                 if (player.teamId == 100) {
                     blueTeam += `${summonerSpells} \`\`| ${input.justifyToRight(kda, 8)} | ${input.justifyToRight(gold, 5)} | ${input.justifyToRight(damage, 6)} | ${input.justifyToRight(level, 2)} ` +
@@ -157,13 +167,12 @@ exports.API = function () {
             redTeamSummary += `\`\`.......\`\`:trophy:`;
         return redTeamSummary;
     };
-    api.returnsNickIfRankedGame = function (matchData) {
-        var playerNick = ``;
+    api.returnsNickIfRankedGame = function (matchData,i) {
         try {
-            return playerNick = `- ${matchData.participantIdentities[i].player.summonerName}`;
+            return `- ${matchData.participantIdentities[i].player.summonerName}`;
         }
         catch (err) {
-            return playerNick = ``;
+            return ``;
         }
     };
     api.whichTeamWon = function (matchData) {
