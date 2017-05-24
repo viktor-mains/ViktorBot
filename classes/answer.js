@@ -185,31 +185,36 @@ exports.Answer = function (data) {
             api.extractStatsData(playerIGNAndServer[1], playerID, statsAPI => {
                 if (statsAPI.toString().startsWith(`:warning:`))
                     return post.message(statsAPI);
-                
-                for (var i = 0; i <= statsAPI.champions.length - 2; i++) {
-                    for (var j = 0; j <= statsAPI.champions.length - 3; j++) {
-                        if (statsAPI.champions[j].stats.totalSessionsPlayed < statsAPI.champions[j + 1].stats.totalSessionsPlayed) {
-                            var pom = statsAPI.champions[j];
-                            statsAPI.champions[j] = statsAPI.champions[j + 1];
-                            statsAPI.champions[j + 1] = pom;
-                        }
-                    }
-                    if (i == statsAPI.champions.length - 2) {
-                        api.extractChampionData(server, championDataAPI => {
-                            var summary = ``;
-                            if (championDataAPI.toString().startsWith(`:warning:`))
-                                return post.message(championDataAPI);
-                            for (var k = 0; k < 5; k++) {
-                                var totalPlayed = `${statsAPI.champions[k].stats.totalSessionsPlayed}`;
-                                var totalWon = `${statsAPI.champions[k].stats.totalSessionsWon}`;
-                                var winRatio = (input.round(totalWon / totalPlayed * 100, 2)).toString()
-                                summary += `\`\`#${k + 1}: ${input.justifyToRight(totalPlayed, 5)} | ${input.justifyToRight(winRatio, 5)}% - \`\`` +
-                                    `**${championDataAPI.data[statsAPI.champions[k].id].name}**\n`;
+
+                try {
+                    for (var i = 0; i <= statsAPI.champions.length - 2; i++) {
+                        for (var j = 0; j <= statsAPI.champions.length - 3; j++) {
+                            if (statsAPI.champions[j].stats.totalSessionsPlayed < statsAPI.champions[j + 1].stats.totalSessionsPlayed) {
+                                var pom = statsAPI.champions[j];
+                                statsAPI.champions[j] = statsAPI.champions[j + 1];
+                                statsAPI.champions[j + 1] = pom;
                             }
-                            post.embed(`Statistcs of ${playerNickDecoded}`, [[`___`, summary, false]]);
-                        });
-                    }
-                };
+                        }
+                        if (i == statsAPI.champions.length - 2) {
+                            api.extractChampionData(server, championDataAPI => {
+                                var summary = ``;
+                                if (championDataAPI.toString().startsWith(`:warning:`))
+                                    return post.message(championDataAPI);
+                                for (var k = 0; k < 5; k++) {
+                                    var totalPlayed = `${statsAPI.champions[k].stats.totalSessionsPlayed}`;
+                                    var totalWon = `${statsAPI.champions[k].stats.totalSessionsWon}`;
+                                    var winRatio = (input.round(totalWon / totalPlayed * 100, 2)).toString()
+                                    summary += `\`\`#${k + 1}: ${input.justifyToRight(totalPlayed, 5)} | ${input.justifyToRight(winRatio, 5)}% - \`\`` +
+                                        `**${championDataAPI.data[statsAPI.champions[k].id].name}**\n`;
+                                }
+                                post.embed(`Statistcs of ${playerNickDecoded}`, [[`___`, summary, false]]);
+                            });
+                        }
+                    };
+                }
+                catch (err) {
+                    post.message(`Oops. ${err}`);
+                }
             });
         });
     };
