@@ -14,7 +14,7 @@ exports.Data = function (message, bot) {
     data.message = message;
     data.bot = bot;
     
-    data.version = 'The Great Herald beta 2.05: Updated !build';
+    data.version = 'The Great Herald beta 2.07: !lastgame command';
 
     data.logChannel = '';
     data.roleChannel = '';

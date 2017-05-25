@@ -36,8 +36,8 @@ exports.Roles = function (member) {
         member.addRole(roles.returnRoleID(roleName))
             .then(success => {
                 if (roles.requestedManually)
-                    post.message(`**[${roleName.toUpperCase()}]** succesfully added to ${member.user.username}.`);
-                console.log(`**[${roleName.toUpperCase()}]** succesfully added to ${member.user.username}.`);
+                    post.message(`**Role [${roleName.toUpperCase()}]** assigned to ${member.user.username} with utmost efficiency.`);
+                console.log(`**Role [${roleName.toUpperCase()}]** assigned to to ${member.user.username}  with utmost efficiency.`);
             }).catch(error => {
                 if (roles.requestedManually)
                     post.message(`Failed to assign the **[${roleName.toUpperCase()}]** role.`);

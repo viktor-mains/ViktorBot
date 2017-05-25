@@ -186,7 +186,7 @@ exports.Answer = function (data) {
                 if (statsAPI.toString().startsWith(`:warning:`))
                     return post.message(statsAPI);
 
-                try {
+                try {//TODO case for unkraned people; case for people with less than 5 champs
                     for (var i = 0; i <= statsAPI.champions.length - 2; i++) {
                         for (var j = 0; j <= statsAPI.champions.length - 3; j++) {
                             if (statsAPI.champions[j].stats.totalSessionsPlayed < statsAPI.champions[j + 1].stats.totalSessionsPlayed) {
