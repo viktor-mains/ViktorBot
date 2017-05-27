@@ -8,11 +8,11 @@ exports.Roles = function (member) {
     roles.getData = function (fetchedData) { roles.data = fetchedData; };
     
     roles.roleExists = function (roleName) {
-        return member.guild.roles.exists(role => role.name.toLowerCase()===roleName.toLowerCase());
+        return member.guild.roles.exists(role => role.name.toLowerCase() === roleName.toLowerCase());
     };
     roles.returnRoleID = function (roleName) {
-        var role = member.guild.roles.find(role => role.name.toLowerCase() === roleName.toLowerCase());
-        return role.id;
+        var role = member.guild.roles.find(role => role.name.toLowerCase() === roleName.toLowerCase()).id;
+        return role;
     };
     roles.userHasRole = function (roleName) {
         if (member.roles.has(roles.returnRoleID(roleName)))
@@ -36,8 +36,8 @@ exports.Roles = function (member) {
         member.addRole(roles.returnRoleID(roleName))
             .then(success => {
                 if (roles.requestedManually)
-                    post.message(`**Role [${roleName.toUpperCase()}]** assigned to ${member.user.username} with utmost efficiency.`);
-                console.log(`**Role [${roleName.toUpperCase()}]** assigned to to ${member.user.username}  with utmost efficiency.`);
+                    post.message(`Role **[${roleName.toUpperCase()}]** assigned to ${member.user.username} with utmost efficiency.`);
+                console.log(`Role **[${roleName.toUpperCase()}]** assigned to to ${member.user.username}  with utmost efficiency.`);
             }).catch(error => {
                 if (roles.requestedManually)
                     post.message(`Failed to assign the **[${roleName.toUpperCase()}]** role.`);

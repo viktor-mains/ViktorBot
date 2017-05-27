@@ -40,7 +40,7 @@ bot.on('message', message => {
         }
     }
     catch (err) {
-        console.log('\n\n!!! SOME BIGGER BUG !!!\n\n' + err);
+        console.log(`\n\n!!! ${err} !!!\n\n`);
     }
 });
 
@@ -100,6 +100,9 @@ bot.on('guildMemberAdd', GuildMember => {
     try { data.whatServer(GuildMember.guild.id); }
     catch (err) { }//this triggers when message was sent in DM
 
+    if (data.server == `vikmains`)
+        GuildMember.user.send(data.welcomeMessageForViktorMains);
+
     var embed = new Discord.RichEmbed()
         .setTitle(`USER JOINS`)
         .setColor(0x51E61C)
@@ -123,7 +126,7 @@ bot.on('guildMemberRemove', GuildMember => {
     bot.channels.get(data.logChannel).send({ embed });
 });
 
-bot.on('presenceUpdate', (oldMember, newMember) => {
+bot.on('presenceUpdate', (oldMember, newMember) => {    
     var roles = new Roles.Roles(newMember);
     var stream = new Stream.Stream(newMember);
     var game = newMember.presence.game;
@@ -131,10 +134,16 @@ bot.on('presenceUpdate', (oldMember, newMember) => {
     try {
         if (game && game.url) //add another requirement being the "Viktor Streamer" being assigned to them
             stream.addStreamingRoleIfTheyDontHaveItYet();
+    }
+    catch (err) {
+        console.log(`${err} while adding stream role to ${newMember.user.username}`);
+    }
+
+    try{
         if (!game || (game && !game.url))
             stream.removeStreamingRoleIfTheyStoppedStreaming();
     }
     catch (err) {
-        console.log(`${err} while managing streaming role for user ${newMember.user.username}`);
+        console.log(`${err} while removing streaming role from ${newMember.user.username}`);
     }
 });
