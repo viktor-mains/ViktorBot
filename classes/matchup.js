@@ -29,6 +29,9 @@
         "katarina": "https://www.reddit.com/r/viktormains/comments/5uzaqu/weekly_matchup_discussion_25_viktor_vs_katarina_2/ - patch 7.3",
         "kata": "https://www.reddit.com/r/viktormains/comments/5uzaqu/weekly_matchup_discussion_25_viktor_vs_katarina_2/ - patch 7.3",
 
+        "kassadin": "https://www.reddit.com/r/viktormains/comments/6e9m4x/weekly_matchup_discussion_35_viktor_vs_kassadin/ - path 7.10",
+        "kassa": "https://www.reddit.com/r/viktormains/comments/6e9m4x/weekly_matchup_discussion_35_viktor_vs_kassadin/ - path 7.10",
+
         "leblanc": "https://www.reddit.com/r/viktormains/comments/5o0qs8/weekly_matchup_discussion_21_viktor_vs_leblanc/ - patch 7.1",
         "lb": "https://www.reddit.com/r/viktormains/comments/5o0qs8/weekly_matchup_discussion_21_viktor_vs_leblanc/ - patch 7.1",
 
