@@ -77,7 +77,7 @@ exports.Race = function (data, post) {
 
                                     return post.embed(`:trophy: ${rankDesired} Race!`,
                                         [[`___`,
-                                            `${m}`, false], [`Winners:`, `${winners}`, false], [`___`, `\n\nTo join the ${rankDesired} Race, write !${rankDesired.toLowerCase()}race add _IGN_|_server_ . Disclaimer: you have to be ${rankCurrent}.`,
+                                            `${m}`, false], [`Winners:`, `${winners}`, false], [`___`, `\n\nTo join the ${rankDesired} Race, write **!${rankDesired.toLowerCase()}race add <IGN>|<server>** . Disclaimer: you have to be ${rankCurrent}.`,
                                             false]]);
                                 }
                             }
