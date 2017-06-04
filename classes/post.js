@@ -40,6 +40,20 @@ exports.Post = function (data) {
             }
         }
     };
+    post.embedToDM = function (title, embedTitleBodyAndArgs, channelToPost) {
+        var embed = new Discord.RichEmbed()
+            .setTitle(title)
+            .setColor(0xFDC000);
+        for (var i = 0; i < embedTitleBodyAndArgs.length; i++) {
+            embed.addField(embedTitleBodyAndArgs[i][0],
+                embedTitleBodyAndArgs[i][1],
+                embedTitleBodyAndArgs[i][2]);
+            if (i === embedTitleBodyAndArgs.length - 1) {
+                data.message.author.send({ embed });
+                break;
+            }
+        }
+    };
     post.reactionToMessage = function (reactionEmoji) {
         data.message.react(reactionEmoji);
     };

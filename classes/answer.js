@@ -44,7 +44,7 @@ exports.Answer = function (data) {
             `\n\nBuild versus high AP damage threats, where MR is crucial (**LeBlanc**, **Fizz**, **Syndra**); versus **Ahri** to nullify her Charm; ` +
             `versus **Kassadin** as his base damage is very low; versus **Cassiopeia** as she is unable to counter early MR with <:boot_sorcs:315619116641812481>`, false];*/
         
-        post.embed(title, build);
+        post.embedToDM(title, build, data.message.author);
     }
     answer.toHelp = `\n**${data.version} **\n\nCommand list:\n` +
         `\`\`\`Viktor gameplay questions     - !build | !matchup <champion_name> | !faq\n` +
