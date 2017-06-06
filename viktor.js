@@ -100,8 +100,17 @@ bot.on('guildMemberAdd', GuildMember => {
     try { data.whatServer(GuildMember.guild.id); }
     catch (err) { }//this triggers when message was sent in DM
 
-    if (data.server == `vikmains`)
+    if (data.server == `vikmains`) {
+        for (i in listOfDravenUsernamesAndDiscriminators)
+        {
+            if (GuildMember.user.username == listOfDravenUsernamesAndDiscriminators[i][0] && GuildMember.user.discriminator == listOfDravenUsernamesAndDiscriminators[i][0]) {
+                var roles = new Roles.Roles(GuildMember);
+                roles.addRoleToUser(`timeout`);
+                GuildMember.user.send(`Lol. Nope. <:lazored:288786608952442881>`);
+            }
+        }
         GuildMember.user.send(data.welcomeMessageForViktorMains);
+    }
 
     var embed = new Discord.RichEmbed()
         .setTitle(`USER JOINS`)
@@ -132,7 +141,7 @@ bot.on('presenceUpdate', (oldMember, newMember) => {
     var game = newMember.presence.game;
 
     try {
-        if (game && game.url) //add another requirement being the "Viktor Streamer" being assigned to them
+        if (stream.ifUserStreams(game)) //add another requirement being the "Viktor Streamer" being assigned to them
             stream.addStreamingRoleIfTheyDontHaveItYet();
     }
     catch (err) {
@@ -147,3 +156,32 @@ bot.on('presenceUpdate', (oldMember, newMember) => {
         console.log(`${err} while removing streaming role from ${newMember.user.username}`);
     }
 });
+
+var listOfDravenUsernamesAndDiscriminators = [[`Poro`,`0069`], 
+[`Son`,`9765`],
+[`Fading`,`1461`],
+[`Kappacino`,`1440`],
+[`DidYouEatCrab`,`4893`],
+[`hothole`,`6007`],
+[`Dark Phoenix`,`4156`],
+[`dandeedandee`,`5917`],
+[`Snivel`,`4800`],
+[`Kronus`,`6870`],
+[`Shindae`,`3005`],
+[`Jesias`,`6016`],
+[`�nly Rengar`,`7841`],
+[`Blue`,`2926`],
+[`Froze`,`0864`],
+[`Onee-chan~`,`6102`],
+[`cancer op`, `6587`],
+[`SlippB`,`1382`],
+[`Jesias`,`6016`],
+[`macc`,`0552`],
+[`Saware`,`4087`], 
+[`infamous steady`,`9391`],
+[`206089`,`2511`],
+[`Turbovirginschwarzkopf`,`1400`],
+[`? ??????????????`,`7001`],
+[`Zenod`, `0071`],
+[`TisClobberinTime`, `7076`],
+[`Feuer`,`6277`]];

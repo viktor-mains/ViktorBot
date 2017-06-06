@@ -4,6 +4,12 @@ exports.Stream = function (member) {
     var stream = this;
     var roles = new Roles.Roles(member);
 
+    stream.ifUserStreams = function (game) {
+        if (game && game.url)
+            return true;
+        return false;
+    };
+
     stream.addStreamingRoleIfTheyDontHaveItYet = function () {
         var roleName = 'Live Stream';
         if (!roles.userHasRole(roleName)) {
