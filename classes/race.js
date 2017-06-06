@@ -69,7 +69,10 @@ exports.Race = function (data, post) {
                                 else {
                                     for (var k = 0; k < playerNickIDAndServer.length; k++) {
                                         if (playerNickIDAndServer[k][3] < 999) {
-                                            m += `\n\`\`#${k + 1}: ${playerNickIDAndServer[k][4]}`;
+                                            if (k+1 < 10)
+                                                m += `\n\`\`#${k + 1}:  ${playerNickIDAndServer[k][4]}`;
+                                            else
+                                                m += `\n\`\`#${k + 1}: ${playerNickIDAndServer[k][4]}`;
                                         }
                                         else
                                             winners += `:medal: ${playerNickIDAndServer[k][0]}\n`;
