@@ -4,13 +4,11 @@ var Roles = require('./roles.js');
 exports.Ban = function (data) {
     var ban = this;
 
-    ban.newUserIsBlacklisted = function (GuildMember) {
+    ban.newUserIsBlacklisted = function (user) {
         for (i in ban.blacklist) {
-            if (GuildMember.user.username.toLowerCase() == ban.blacklist[i][0].toLowerCase()
-                && GuildMember.user.discriminator == ban.blacklist[i][1]) {
-                console.log(`there he is`);
+            if (user.username.toLowerCase() == ban.blacklist[i][0].toLowerCase()
+                && user.discriminator == ban.blacklist[i][1]) 
                 return true;
-            }
         }
         return false;
     };
