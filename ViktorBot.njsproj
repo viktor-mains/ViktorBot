@@ -145,6 +145,9 @@
     <Compile Include="classes\API.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="classes\ban.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="classes\commands.js" />
     <Compile Include="classes\data.js" />
     <Compile Include="classes\dearviktoranswers.js" />

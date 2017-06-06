@@ -19,10 +19,8 @@ exports.Stream = function (member) {
 
         if (!roles.roleExists(VikStreamer))
             return false;
-        if (!roles.userHasRole(VikStreamer)) {
-            console.log('this is not vikstremaer');
+        if (!roles.userHasRole(VikStreamer)) 
             return false;
-        }
         return true;
     };
     stream.addStreamingRoleIfTheyDontHaveItYet = function () {
