@@ -25,7 +25,7 @@ bot.on('message', message => {
     try { data.whatServer(message.channel.guild.id); }
     catch (err) {
         var ban = new Ban.Ban(data);
-        if (ban.newUserIsBlacklisted(message.author)) {
+        if (ban.newUserIsNameBlacklisted(message.author) || (ban.newUserIsIDBlacklisted(message.author))) {
             console.log(`${message.author.username}#${message.author.discriminator}: ${message.content}`);
             return;
         }
@@ -111,7 +111,7 @@ bot.on('guildMemberAdd', GuildMember => {
 
     if (data.server == `vikmains`) {
         var ban = new Ban.Ban(data);
-        if (ban.newUserIsBlacklisted(GuildMember.user))
+        if (ban.newUserIsNameBlacklisted(GuildMember.user) || (ban.newUserIsIDBlacklisted(GuildMember.user)))
             ban.handleUserFromBlacklist(GuildMember);
         else GuildMember.user.send(data.welcomeMessageForViktorMains);
     }
