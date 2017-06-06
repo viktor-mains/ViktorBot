@@ -112,8 +112,8 @@ bot.on('guildMemberAdd', GuildMember => {
     if (data.server == `vikmains`) {
         var ban = new Ban.Ban(data);
         if (ban.newUserIsNameBlacklisted(GuildMember.user) || (ban.newUserIsIDBlacklisted(GuildMember.user)))
-            ban.handleUserFromBlacklist(GuildMember);
-        else GuildMember.user.send(data.welcomeMessageForViktorMains);
+            return ban.handleUserFromBlacklist(GuildMember);
+        GuildMember.user.send(data.welcomeMessageForViktorMains);
     }
 
     var embed = new Discord.RichEmbed()
@@ -144,19 +144,15 @@ bot.on('presenceUpdate', (oldMember, newMember) => {
     var stream = new Stream.Stream(newMember);
     var game = newMember.presence.game;
 
-    try {
-        if (stream.ifUserStreams(game)) //add another requirement being the "Viktor Streamer" being assigned to them
-            stream.addStreamingRoleIfTheyDontHaveItYet();
-    }
-    catch (err) {
-        console.log(`${err} while adding stream role to ${newMember.user.username}`);
-    }
-
-    try{
-        if (!game || (game && !game.url))
-            stream.removeStreamingRoleIfTheyStoppedStreaming();
-    }
-    catch (err) {
-        console.log(`${err} while removing streaming role from ${newMember.user.username}`);
+    if (data.server == `vikmains`) {
+        try {
+            if (stream.userStreams(game) && stream.isViktorStreamer()) //add another requirement being the "Viktor Streamer" being assigned to them
+                stream.addStreamingRoleIfTheyDontHaveItYet();
+            if (stream.userDoesntStream(game))
+                stream.removeStreamingRoleIfTheyStoppedStreaming();
+        }
+        catch (err) {
+            console.log(`${err} while removing streaming role from ${newMember.user.username}`);
+        }
     }
 });
