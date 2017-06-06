@@ -67,4 +67,9 @@ exports.Data = function (message, bot) {
             return true;
         return false;
     };
+    data.userIsArcy = function () {
+        if (message.author.id !== `165962236009906176`)
+            return false;
+        return true;
+    };
 };

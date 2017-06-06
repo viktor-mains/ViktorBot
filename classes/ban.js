@@ -79,8 +79,7 @@ exports.Ban = function (data) {
         `321545875442892801`,
         `321556650546823170`,
         `321592883985514496`,
-        `321594021359124480`,
-        `263065580888653836`]; //last is testing account
+        `321594021359124480`];
     ban.blacklistNames = [
         [`Poro`, `0069`],
         [`Son`, `9765`],
@@ -108,6 +107,5 @@ exports.Ban = function (data) {
         [`Turbovirginschwarzkopf`, `1400`],
         [`➣ 𝕲𝖆𝖇𝖗𝖎𝔢𝖑`, `7001`],
         [`Zenod`, `0071`],
-        [`TisClobberinTime`, `7076`],
-        [`Based Vassilij`,`0627`]];
+        [`TisClobberinTime`, `7076`]];
 };

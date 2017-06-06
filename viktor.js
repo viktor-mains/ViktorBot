@@ -29,6 +29,10 @@ bot.on('message', message => {
             console.log(`${message.author.username}#${message.author.discriminator}: ${message.content}`);
             return;
         }
+        if (!data.userIsArcy() && data.userIsNotThisBot()) {
+            message.reply(`Only my glorious creator is allowed to talk to me in private.`);
+            return;
+        }
     }//this triggers when message was sent in DM
 
     try {
@@ -139,10 +143,14 @@ bot.on('guildMemberRemove', GuildMember => {
     bot.channels.get(data.logChannel).send({ embed });
 });
 
-bot.on('presenceUpdate', (oldMember, newMember) => {    
+bot.on('presenceUpdate', (oldMember, newMember) => {   
+    var data = new Data.Data('', bot);
     var roles = new Roles.Roles(newMember);
     var stream = new Stream.Stream(newMember);
     var game = newMember.presence.game;
+
+    try { data.whatServer(newMember.guild.id); }
+    catch (err) { }//this triggers when message was sent in DM
 
     if (data.server == `vikmains`) {
         try {
