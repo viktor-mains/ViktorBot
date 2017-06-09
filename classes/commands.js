@@ -109,6 +109,11 @@ exports.Commands = function (answer) {
             isModCommand: false,
             refusal: `I don't think you want to show _that_  to everyone.`
         },
+        'pbe': {
+            triggers: `toPBE`,
+            typeOfResponse: `function`,
+            isModCommand: false
+        },
         'mastery': {
             triggers: `toViktorMastery`,
             arguments: `<:viktorgod:269479031009837056> Viktor mastery points for`,

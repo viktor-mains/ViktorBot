@@ -49,7 +49,8 @@ exports.Answer = function (data) {
     answer.toHelp = `\n**${data.version} **\n\nCommand list:\n` +
         `\`\`\`Viktor gameplay questions     - !build | !matchup <champion_name> | !faq\n` +
         `Clubs                         - !clubs\n` +
-        `Streams                       - !dun\n\n` +
+        `Streams                       - !dun\n` +
+        `PBE                           - !pbe new | !pbe full\n\n`+
         `Live game data                - !ingame <ign>|<server> (example: !ingame arcyvilk|euw)\n` +
         `Last game summary             - !lastgame <ign>|<server> (example: !lastgame arcyvilk|euw)\n` +
         `OP.gg  				       - !opgg <ign>|<server> (example: !opgg arcyvilk|euw)\n` +
@@ -169,7 +170,42 @@ exports.Answer = function (data) {
         if (input.removeKeyword(data.message.content).startsWith(`add`))
             return race.join(rankDesiredAndCurrent);
         return race.leaderboards(rankDesiredAndCurrent[0], rankDesiredAndCurrent[1]);
-    }
+    };
+    answer.toPBE = function () {
+        var api = new API.API();
+
+        if (input.removeKeyword(data.message.content).startsWith(`full`))
+            return post.embed(`Full PBE coverage`, [[`___`, `http://www.surrenderat20.net/p/current-pbe-balance-changes.html`, false]]);
+        if (input.removeKeyword(data.message.content).startsWith(`new`)) {
+            api.extractFromURL(`http://www.surrenderat20.net/search/label/PBE/`, surrAt20API => {
+                if (!api.everythingOkay(surrAt20API))
+                    return post.message(`Unable to fetch the newest PBE patch notes.`);
+                var findThis = `<h1 class='news-title' itemprop='name'>`;
+                surrAt20API = surrAt20API.toString();
+                try {
+                    surrAt20API = surrAt20API.substring(surrAt20API.indexOf(findThis) + findThis.length);
+                    surrAt20API = surrAt20API.substring(surrAt20API.indexOf(`<a href='`) + 9, surrAt20API.indexOf(`'>`));
+
+                    api.extractFromURL(surrAt20API, currentPatchHTML => {
+                        if (!api.everythingOkay(currentPatchHTML))
+                            return post.message(`Unable to fetch the newest PBE patch notes.`);
+                        var newestPBEPatchVersion = currentPatchHTML.toString();
+                        try {
+                            newestPBEPatchVersion = newestPBEPatchVersion.substring(newestPBEPatchVersion.indexOf(`reddit_title = "`) + 16);
+                            newestPBEPatchVersion = newestPBEPatchVersion.substring(0, newestPBEPatchVersion.indexOf(`";`));
+                            return post.embed(newestPBEPatchVersion, [[`___`, surrAt20API, false]]);
+                        }
+                        catch (err) {
+                            return post.message(`Unable to fetch the newest PBE patch notes. ${err}`);
+                        };
+                    });
+                }
+                catch (err) {
+                    return post.message(`Unable to fetch the newest PBE patch notes. ${err}`);
+                };
+            });
+        }
+    };
     answer.toStatsRequest = function () {
         post.message(`:hourglass_flowing_sand: Getting the Player Stats data. This might take a while...`);
 
@@ -369,7 +405,7 @@ exports.Answer = function (data) {
     };
     answer.toCatPicture = function () {
         var api = new API.API();
-        api.extractFromURL('http://random.cat/meow', function (extractedStuff) {
+        api.extractFromURL('http://random.cat/meow', extractedStuff => {
             if (!api.everythingOkay(extractedStuff))
                 return post.message('Unable to get a cat.');
             var cat = JSON.parse(extractedStuff).file;
@@ -378,7 +414,7 @@ exports.Answer = function (data) {
     };
     answer.toDogPicture = function () {
         var api = new API.API();
-        api.extractFromURL('http://random.dog/woof', function (extractedStuff) {
+        api.extractFromURL('http://random.dog/woof', extractedStuff => {
             if (!api.everythingOkay(extractedStuff))
                 return post.message('Unable to get a dog.');
             post.message(`http://random.dog/${extractedStuff} 🐶 :3`);
