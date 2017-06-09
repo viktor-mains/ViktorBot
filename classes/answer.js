@@ -174,37 +174,33 @@ exports.Answer = function (data) {
     answer.toPBE = function () {
         var api = new API.API();
 
-        if (input.removeKeyword(data.message.content).startsWith(`full`))
-            return post.embed(`Full PBE coverage`, [[`___`, `http://www.surrenderat20.net/p/current-pbe-balance-changes.html`, false]]);
-        if (input.removeKeyword(data.message.content).startsWith(`new`)) {
-            api.extractFromURL(`http://www.surrenderat20.net/search/label/PBE/`, surrAt20API => {
-                if (!api.everythingOkay(surrAt20API))
-                    return post.message(`Unable to fetch the newest PBE patch notes.`);
-                var findThis = `<h1 class='news-title' itemprop='name'>`;
-                surrAt20API = surrAt20API.toString();
-                try {
-                    surrAt20API = surrAt20API.substring(surrAt20API.indexOf(findThis) + findThis.length);
-                    surrAt20API = surrAt20API.substring(surrAt20API.indexOf(`<a href='`) + 9, surrAt20API.indexOf(`'>`));
+        api.extractFromURL(`http://www.surrenderat20.net/search/label/PBE/`, surrAt20API => {
+            if (!api.everythingOkay(surrAt20API))
+                return post.message(`Unable to fetch the newest PBE patch notes.`);
+            var findThis = `<h1 class='news-title' itemprop='name'>`;
+            surrAt20API = surrAt20API.toString();
+            try {
+                surrAt20API = surrAt20API.substring(surrAt20API.indexOf(findThis) + findThis.length);
+                surrAt20API = surrAt20API.substring(surrAt20API.indexOf(`<a href='`) + 9, surrAt20API.indexOf(`'>`));
 
-                    api.extractFromURL(surrAt20API, currentPatchHTML => {
-                        if (!api.everythingOkay(currentPatchHTML))
-                            return post.message(`Unable to fetch the newest PBE patch notes.`);
-                        var newestPBEPatchVersion = currentPatchHTML.toString();
-                        try {
-                            newestPBEPatchVersion = newestPBEPatchVersion.substring(newestPBEPatchVersion.indexOf(`reddit_title = "`) + 16);
-                            newestPBEPatchVersion = newestPBEPatchVersion.substring(0, newestPBEPatchVersion.indexOf(`";`));
-                            return post.embed(newestPBEPatchVersion, [[`___`, surrAt20API, false]]);
-                        }
-                        catch (err) {
-                            return post.message(`Unable to fetch the newest PBE patch notes. ${err}`);
-                        };
-                    });
-                }
-                catch (err) {
-                    return post.message(`Unable to fetch the newest PBE patch notes. ${err}`);
-                };
-            });
-        }
+                api.extractFromURL(surrAt20API, currentPatchHTML => {
+                    if (!api.everythingOkay(currentPatchHTML))
+                        return post.message(`Unable to fetch the newest PBE patch notes.`);
+                    var newestPBEPatchVersion = currentPatchHTML.toString();
+                    try {
+                        newestPBEPatchVersion = newestPBEPatchVersion.substring(newestPBEPatchVersion.indexOf(`reddit_title = "`) + 16);
+                        newestPBEPatchVersion = newestPBEPatchVersion.substring(0, newestPBEPatchVersion.indexOf(`";`));
+                        return post.embed(``, [[newestPBEPatchVersion, surrAt20API, false], [`Full PBE coverage`, `http://www.surrenderat20.net/p/current-pbe-balance-changes.html`, false]]);
+                    }
+                    catch (err) {
+                        return post.message(`Unable to fetch the newest PBE patch notes. ${err}`);
+                    };
+                });
+            }
+            catch (err) {
+                return post.message(`Unable to fetch the newest PBE patch notes. ${err}`);
+            };
+        });
     };
     answer.toStatsRequest = function () {
         post.message(`:hourglass_flowing_sand: Getting the Player Stats data. This might take a while...`);
