@@ -50,7 +50,7 @@ exports.Answer = function (data) {
         `\`\`\`Viktor gameplay questions     - !build | !matchup <champion_name> | !faq\n` +
         `Clubs                         - !clubs\n` +
         `Streams                       - !dun\n` +
-        `PBE                           - !pbe new | !pbe full\n\n`+
+        `PBE                           - !pbe\n\n`+
         `Live game data                - !ingame <ign>|<server> (example: !ingame arcyvilk|euw)\n` +
         `Last game summary             - !lastgame <ign>|<server> (example: !lastgame arcyvilk|euw)\n` +
         `OP.gg  				       - !opgg <ign>|<server> (example: !opgg arcyvilk|euw)\n` +

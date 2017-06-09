@@ -14,7 +14,7 @@ exports.Data = function (message, bot) {
     data.message = message;
     data.bot = bot;
     
-    data.version = 'The Great Herald beta 2.1: anti-raid feature + the glorious return of Viktor Streamer role!';
+    data.version = 'The Great Herald beta 2.2: PBE coverage';
 
     data.server = '';
     data.logChannel = '';
