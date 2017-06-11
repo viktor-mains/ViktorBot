@@ -161,6 +161,21 @@ exports.Commands = function (answer) {
             isModCommand: false,
             arguments: `Silver+Bronze`
         },
+        'rito': {
+            triggers: `:white_sun_small_cloud:\n\n` +
+                `       <:rito:323416307414335488>\n` +
+                `          |:open_hands:\n` +
+                `         / _\n` +
+                `━━━━━┓ ＼＼ \n` +
+                `┓┓┓┓┓┃\n` +
+                `┓┓┓┓┓┃ ヽ<:viktor:232941841815830536>ノ\n` +
+                `┓┓┓┓┓┃      /\n` +
+                `┓┓┓┓┓┃  ノ) \n` +
+                `┓┓┓┓┓┃\n` +
+                `┓┓┓┓┓┃\n`,
+            typeOfResponse: `text`,
+            isModCommand: false
+        },
         'roles': {
             triggers: `- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n` +
             `- are you a Viktor streamer? Type !iam Viktor Streamer\n`,
