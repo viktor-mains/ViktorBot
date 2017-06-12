@@ -432,7 +432,7 @@ exports.Answer = function (data) {
     };
     answer.toMatchup = function () {
         var matchup = new Matchup.Matchup();
-        var championName = input.removeKeyword(data.message.content);
+        var championName = input.removeKeyword(data.message.content).toLowerCase();
         for (property in matchup.listOfChampions){
             if (championName === property)
                 return post.message(matchup.listOfChampions[property]);
