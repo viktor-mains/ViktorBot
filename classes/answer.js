@@ -167,8 +167,13 @@ exports.Answer = function (data) {
         var race = new Race.Race(data, post);
         var rankDesiredAndCurrent = fetchedRanks.split(`+`);
 
-        if (input.removeKeyword(data.message.content).startsWith(`add`))
+        if (input.removeKeyword(data.message.content).startsWith(`add`)) {
+            if (input.removeKeyword(data.message.content).indexOf(`<`) !== -1) {
+                return post.message(`**<** and **>** is supposed to indicate that this is a part where you put your IGN and server. You don't _literally_  ` +
+                    `put **<** and **>** there. <:vikfacepalm:305783369302802434>`);
+            }
             return race.join(rankDesiredAndCurrent);
+        }
         return race.leaderboards(rankDesiredAndCurrent[0], rankDesiredAndCurrent[1]);
     };
     answer.toPBE = function () {

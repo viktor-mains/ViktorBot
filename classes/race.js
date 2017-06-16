@@ -5,7 +5,7 @@ exports.Race = function (data, post) {
     var race = this;
 
     race.join = function (rankDesiredAndCurrent) {
-        post.message(`This isn't implemented yet.`); 
+        post.message(`This isn't implemented yet. Ping Arcyvilk to be added manually.`); 
     };
 
     race.leaderboards = function (rankDesired, rankCurrent) {
@@ -80,7 +80,8 @@ exports.Race = function (data, post) {
 
                                     return post.embed(`:trophy: ${rankDesired} Race!`,
                                         [[`___`,
-                                            `${m}`, false], [`Winners:`, `${winners}`, false], [`___`, `\n\nTo join the ${rankDesired} Race, write **!${rankDesired.toLowerCase()}race add <IGN>|<server>** . Disclaimer: you have to be ${rankCurrent}.`,
+                                            `${m}`, false], [`Winners:`, `${winners}`, false], [`___`, `\n\nTo join the ${rankDesired} Race, write **!${rankDesired.toLowerCase()}race add <IGN>|<server>** . ` +
+                                            `Disclaimer: you have to be ${rankCurrent }.`,
                                             false]]);
                                 }
                             }
