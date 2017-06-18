@@ -120,8 +120,10 @@ exports.API = function () {
         var gameSummary = `${matchData.gameMode}${swap.gameModeIDToName(matchData.queueId)} [${input.convertMinutesToHoursAndMinutes(matchData.gameDuration)}]`;
         var blueTeam = `\`\`.       |    KDA   |  gold |    dmg | lv |\`\`\n\`\`------------------------------------------\`\`\n`;
         var redTeam = `\`\`.       |    KDA   |  gold |    dmg | lv |\`\`\n\`\`------------------------------------------\`\`\n`;
-        api.extractChampionData(server, championData => {
-            var champions = championData;
+        api.extractChampionData(server, championDataAPI => {
+            if (championDataAPI.toString().startsWith(`:warning:`))
+                return callback("error", championDataAPI);
+            var champions = championDataAPI;
             for (var i = 0; i < matchData.participants.length; i++) {
 
                 var player = matchData.participants[i];

@@ -281,6 +281,8 @@ exports.Answer = function (data) {
                     if (matchData.toString().startsWith(`:warning:`))
                         return post.message(matchData);
                     api.lastGameSummary(matchData, server, (title, gameSummary) => {
+                        if (gameSummary.toString().startsWith(`:warning:`))
+                            return post.message(gameSummary);
                         return post.embed(title,
                             [[gameSummary[0][0], gameSummary[0][1], gameSummary[0][2]],
                             [gameSummary[1][0], gameSummary[1][1], gameSummary[1][2]]]);
