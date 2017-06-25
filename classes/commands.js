@@ -177,7 +177,7 @@ exports.Commands = function (answer) {
             isModCommand: false
         },
         'roles': {
-            triggers: `- servers: BR | EUW | EUNE | NA | JP | Garena | KR | LAN | LAS | OCE | RU | TR\n` +
+            triggers: `- servers: BR | EUW | EUNE | NA | JP | CN | SEA | KR | LAN | LAS | OCE | RU | TR\n` +
             `- are you a Viktor streamer? Type !iam Viktor Streamer\n`,
             title: `Self-assignable roles`,
             typeOfResponse: `embed`,
