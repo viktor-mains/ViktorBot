@@ -163,6 +163,26 @@ exports.Answer = function (data) {
         var impersonate = input.removeKeyword(data.message.content);
         post.messageToChannel(impersonate, data.offTop);
     };
+    answer.toSkinTimer = function () {
+        var dateCreator = Date.UTC(2013, 9, 1);
+        var datePromised = Date.UTC(2018, 2, 5);
+        var dateNow = new Date(); 
+        dateNow = Date.now();
+
+        var creatorMath = `Creator skin got released at 1st of October, 2013. That gives us ` +
+            `**${input.round((dateNow - dateCreator) / 1000, 0)}** seconds, or ` +
+            `**${input.round((dateNow - dateCreator) / 60000, 0)}** minutes, or ` +
+            `**${input.round((dateNow - dateCreator) / 3600000, 0)}** hours, or ` +
+            `**${input.round((dateNow - dateCreator) / 86400000, 0)}** days since the last Viktor skin.`
+        var newSkinMath = `However, we've been promised at 5th of March, 2017 that we will get a skin in the next 12 months. ` +
+            `That means, that if it doesn't happen in the next `+
+            `**${input.round((datePromised - dateNow) / 1000, 0)}** seconds, or ` +
+            `**${input.round((datePromised - dateNow) / 60000, 0)}** minutes, or ` +
+            `**${input.round((datePromised - dateNow) / 3600000, 0)}** hours, or ` +
+            `**${input.round((datePromised - dateNow) / 86400000, 0)}** days, then we can start dedusting our pitchforks. ---E`
+
+        post.embed(`:timer: Viktor skin`, [[`______`, `${creatorMath}\n\n${newSkinMath}`, false]]);
+    };
     answer.toRace = function (fetchedRanks) {
         var race = new Race.Race(data, post);
         var rankDesiredAndCurrent = fetchedRanks.split(`+`);

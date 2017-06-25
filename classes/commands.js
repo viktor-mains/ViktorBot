@@ -49,6 +49,11 @@ exports.Commands = function (answer) {
             typeOfResponse: `text`,
             isModCommand: false
         },
+        'gibeskin': {
+            triggers: `toSkinTimer`,
+            typeOfResponse: `function`,
+            isModCommand: false
+        },
         'giveid': {
             triggers: `toPlayerIDRequest`,
             typeOfResponse: `function`,
