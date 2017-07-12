@@ -62,7 +62,7 @@ Reference to the class containing all the commands: [[click](https://github.com/
 - **Usage**: _everyone_ (only in a designated Role room)  
 - **Purpose**: server role management commands.
 
-****To access the full list of self-assignable roles, use the ``!roles`` command.**
+**To access the full list of self-assignable roles, use the ``!roles`` command.**
 
 ### !impersonate 
 
@@ -115,7 +115,6 @@ Ranked races
 Ranked races got introduced to our Discord as a way to encourage our community members to compete with each other on their way up to the next ranked tier. Whoever wishes to join the race, may ask the Moderator to add their nickname to the database. When the right command is used, they can check how they place on a ladder relatively to their fellow Viktor mains.
 
 - **Commands**: ``!masterrace | !diamondrace | !platinumrace | !goldrace | !silverrace ``
-
 - **Usage**: _everyone_  
 - **Endpoints**: 
     - ``LEAGUE-V2.5``
@@ -126,10 +125,10 @@ Ranked races got introduced to our Discord as a way to encourage our community m
 - **Code**: [[click](https://github.com/Arcyvilk/GreatHerald/blob/master/classes/race.js)]
 - **To do**:
 
-[ ] 24-07-17 - change the ``LEAGUE-V2.5`` endpoint to ``LEAGUE-V3`` one.
-[ ] change the object storing players data to ``.json``
-[ ] allow users to join the race themselves
-[ ] check if the user has enough Viktor games to qualify
+[] 24-07-17 - change the ``LEAGUE-V2.5`` endpoint to ``LEAGUE-V3`` one.  
+[] change the object storing players data to ``.json``  
+[] allow users to join the race themselves  
+[] check if the user has enough Viktor games to qualify  
 
 ### !giveid <ign|server>
 
