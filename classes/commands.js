@@ -143,35 +143,35 @@ exports.Commands = function (answer) {
             triggers: `toRace`,
             typeOfResponse: `function`,
             //isModCommand: false,
-            isModCommand: true
+            isModCommand: true,
             arguments: `Master+Diamond`
         },
         'diamondrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
             //isModCommand: false,
-            isModCommand: true
+            isModCommand: true,
             arguments: `Diamond+Platinum`
         },
         'platinumrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
             //isModCommand: false,
-            isModCommand: true
+            isModCommand: true,
             arguments: `Platinum+Gold`
         },
         'goldrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
             //isModCommand: false,
-            isModCommand: true
+            isModCommand: true,
             arguments: `Gold+Silver`
         },
         'silverrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
             //isModCommand: false,
-            isModCommand: true
+            isModCommand: true,
             arguments: `Silver+Bronze`
         },
         'rito': {
