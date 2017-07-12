@@ -78,7 +78,8 @@ exports.Commands = function (answer) {
             triggers: `toLiveGameRequest`,
             arguments: `:game_die:`,
             typeOfResponse: `function`,
-            isModCommand: false
+            //isModCommand: false
+            isModCommand: true
         },
         'joke': {
             triggers: `I won't waste my precious time for the sake of your personal amusement.`,
@@ -88,7 +89,8 @@ exports.Commands = function (answer) {
         'lastgame': {
             triggers: `toLastGameRequest`,
             typeOfResponse: `function`,
-            isModCommand: false
+            //isModCommand: false
+            isModCommand: true
         },
         'h': {
             triggers: answer.toHelp,
@@ -123,7 +125,8 @@ exports.Commands = function (answer) {
             triggers: `toViktorMastery`,
             arguments: `<:viktorgod:269479031009837056> Viktor mastery points for`,
             typeOfResponse: `function`,
-            isModCommand: false
+            //isModCommand: false
+            isModCommand: true
         },
         'matchup': {
             triggers: `toMatchup`,
@@ -139,31 +142,36 @@ exports.Commands = function (answer) {
         'masterrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
-            isModCommand: false,
+            //isModCommand: false,
+            isModCommand: true
             arguments: `Master+Diamond`
         },
         'diamondrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
-            isModCommand: false,
+            //isModCommand: false,
+            isModCommand: true
             arguments: `Diamond+Platinum`
         },
         'platinumrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
-            isModCommand: false,
+            //isModCommand: false,
+            isModCommand: true
             arguments: `Platinum+Gold`
         },
         'goldrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
-            isModCommand: false,
+            //isModCommand: false,
+            isModCommand: true
             arguments: `Gold+Silver`
         },
         'silverrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
-            isModCommand: false,
+            //isModCommand: false,
+            isModCommand: true
             arguments: `Silver+Bronze`
         },
         'rito': {

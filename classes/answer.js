@@ -127,8 +127,12 @@ exports.Answer = function (data) {
 
 
     answer.checkForModPrivileges = function (cmd) {
-        if (!answer.userAllowedToUseCommand(cmd))
-            return post.toDM("```You aren\'t allowed to use this command because you ain\'t cool enough.```");
+        if (!answer.userAllowedToUseCommand(cmd)) {
+            return post.message("```This command is temporarily unavailable. " +
+                "It will get turned on again after the application proces for Viktor Bot gets completed. " +
+                "Sorry for inconvenience and please be patient.```");
+            //return post.toDM("```You aren\'t allowed to use this command because you ain\'t cool enough.```");
+        }
         answer.checkForBotRefusal(cmd);
     };
     answer.checkForBotRefusal = function (cmd) {
