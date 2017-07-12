@@ -3,21 +3,21 @@ The **Great Herald** bot got created specifically with the purpose to serve the 
 
 Majority of commands can be invoked with the exclamation mark preceeding them - for example ``!help``. There are also several other bot interactions which do not require the ``!`` syntax, for example ``Dear Viktor <text>`` which triggers the yes/no type of response, or specific keywords occuring in the string which trigger the response frm the bot, be it a text message, be it a reaction.
 
-## Table of contents
+## Table of contents [[back](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#greatherald)]
 
 1. [Great Herald](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#greatherald)  
-    1. [Table of contents](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#table-of-contents)  
-    2. [Tools of choice](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#tools-of-choice)  
-2. [Command list](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#command-list)  
-    1. [Standard commands](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#1-standard-commands)  
-    2. [Commands using Riot's API](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#2-commands-using-riots-api)  
-3. [Legal information](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#legal-information)  
+    - [Table of contents](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#table-of-contents-back)  
+    - [Tools of choice](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#tools-of-choice-back)  
+2. [Command list](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#command-list-back)  
+    - [Standard commands](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#1-standard-commands-back)  
+    - [Commands using Riot's API](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#2-commands-using-riots-api-back)  
+3. [Legal information](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#legal-information-back)  
 
 ## Tools of choice [[back](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#greatherald)]
 - [Discord.JS](https://discord.js.org) framework,
 - [Node.js](https://nodejs.org/en/).
 
-# Command list
+# Command list [[back](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#greatherald)]
 
 To access the list of commands, write ``!h`` or ``!help`` or  ``!commands``.
 
