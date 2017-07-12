@@ -11,9 +11,27 @@ Majority of commands can be invoked with the exclamation mark preceeding them - 
 
 To access the list of commands, write ``!h`` or ``!help`` or  ``!commands``.
 
-## Standard commands
+## 1. Standard commands
 
-```!beep | !build | !choose <x|y> | !clubs | !dun | !faq | !gibeskin | !iam | !iamnot | !impersonate | !joke | !opgg | !pbe | !matchup | !meow/!woof | !rito | !roles | !setstatus | !test | !version```
+```!beep
+!build
+!choose <x|y>
+!clubs
+!dun
+!faq
+!gibeskin
+!iam / !iamnot
+!impersonate
+!joke
+!opgg
+!pbe
+!matchup
+!meow / !woof
+!rito
+!roles
+!setstatus
+!test
+!version```
 
 Reference to the class containing all the commands: [[click](https://github.com/Arcyvilk/GreatHerald/blob/master/classes/commands.js)].
 
@@ -79,16 +97,21 @@ Reference to the class containing all the commands: [[click](https://github.com/
 - **Usage**: _everyone_  
 - **Purpose**: returns the version of the bot.
 
-## Commands using Riot's API
+## 2. Commands using Riot's API
 
-```!giveid | !ingame | !lastgame | !mastery | !masterrace/!diamondrace/!platinumrace/!goldrace/!silverrace | !stats```
+```!giveid
+!ingame
+!lastgame
+!mastery
+!masterrace/!diamondrace/!platinumrace/!goldrace/!silverrace
+!stats```
 
 ### !giveid <ign|server>
 
 - **Usage**: _Moderators_  
 - **Purpose**: this command returns the summoner ID of the requsted summoner. It's usable only by Moderators because its only use was to ease the development process for some fnctionalities which initially required th summoner ID as an argument.
 - **Endpoints**: 
--- ``SUMMONER-vV3``
+    - ``SUMMONER-vV3``
 - **Example of use**: 
 
 ![http://i.imgur.com/x4yQXJr.png](http://i.imgur.com/x4yQXJr.png)
@@ -98,10 +121,10 @@ Reference to the class containing all the commands: [[click](https://github.com/
 - **Usage**: _everyone_  
 - **Purpose**: this command returns the data about the game the requested summoner is playing currently. This data contains: **rank** of all participants, their **win ratio**, their **summoner spells**, **nicknames** and the **name of champion** they're playing, plus the **gamemode's** name.
 - **Endpoints**: 
--- ``SUMMONER-V3``
--- ``SPECTATOR-V3``
--- ``LOL-STATIC-DATA-V3``
--- ``LEAGUE-V2.5`` - soon to be rewritten into ``LEAGUE-V3`` (24-07-17)
+    - ``SUMMONER-V3``
+    - ``SPECTATOR-V3``
+    - ``LOL-STATIC-DATA-V3``
+    - ``LEAGUE-V2.5`` - soon to be rewritten into ``LEAGUE-V3`` (24-07-17)
 - **Example of use**:
 
 ![http://i.imgur.com/U9lmAJ8.png](http://i.imgur.com/U9lmAJ8.png)
@@ -111,7 +134,7 @@ Reference to the class containing all the commands: [[click](https://github.com/
 - **Usage**: _everyone_  
 - **Purpose**: testing command.
 - **Endpoints**: 
--- [summoner/v3]
+    - [summoner/v3]
 - **Example of use**:
 
 ![http://i.imgur.com/mYeRVPK.png](http://i.imgur.com/mYeRVPK.png)
@@ -121,7 +144,7 @@ Reference to the class containing all the commands: [[click](https://github.com/
 - **Usage**: _everyone_  
 - **Purpose**: testing command.
 - **Endpoints**: 
--- [summoner/v3]
+    - [summoner/v3]
 - **Example of use**:
 
 ![http://i.imgur.com/5pSHhpG.png](http://i.imgur.com/5pSHhpG.png)
@@ -131,7 +154,7 @@ Reference to the class containing all the commands: [[click](https://github.com/
 - **Usage**: _everyone_  
 - **Purpose**: testing command.
 - **Endpoints**: 
--- [summoner/v3]
+    - [summoner/v3]
 - **Example of use**:
 
 ![http://i.imgur.com/rtXbB1U.png](http://i.imgur.com/rtXbB1U.png)
@@ -141,7 +164,7 @@ Reference to the class containing all the commands: [[click](https://github.com/
 - **Usage**: _Moderators_  
 - **Purpose**: testing command.
 - **Endpoints**: 
--- [summoner/v3]
+    - [summoner/v3]
 - **Example of use**:
 
 ![http://i.imgur.com/E1cQeeL.png](http://i.imgur.com/E1cQeeL.png)
