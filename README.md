@@ -3,7 +3,14 @@ The **Great Herald** bot got created specifically with the purpose to serve the 
 
 Majority of commands can be invoked with the exclamation mark preceeding them - for example ``!help``. There are also several other bot interactions which do not require the ``!`` syntax, for example ``Dear Viktor <text>`` which triggers the yes/no type of response, or specific keywords occuring in the string which trigger the response frm the bot, be it a text message, be it a reaction.
 
-## Tools of choice
+## Table of contents
+
+1. [Tools of choice](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#1-tools-of-choice)  
+2. [Standard commands](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#2-standard-commands)  
+3. [Commands using Riot's API](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#3-commands-using-riots-api)  
+4. [Legal information](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#4-legal-information)  
+
+## 1. Tools of choice
 - [Discord.JS](https://discord.js.org) framework,
 - [Node.js](https://nodejs.org/en/).
 
@@ -11,7 +18,7 @@ Majority of commands can be invoked with the exclamation mark preceeding them - 
 
 To access the list of commands, write ``!h`` or ``!help`` or  ``!commands``.
 
-## 1. Standard commands
+## 2. Standard commands
 
 ```
 !beep
@@ -99,7 +106,7 @@ Reference to the class containing all the commands: [[click](https://github.com/
 - **Usage**: _everyone_  
 - **Purpose**: returns the version of the bot.
 
-## 2. Commands using Riot's API
+## 3. Commands using Riot's API
 
 ```
 Ranked races
@@ -206,5 +213,5 @@ This command returns the top 5 most played champions by the requested summoner, 
     - [ ] remove
 
 
-## Legal information
+## 4. Legal information
 _Great Herald_ bot isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
