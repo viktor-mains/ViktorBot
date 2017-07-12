@@ -17,63 +17,63 @@ To access the list of commands, write ``!h`` or ``!help`` or  ``!commands``.
 
 Reference to the class containing all the commands: [[click](https://github.com/Arcyvilk/GreatHerald/blob/master/classes/commands.js)].
 
-# !beep | !gibeskin | !joke | !rito 
+### !beep | !gibeskin | !joke | !rito 
 
 Usage: _everyone_
 Purpose: _returning /r/viktormains community memes._
 
-# !build | !clubs | !faq | !matchup <champion>
+### !build | !clubs | !faq | !matchup <champion>
 
 Usage: _everyone_
 Purpose: _returns /r/viktormains community recommendations on the particular topic._
 
-# !choose <x|y> 
+### !choose <x|y> 
 
 Usage: _everyone_
 Purpose: _make the bot choose for you from the given options._
 
-# !dun 
+### !dun 
 
 Usage: _everyone_
 Purpose: _returns information on the Dun, challenger Viktor main._
 
-# !iam / !iamnot 
+### !iam / !iamnot 
 
 Usage: _everyone_
 Purpose: _server role management commands._
 To access the full list of self-assignable roles, use the ``!roles`` command.
 
-# !impersonate 
+### !impersonate 
 
 Usage: _Moderators_
 Purpose: _makes bot resend the given string into the #offtopic room._
 
-# !opgg <ign|server> 
+### !opgg <ign|server> 
 
 Usage: _everyone_
 Purpose: _returns the link to OP.gg of the particular playe.r_
 
-# !pbe 
+### !pbe 
 
 Usage: _everyone_
 Purpose: _returns the link to the newest PBE patch using the http://surrenderat20.net website._
 
-# !meow/!woof 
+### !meow/!woof 
 
 Usage: _everyone_
 Purpose: _returns a cat or a dog photo, using the http://random.cat and http://random.dog API's._
 
-# !setstatus 
+### !setstatus 
 
 Usage: _Moderators_
 Purpose: _changes the "Playing" status of the bot._
 
-# !test 
+### !test 
 
 Usage: _Moderators_
 Purpose: _testing command._
 
-# !version
+### !version
 
 Usage: _everyone_
 Purpose: _returns the version of the bot._
