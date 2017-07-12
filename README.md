@@ -10,7 +10,7 @@ Majority of commands can be invoked with the exclamation mark preceeding them - 
 3. [Commands using Riot's API](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#3-commands-using-riots-api)  
 4. [Legal information](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#4-legal-information)  
 
-## 1. Tools of choice
+## 1. Tools of choice [[back](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#greatherald)]
 - [Discord.JS](https://discord.js.org) framework,
 - [Node.js](https://nodejs.org/en/).
 
@@ -18,7 +18,7 @@ Majority of commands can be invoked with the exclamation mark preceeding them - 
 
 To access the list of commands, write ``!h`` or ``!help`` or  ``!commands``.
 
-## 2. Standard commands
+## 2. Standard commands [[back](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#greatherald)]
 
 ```
 !beep
@@ -106,7 +106,7 @@ Reference to the class containing all the commands: [[click](https://github.com/
 - **Usage**: _everyone_  
 - **Purpose**: returns the version of the bot.
 
-## 3. Commands using Riot's API
+## 3. Commands using Riot's API [[back](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#greatherald)]
 
 ```
 Ranked races
@@ -213,5 +213,5 @@ This command returns the top 5 most played champions by the requested summoner, 
     - [ ] remove
 
 
-## 4. Legal information
+## 4. Legal information [[back](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#greatherald)]
 _Great Herald_ bot isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
