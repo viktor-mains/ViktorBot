@@ -125,10 +125,10 @@ Ranked races got introduced to our Discord as a way to encourage our community m
 - **Code**: [[click](https://github.com/Arcyvilk/GreatHerald/blob/master/classes/race.js)]
 - **To do**:
 
-[] 24-07-17 - change the ``LEAGUE-V2.5`` endpoint to ``LEAGUE-V3`` one.  
-[] change the object storing players data to ``.json``  
-[] allow users to join the race themselves  
-[] check if the user has enough Viktor games to qualify  
+- [ ] 24-07-17 - change the ``LEAGUE-V2.5`` endpoint to ``LEAGUE-V3`` one.  
+- [ ] change the object storing players data to ``.json``  
+- [ ] allow users to join the race themselves  
+- [ ] check if the user has enough Viktor games to qualify  
 
 ### !giveid <ign|server>
 
