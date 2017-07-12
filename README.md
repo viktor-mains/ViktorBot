@@ -88,10 +88,25 @@ Reference to the class containing all the commands: [[click](https://github.com/
 - **Usage**: _Moderators_  
 - **Purpose**: this command returns the summoner ID of the requsted summoner. It's usable only by Moderators because its only use was to ease the development process for some fnctionalities which initially required th summoner ID as an argument.
 - **Endpoints**: 
--- [summoner/v3]
-- **Example of use**: ![http://i.imgur.com/x4yQXJr.png](http://i.imgur.com/x4yQXJr.png)
+-- ``SUMMONER-vV3``
+- **Example of use**: 
 
-### !ingame 
+![http://i.imgur.com/x4yQXJr.png](http://i.imgur.com/x4yQXJr.png)
+
+### !ingame <ign|server>
+
+- **Usage**: _everyone_  
+- **Purpose**: this command returns the data about the game the requested summoner is playing currently. This data contains: **rank** of all participants, their **win ratio**, their **summoner spells**, **nicknames** and the **name of champion** they're playing, plus the **gamemode's** name.
+- **Endpoints**: 
+-- ``SUMMONER-V3``
+-- ``SPECTATOR-V3``
+-- ``LOL-STATIC-DATA-V3``
+-- ``LEAGUE-V2.5`` - soon to be rewritten into ``LEAGUE-V3`` (24-07-17)
+- **Example of use**:
+
+![http://i.imgur.com/U9lmAJ8.png](http://i.imgur.com/U9lmAJ8.png)
+
+### !lastgame <ign|server> 
 
 - **Usage**: _everyone_  
 - **Purpose**: testing command.
@@ -99,7 +114,9 @@ Reference to the class containing all the commands: [[click](https://github.com/
 -- [summoner/v3]
 - **Example of use**:
 
-### !lastgame 
+![http://i.imgur.com/mYeRVPK.png](http://i.imgur.com/mYeRVPK.png)
+
+### !mastery <ign|server> 
 
 - **Usage**: _everyone_  
 - **Purpose**: testing command.
@@ -107,13 +124,7 @@ Reference to the class containing all the commands: [[click](https://github.com/
 -- [summoner/v3]
 - **Example of use**:
 
-### !mastery 
-
-- **Usage**: _everyone_  
-- **Purpose**: testing command.
-- **Endpoints**: 
--- [summoner/v3]
-- **Example of use**:
+![http://i.imgur.com/5pSHhpG.png](http://i.imgur.com/5pSHhpG.png)
 
 ### !masterrace/!diamondrace/!platinumrace/!goldrace/!silverrace 
 
@@ -123,7 +134,9 @@ Reference to the class containing all the commands: [[click](https://github.com/
 -- [summoner/v3]
 - **Example of use**:
 
-### !stats
+![http://i.imgur.com/rtXbB1U.png](http://i.imgur.com/rtXbB1U.png)
+
+### !stats <ign|server>
 
 - **Usage**: _Moderators_  
 - **Purpose**: testing command.
@@ -131,6 +144,10 @@ Reference to the class containing all the commands: [[click](https://github.com/
 -- [summoner/v3]
 - **Example of use**:
 
+![http://i.imgur.com/E1cQeeL.png](http://i.imgur.com/E1cQeeL.png)
+
 **This command is going to be removed as the endpoint using it is to be deprecated.**
+
+
 ## Legal information
 _Great Herald_ bot isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
