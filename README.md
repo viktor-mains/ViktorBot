@@ -89,7 +89,7 @@ Reference to the class containing all the commands: [[click](https://github.com/
 - **Purpose**: this command returns the summoner ID of the requsted summoner. It's usable only by Moderators because its only use was to ease the development process for some fnctionalities which initially required th summoner ID as an argument.
 - **Endpoints**: 
 -- [summoner/v3]
-- **Example of use**: http://i.imgur.com/x4yQXJr.png
+- **Example of use**: ![http://i.imgur.com/x4yQXJr.png](http://i.imgur.com/x4yQXJr.png)
 
 ### !ingame 
 
