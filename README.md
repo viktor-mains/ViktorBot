@@ -19,65 +19,65 @@ Reference to the class containing all the commands: [[click](https://github.com/
 
 ### !beep | !gibeskin | !joke | !rito 
 
-**Usage**: _everyone_  
-**Purpose**: returning /r/viktormains community memes.
+- **Usage**: _everyone_  
+- **Purpose**: returning /r/viktormains community memes.
 
 ### !build | !clubs | !faq | !matchup <champion>
 
-**Usage**: _everyone_  
-**Purpose**: returns /r/viktormains community recommendations on the particular topic.
+- **Usage**: _everyone_  
+- **Purpose**: returns /r/viktormains community recommendations on the particular topic.
 
 ### !choose <x|y> 
 
-**Usage**: _everyone_  
-**Purpose**: make the bot choose for you from the given options.
+- **Usage**: _everyone_  
+- **Purpose**: make the bot choose for you from the given options.
 
 ### !dun 
 
-**Usage**: _everyone_  
-**Purpose**: returns information on the Dun, challenger Viktor main.
+- **Usage**: _everyone_  
+- **Purpose**: returns information on the Dun, challenger Viktor main.
 
 ### !iam / !iamnot 
 
-**Usage**: _everyone_  
-**Purpose**: server role management commands.
+- **Usage**: _everyone_  
+- **Purpose**: server role management commands.
 
 ****To access the full list of self-assignable roles, use the ``!roles`` command.**
 
 ### !impersonate 
 
-**Usage**: _Moderators_  
-**Purpose**: makes bot resend the given string into the #offtopic room.
+- **Usage**: _Moderators_  
+- **Purpose**: makes bot resend the given string into the #offtopic room.
 
 ### !opgg <ign|server> 
 
-**Usage**: _everyone_  
-**Purpose**: returns the link to OP.gg of the particular player.
+- **Usage**: _everyone_  
+- **Purpose**: returns the link to OP.gg of the particular player.
 
 ### !pbe 
 
-**Usage**: _everyone_  
-**Purpose**: returns the link to the newest PBE patch using the http://surrenderat20.net website.
+- **Usage**: _everyone_  
+- **Purpose**: returns the link to the newest PBE patch using the http://surrenderat20.net website.
 
 ### !meow/!woof 
 
-**Usage**: _everyone_  
-**Purpose**: returns a cat or a dog photo, using the http://random.cat and http://random.dog API's.
+- **Usage**: _everyone_  
+- **Purpose**: returns a cat or a dog photo, using the http://random.cat and http://random.dog API's.
 
 ### !setstatus 
 
-**Usage**: _Moderators_  
-**Purpose**: changes the "Playing" status of the bot.
+- **Usage**: _Moderators_  
+- **Purpose**: changes the "Playing" status of the bot.
 
 ### !test 
 
-**Usage**: _Moderators_  
-**Purpose**: testing command.
+- **Usage**: _Moderators_  
+- **Purpose**: testing command.
 
 ### !version
 
-**Usage**: _everyone_  
-**Purpose**: returns the version of the bot.
+- **Usage**: _everyone_  
+- **Purpose**: returns the version of the bot.
 
 ## Commands using Riot's API
 
