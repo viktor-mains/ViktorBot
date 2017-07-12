@@ -39,7 +39,7 @@ Reference to the class containing all the commands: [[click](https://github.com/
 
 ### !iam / !iamnot 
 
-- **Usage**: _everyone_  
+- **Usage**: _everyone_ (only in a designated Role room)  
 - **Purpose**: server role management commands.
 
 ****To access the full list of self-assignable roles, use the ``!roles`` command.**
@@ -83,5 +83,54 @@ Reference to the class containing all the commands: [[click](https://github.com/
 
 ```!giveid | !ingame | !lastgame | !mastery | !masterrace/!diamondrace/!platinumrace/!goldrace/!silverrace | !stats```
 
+### !giveid <ign|server>
+
+- **Usage**: _Moderators_  
+- **Purpose**: this command returns the summoner ID of the requsted summoner. It's usable only by Moderators because its only use was to ease the development process for some fnctionalities which initially required th summoner ID as an argument.
+- **Endpoints**: 
+-- [summoner/v3]
+- **Example of use**: http://i.imgur.com/x4yQXJr.png
+
+### !ingame 
+
+- **Usage**: _everyone_  
+- **Purpose**: testing command.
+- **Endpoints**: 
+-- [summoner/v3]
+- **Example of use**:
+
+### !lastgame 
+
+- **Usage**: _everyone_  
+- **Purpose**: testing command.
+- **Endpoints**: 
+-- [summoner/v3]
+- **Example of use**:
+
+### !mastery 
+
+- **Usage**: _everyone_  
+- **Purpose**: testing command.
+- **Endpoints**: 
+-- [summoner/v3]
+- **Example of use**:
+
+### !masterrace/!diamondrace/!platinumrace/!goldrace/!silverrace 
+
+- **Usage**: _everyone_  
+- **Purpose**: testing command.
+- **Endpoints**: 
+-- [summoner/v3]
+- **Example of use**:
+
+### !stats
+
+- **Usage**: _Moderators_  
+- **Purpose**: testing command.
+- **Endpoints**: 
+-- [summoner/v3]
+- **Example of use**:
+
+**This command is going to be removed as the endpoint using it is to be deprecated.**
 ## Legal information
 _Great Herald_ bot isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
