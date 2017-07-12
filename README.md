@@ -96,7 +96,7 @@ Reference to the class containing all the commands: [[click](https://github.com/
 
 ![http://i.imgur.com/y73GvIY.png](http://i.imgur.com/y73GvIY.png)
 
-### !meow/!woof 
+### !meow / !woof 
 
 - **Usage**: _everyone_  
 - **Purpose**: returns a cat or a dog photo, using the http://random.cat and http://random.dog API's.
@@ -226,7 +226,7 @@ This command returns the top 5 most played champions by the requested summoner, 
 
 ## 3. Keyword triggers [[back](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#greatherald)]
 
-### Dear Viktor <text> ?
+### Dear Viktor \<text> ?
 
 This syntax triggers a yes/no/maybe type of response. The list of responses currently contains around 50 quotes and still grows. In future it is planned to implement a bit more advanced AI here for the responses to make sense in every possible situation.
 
