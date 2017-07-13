@@ -11,6 +11,7 @@ Majority of commands can be invoked with the exclamation mark preceeding them - 
 2. [Command list](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#command-list-back)  
     - [Standard commands](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#1-standard-commands-back)  
     - [Commands using Riot's API](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#2-commands-using-riots-api-back)  
+    - [Keyword triggers](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#3-keyword-triggers-back) 
 3. [Legal information](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#legal-information-back)  
 
 ## Tools of choice [[back](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#greatherald)]
@@ -20,6 +21,8 @@ Majority of commands can be invoked with the exclamation mark preceeding them - 
 # Command list [[back](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#greatherald)]
 
 To access the list of commands, write ``!h`` or ``!help`` or  ``!commands``.
+
+Reference to the class containing all the commands: [[click](https://github.com/Arcyvilk/GreatHerald/blob/master/classes/commands.js)].
 
 ## 1. Standard commands [[back](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#greatherald)]
 
@@ -45,8 +48,6 @@ To access the list of commands, write ``!h`` or ``!help`` or  ``!commands``.
 !version
 ```
 
-Reference to the class containing all the commands: [[click](https://github.com/Arcyvilk/GreatHerald/blob/master/classes/commands.js)].
-
 ### !beep | !gibeskin | !joke | !rito 
 
 - **Usage**: _everyone_  
@@ -57,10 +58,14 @@ Reference to the class containing all the commands: [[click](https://github.com/
 - **Usage**: _everyone_  
 - **Purpose**: returns /r/viktormains community recommendations on the particular topic.
 
+![http://i.imgur.com/svYebFp.png](http://i.imgur.com/svYebFp.png)
+
 ### !choose <x|y> 
 
 - **Usage**: _everyone_  
 - **Purpose**: make the bot choose for you from the given options.
+
+![http://i.imgur.com/OV99rR3.png](http://i.imgur.com/OV99rR3.png)
 
 ### !dun 
 
@@ -89,10 +94,14 @@ Reference to the class containing all the commands: [[click](https://github.com/
 - **Usage**: _everyone_  
 - **Purpose**: returns the link to the newest PBE patch using the http://surrenderat20.net website.
 
-### !meow/!woof 
+![http://i.imgur.com/y73GvIY.png](http://i.imgur.com/y73GvIY.png)
+
+### !meow / !woof 
 
 - **Usage**: _everyone_  
 - **Purpose**: returns a cat or a dog photo, using the http://random.cat and http://random.dog API's.
+
+![http://i.imgur.com/Lmr5LmX.png](http://i.imgur.com/Lmr5LmX.png)
 
 ### !setstatus 
 
@@ -215,6 +224,19 @@ This command returns the top 5 most played champions by the requested summoner, 
 - **To do**:
     - [ ] remove
 
+## 3. Keyword triggers [[back](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#greatherald)]
+
+### Dear Viktor \<text> ?
+
+This syntax triggers a yes/no/maybe type of response. The list of responses currently contains around 50 quotes and still grows. In future it is planned to implement a bit more advanced AI here for the responses to make sense in every possible situation.
+
+![http://i.imgur.com/8lRLbmH.png](http://i.imgur.com/8lRLbmH.png)
+
+### Reactions triggers
+
+There are certain keywords (or capslocks) to which Viktor bot reacts with emotes.
+
+![http://i.imgur.com/OOa3iSj.png](http://i.imgur.com/OOa3iSj.png)
 
 # Legal information [[back](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#greatherald)]
 _Great Herald_ bot isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
