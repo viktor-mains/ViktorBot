@@ -3,6 +3,9 @@
   "version": "2.0.0",
   "description": "Custom bot for the /r/viktormains Discord channel!",
   "main": "viktor.js",
+  "engines": {
+    "node": "6.11.1"
+  }
   "dependencies": {
     "discord.js": "^11.1.0",
     "es6-promise": "^4.1.0",
