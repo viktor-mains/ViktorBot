@@ -231,57 +231,6 @@ exports.Answer = function (data) {
             };
         });
     };
-    answer.toStatsRequest = function () {
-        post.message(`:hourglass_flowing_sand: Getting the Player Stats data. This might take a while...`);
-
-        var _input = data.message.content;
-        if (!input.hasSeparator(_input))
-            return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!stats ${data.message.author.username}**|**euw\`\``);
-
-        var api = new API.API();
-        var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
-        var playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]).toUpperCase();
-        var server = swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
-
-        api.extractPlayerID(server, playerIGNAndServer, playerID => {
-            if (playerID.toString().startsWith(`:warning:`))
-                return post.message(playerID);
-            api.extractStatsData(playerIGNAndServer[1], playerID, statsAPI => {
-                if (statsAPI.toString().startsWith(`:warning:`))
-                    return post.message(statsAPI);
-
-                try {//TODO case for unkraned people; case for people with less than 5 champs
-                    for (var i = 0; i <= statsAPI.champions.length - 2; i++) {
-                        for (var j = 0; j <= statsAPI.champions.length - 3; j++) {
-                            if (statsAPI.champions[j].stats.totalSessionsPlayed < statsAPI.champions[j + 1].stats.totalSessionsPlayed) {
-                                var pom = statsAPI.champions[j];
-                                statsAPI.champions[j] = statsAPI.champions[j + 1];
-                                statsAPI.champions[j + 1] = pom;
-                            }
-                        }
-                        if (i == statsAPI.champions.length - 2) {
-                            api.extractChampionData(server, championDataAPI => {
-                                var summary = ``;
-                                if (championDataAPI.toString().startsWith(`:warning:`))
-                                    return post.message(championDataAPI);
-                                for (var k = 0; k < 5; k++) {
-                                    var totalPlayed = `${statsAPI.champions[k].stats.totalSessionsPlayed}`;
-                                    var totalWon = `${statsAPI.champions[k].stats.totalSessionsWon}`;
-                                    var winRatio = (input.round(totalWon / totalPlayed * 100, 2)).toString()
-                                    summary += `\`\`#${k + 1}: ${input.justifyToRight(totalPlayed, 5)} | ${input.justifyToRight(winRatio, 5)}% - \`\`` +
-                                        `**${championDataAPI.data[statsAPI.champions[k].id].name}**\n`;
-                                }
-                                post.embed(`Statistcs of ${playerNickDecoded}`, [[`___`, summary, false]]);
-                            });
-                        }
-                    };
-                }
-                catch (err) {
-                    post.message(`Oops. ${err}`);
-                }
-            });
-        });
-    };
     answer.toLastGameRequest = function () {
         post.message(`:hourglass_flowing_sand: Getting the Last Game data. This might take a while...`);
 

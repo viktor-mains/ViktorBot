@@ -207,9 +207,9 @@ This command shows the total Viktor mastery points for the requeste summoner, as
 - **To do**:
     - [ ] \(_Optional_) add a possibility to show other champions' mastery aswell (meh)
 
-### !stats <ign|server>
+### ~~!stats <ign|server>~~ [DEPRECATED 21-07-17]
 
-This command returns the top 5 most played champions by the requested summoner, sorted by the total amount of ranked games played by said champions.
+~~This command returns the top 5 most played champions by the requested summoner, sorted by the total amount of ranked games played by said champions.~~
 
 **This command is going to be removed as the endpoint using it is to be deprecated.**
 
@@ -222,7 +222,7 @@ This command returns the top 5 most played champions by the requested summoner, 
 ![http://i.imgur.com/E1cQeeL.png](http://i.imgur.com/E1cQeeL.png)
 
 - **To do**:
-    - [ ] remove
+    - [X] remove
 
 ## 3. Keyword triggers [[back](https://github.com/Arcyvilk/GreatHerald/blob/master/README.md#greatherald)]
 

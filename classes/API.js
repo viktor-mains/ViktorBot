@@ -9,9 +9,6 @@ exports.API = function () {
     api.RITO_KEY = process.env.RITO_KEY;
 
 
-    api.URLstatsData = function (server, playerID) {
-        return `https://${server}.api.riotgames.com/api/lol/${server}/v1.3/stats/by-summoner/${playerID}/ranked?season=SEASON2017&api_key=${api.RITO_KEY}`;
-    };
     api.URLmatchData = function (server, matchID) {
         return `https://${server}.api.riotgames.com/lol/match/v3/matches/${matchID}?api_key=${api.RITO_KEY}`;
     };
@@ -35,11 +32,6 @@ exports.API = function () {
     };
 
 
-    api.extractStatsData = function (server, playerID, callback) {
-        api.extractFromURL(api.URLstatsData(server, playerID), statsAPI => {
-            if (!api.everythingOkay(statsAPI))
-                return callback(":warning: Error retrieving player statistics data.");
-            return callback(JSON.parse(statsAPI));
         });
     };
     api.extractMatchData = function (server, matchID, callback) {
