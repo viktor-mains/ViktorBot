@@ -9,7 +9,7 @@ var Stream = require('./classes/stream.js');
 var Ban = require('./classes/ban.js');
 
 const bot = new Discord.Client();
-const token = process.env.API_KEY;
+const token = process.env.VIKTOR_DISCORD_TOKEN;
 
 bot.login(token);
 
