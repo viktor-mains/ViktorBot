@@ -112,7 +112,7 @@ bot.on('guildMemberAdd', GuildMember => {
     try { data.whatServer(GuildMember.guild.id); }
     catch (err) { }//this triggers when message was sent in DM
 
-    console.log(`${d} - new member - ${GuildMember.user.username}#${GuildMember.user.discriminator}`);
+    console.log(`${d} - new member - ${GuildMember.user.username}#${GuildMember.user.discriminator}\n`);
 
     if (data.server == `vikmains`) {
         var ban = new Ban.Ban(data);
@@ -136,6 +136,8 @@ bot.on('guildMemberRemove', GuildMember => {
     try { data.whatServer(GuildMember.guild.id); }
     catch (err) { }//this triggers when message was sent in DM
 
+    console.log(`${d} - member left - ${GuildMember.user.username}#${GuildMember.user.discriminator}\n`);
+
     var embed = new Discord.RichEmbed()
         .setTitle(`USER LEAVES`)
         .setColor(0xFDC000)
@@ -146,6 +148,7 @@ bot.on('guildMemberRemove', GuildMember => {
 
 bot.on('presenceUpdate', (oldMember, newMember) => {   
     var data = new Data.Data('', bot);
+    var d = new Date();
     var roles = new Roles.Roles(newMember);
     var stream = new Stream.Stream(newMember);
     var game = newMember.presence.game;
@@ -161,7 +164,7 @@ bot.on('presenceUpdate', (oldMember, newMember) => {
                 stream.removeStreamingRoleIfTheyStoppedStreaming();
         }
         catch (err) {
-            console.log(`${err} while removing streaming role from ${newMember.user.username}`);
+            console.log(`${d} - ${err} while removing streaming role from ${newMember.user.username}\n`);
         }
     }
 });

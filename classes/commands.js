@@ -139,40 +139,47 @@ exports.Commands = function (answer) {
             isModCommand: false,
             refusal: `You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a cat photo. _Really?_\n`
         },
+        'challengerrace': {
+            triggers: `toRace`,
+            typeOfResponse: `function`,
+            //isModCommand: false,
+            isModCommand: true,
+            arguments: `Challenger+Master+Diamond`
+        },
         'masterrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
             //isModCommand: false,
             isModCommand: true,
-            arguments: `Master+Diamond`
+            arguments: `Master+Diamond+Platinum`
         },
         'diamondrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
             //isModCommand: false,
             isModCommand: true,
-            arguments: `Diamond+Platinum`
+            arguments: `Diamond+Platinum+Gold`
         },
         'platinumrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
             //isModCommand: false,
             isModCommand: true,
-            arguments: `Platinum+Gold`
+            arguments: `Platinum+Gold+Silver`
         },
         'goldrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
             //isModCommand: false,
             isModCommand: true,
-            arguments: `Gold+Silver`
+            arguments: `Gold+Silver+Bronze`
         },
         'silverrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
             //isModCommand: false,
             isModCommand: true,
-            arguments: `Silver+Bronze`
+            arguments: `Silver+Bronze+Unranked`
         },
         'rito': {
             triggers: `:white_sun_small_cloud:\n\n` +
