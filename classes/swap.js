@@ -130,6 +130,7 @@
             return 4;
         else if (number == "V")
             return 5;
+        else return 0;
     };
     swap.arabicToRoman = function (number) {
         if (number == 1)
@@ -142,6 +143,7 @@
             return `IV`;
         else if (number == 5)
             return `V`;
+        else return 0;
     };
     swap.numberToNumberEmoji = function (number) {
         switch (number) {

@@ -77,7 +77,7 @@ bot.on('messageUpdate', (oldMessage, newMessage) => {
         }
     }
     catch (err) {
-        console.log('\n\BUG IN MESSAGE UPDATE EVENT\n' + err);
+        console.log('\n\BUG IN MESSAGE UPDATE EVENT' + err);
     }
 });
 
@@ -101,17 +101,18 @@ bot.on('messageDelete', message => {
         }
     }
     catch (err) {
-        console.log('\n\BUG IN MESSAGE DELETE EVENT\n' + err);
+        console.log('\n\BUG IN MESSAGE DELETE EVENT' + err);
     }
 });
 
 bot.on('guildMemberAdd', GuildMember => {
     var data = new Data.Data('', bot);
+    var d = new Date();
 
     try { data.whatServer(GuildMember.guild.id); }
     catch (err) { }//this triggers when message was sent in DM
 
-    console.log(`${GuildMember.user.username}#${GuildMember.user.discriminator}`);
+    console.log(`${d} - new member - ${GuildMember.user.username}#${GuildMember.user.discriminator}`);
 
     if (data.server == `vikmains`) {
         var ban = new Ban.Ban(data);

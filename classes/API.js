@@ -24,14 +24,29 @@ exports.API = function () {
     api.URLliveGameData = function (server, playerID) {
         return `https://${server}.api.riotgames.com/lol/spectator/v3/active-games/by-summoner/${playerID}?api_key=${api.RITO_KEY}`;
     };
-    api.playersRanksData = function (server, playerIDs) {
+    api.playersRanksData = function (server, playerIDs) { //to be deprecated
         return `https://${server}.api.riotgames.com/api/lol/${server}/v2.5/league/by-summoner/${playerIDs}/entry?api_key=${api.RITO_KEY}`;
+    };
+    api.newPlayersRanksData = function (server, playerID) {
+        return `https://${server}.api.riotgames.com/lol/league/v3/positions/by-summoner/${playerID}?api_key=${api.RITO_KEY}`;
     };
     api.URLchampionData = function (server) {
         return `https://${server}.api.riotgames.com/lol/static-data/v3/champions?dataById=true&api_key=${api.RITO_KEY}`;
     };
 
 
+    api.extractPlayerRanksData = function (server, playerIDs, callback) { //to be deprecated
+        api.extractFromURL(api.playersRanksData(server, playerIDs), ranksAPI => {
+            if (!api.everythingOkay(ranksAPI))
+                return callback(`:warning: Error retrieving ranks data.`);
+            return callback(JSON.parse(ranksAPI));
+        });
+    };
+    api.extractNewPlayerRanksData = function (server, playerID, callback) {
+        api.extractFromURL(api.newPlayersRanksData(server, playerID), ranksAPI => {
+            if (!api.everythingOkay(ranksAPI))
+                return callback(`:warning: Error retrieving ranks data.`);
+            return callback(JSON.parse(ranksAPI));
         });
     };
     api.extractMatchData = function (server, matchID, callback) {
@@ -53,13 +68,6 @@ exports.API = function () {
             if (!api.everythingOkay(championDataAPI))
                 return callback(":warning: Error retrieving champion data.");
             return callback(JSON.parse(championDataAPI));
-        });
-    };
-    api.extractPlayerRanksData = function (server, playerIDs, callback) {
-        api.extractFromURL(api.playersRanksData(server, playerIDs), ranksAPI => {
-            if (!api.everythingOkay(ranksAPI))
-                return callback(`:warning: Error retrieving ranks data.`);
-            return callback(JSON.parse(ranksAPI));
         });
     };
     api.extractPlayersLiveGameData = function (server, playerID, callback) {
@@ -195,6 +203,7 @@ exports.API = function () {
     api.everythingOkay = function (input) {
         if (!input.startsWith('error'))
             return true;
+        console.log(input.toString());
         return false;
     };
 };

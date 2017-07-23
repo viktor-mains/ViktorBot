@@ -37,7 +37,8 @@ exports.Roles = function (member) {
             .then(success => {
                 if (roles.requestedManually)
                     post.message(`Role **[${roleName.toUpperCase()}]** assigned to ${member.user.username} with utmost efficiency.`);
-                console.log(`Role **[${roleName.toUpperCase()}]** assigned to to ${member.user.username}  with utmost efficiency.`);
+                var d = new Date();
+                console.log(`${d} - ${member.user.username} started streaming, streaming role assigned`);
             }).catch(error => {
                 if (roles.requestedManually)
                     post.message(`Failed to assign the **[${roleName.toUpperCase()}]** role.`);
@@ -58,7 +59,8 @@ exports.Roles = function (member) {
             .then(success => {
                 if (roles.requestedManually)
                     post.message(`**[${roleName.toUpperCase()}]** succesfully removed from ${member.user.username}.`);
-                console.log(`**[${roleName.toUpperCase()}]** succesfully removed from ${member.user.username}.`);
+                var d = new Date();
+                console.log(`${d} - ${member.user.username} started streaming, streaming role assigned`);
             }).catch(error => {
                 if (roles.requestedManually)
                     post.message(`Failed to remove the **[${roleName.toUpperCase()}]** role.`);
