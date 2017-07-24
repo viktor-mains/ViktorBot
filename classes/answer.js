@@ -288,11 +288,12 @@ exports.Answer = function (data) {
                     var ids = "";
                     for (var i = 0; i < game.participants.length; i++)
                         ids += "," + game.participants[i].summonerId;
-                    api.extractPlayerRanksData(swap.endPointToServer(server), ids.slice(1), ranksData => {
-                        if (ranksData.toString().startsWith(`:warning:`))
-                            return post.message(ranksData);
+                    //api.extractPlayerRanksData(swap.endPointToServer(server), ids.slice(1), ranksData => {
+                    //    if (ranksData.toString().startsWith(`:warning:`))
+                    //        return post.message(ranksData);
                         var champions = championDataAPI;
-                        var ranks = ranksData;
+                        //var ranks = ranksData;
+                        var ranks = undefined;
 
                         var blueTeam = ``;
                         var redTeam = ``;
@@ -301,7 +302,7 @@ exports.Answer = function (data) {
                             if (i == game.participants.length) {
                                 post.embed(`${title} Live game of ${playerNickDecoded.toUpperCase()} | ${game.gameMode} ${swap.gameModeIDToName(game.gameQueueConfigId)}`,
                                     [[`:large_blue_circle: Blue Team`, blueTeam, true],
-                                    [`:red_circle: Red Team`, redTeam, true]]);
+                                    [`:red_circle: Red Team`, redTeam, true],[`___`,`:warning: Ranks and win ratio are temporarily unavailable.`,false]]);
                                 break;
                             }
                             var player = ``;
@@ -311,7 +312,7 @@ exports.Answer = function (data) {
                             var losses = 0;
                             var winRatio = `---`;
                             var summonerSpells = swap.spellIDToSpellIcon(game.participants[i].spell1Id)+swap.spellIDToSpellIcon(game.participants[i].spell2Id);
-                            if (ranks[game.participants[i].summonerId] != undefined) {
+                            /*if (ranks[game.participants[i].summonerId] != undefined) {
                                 rank = ranks[game.participants[i].summonerId][0].tier.substring(0, 1) + swap.romanToArabic(ranks[game.participants[i].summonerId][0].entries[0].division);
 
                                 wins = ranks[game.participants[i].summonerId][0].entries[0].wins;
@@ -322,7 +323,7 @@ exports.Answer = function (data) {
                                 if (winRatio < 10)
                                     winRatio += `% `;
                                 else winRatio += `%`;
-                            }
+                            }*/
                             player += `\`\`|${rank}|`;
 
                             var nick = game.participants[i].summonerName.trim().replace(/ /g, "");
@@ -337,7 +338,7 @@ exports.Answer = function (data) {
                                 blueTeam += `${player}\n`;
                             else redTeam += `${player}\n`;
                         };
-                    });
+                    //});
                 });
             });
         });

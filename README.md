@@ -136,15 +136,16 @@ Ranked races got introduced to our Discord as a way to encourage our community m
 - **Commands**: ``!masterrace | !diamondrace | !platinumrace | !goldrace | !silverrace ``
 - **Usage**: _everyone_  
 - **Endpoints**: 
-    - ``LEAGUE-V2.5``
+    - ``LEAGUE-V3``
 - **Example of use**:
 
 ![http://i.imgur.com/rtXbB1U.png](http://i.imgur.com/rtXbB1U.png)
 
 - **Code**: [[click](https://github.com/Arcyvilk/GreatHerald/blob/master/classes/race.js)]
 - **To do**:
-    - [ ] 24-07-17 - change the ``LEAGUE-V2.5`` endpoint to ``LEAGUE-V3`` one.  
-    - [ ] change the object storing players data to ``.json``  
+    - [X] 24-07-17 - change the ``LEAGUE-V2.5`` endpoint to ``LEAGUE-V3`` one.  
+    - [X] change the object storing players data to ``.json``  
+	- [X] include notification message in case of participant ascending or demoting from a tier
     - [ ] allow users to join the race themselves  
     - [ ] check if the user has enough Viktor games to qualify  
 
@@ -168,13 +169,14 @@ This command returns the data about the game the requested summoner is playing c
     - ``SUMMONER-V3``
     - ``SPECTATOR-V3``
     - ``LOL-STATIC-DATA-V3``
-    - ``LEAGUE-V2.5`` 
+    - ~~``LEAGUE-V2.5``~~
 - **Example of use**:
 
 ![http://i.imgur.com/U9lmAJ8.png](http://i.imgur.com/U9lmAJ8.png)
 
 - **To do**:
-    - [ ] 24-07-17 - change the ``LEAGUE-V2.5`` endpoint to ``LEAGUE-V3`` one.
+	- [X] 24-07-17 - remove the ``LEAGUE-V2.5`` endpoint.
+    - [ ] 24-07-17 - include the ``LEAGUE-V3`` endpoint.
 
 ### !lastgame <ign|server> 
 
