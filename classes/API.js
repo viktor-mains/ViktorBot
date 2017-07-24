@@ -33,7 +33,7 @@ exports.API = function () {
 
     
     api.extractPlayerRanksData = function (server, playerID, callback) {
-        api.extractFromURL(api.newPlayersRanksData(server, playerID), ranksAPI => {
+        api.extractFromURL(api.playersRanksData(server, playerID), ranksAPI => {
             if (!api.everythingOkay(ranksAPI))
                 return callback(`:warning: Error retrieving ranks data.`);
             return callback(JSON.parse(ranksAPI));

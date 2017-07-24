@@ -83,7 +83,7 @@
                 var server = swap.serverToEndPoint(raceJson.Participants[i].server);
                 var playerID = raceJson.Participants[i].id;
 
-                api.extractNewPlayerRanksData(server, playerID, rankJson => {
+                api.extractPlayerRanksData(server, playerID, rankJson => {
                     if (rankJson.toString().startsWith(`:warning:`)) {
                         post.message(`:warning: Error while downloading ${raceJson.Participants[i].nickname}'s data.`);
                         callback(`error`);
