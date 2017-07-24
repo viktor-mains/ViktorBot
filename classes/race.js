@@ -56,15 +56,19 @@
         });
     };
     race.updateRace = function (raceJson, rankDesired, rankCurrent, rankLower, callback) {
-        race.assignRankPoints(raceJson, rankDesired, rankCurrent, rankLower, updatedRaceJson => {
-            if (updatedRaceJson.toString() == `error`)
-                return;
-            race.checkForRankMoves(updatedRaceJson, rankDesired, rankCurrent, rankLower, newWinnersAssigned => {
-                newWinnersAssigned.Participants = race.sortByPoints(newWinnersAssigned.Participants, `points`);
-                callback(newWinnersAssigned);
-                race.saveUpdateInFile(newWinnersAssigned, `../data/race/${rankDesired.toLowerCase()}race.json`);
+        if (raceJson.Participants.length > 0) {
+            race.assignRankPoints(raceJson, rankDesired, rankCurrent, rankLower, updatedRaceJson => {
+                if (updatedRaceJson.toString() == `error`)
+                    return;
+                race.checkForRankMoves(updatedRaceJson, rankDesired, rankCurrent, rankLower, newWinnersAssigned => {
+                    newWinnersAssigned.Participants = race.sortByPoints(newWinnersAssigned.Participants, `points`);
+                    callback(newWinnersAssigned);
+                    race.saveUpdateInFile(newWinnersAssigned, `../data/race/${rankDesired.toLowerCase()}race.json`);
+                });
             });
-        });
+        }
+        else
+            return callback (raceJson);
     };
     race.assignRankPoints = function (raceJson, rankDesired, rankCurrent, rankLower, callback) {
         var Swap = require('./swap.js');
@@ -72,8 +76,10 @@
         var API = require('./API.js');
         var api = new API.API();
 
+        var l = raceJson.Participants.length;
+
         function raceLoop(i) {
-            if (i < raceJson.Participants.length) {
+            if (i < l) {
                 var server = swap.serverToEndPoint(raceJson.Participants[i].server);
                 var playerID = raceJson.Participants[i].id;
 
@@ -87,7 +93,7 @@
                     raceJson.Participants[i].leaguePoints = rankJson[0].leaguePoints;
                     raceJson.Participants[i].points = race.calculatePlayerRacePoints(rankJson[0], rankDesired, rankCurrent, rankLower);
 
-                    if (i == raceJson.Participants.length - 1) 
+                    if (i == l - 1) 
                         callback(raceJson);
                     return raceLoop(i + 1);
                 });

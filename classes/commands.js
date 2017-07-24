@@ -142,43 +142,43 @@ exports.Commands = function (answer) {
         'challengerrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
-            //isModCommand: false,
-            isModCommand: true,
+            isModCommand: false,
+            //isModCommand: true,
             arguments: `Challenger+Master+Diamond`
         },
         'masterrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
-            //isModCommand: false,
-            isModCommand: true,
+            isModCommand: false,
+            //isModCommand: true,
             arguments: `Master+Diamond+Platinum`
         },
         'diamondrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
-            //isModCommand: false,
-            isModCommand: true,
+            isModCommand: false,
+            //isModCommand: true,
             arguments: `Diamond+Platinum+Gold`
         },
         'platinumrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
-            //isModCommand: false,
-            isModCommand: true,
+            isModCommand: false,
+            //isModCommand: true,
             arguments: `Platinum+Gold+Silver`
         },
         'goldrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
-            //isModCommand: false,
-            isModCommand: true,
+            isModCommand: false,
+            //isModCommand: true,
             arguments: `Gold+Silver+Bronze`
         },
         'silverrace': {
             triggers: `toRace`,
             typeOfResponse: `function`,
-            //isModCommand: false,
-            isModCommand: true,
+            isModCommand: false,
+            //isModCommand: true,
             arguments: `Silver+Bronze+Unranked`
         },
         'rito': {
