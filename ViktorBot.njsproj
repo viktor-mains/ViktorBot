@@ -155,6 +155,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="classes\matchup.js" />
+    <Compile Include="classes\mod\mods.js" />
     <Compile Include="classes\post.js" />
     <Compile Include="classes\race.js">
       <SubType>Code</SubType>
@@ -407,6 +408,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="classes\" />
+    <Folder Include="classes\api\champgg\" />
+    <Folder Include="classes\api\riot\" />
+    <Folder Include="classes\mod\" />
+    <Folder Include="classes\api\" />
     <Folder Include="node_modules\" />
     <Folder Include="node_modules\discord.js\" />
     <Folder Include="node_modules\discord.js\src\" />

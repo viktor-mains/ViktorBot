@@ -24,35 +24,33 @@ bot.on('message', message => {
 
     try { data.whatServer(message.channel.guild.id); }
     catch (err) {
-        var ban = new Ban.Ban(data);
-        if (ban.newUserIsNameBlacklisted(message.author) || (ban.newUserIsIDBlacklisted(message.author))) {
-            console.log(`${message.author.username}#${message.author.discriminator}: ${message.content}`);
-            return;
-        }
         if (!data.userIsArcy() && data.userIsNotThisBot()) {
             message.reply(`Only my glorious creator is allowed to talk to me in private.`);
             return;
-        }
-    }//this triggers when message was sent in DM
+        };
+    };
 
-    try {
+    data.loadServerData(() => {
         if (data.userIsNotThisBot()) {
-            var userMessage = new UserMessage.UserMessage(data);
-            var answer = new Answer.Answer(data);
+            try {
+                var userMessage = new UserMessage.UserMessage(data);
+                var answer = new Answer.Answer(data);
 
-            answer.toEmoteReactionTrigger();
-            if (userMessage.hasCapsLockTrigger())
-                answer.toCapsLock();
-            if (userMessage.hasCommandTrigger())
-                return answer.toCommand();
-            if (userMessage.hasDearViktorTrigger())
-                return answer.toDearViktor();
-            return answer.toKeyword();
+                answer.toEmoteReactionTrigger();
+                if (userMessage.hasCapsLockTrigger())
+                    answer.toCapsLock();
+                if (userMessage.hasCommandTrigger())
+                    return answer.toCommand();
+                if (userMessage.hasDearViktorTrigger())
+                    return answer.toDearViktor();
+                return answer.toKeyword();
+            }
+            catch (err) {
+                var d = new Date();
+                console.log(`\n${d} - message post - ${err}`);
+            };
         }
-    }
-    catch (err) {
-        console.log(`\n\n!!! ${err} !!!\n\n`);
-    }
+    });
 });
 
 bot.on('messageUpdate', (oldMessage, newMessage) => {

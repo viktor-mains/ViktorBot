@@ -22,6 +22,30 @@ exports.Data = function (message, bot) {
     data.spamChannel = '';
     data.offTop = '247501730336604163'; //hardcoded offtop from vikmains
 
+    data.arrayOfMods = '';
+
+    data.loadServerData = function (callback) {
+        if (data.message.guild != null) { //if it was send in guild channel, not in DM
+            var fs = require('fs');
+            var serverDataPath = '../data/mod/serverData.json';
+
+            fs.readFile(serverDataPath, 'utf8', (err, serverDataJson) => {
+                if (err) {
+                    var d = new Date();
+                    return console.log(`\n${d} - error while reading server data!`);
+                }
+                serverDataJson = JSON.parse(serverDataJson);
+                if (data.serverIsListed(serverDataJson)) {
+                    data.arrayOfMods = serverDataJson.Servers[data.serverIndex(serverDataJson)].moderators;
+                    return callback();
+                    // add all the logic of server initial data here!!!!!!!!!
+                }
+                data.arrayOfMods = [data.message.guild.ownerID];
+                return callback();
+            });
+        }
+    };
+
     data.whatServer = function (serverID) {
         switch (serverID) {
             case '207732593733402624': //vikmains
@@ -62,6 +86,22 @@ exports.Data = function (message, bot) {
         `6. No spam. Memes in healthy dose please.\n\n` +
         `Moderators reserve the right to kick/bans users basing on judgement calls.`;
 
+    data.serverIsListed = function (serverDataJson) {
+        if (data.message) {
+            for (i in serverDataJson.Servers) {
+                if (serverDataJson.Servers[i].id == data.message.guild.id)
+                    return true;
+            };
+        }
+        return false;
+    };
+    data.serverIndex = function (serverDataJson) {
+        for (i in serverDataJson.Servers) {
+            if (serverDataJson.Servers[i].id == data.message.guild.id)
+                return i;
+        };
+        return -1;
+    };
     data.userIsNotThisBot = function () {
         if (message.author.id !== bot.user.id)
             return true;

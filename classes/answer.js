@@ -69,14 +69,21 @@ exports.Answer = function (data) {
 
 
     answer.userIsAMod = function () {
-        if (data.message.author.id === `165962236009906176`)
-            return true;
+        for (i in data.arrayOfMods) {
+            if (data.arrayOfMods[i] == data.message.author.id)
+                return true;
+        }
         return false;
     };
     answer.userAllowedToUseCommand = function (cmd) {
         if (cmd.isModCommand && !answer.userIsAMod())
             return false;
         return true;
+    };
+    answer.commandIsAvailable = function (cmd) {
+        if (cmd.isAvailable)
+            return true;
+        return false;
     };
 
 
@@ -127,12 +134,12 @@ exports.Answer = function (data) {
 
 
     answer.checkForModPrivileges = function (cmd) {
-        if (!answer.userAllowedToUseCommand(cmd)) {
+        if (!answer.userAllowedToUseCommand(cmd))
+            return post.toDM("```You aren\'t allowed to use this command because you ain\'t cool enough.```");
+        if (!answer.commandIsAvailable(cmd))
             return post.message("```This command is temporarily unavailable. " +
                 "It will get turned on again after the application proces for Viktor Bot gets completed. " +
                 "Sorry for inconvenience and please be patient.```");
-            //return post.toDM("```You aren\'t allowed to use this command because you ain\'t cool enough.```");
-        }
         answer.checkForBotRefusal(cmd);
     };
     answer.checkForBotRefusal = function (cmd) {
@@ -163,6 +170,22 @@ exports.Answer = function (data) {
     
 
 
+    answer.locateServer = function () {
+        var Mods = require('./mod/mods.js');
+        var mods = new Mods.Mods(data);
+
+        return mods.locateServer();
+    };
+    answer.editModPrivileges = function (typeOfRequest) {
+        var Mods = require('./mod/mods.js');
+        var mods = new Mods.Mods(data);
+        if (typeOfRequest == `promote`)
+            return mods.promote();
+        if (typeOfRequest == `demote`)
+            return mods.demote();
+        if (typeOfRequest == `list`)
+            return mods.showList();
+    };
     answer.toImpersonate = function () {
         var impersonate = input.removeKeyword(data.message.content);
         post.messageToChannel(impersonate, data.offTop);
