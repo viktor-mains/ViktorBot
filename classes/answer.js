@@ -9,8 +9,6 @@ var Post = require('./post.js');
 var Swap = require('./swap.js');
 var API = require('./API.js');
 
-const version = `The Great Herald vers 2.0.0: Remastered!`;
-
 exports.Answer = function (data) {
     var answer = this;
     var rng = new RNG.RNG();
@@ -46,22 +44,26 @@ exports.Answer = function (data) {
         
         post.embedToDM(title, build, data.message.author);
     }
-    answer.toHelp = `\n**${data.version} **\n\nCommand list:\n` +
-        `\`\`\`Viktor gameplay questions     - !build | !matchup <champion_name> | !faq\n` +
-        `Clubs                         - !clubs\n` +
-        `Streams                       - !dun\n` +
-        `PBE                           - !pbe\n\n`+
-        `Live game data                - !ingame <ign>|<server> (example: !ingame arcyvilk|euw)\n` +
-        `Last game summary             - !lastgame <ign>|<server> (example: !lastgame arcyvilk|euw)\n` +
-        `OP.gg  				       - !opgg <ign>|<server> (example: !opgg arcyvilk|euw)\n` +
-        `Mastery points 		       - !mastery <ign>|<server> (example: !mastery arcyvilk|euw)\n` +
-        `Ranked races                  - !silverrace | !goldrace | !platinumrace | !diamondrace | !masterrace\n\n` +
-        `Talking with Viktor bot       - dear viktor <text> ? | hello | notice me senpai | !beep\n` +
-        `Can't decide between X and Y? - !choose <option1>|<option2>|<option3> ...\n` +
-        `Random pet photo              - !meow | !woof\`\`\`` +
-        `**Joining races is not reimplemented yet!**\n\n` +
-        `Server, rank and stream roles - visit <#${data.roleChannel}> room for more info.\n` +
-        `In case of any bugs occuring, contact Arcyvilk#5460.\n\n`;
+    answer.showHelpContents = function () {
+        var Commands = require('./commands.js');
+        var commands = new Commands.Commands('');
+        var Input = require('./input.js');
+        var input = new Input.Input();
+        var helpContents = '```List of commands:\n\n';
+
+        for (var property in commands.listOfResponses) {
+            if (!commands.listOfResponses[property].isModCommand && commands.listOfResponses[property].hasOwnProperty('description')) {
+                var commandDescription = `!${input.justifyToLeft(property, 15)} - ${commands.listOfResponses[property].description}\n`;
+                if (helpContents.length + commandDescription.length >= 2000) {
+                    post.toDM(helpContents);
+                    helpContents = '```';
+                }
+                helpContents += commandDescription;
+            }
+        };
+        helpContents += '```';
+        post.toDM(helpContents);
+    };
 
     answer.toVersion = data.version;
     answer.toTest = `>:3`;
@@ -170,6 +172,12 @@ exports.Answer = function (data) {
     
 
 
+    answer.showModCommands = function () {
+        var Mods = require('./mod/mods.js');
+        var mods = new Mods.Mods(data);
+
+        return mods.showModCommands();
+    };
     answer.locateServer = function () {
         var Mods = require('./mod/mods.js');
         var mods = new Mods.Mods(data);

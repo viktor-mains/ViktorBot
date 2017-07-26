@@ -14,7 +14,7 @@ exports.Data = function (message, bot) {
     data.message = message;
     data.bot = bot;
     
-    data.version = 'The Great Herald beta 2.2: PBE coverage';
+    data.version = 'The Great Herald beta 2.5.3: Command !help reworked!';
 
     data.server = '';
     data.logChannel = '';

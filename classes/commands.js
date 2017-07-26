@@ -10,6 +10,7 @@ exports.Commands = function (answer) {
  *  Values:
  *  @triggers - string response sent by bot when triggered
  *  @typeOfResponse: 'text' (returns string), 'function' (triggers function - sending from inside of function), 'embed' (REQUIRES TITLE!)
+ *  @description - description which shows in the list of commands. If UNDEFINED, command doesn't show on the list.
  *  @isModCommand - self-explanatory
  *  @isAvailable - self-explanatory
  *  <@refusal> - a special response which gets sent instead of standard one, if bot decides to refuse to execute the command
@@ -18,229 +19,49 @@ exports.Commands = function (answer) {
  *  <@postInChannel> - directs the bot's response into the channel which ID is given. If value='DM' will send DM.
 */
     commands.listOfResponses = {
-        'beep': {
-            triggers: `_sighs deeply_\nBeep. Boop.`,
-            typeOfResponse: `text`,
-            isAvailable: true,
-            isModCommand: false
-        },
-        'build': {
-            triggers: 'toBuild',
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: false,
-            arguments: `**♥ GLORIOUS MINIGUIDE TO BUILD ♥**`
-        },
-        'choose': {
-            triggers: `toChoose`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: false
-        },
-        'clubs': {
-            triggers: `https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.`,
-            typeOfResponse: `text`,
-            isAvailable: true,
-            isModCommand: false
-        },
-        'dun': {
-            triggers: `- OP.gg - https://na.op.gg/summoner/userName=dunv2\n- Stream - http://twitch.tv/dunlol`,
-            typeOfResponse: `embed`,
-            isAvailable: true,
-            isModCommand: false,
-            title: `Dun, Challenger Viktor main`
-        },
-        'faq': {
-            triggers: `Useful tips and tricks for new Viktor players: https://www.reddit.com/r/viktormains/wiki/faq`,
-            typeOfResponse: `text`,
-            isAvailable: true,
-            isModCommand: false
-        },
-        'gibeskin': {
-            triggers: `toSkinTimer`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: false
-        },
-        'giveid': {
-            triggers: `toPlayerIDRequest`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: true
-        },
-        'iamnot': {
-            triggers: `toIAmNotCommand`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: false
-        },
-        'iam': {
-            triggers: `toIAmCommand`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: false
-        },
-        'impersonate': {
-            triggers: `toImpersonate`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: true
-        },
-        'ingame': {
-            triggers: `toLiveGameRequest`,
-            arguments: `:game_die:`,
-            typeOfResponse: `function`,
-            isAvailable: false,
-            isModCommand: false
-        },
-        'joke': {
-            triggers: `I won't waste my precious time for the sake of your personal amusement.`,
-            typeOfResponse: `text`,
-            isAvailable: true,
-            isModCommand: false
-        },
-        'lastgame': {
-            triggers: `toLastGameRequest`,
-            typeOfResponse: `function`,
-            isAvailable: false,
-            isModCommand: false
-        },
-        'locateserver': {
-            triggers: `locateServer`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: true
-        },
         'h': {
-            triggers: answer.toHelp,
-            typeOfResponse: `text`,
+            triggers: `showHelpContents`,
+            typeOfResponse: `function`,
             postInChannel: `DM`,
+            description: `alternatives: !help/!commands - returns help contents. So basically what you're reading now.`,
             isAvailable: true,
             isModCommand: false
         },
         'help': {
-            triggers: answer.toHelp,
-            typeOfResponse: `text`,
+            triggers: `showHelpContents`,
+            typeOfResponse: `function`,
             postInChannel: `DM`,
+            //description: ``,
             isAvailable: true,
             isModCommand: false
         },
         'commands': {
-            triggers: answer.toHelp,
-            typeOfResponse: `text`,
+            triggers: `showHelpContents`,
+            typeOfResponse: `function`,
             postInChannel: `DM`,
+            //description: ``,
             isAvailable: true,
             isModCommand: false
         },
-        'opgg': {
-            triggers: `toOPGG`,
+        'hmod': {
+            triggers: `showModCommands`,
             typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: false,
-            refusal: `I don't think you want to show _that_  to everyone.`
-        },
-        'pbe': {
-            triggers: `toPBE`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: false
-        },
-        'mastery': {
-            triggers: `toViktorMastery`,
-            arguments: `<:viktorgod:269479031009837056> Viktor mastery points for`,
-            typeOfResponse: `function`,
-            isAvailable: false,
-            isModCommand: false
-        },
-        'matchup': {
-            triggers: `toMatchup`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: false
-        },
-        'meow': {
-            triggers: `toCatPicture`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: false,
-            refusal: `You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a cat photo. _Really?_\n`
-        },
-        'mod': {
-            triggers: `editModPrivileges`,
-            typeOfResponse: `function`,
-            arguments: `promote`,
+            postInChannel: `DM`,
+            description: `returns the list of moderator exclusive commands`,
             isAvailable: true,
             isModCommand: true
         },
-        'unmod': {
-            triggers: `editModPrivileges`,
+        'iam': {
+            triggers: `toIAmCommand`,
             typeOfResponse: `function`,
-            arguments: `demote`,
+            description: `adds a role to you (only #assign_role room)`,
             isAvailable: true,
-            isModCommand: true
+            isModCommand: false
         },
-        'modlist': {
-            triggers: `editModPrivileges`,
+        'iamnot': {
+            triggers: `toIAmNotCommand`,
             typeOfResponse: `function`,
-            arguments: `list`,
-            isAvailable: true,
-            isModCommand: true
-        },
-        'challengerrace': {
-            triggers: `toRace`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: false,
-            arguments: `Challenger+Master+Diamond`
-        },
-        'masterrace': {
-            triggers: `toRace`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: false,
-            arguments: `Master+Diamond+Platinum`
-        },
-        'diamondrace': {
-            triggers: `toRace`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: false,
-            arguments: `Diamond+Platinum+Gold`
-        },
-        'platinumrace': {
-            triggers: `toRace`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: false,
-            arguments: `Platinum+Gold+Silver`
-        },
-        'goldrace': {
-            triggers: `toRace`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: false,
-            arguments: `Gold+Silver+Bronze`
-        },
-        'silverrace': {
-            triggers: `toRace`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: false,
-            arguments: `Silver+Bronze+Unranked`
-        },
-        'rito': {
-            triggers: `:white_sun_small_cloud:\n\n` +
-                `       <:rito:323416307414335488>\n` +
-                `          |:open_hands:\n` +
-                `         / _\n` +
-                `━━━━━┓ ＼＼ \n` +
-                `┓┓┓┓┓┃\n` +
-                `┓┓┓┓┓┃ ヽ<:viktor:232941841815830536>ノ\n` +
-                `┓┓┓┓┓┃      /\n` +
-                `┓┓┓┓┓┃  ノ) \n` +
-                `┓┓┓┓┓┃\n` +
-                `┓┓┓┓┓┃\n`,
-            typeOfResponse: `text`,
+            description: `removes a role from you (only #assign_role room)`,
             isAvailable: true,
             isModCommand: false
         },
@@ -249,34 +70,260 @@ exports.Commands = function (answer) {
             `- are you a Viktor streamer? Type !iam Viktor Streamer\n`,
             title: `Self-assignable roles`,
             typeOfResponse: `embed`,
+            description: `shows the list of self-assignable roles\n`,
             isAvailable: true,
             isModCommand: false
+        },
+        'beep': {
+            triggers: `_sighs deeply_\nBeep. Boop.`,
+            typeOfResponse: `text`,
+            //description: ``,
+            isAvailable: true,
+            isModCommand: false
+        },
+        'build': {
+            triggers: 'toBuild',
+            typeOfResponse: `function`,
+            description: `returns the recommended by /r/ViktorMains build`,
+            isAvailable: true,
+            isModCommand: false,
+            arguments: `**♥ GLORIOUS MINIGUIDE TO BUILD ♥**`
+        },
+        'clubs': {
+            triggers: `https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.`,
+            typeOfResponse: `text`,
+            description: `returns the list of Viktor clubs known to us`,
+            isAvailable: true,
+            isModCommand: false
+        },
+        'dun': {
+            triggers: `- OP.gg - https://na.op.gg/summoner/userName=duniswashedup\n- Stream - http://twitch.tv/dunlol`,
+            typeOfResponse: `embed`,
+            description: `returns someinfo about Dun, challenger Viktor main`,
+            isAvailable: true,
+            isModCommand: false,
+            title: `Dun, Challenger Viktor main`
+        },
+        'faq': {
+            triggers: `Useful tips and tricks for new Viktor players: https://www.reddit.com/r/viktormains/wiki/faq`,
+            typeOfResponse: `text`,
+            description: `returns the link to our FAQ with some usefl stuff for new Viktor players`,
+            isAvailable: true,
+            isModCommand: false
+        },
+        'matchup': {
+            triggers: `toMatchup`,
+            typeOfResponse: `function`,
+            description: `syntax: !matchup <championname> - returns link to the Viktor vs <Champion> matchup tips\n`,
+            isAvailable: true,
+            isModCommand: false
+        },
+        'giveid': {
+            triggers: `toPlayerIDRequest`,
+            typeOfResponse: `function`,
+            description: `syntax: !giveid <ign>|<server> - returns the ID of the requested player`,
+            isAvailable: true,
+            isModCommand: true
+        },
+        'impersonate': {
+            triggers: `toImpersonate`,
+            typeOfResponse: `function`,
+            description: `sends a given string as Viktor Bot to the #off_topic channel\n`,
+            isAvailable: true,
+            isModCommand: true
+        },
+        'joke': {
+            triggers: `I won't waste my precious time for the sake of your personal amusement.`,
+            typeOfResponse: `text`,
+            //description: ``,
+            isAvailable: true,
+            isModCommand: false
+        },
+        'locateserver': {
+            triggers: `locateServer`,
+            typeOfResponse: `function`,
+            description: `fetches the server data (chatroom's IDs + server owner ID) into a database. Required for the further moderation`,
+            isAvailable: true,
+            isModCommand: true
+        },
+        'mod': {
+            triggers: `editModPrivileges`,
+            typeOfResponse: `function`,
+            arguments: `promote`,
+            description: `syntax: !mod @mention - gives bot moderation rights to the user`,
+            isAvailable: true,
+            isModCommand: true
+        },
+        'unmod': {
+            triggers: `editModPrivileges`,
+            typeOfResponse: `function`,
+            arguments: `demote`,
+            description: `syntax: !unmod @mention - removes bot moderation rights from the user`,
+            isAvailable: true,
+            isModCommand: true
+        },
+        'modlist': {
+            triggers: `editModPrivileges`,
+            typeOfResponse: `function`,
+            arguments: `list`,
+            description: `shows the list of all users with bot moderation rights\n`,
+            isAvailable: true,
+            isModCommand: true
         },
         'setstatus': {
             triggers: `toStatusChangeRequest`,
             typeOfResponse: `function`,
+            description: `changes the status of Viktor Bot to given one`,
             isAvailable: true,
             isModCommand: true
         },
         'test': {
             triggers: answer.toTest,
             typeOfResponse: `text`,
+            description: `testing function`,
             isAvailable: true,
             isModCommand: true
-        },
-        'woof': {
-            triggers: `toDogPicture`,
-            typeOfResponse: `function`,
-            isAvailable: true,
-            isModCommand: false,
-            refusal: `You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really?_\n`
         },
         'version': {
             triggers: answer.toVersion,
             typeOfResponse: `text`,
+            //description: ``,
             isAvailable: true,
             isModCommand: false
-        }
+        },
+        'ingame': {
+            triggers: `toLiveGameRequest`,
+            arguments: `:game_die:`,
+            typeOfResponse: `function`,
+            description: `syntax: !ingame <ign>|<server> - shows info of an ongoing League game`,
+            isAvailable: false,
+            isModCommand: false
+        },
+        'lastgame': {
+            triggers: `toLastGameRequest`,
+            typeOfResponse: `function`,
+            description: `syntax: !lastgame <ign>|<server> - shows info of last game of a particular player`,
+            isAvailable: false,
+            isModCommand: false
+        },
+        'mastery': {
+            triggers: `toViktorMastery`,
+            arguments: `<:viktorgod:269479031009837056> Viktor mastery points for`,
+            typeOfResponse: `function`,
+            description: `syntax: !mastery <ign>|<server> - returns Viktor mastery for the particular player`,
+            isAvailable: false,
+            isModCommand: false
+        },
+        'opgg': {
+            triggers: `toOPGG`,
+            typeOfResponse: `function`,
+            description: `syntax: !opgg <ign>|<server> returns link to player's op.gg`,
+            isAvailable: true,
+            isModCommand: false,
+            refusal: `I don't think you want to show _that_  to everyone.`
+        },
+        'pbe': {
+            triggers: `toPBE`,
+            typeOfResponse: `function`,
+            description: `returns link to thenewest PBE patch\n`,
+            isAvailable: true,
+            isModCommand: false
+        }, 
+        'challengerrace': {
+            triggers: `toRace`,
+            typeOfResponse: `function`,
+            description: `Challenger Race!`,
+            isAvailable: true,
+            isModCommand: false,
+            arguments: `Challenger+Master+Diamond`
+        },
+        'masterrace': {
+            triggers: `toRace`,
+            typeOfResponse: `function`,
+            description: `Master Race!`,
+            isAvailable: true,
+            isModCommand: false,
+            arguments: `Master+Diamond+Platinum`
+        },
+        'diamondrace': {
+            triggers: `toRace`,
+            typeOfResponse: `function`,
+            description: `Diamond Race!`,
+            isAvailable: true,
+            isModCommand: false,
+            arguments: `Diamond+Platinum+Gold`
+        },
+        'platinumrace': {
+            triggers: `toRace`,
+            typeOfResponse: `function`,
+            description: `Platinum Race!`,
+            isAvailable: true,
+            isModCommand: false,
+            arguments: `Platinum+Gold+Silver`
+        },
+        'goldrace': {
+            triggers: `toRace`,
+            typeOfResponse: `function`,
+            description: `Gold Race!`,
+            isAvailable: true,
+            isModCommand: false,
+            arguments: `Gold+Silver+Bronze`
+        },
+        'silverrace': {
+            triggers: `toRace`,
+            typeOfResponse: `function`,
+            description: `Silver Race!\n`,
+            isAvailable: true,
+            isModCommand: false,
+            arguments: `Silver+Bronze+Unranked`
+        },
+        'choose': {
+            triggers: `toChoose`,
+            typeOfResponse: `function`,
+            description: `syntax: !choose 1|2|...|n - chooses one from given choices`,
+            isAvailable: true,
+            isModCommand: false
+        },
+        'meow': {
+            triggers: `toCatPicture`,
+            typeOfResponse: `function`,
+            description: `returns random cat photo 🐈`,
+            isAvailable: true,
+            isModCommand: false,
+            refusal: `You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a cat photo. _Really?_\n`
+        },
+        'woof': {
+            triggers: `toDogPicture`,
+            typeOfResponse: `function`,
+            description: `returns random dog photo 🐕`,
+            isAvailable: true,
+            isModCommand: false,
+            refusal: `You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really?_\n`
+        },
+        'rito': {
+            triggers: `:white_sun_small_cloud:\n\n` +
+            `       <:rito:323416307414335488>\n` +
+            `          |:open_hands:\n` +
+            `         / _\n` +
+            `━━━━━┓ ＼＼ \n` +
+            `┓┓┓┓┓┃\n` +
+            `┓┓┓┓┓┃ ヽ<:viktor:232941841815830536>ノ\n` +
+            `┓┓┓┓┓┃      /\n` +
+            `┓┓┓┓┓┃  ノ) \n` +
+            `┓┓┓┓┓┃\n` +
+            `┓┓┓┓┓┃\n`,
+            typeOfResponse: `text`,
+            description: `>:3`,
+            isAvailable: true,
+            isModCommand: false
+        },
+        'gibeskin': {
+            triggers: `toSkinTimer`,
+            typeOfResponse: `function`,
+            description: `calculates time since we've got the last Viktor skin\n`,
+            isAvailable: true,
+            isModCommand: false
+        },
     };
 /**
  *  listOfKeywords is an object storing keywords, which when found laying around inside sentences sent by users, are responded with

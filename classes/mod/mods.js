@@ -4,6 +4,24 @@
 	var post = new Post.Post(data);
     var serverDataPath = `../data/mod/serverData.json`;
 
+    // commands to moderate mod help
+    mods.showModCommands = function () {
+        var Commands = require('../commands.js');
+        var commands = new Commands.Commands('');
+        var Input = require('../input.js');
+        var input = new Input.Input();
+        var helpContents = '```Moderator commands:\n\n';
+
+        for (var property in commands.listOfResponses) {
+            if (commands.listOfResponses[property].isModCommand)
+                helpContents += `!${input.justifyToLeft(property, 15)} - ${commands.listOfResponses[property].description}\n`;
+        };
+        helpContents += '```';
+
+        return post.toDM(helpContents);
+    };
+
+    // commands to moderate mods
 	mods.promote = function () {
 		var fs = require('fs');
 		var Input = require('../input.js');
@@ -98,6 +116,9 @@
         });
 	};
 
+    // commands to moderate users
+
+    // commands to moderate server/rooms
     mods.locateServer = function () {
         var fs = require('fs');
 
@@ -149,6 +170,7 @@
         return post.message(`Not implemented yet.`);
     };
 
+    // smaller functions
     mods.serverIsListed = function (serverDataJson) {
         var serverListed = false;
 
