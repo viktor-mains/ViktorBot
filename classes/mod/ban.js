@@ -2,13 +2,35 @@
     var ban = this;
     var Post = require('../post.js');
     var Input = require('../input.js');
+    var fs = require('fs');
     var post = new Post.Post(data);
     var input = new Input.Input();
-    
+    var banPath = ('../data/mod/blackList.json');
+
+    ban.newUserIsBlacklisted = function (GuildMember, callback) {
+        fs.readFile(banPath, 'utf8', (err, fileContents) => {
+            if (err)
+                return false;
+            fileContents = JSON.parse(fileContents);
+            for (i in fileContents.Blacklist) {
+                if (fileContents.Blacklist[i].serverID == GuildMember.guild.id) {
+                    for (j in fileContents.Blacklist[i].bans) {
+                        if (fileContents.Blacklist[i].bans[j].id == GuildMember.user.id) {
+                            callback(true);
+                            return;
+                        }
+                    }
+                }
+            };
+            callback(false);
+        });
+    };
+    ban.handleUserFromBlacklist = function (GuildMember) {
+        GuildMember.ban();
+        GuildMember.user.send(`<:lazored:288786608952442881>`);
+    };
+
     ban.ban = function () { //remake it so half of code doesn't repeat itself
-        var fs = require('fs');
-        var banPath = ('../data/mod/blackList.json');
-        var idToBan = '';
         var lastMessage = 'null';
         var banOptions = input.removeKeyword(data.message.content).split('|');
 
@@ -92,8 +114,6 @@
         });
     };
     ban.unban = function () {
-        var fs = require('fs');
-        var banPath = ('../data/mod/blackList.json');
         var idToUnban = input.removeKeyword(data.message.content);
         var reason = '';
 
@@ -137,5 +157,4 @@
     ban.banList = function () {
         return post.embed(`:warning: Command unavailable`, [[`___`, `\`\`Not implemented yet!\`\``, false]]);
     };
-   
 };

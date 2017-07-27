@@ -6,7 +6,7 @@ var Data = require('./classes/data.js');
 
 var Roles = require('./classes/roles.js');
 var Stream = require('./classes/stream.js');
-var Ban = require('./classes/ban.js');
+var Ban = require('./classes/mod/ban.js');
 
 const bot = new Discord.Client();
 const token = process.env.VIKTOR_DISCORD_TOKEN;
@@ -61,21 +61,20 @@ bot.on('messageUpdate', (oldMessage, newMessage) => {
 
     try {
         if (data.userIsNotThisBot()) {
-            var embed = new Discord.RichEmbed()
-                .setTitle(`MESSAGE EDITED`)
-                .setColor(0x83C4F2)
-                .setDescription(`**Author:** \`\`${oldMessage.author.username}#${oldMessage.author.discriminator}\`\`` +
-                `\n**Timestamp:**\`\`${oldMessage.createdTimestamp}\`\`` +
-                `\n**Channel:** <#${oldMessage.channel.id}>`)
-                .addField(`Old message`,
-                `\n\`\`\`${oldMessage.content}\`\`\``, true)
-                .addField(`New message`,
-                `\n\`\`\`${newMessage.content}\`\`\``, true);
-            bot.channels.get(data.logChannel).send({ embed });
+            var Post = require('./classes/post.js');
+            var post = new Post.Post(data);
+
+            post.embedToChannel(`:clipboard: MESSAGE EDITED`, [
+                [`Author`, `${oldMessage.author.username}#${oldMessage.author.discriminator}`, true],
+                [`Timestamp`, oldMessage.createdTimestamp, true],
+                [`Channel`, `<#${oldMessage.channel.id}>`, true],
+                [`Old message`, `\`\`\`${oldMessage.content}\`\`\``, false],
+                [`New message`, `\`\`\`${newMessage.content}\`\`\``, false]
+                ], data.logChannel, '83C4F2');
         }
     }
     catch (err) {
-        console.log('\n\BUG IN MESSAGE UPDATE EVENT' + err);
+        console.log('\n\BUG IN MESSAGE UPDATE EVENT' + err); 
     }
 });
 
@@ -87,15 +86,15 @@ bot.on('messageDelete', message => {
 
     try {
         if (data.userIsNotThisBot()) {
-            var embed = new Discord.RichEmbed()
-                .setTitle(`MESSAGE DELETED`)
-                .setColor(0xC70000)
-                .setDescription(`**Author:** \`\`${message.author.username}#${message.author.discriminator}\`\`` +
-                `\n**Timestamp:**\`\`${message.createdTimestamp}\`\`` +
-                `\n**Channel:** <#${message.channel.id}>`)
-                .addField(`Content`,
-                `\n\`\`\`${message.content}\`\`\``, false)
-            bot.channels.get(data.logChannel).send({ embed });
+            var Post = require('./classes/post.js');
+            var post = new Post.Post(data);
+
+            post.embedToChannel(`:no_mobile_phones: MESSAGE DELETED`, [
+                [`Author`, `${message.author.username}#${message.author.discriminator}`, true],
+                [`Timestamp`, message.createdTimestamp, true],
+                [`Channel`, `<#${message.channel.id}>`, true],
+                [`Content`, `\`\`\`${message.content}\`\`\``, false]
+            ], data.logChannel, 'C70000');
         }
     }
     catch (err) {
@@ -106,41 +105,41 @@ bot.on('messageDelete', message => {
 bot.on('guildMemberAdd', GuildMember => {
     var data = new Data.Data('', bot);
     var d = new Date();
+    var Post = require('./classes/post.js');
+    var post = new Post.Post(data);
+    var ban = new Ban.Ban(data);
 
     try { data.whatServer(GuildMember.guild.id); }
     catch (err) { }//this triggers when message was sent in DM
 
     console.log(`${d} - new member - ${GuildMember.user.username}#${GuildMember.user.discriminator}\n`);
+    post.embedToChannel(`:man: :woman: USER JOINS`, [
+        [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, true],
+        [`Joined at`, GuildMember.joinedAt, true]
+    ], data.logChannel, '51E61C');
 
-    if (data.server == `vikmains`) {
-        var ban = new Ban.Ban(data);
-        if (ban.newUserIsNameBlacklisted(GuildMember.user) || (ban.newUserIsIDBlacklisted(GuildMember.user)))
+    ban.newUserIsBlacklisted(GuildMember, isBanned => {
+        if (isBanned)
             return ban.handleUserFromBlacklist(GuildMember);
         GuildMember.user.send(data.welcomeMessageForViktorMains);
-    }
-    var embed = new Discord.RichEmbed()
-        .setTitle(`USER JOINS`)
-        .setColor(0x51E61C)
-        .setDescription(`**User:** \`\`${GuildMember.user.username}#${GuildMember.user.discriminator}\`\`` +
-        `\n**Joined at:**\`\`${GuildMember.joinedAt}\`\``);
-    bot.channels.get(data.logChannel).send({ embed });
+    });
 });
 
 bot.on('guildMemberRemove', GuildMember => {
     var data = new Data.Data('', bot);
     var d = new Date();
+    var Post = require('./classes/post.js');
+    var post = new Post.Post(data);
 
     try { data.whatServer(GuildMember.guild.id); }
     catch (err) { }//this triggers when message was sent in DM
 
     console.log(`${d} - member left - ${GuildMember.user.username}#${GuildMember.user.discriminator}\n`);
 
-    var embed = new Discord.RichEmbed()
-        .setTitle(`USER LEAVES`)
-        .setColor(0xFDC000)
-        .setDescription(`**User:** \`\`${GuildMember.user.username}#${GuildMember.user.discriminator}\`\`` +
-        `\n**Leaves at:** \`\`${d}\`\``);
-    bot.channels.get(data.logChannel).send({ embed });
+    post.embedToChannel(`:man: :no_entry_sign: USER LEAVES`, [
+        [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, true],
+        [`Leaves at`, d, true]
+    ], data.logChannel, 'FDC000');
 });
 
 bot.on('presenceUpdate', (oldMember, newMember) => {   
