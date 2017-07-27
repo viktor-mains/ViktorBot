@@ -155,6 +155,22 @@
         });
     };
     ban.banList = function () {
-        return post.embed(`:warning: Command unavailable`, [[`___`, `\`\`Not implemented yet!\`\``, false]]);
+        fs.readFile(banPath, 'utf8', (err, fileContents) => {
+            if (err)
+                return post.embed(`:warning: Error while unbanning user`, [[`___`, `${err}`, false]]);
+            var d = new Date();
+            var serverID = data.message.guild.id;
+            var listOfBans = '';
+            fileContents = JSON.parse(fileContents);
+
+            for (i in fileContents.Blacklist) {
+                if (fileContents.Blacklist[i].serverID == serverID) {
+                    for (j in fileContents.Blacklist[i].bans)
+                        listOfBans += `**${fileContents.Blacklist[i].bans[j].id}** - ${fileContents.Blacklist[i].bans[j].reason}\n`;
+                    return post.embed(`:no_entry_sign: Blacklist`, [[`___`, listOfBans, false]]);
+                }
+            }
+            return post.embed(`:hug: No one is on blacklist yet!`, [[`___`, `You should be happy.`, false]]);
+        });
     };
 };
