@@ -116,8 +116,6 @@
         });
 	};
 
-    // commands to moderate users
-
     // commands to moderate server/rooms
     mods.locateServer = function () {
         var fs = require('fs');

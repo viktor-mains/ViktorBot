@@ -155,6 +155,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="classes\matchup.js" />
+    <Compile Include="classes\mod\ban.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="classes\mod\mods.js" />
     <Compile Include="classes\post.js" />
     <Compile Include="classes\race.js">

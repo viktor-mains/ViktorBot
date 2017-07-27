@@ -118,7 +118,6 @@ bot.on('guildMemberAdd', GuildMember => {
             return ban.handleUserFromBlacklist(GuildMember);
         GuildMember.user.send(data.welcomeMessageForViktorMains);
     }
-
     var embed = new Discord.RichEmbed()
         .setTitle(`USER JOINS`)
         .setColor(0x51E61C)

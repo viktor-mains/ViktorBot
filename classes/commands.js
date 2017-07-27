@@ -170,6 +170,30 @@ exports.Commands = function (answer) {
             isAvailable: true,
             isModCommand: true
         },
+        'ban': {
+            triggers: `toBan`,
+            typeOfResponse: `function`,
+            arguments: `ban`,
+            description: `syntax: !ban <id>|<reason> - bans user (can be used with mention instead of ID)`,
+            isAvailable: true,
+            isModCommand: true
+        },
+        'unban': {
+            triggers: `toBan`,
+            typeOfResponse: `function`,
+            arguments: `unban`,
+            description: `syntax: !unban <id> - unbans user`,
+            isAvailable: true,
+            isModCommand: true
+        },
+        'banlist': {
+            triggers: `toBan`,
+            typeOfResponse: `function`,
+            arguments: `list`,
+            description: `shows the list of banned/blacklisted users\n`,
+            isAvailable: true,
+            isModCommand: true
+        },
         'setstatus': {
             triggers: `toStatusChangeRequest`,
             typeOfResponse: `function`,

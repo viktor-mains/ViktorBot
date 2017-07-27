@@ -12,10 +12,16 @@ exports.Post = function (data) {
     post.messageToChannel = function (messageToPost, channelToPost) {
         data.bot.channels.get(channelToPost).send(messageToPost);
     };
-    post.embed = function (title, embedTitleBodyAndArgs) {//messageToPost) {
-        var embed = new Discord.RichEmbed()
-            .setTitle(title)
-            .setColor(0xFDC000);
+    post.embed = function (title, embedTitleBodyAndArgs, color) {
+        var embed;
+        if (color)
+            embed = new Discord.RichEmbed()
+                .setTitle(title)
+                .setColor(`0x${color}`);
+        else
+            embed = new Discord.RichEmbed()
+                .setTitle(title)
+                .setColor(0xFDC000);
         for (var i = 0; i < embedTitleBodyAndArgs.length; i++){
             embed.addField(embedTitleBodyAndArgs[i][0],
                 embedTitleBodyAndArgs[i][1],
@@ -26,10 +32,16 @@ exports.Post = function (data) {
             }
         }
     };
-    post.embedToChannel = function (title, embedTitleBodyAndArgs, channelToPost) {
-        var embed = new Discord.RichEmbed()
-            .setTitle(title)
-            .setColor(0xFDC000);
+    post.embedToChannel = function (title, embedTitleBodyAndArgs, channelToPost, color) {
+        var embed;
+        if (color)
+            embed = new Discord.RichEmbed()
+                .setTitle(title)
+                .setColor(`0x${color}`);
+        else 
+            embed = new Discord.RichEmbed()
+                .setTitle(title)
+                .setColor(0xFDC000);
         for (var i = 0; i < embedTitleBodyAndArgs.length; i++) {
             embed.addField(embedTitleBodyAndArgs[i][0],
                 embedTitleBodyAndArgs[i][1],

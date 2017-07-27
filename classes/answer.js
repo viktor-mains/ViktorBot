@@ -171,7 +171,17 @@ exports.Answer = function (data) {
     };
     
 
+    answer.toBan = function (typeOfRequest) {
+        var Ban = require('./mod/ban.js');
+        var ban = new Ban.Ban(data);
 
+        if (typeOfRequest == `ban`)
+            return ban.ban();
+        if (typeOfRequest == `unban`)
+            return ban.unban();
+        if (typeOfRequest == `list`)
+            return ban.banList();
+    };
     answer.showModCommands = function () {
         var Mods = require('./mod/mods.js');
         var mods = new Mods.Mods(data);
@@ -187,6 +197,7 @@ exports.Answer = function (data) {
     answer.editModPrivileges = function (typeOfRequest) {
         var Mods = require('./mod/mods.js');
         var mods = new Mods.Mods(data);
+
         if (typeOfRequest == `promote`)
             return mods.promote();
         if (typeOfRequest == `demote`)
