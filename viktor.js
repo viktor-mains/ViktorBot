@@ -113,7 +113,7 @@ bot.on('guildMemberAdd', GuildMember => {
     catch (err) { }//this triggers when message was sent in DM
 
     console.log(`${d} - new member - ${GuildMember.user.username}#${GuildMember.user.discriminator}\n`);
-    post.embedToChannel(`:man: :woman: USER JOINS`, [
+    post.embedToChannel(`:man: USER JOINS`, [
         [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, true],
         [`Joined at`, GuildMember.joinedAt, true]
     ], data.logChannel, '51E61C');
@@ -136,7 +136,7 @@ bot.on('guildMemberRemove', GuildMember => {
 
     console.log(`${d} - member left - ${GuildMember.user.username}#${GuildMember.user.discriminator}\n`);
 
-    post.embedToChannel(`:man: :no_entry_sign: USER LEAVES`, [
+    post.embedToChannel(`:wave: USER LEAVES`, [
         [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, true],
         [`Leaves at`, d, true]
     ], data.logChannel, 'FDC000');

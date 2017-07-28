@@ -174,7 +174,7 @@ exports.Commands = function (answer) {
             triggers: `toBan`,
             typeOfResponse: `function`,
             arguments: `ban`,
-            description: `syntax: !ban <id>|<reason> - bans user (can be used with mention instead of ID)`,
+            description: `syntax: !ban <id>|<reason> - blacklists (user gets banned the moment they join the Discord) user, or bans them`,
             isAvailable: true,
             isModCommand: true
         },
@@ -182,7 +182,7 @@ exports.Commands = function (answer) {
             triggers: `toBan`,
             typeOfResponse: `function`,
             arguments: `unban`,
-            description: `syntax: !unban <id> - unbans user`,
+            description: `syntax: !unban <id> - removes user from the blacklist, or unbans him`,
             isAvailable: true,
             isModCommand: true
         },
@@ -190,7 +190,7 @@ exports.Commands = function (answer) {
             triggers: `toBan`,
             typeOfResponse: `function`,
             arguments: `list`,
-            description: `shows the list of banned/blacklisted users\n`,
+            description: `shows the list of banned/blacklised users\n`,
             isAvailable: true,
             isModCommand: true
         },
