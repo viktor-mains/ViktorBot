@@ -197,8 +197,14 @@
             fileContents = JSON.parse(fileContents);
 
             if (fileContents.Blacklist.hasOwnProperty(serverID)) {
-                for (i in fileContents.Blacklist[serverID].bans)
-                    listOfBans += `**${fileContents.Blacklist[serverID].bans[i].id}** - ${fileContents.Blacklist[serverID].bans[i].reason}\n`;
+                for (i in fileContents.Blacklist[serverID].bans) {
+                    var ifListTooLong = listOfBans +`\`\`${parseInt(i) + 1}. ${fileContents.Blacklist[serverID].bans[i].id} -\`\` ${fileContents.Blacklist[serverID].bans[i].reason}\n`;
+                    if (ifListTooLong.length > 1024) {
+                        post.embed(`:no_entry_sign: Blacklist`, [[`___`, listOfBans, false]]);
+                        listOfBans = ``;
+                    }
+                    listOfBans += `\`\`${parseInt(i) + 1}. ${fileContents.Blacklist[serverID].bans[i].id} -\`\` ${fileContents.Blacklist[serverID].bans[i].reason}\n`;
+                }
                 return post.embed(`:no_entry_sign: Blacklist`, [[`___`, listOfBans, false]]);
             }
             return post.embed(`🤗 No one is blacklisted yet!`, [[`___`, `You should be happy.`, false]]);
