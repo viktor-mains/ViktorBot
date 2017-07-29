@@ -186,11 +186,11 @@ exports.Commands = function (answer) {
             isAvailable: true,
             isModCommand: true
         },
-        'banlist': {
+        'blacklist': {
             triggers: `toBan`,
             typeOfResponse: `function`,
             arguments: `list`,
-            description: `shows the list of banned/blacklised users\n`,
+            description: `shows the list of blacklised users which will get automatically banned on sight.\n`,
             isAvailable: true,
             isModCommand: true
         },

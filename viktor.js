@@ -112,16 +112,18 @@ bot.on('guildMemberAdd', GuildMember => {
     try { data.whatServer(GuildMember.guild.id); }
     catch (err) { }//this triggers when message was sent in DM
 
-    console.log(`${d} - new member - ${GuildMember.user.username}#${GuildMember.user.discriminator}\n`);
-    post.embedToChannel(`:man: USER JOINS`, [
-        [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, true],
-        [`Joined at`, GuildMember.joinedAt, true]
-    ], data.logChannel, '51E61C');
+    ban.newUserIsBlacklisted(GuildMember, (isBanned, banIndex) => {
+        if (isBanned) {
+            ban.handleUserFromBlacklist(GuildMember, banIndex);
+            return;
+        }
 
-    ban.newUserIsBlacklisted(GuildMember, isBanned => {
-        if (isBanned)
-            return ban.handleUserFromBlacklist(GuildMember);
         GuildMember.user.send(data.welcomeMessageForViktorMains);
+        console.log(`${d} - new member - ${GuildMember.user.username}#${GuildMember.user.discriminator}\n`);
+        post.embedToChannel(`:man: USER JOINS`, [
+            [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, true],
+            [`Joined at`, GuildMember.joinedAt, true]
+        ], data.logChannel, '51E61C');
     });
 });
 

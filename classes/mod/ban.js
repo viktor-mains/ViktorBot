@@ -10,24 +10,45 @@
     ban.newUserIsBlacklisted = function (GuildMember, callback) {
         fs.readFile(banPath, 'utf8', (err, fileContents) => {
             if (err)
-                return false;
+                return callback(false, -1);
+            var serverID = GuildMember.guild.id;
             fileContents = JSON.parse(fileContents);
-            for (i in fileContents.Blacklist) {
-                if (fileContents.Blacklist[i].serverID == GuildMember.guild.id) {
-                    for (j in fileContents.Blacklist[i].bans) {
-                        if (fileContents.Blacklist[i].bans[j].id == GuildMember.user.id) {
-                            callback(true);
-                            return;
-                        }
+
+            if (fileContents.Blacklist.hasOwnProperty(serverID)) {
+                for (i in fileContents.Blacklist[serverID].bans) {
+                    if (fileContents.Blacklist[serverID].bans[i].id == GuildMember.user.id) {
+                        callback(true, i);
+                        return;
                     }
                 }
-            };
-            callback(false);
+            }
+            callback(false, -1);
         });
     };
-    ban.handleUserFromBlacklist = function (GuildMember) {
-        GuildMember.ban();
-        GuildMember.user.send(`<:lazored:288786608952442881>`);
+    ban.handleUserFromBlacklist = function (GuildMember, banIndex) {
+        var d = new Date();
+        var serverID = GuildMember.guild.id;
+        
+        fs.readFile(banPath, 'utf8', (err, fileContents) => {
+            if (err)
+                return console.log(`${d} - error while banning blacklisted ${GuildMember.user} who joins!`);
+            fileContents = JSON.parse(fileContents);
+            var reason = fileContents.Blacklist[serverID].bans[banIndex].reason;
+            post.embedToChannel(`:man: BLACKLISTED USER TRIES TO JOIN`, [
+                [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, false],
+                [`Reason for blacklist`, reason, false],
+                [`Joined at`, GuildMember.joinedAt, false]
+            ], data.logChannel, 'A600F2');
+            console.log(`${d} - blacklisted user joins - ${GuildMember.user.username}#${GuildMember.user.discriminator}\n`);
+
+            fileContents.Blacklist[serverID].bans.splice(banIndex, 1);
+            fs.writeFile(banPath, JSON.stringify(fileContents), err => {
+                if (err)
+                    return console.log(`${d} - error while removing from blacklist ${GuildMember.user} who joins!`);
+                GuildMember.ban();
+                GuildMember.user.send(`<:lazored:288786608952442881>`);
+            })
+        })
     };
 
 
@@ -71,12 +92,38 @@
                         return post.embed(`:warning: Error while banning user`, [[`___`, `${error}`, false]]);
                     });
             }
-            else {
-                //add to blacklist and wait for him to come >:3c
-                //fs.readFile(banPath, 'utf8', (err, fileContents) => {
+            else { //if banned by ID & is not on the server
+                fs.readFile(banPath, 'utf8', (err, fileContents) => {
+                    if (err)
+                        return post.embed(`:warning: Error while blacklisting user`, [[`___`, `${err}`, false]]);
+                    var serverID = data.message.guild.id;
+                    fileContents = JSON.parse(fileContents);
 
-                //});
-                post.message(`This person is not on server and will get blacklisted instead of banned`);
+                    if (fileContents.Blacklist.hasOwnProperty(serverID)) {
+                        for (i in fileContents.Blacklist[serverID].bans) {
+                            if (fileContents.Blacklist[serverID].bans[i].id == idToBan)
+                                return post.embed(`:warning: ${idToBan} is already blacklisted.`, [[`Original reason for blacklist`, `\`\`\`${fileContents.Blacklist[serverID].bans[i].reason}\`\`\``, false]]);
+                        }
+                        fileContents.Blacklist[serverID].bans.push({
+                            'id': idToBan,
+                            'bannedBy': data.message.author.username,
+                            'reason': banOptions[1]
+                        })
+                    }
+                    else
+                        fileContents.Blacklist[serverID] = {
+                            'bans': [{
+                                'id': idToBan,
+                                'bannedBy': data.message.author.username,
+                                'reason': banOptions[1]
+                            }]
+                        };
+                    fs.writeFile(banPath, JSON.stringify(fileContents), err => {
+                        if (err)
+                            return post.embed(`:warning: Error while blacklisting user`, [[`___`, `${err}`, false]]);
+                        return post.embed(`:white_check_mark: Success!`, [[`___`, `${idToBan} was not on the server - blacklisted!`, false]]);
+                    });
+                });
             }
         }
     };
@@ -113,12 +160,14 @@
                             for (i in blackList.Blacklist[serverID].bans) {
                                 if (blackList.Blacklist[serverID].bans[i].id == idToUnban) {
                                     var reason = blackList.Blacklist[serverID].bans[i].reason;
+                                    if (reason == undefined)
+                                        reason = `Not specified`;
                                     blackList.Blacklist[serverID].bans.splice(i, 1);
                                     fs.writeFile(banPath, JSON.stringify(blackList), err => {
                                         if (err)
                                             return post.embed(`:warning: Error while unbanning user`, [[`___`, `${error}`, false]]);
                                         post.embedToChannel(`<:banhammer:310437806772060168> MEMBER REMOVED FROM BLACKLIST`, [
-                                            [`User`, `${idToUnban})`, true],
+                                            [`User`, `${idToUnban}`, true],
                                             [`Unbanned by`, data.message.author.username, true],
                                             [`Reason for original ban`, reason, false],
                                             [`Date`, d, false],
@@ -126,7 +175,7 @@
                                         return post.embed(`:white_check_mark: Success!`, [[`___`, `${idToUnban} removed from blacklist!`, false]]);
                                     });
                                 }
-                            }
+                            } //this is asynchronous
                             return post.embed(`:warning: Error while unbanning user`, [[`___`, `Can't unban user who ain't banned yet.`, false]]);
                         }
                         else
@@ -154,7 +203,7 @@
                     return post.embed(`:no_entry_sign: Blacklist`, [[`___`, listOfBans, false]]);
                 }
             }
-            return post.embed(`🤗 No one is on blacklist yet!`, [[`___`, `You should be happy.`, false]]);
+            return post.embed(`🤗 No one is blacklisted yet!`, [[`___`, `You should be happy.`, false]]);
         });
     };
 };

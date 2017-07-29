@@ -24,15 +24,7 @@ exports.Roles = function (member) {
             return true;
         return false;
     };
-    roles.roleIsRankRole = function (roleName) {
-        var arrayOfRanks = [`challenger`, `master`, `diamond`, `platinum`, `gold`, `silver`, `bronze`];
-        for (i in arrayOfRanks) {
-            if (roleName.toLowerCase() == arrayOfRanks[i])
-                return true;
-        };
-        return false;
-    };
-
+    
     roles.addRoleToUser = function (roleName) {
         if (roles.requestedManually && !roles.allRequirementsMet('add', roleName,
                 `You can be anything you want, I'm not giving you role outside the #assign_role room.`,
@@ -84,6 +76,15 @@ exports.Roles = function (member) {
         }
         return false;
     };
+    roles.rankRoleRequested = function (roleName) {
+        var arrayOfRanks = [`challenger`, `master`, `diamond`, `platinum`, `gold`, `silver`, `bronze`];
+        for (i in arrayOfRanks) {
+            if (roleName.toLowerCase() == arrayOfRanks[i])
+                return true;
+        };
+        return false;
+    };
+
     roles.allRequirementsMet = function (roleAction, roleName, wrongChatRoom, userHasOrHasNotRole) {
         var post = new Post.Post(roles.data);
 
@@ -93,7 +94,7 @@ exports.Roles = function (member) {
         }
         if (roles.jokeRoleRequested(roleName) && roleAction==`add`)
             return post.message(`Indeed. You are.`);
-        if (roles.roleIsRankRole(roleName) && roleAction==`add`)
+        if (roles.rankRoleRequested(roleName) && roleAction==`add`)
             return post.embed(`:information_source: This is not how rank roles are assigned`, [[`___`, `Rank roles are assigned manually by moderators.\n\n` +
                 `1. **Screenshot your profile** with nickname and rank badge visible, like that: http://i.imgur.com/aiRJudZ.png \n` +
                 `2. Post the screenshot in the #assign_role room. \n\n` +
