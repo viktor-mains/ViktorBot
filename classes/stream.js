@@ -31,18 +31,18 @@ exports.Stream = function (member, data) {
             if (err)
                 return console.log(`Reading follow file for stream: ${err}`);
             followerInfoJson = JSON.parse(followerInfoJson);
+            var Post = require('./post.js');
+            var post = new Post.Post(data);
+            var userFollowers = '';
+
             for (i in followerInfoJson.Streamers) {
                 if (followerInfoJson.Streamers[i].id == member.user.id) {
-                    var userFollowers = '_Tagging:_ ';
                     for (j in followerInfoJson.Streamers[i].followers)
                         userFollowers += `${member.guild.members.find('id', followerInfoJson.Streamers[i].followers[j]).user.toString()} `;
-                    var Post = require('./post.js');
-                    var post = new Post.Post(data);
-                    console.log(`📺 **${member.user.username} started streaming!**\n${member.presence.game.url}\n\n${userFollowers}`);
-                    post.messageToChannel(`📺 **${member.user.username} started streaming!**\n${member.presence.game.url}\n\n${userFollowers}`, data.strChannel);
-                    return;
                 }
             };
+            post.messageToChannel(`📺 **${member.user.username} started streaming!**\n${member.presence.game.url}\n\n**Tagging:** ${userFollowers}`, data.strChannel);
+            return;
         });
     };
     stream.addStreamingRoleIfTheyDontHaveItYet = function () {

@@ -305,7 +305,7 @@ exports.Commands = function (answer) {
             triggers: `toFollow`,
             typeOfResponse: `function`,
             arguments: `start`,
-            description: `syntax: !follow @mention - sends a message whenever followed person starts streaming`,
+            //description: `syntax: !follow @mention - sends a message whenever followed person starts streaming`,
             isAvailable: true,
             isModCommand: false
         },
@@ -313,7 +313,7 @@ exports.Commands = function (answer) {
             triggers: `toFollow`,
             typeOfResponse: `function`,
             arguments: `stop`,
-            description: `syntax: !unfollow @mention - opts out of the function described above`,
+            //description: `syntax: !unfollow @mention - opts out of the function described above`,
             isAvailable: true,
             isModCommand: false
         },
@@ -321,7 +321,7 @@ exports.Commands = function (answer) {
             triggers: `toFollow`,
             typeOfResponse: `function`,
             arguments: `list`,
-            description: `lists all users following your stream\n`,
+            //description: `lists all users following your stream\n`,
             isAvailable: true,
             isModCommand: false
         },
