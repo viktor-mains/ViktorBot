@@ -301,6 +301,30 @@ exports.Commands = function (answer) {
             isModCommand: false,
             arguments: `Silver+Bronze+Unranked`
         },
+        'follow': {
+            triggers: `toFollow`,
+            typeOfResponse: `function`,
+            arguments: `start`,
+            description: `syntax: !follow @mention - sends a message whenever followed person starts streaming`,
+            isAvailable: true,
+            isModCommand: false
+        },
+        'unfollow': {
+            triggers: `toFollow`,
+            typeOfResponse: `function`,
+            arguments: `stop`,
+            description: `syntax: !unfollow @mention - opts out of the function described above`,
+            isAvailable: true,
+            isModCommand: false
+        },
+        'followedby': {
+            triggers: `toFollow`,
+            typeOfResponse: `function`,
+            arguments: `list`,
+            description: `lists all users following your stream\n`,
+            isAvailable: true,
+            isModCommand: false
+        },
         'choose': {
             triggers: `toChoose`,
             typeOfResponse: `function`,

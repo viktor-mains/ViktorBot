@@ -20,6 +20,7 @@ exports.Data = function (message, bot) {
     data.logChannel = '';
     data.roleChannel = '';
     data.spamChannel = '';
+    data.strChannel = '';
     data.offTop = '247501730336604163'; //hardcoded offtop from vikmains
 
     data.arrayOfMods = '';
@@ -54,6 +55,7 @@ exports.Data = function (message, bot) {
                     data.logChannel = '315258332749234189';
                     data.roleChannel = '268354627781656577';
                     data.spamChannel = '290601371370127361';
+                    data.strChannel = '340933657437143044';
                     data.offTop = '247501730336604163';
                     break;
                 }
@@ -63,6 +65,7 @@ exports.Data = function (message, bot) {
                     data.logChannel = '310735697260707841';
                     data.roleChannel = '310735697260707841';
                     data.spamChannel = '310735697260707841';
+                    data.strChannel = '310735697260707841';
                     data.offTop = '310735697260707841';
                     break;
                 }

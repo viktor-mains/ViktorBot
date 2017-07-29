@@ -205,6 +205,19 @@ exports.Answer = function (data) {
         if (typeOfRequest == `list`)
             return mods.showList();
     };
+
+
+    answer.toFollow = function (typeOfRequest) {
+        var Follow = require('./data/follow.js');
+        var follow = new Follow.Follow(data);
+
+        if (typeOfRequest == `start`)
+            return follow.start();
+        if (typeOfRequest == `stop`)
+            return follow.stop();
+        if (typeOfRequest == `list`)
+            return follow.showList();
+    };
     answer.toImpersonate = function () {
         var impersonate = input.removeKeyword(data.message.content);
         post.messageToChannel(impersonate, data.offTop);

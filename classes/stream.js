@@ -1,6 +1,6 @@
 ﻿var Roles = require('./roles.js');
 
-exports.Stream = function (member) {
+exports.Stream = function (member, data) {
     var stream = this;
     var roles = new Roles.Roles(member);
 
@@ -23,10 +23,35 @@ exports.Stream = function (member) {
             return false;
         return true;
     };
+    stream.informFollowers = function () {
+        var fs = require('fs');
+        var followersPath = '../data/follow.json';
+
+        fs.readFile(followersPath, 'utf8', (err, followerInfoJson) => {
+            if (err)
+                return console.log(`Reading follow file for stream: ${err}`);
+            followerInfoJson = JSON.parse(followerInfoJson);
+            for (i in followerInfoJson.Streamers) {
+                if (followerInfoJson.Streamers[i].id == member.user.id) {
+                    var userFollowers = '_Tagging:_ ';
+                    for (j in followerInfoJson.Streamers[i].followers)
+                        userFollowers += `${member.guild.members.find('id', followerInfoJson.Streamers[i].followers[j]).user.toString()} `;
+                    var Post = require('./post.js');
+                    var post = new Post.Post(data);
+                    console.log(`📺 **${member.user.username} started streaming!**\n${member.presence.game.url}\n\n${userFollowers}`);
+                    post.messageToChannel(`📺 **${member.user.username} started streaming!**\n${member.presence.game.url}\n\n${userFollowers}`, data.strChannel);
+                    return;
+                }
+            };
+        });
+    };
     stream.addStreamingRoleIfTheyDontHaveItYet = function () {
         var roleName = 'Live Stream';
+        var d = new Date();
+
         if (!roles.userHasRole(roleName)) {
             roles.addRoleToUser(roleName);
+            stream.informFollowers();
         }
     };
     stream.removeStreamingRoleIfTheyStoppedStreaming = function () {

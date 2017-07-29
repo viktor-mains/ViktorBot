@@ -148,15 +148,15 @@ bot.on('presenceUpdate', (oldMember, newMember) => {
     var data = new Data.Data('', bot);
     var d = new Date();
     var roles = new Roles.Roles(newMember);
-    var stream = new Stream.Stream(newMember);
+    var stream = new Stream.Stream(newMember, data);
     var game = newMember.presence.game;
 
     try { data.whatServer(newMember.guild.id); }
     catch (err) { }//this triggers when message was sent in DM
 
-    if (data.server == `vikmains`) {
+    if (data.server == `vikmains`) { // || data.server == `arcytesting`) {
         try {
-            if (stream.userStreams(game) && stream.isViktorStreamer()) //add another requirement being the "Viktor Streamer" being assigned to them
+            if (stream.userStreams(game) && stream.isViktorStreamer())
                 stream.addStreamingRoleIfTheyDontHaveItYet();
             if (stream.userDoesntStream(game))
                 stream.removeStreamingRoleIfTheyStoppedStreaming();
