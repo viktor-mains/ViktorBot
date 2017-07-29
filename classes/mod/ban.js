@@ -192,16 +192,14 @@
             if (err)
                 return post.embed(`:warning: Error while unbanning user`, [[`___`, `${err}`, false]]);
             var d = new Date();
-            var serverID = data.message.guild.id;
+            var serverID = data.message.guild.id; 
             var listOfBans = '';
             fileContents = JSON.parse(fileContents);
 
-            for (i in fileContents.Blacklist) {
-                if (fileContents.Blacklist[i].serverID == serverID) {
-                    for (j in fileContents.Blacklist[i].bans)
-                        listOfBans += `**${fileContents.Blacklist[i].bans[j].id}** - ${fileContents.Blacklist[i].bans[j].reason}\n`;
-                    return post.embed(`:no_entry_sign: Blacklist`, [[`___`, listOfBans, false]]);
-                }
+            if (fileContents.Blacklist.hasOwnProperty(serverID)) {
+                for (i in fileContents.Blacklist[serverID].bans)
+                    listOfBans += `**${fileContents.Blacklist[serverID].bans[i].id}** - ${fileContents.Blacklist[serverID].bans[i].reason}\n`;
+                return post.embed(`:no_entry_sign: Blacklist`, [[`___`, listOfBans, false]]);
             }
             return post.embed(`🤗 No one is blacklisted yet!`, [[`___`, `You should be happy.`, false]]);
         });

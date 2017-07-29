@@ -174,7 +174,7 @@ exports.Commands = function (answer) {
             triggers: `toBan`,
             typeOfResponse: `function`,
             arguments: `ban`,
-            description: `syntax: !ban <id>|<reason> - blacklists (user gets banned the moment they join the Discord) user, or bans them`,
+            description: `syntax: !ban <id>|<reason> - blacklists user, or bans them. Can be used with ID or @mention`,
             isAvailable: true,
             isModCommand: true
         },
