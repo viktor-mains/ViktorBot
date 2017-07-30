@@ -306,7 +306,7 @@ exports.Commands = function (answer) {
             typeOfResponse: `function`,
             description: `syntax: !follow @mention - sends a message whenever followed person starts streaming`,
             isAvailable: true,
-            isModCommand: true
+            isModCommand: false
         },
         'follow': {
             triggers: `toFollow`,
