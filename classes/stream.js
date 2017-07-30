@@ -41,8 +41,9 @@ exports.Stream = function (member, data) {
                         userFollowers += `${member.guild.members.find('id', followerInfoJson.Streamers[i].followers[j]).user.toString()} `;
                 }
             };
-            post.messageToChannel(`📺 **${member.user.username} started streaming!**\n${member.presence.game.url}\n\n**Tagging:** ${userFollowers}`, data.strChannel);
-            return;
+            if (userFollowers)
+                return post.messageToChannel(`📺 **${member.user.username} started streaming!**\n${member.presence.game.url}\n\n**Tagging:** ${userFollowers}`, data.strChannel);
+            return post.messageToChannel(`📺 **${member.user.username} started streaming!**\n${member.presence.game.url}`, data.strChannel);
         });
     };
     stream.addStreamingRoleIfTheyDontHaveItYet = function () {
