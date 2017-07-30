@@ -55,7 +55,7 @@ exports.Answer = function (data) {
             if (!commands.listOfResponses[property].isModCommand && commands.listOfResponses[property].hasOwnProperty('description')) {
                 var commandDescription = `!${input.justifyToLeft(property, 15)} - ${commands.listOfResponses[property].description}\n`;
                 if (helpContents.length + commandDescription.length >= 2000) {
-                    post.toDM(helpContents);
+                    post.toDM(helpContents + '```');
                     helpContents = '```';
                 }
                 helpContents += commandDescription;
