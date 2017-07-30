@@ -304,7 +304,7 @@ exports.Commands = function (answer) {
         'streamers': {
             triggers: `toStreamerList`,
             typeOfResponse: `function`,
-            description: `syntax: !follow @mention - sends a message whenever followed person starts streaming`,
+            description: `shows the list of Viktor Streamers on our Discord server and their IDs`,
             isAvailable: true,
             isModCommand: false
         },
@@ -312,7 +312,7 @@ exports.Commands = function (answer) {
             triggers: `toFollow`,
             typeOfResponse: `function`,
             arguments: `start`,
-            description: `syntax: !follow @mention - tags you in #live_stream room whenever followed person starts streaming`,
+            description: `syntax: !follow <id> - allows you to follow the chosen streamer, <id> being taken from !streamers command`,
             isAvailable: true,
             isModCommand: false
         },
@@ -320,7 +320,7 @@ exports.Commands = function (answer) {
             triggers: `toFollow`,
             typeOfResponse: `function`,
             arguments: `stop`,
-            description: `syntax: !unfollow @mention - opts out of the function described above`,
+            description: `syntax: !unfollow <id> - allows you to unfollow a streamer`,
             isAvailable: true,
             isModCommand: false
         },
@@ -328,7 +328,7 @@ exports.Commands = function (answer) {
             triggers: `toFollow`,
             typeOfResponse: `function`,
             arguments: `listOfMyFollowers`,
-            description: `lists all users following your stream`,
+            description: `shows the list of people following your stream`,
             isAvailable: true,
             isModCommand: false
         },
@@ -336,7 +336,7 @@ exports.Commands = function (answer) {
             triggers: `toFollow`,
             typeOfResponse: `function`,
             arguments: `listOfWhoIFollow`,
-            description: `lists all streamers that you are following\n`,
+            description: `shows the list of streamers followed by you\n`,
             isAvailable: true,
             isModCommand: false
         },
