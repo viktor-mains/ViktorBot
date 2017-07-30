@@ -147,6 +147,7 @@
     </Compile>
     <Compile Include="classes\commands.js" />
     <Compile Include="classes\data.js" />
+    <Compile Include="classes\data\follow.js" />
     <Compile Include="classes\dearviktoranswers.js" />
     <Compile Include="classes\input.js">
       <SubType>Code</SubType>
@@ -412,6 +413,7 @@
     <Folder Include="classes\api\riot\" />
     <Folder Include="classes\mod\" />
     <Folder Include="classes\api\" />
+    <Folder Include="classes\data\" />
     <Folder Include="node_modules\" />
     <Folder Include="node_modules\discord.js\" />
     <Folder Include="node_modules\discord.js\src\" />

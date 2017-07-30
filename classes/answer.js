@@ -206,7 +206,12 @@ exports.Answer = function (data) {
             return mods.showList();
     };
 
+    answer.toStreamerList = function () {
+        var Follow = require('./data/follow.js');
+        var follow = new Follow.Follow(data);
 
+        return follow.listOfStreamers();
+    };
     answer.toFollow = function (typeOfRequest) {
         var Follow = require('./data/follow.js');
         var follow = new Follow.Follow(data);
@@ -215,8 +220,10 @@ exports.Answer = function (data) {
             return follow.start();
         if (typeOfRequest == `stop`)
             return follow.stop();
-        if (typeOfRequest == `list`)
-            return follow.showList();
+        if (typeOfRequest == `listOfMyFollowers`)
+            return follow.listOfMyFollowers();
+        if (typeOfRequest == `listOfWhoIFollow`)
+            return follow.listOfWhoIFollow();
     };
     answer.toImpersonate = function () {
         var impersonate = input.removeKeyword(data.message.content);

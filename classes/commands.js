@@ -54,14 +54,14 @@ exports.Commands = function (answer) {
         'iam': {
             triggers: `toIAmCommand`,
             typeOfResponse: `function`,
-            description: `adds a role to you (only #assign_role room)`,
+            description: `adds a role to you (only #bot_commands room)`,
             isAvailable: true,
             isModCommand: false
         },
         'iamnot': {
             triggers: `toIAmNotCommand`,
             typeOfResponse: `function`,
-            description: `removes a role from you (only #assign_role room)`,
+            description: `removes a role from you (only #bot_commands room)`,
             isAvailable: true,
             isModCommand: false
         },
@@ -301,11 +301,18 @@ exports.Commands = function (answer) {
             isModCommand: false,
             arguments: `Silver+Bronze+Unranked`
         },
+        'streamers': {
+            triggers: `toStreamerList`,
+            typeOfResponse: `function`,
+            description: `syntax: !follow @mention - sends a message whenever followed person starts streaming`,
+            isAvailable: true,
+            isModCommand: true
+        },
         'follow': {
             triggers: `toFollow`,
             typeOfResponse: `function`,
             arguments: `start`,
-            //description: `syntax: !follow @mention - sends a message whenever followed person starts streaming`,
+            description: `syntax: !follow @mention - tags you in #live_stream room whenever followed person starts streaming`,
             isAvailable: true,
             isModCommand: false
         },
@@ -313,15 +320,23 @@ exports.Commands = function (answer) {
             triggers: `toFollow`,
             typeOfResponse: `function`,
             arguments: `stop`,
-            //description: `syntax: !unfollow @mention - opts out of the function described above`,
+            description: `syntax: !unfollow @mention - opts out of the function described above`,
             isAvailable: true,
             isModCommand: false
         },
-        'followedby': {
+        'myfollowers': {
             triggers: `toFollow`,
             typeOfResponse: `function`,
-            arguments: `list`,
-            //description: `lists all users following your stream\n`,
+            arguments: `listOfMyFollowers`,
+            description: `lists all users following your stream`,
+            isAvailable: true,
+            isModCommand: false
+        },
+        'whoifollow': {
+            triggers: `toFollow`,
+            typeOfResponse: `function`,
+            arguments: `listOfWhoIFollow`,
+            description: `lists all streamers that you are following\n`,
             isAvailable: true,
             isModCommand: false
         },

@@ -27,7 +27,7 @@ exports.Roles = function (member) {
     
     roles.addRoleToUser = function (roleName) {
         if (roles.requestedManually && !roles.allRequirementsMet('add', roleName,
-                `You can be anything you want, I'm not giving you role outside the #assign_role room.`,
+            `You can be anything you want, I'm not giving you role outside the <#${roles.data.roleChannel}> room.`,
                 `You already have the **[${roleName.toUpperCase()}]** role.`))
             return;
 
