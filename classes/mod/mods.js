@@ -240,6 +240,7 @@
             });
         });
     };
+
     // smaller functions
     mods.serverIsListed = function (serverDataJson) {
         var serverListed = false;

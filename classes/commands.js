@@ -393,7 +393,7 @@ exports.Commands = function (answer) {
             description: `calculates time since we've got the last Viktor skin\n`,
             isAvailable: true,
             isModCommand: false
-        },
+        }
     };
 /**
  *  listOfKeywords is an object storing keywords, which when found laying around inside sentences sent by users, are responded with
