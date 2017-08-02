@@ -29,6 +29,7 @@
                             var roles = new Roles.Roles(data.message.guild.members.find('id', data.message.author.id));
                             var timeoutRole = `timeout`;
 
+                            messageData.Servers[serverID][userID].messageCount = parseInt(messageData.Servers[serverID][userID].messageCount) - parseInt(data.spamCount);
                             delete messageData.Servers[serverID][userID].spamCounter;
                             if (roles.roleExists(timeoutRole))
                                 roles.addRoleToUser(timeoutRole);
@@ -105,29 +106,29 @@
         var post = new Post.Post(data);
         var roles = new Roles.Roles(data.message.guild.members.find('id', data.message.author.id));
 
-        if (roles.roleExists(memberRole)) {
-            if (userData.messageCount >= 5 && !roles.userHasRole(memberRole)) {
-                roles.addRoleToUser(memberRole);
-                post.embed(`:bouquet: ${data.message.author.username} promoted to ${memberRole}!`, [
-                    [`___`, `You start getting comfy in our little community, do you? \n\nAs a gift for your initial commitment, you now have the **${memberRole}** rank! Keep it up.`, false]]);
-            }
-        }
-        if (roles.roleExists(regularRole)) {
-            if (userData.messageCount >= 10 && Date.now() - userData.firstMessage > 10518984000 && !roles.userHasRole(regularRole)) { //10518984000 = 4 months
-                roles.addRoleToUser(regularRole);
-                post.embed(`:cake: ${data.message.author.username} promoted to ${regularRole}!`, [
-                    [`___`, `You're amongst the most loyal Acolytes and regularly participate in our little community. Thank you.` +
-                        `\n\nFrom now on, you are known as one of **${regularRole}s**. Have this cookie: :cookie:`, false]]);
-            }
-        }
-        if (roles.roleExists(fossilRole)) {
+        if (roles.roleExists(memberRole) && roles.roleExists(regularRole) && roles.roleExists(fossilRole)) {
             if (userData.messageCount >= 10 && Date.now() - userData.firstMessage > 31536000000 && !roles.userHasRole(fossilRole)) { //31536000000 = 1 year
                 roles.addRoleToUser(fossilRole);
-                post.embed(`:trophy: ${data.message.author.username} promoted to ${fossilRole}!`, [
+                if (roles.userHasRole(regularRole))
+                    roles.removeRoleFromUser(regularRole);
+                post.embedToChannel(`:trophy: ${data.message.author.username} promoted to ${fossilRole}!`, [
                     [`___`, `You're amongst us for over a year already. Your loyality for the Evolution have been recognized, and you deserve the best treatment.` +
                         `\n\nFrom now on, you are known as one of **${fossilRole}s**, carrying the Evolution's legacy with yourself wherever you go.`, false]]);
             }
-        }
+            else if (userData.messageCount >= 10 && Date.now() - userData.firstMessage > 10518984000 && !roles.userHasRole(regularRole)) { //10518984000 = 4 months
+                roles.addRoleToUser(regularRole);
+                if (roles.userHasRole(memberRole))
+                    roles.removeRoleFromUser(memberRole);
+                post.embedToChannel(`:cake: ${data.message.author.username} promoted to ${regularRole}!`, [
+                    [`___`, `You're amongst the most loyal Acolytes and regularly participate in our little community. Thank you.` +
+                        `\n\nFrom now on, you are known as one of **${regularRole}s**. Have this cookie: :cookie:`, false]]);
+            }
+            else if (userData.messageCount >= 5 && !roles.userHasRole(memberRole)) {
+                roles.addRoleToUser(memberRole);
+                post.embedToChannel(`:bouquet: ${data.message.author.username} promoted to ${memberRole}!`, [
+                    [`___`, `You start getting comfy in our little community, do you? \n\nAs a gift for your initial commitment, you now have the **${memberRole}** rank! Keep it up.`, false]]);
+            }
+        }   
     };
     messageCount.getServerMessageCount = function () {
 
