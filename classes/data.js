@@ -25,6 +25,10 @@ exports.Data = function (message, bot) {
 
     data.arrayOfMods = '';
 
+    data.antispam = false;
+    data.spamCount = 4;
+    data.spamTime = 20;
+
     data.loadServerData = function (callback) {
         if (data.message.guild != null) { //if it was send in guild channel, not in DM
             var fs = require('fs');
@@ -35,9 +39,13 @@ exports.Data = function (message, bot) {
                     var d = new Date();
                     return console.log(`\n${d} - error while reading server data!`);
                 }
+                var serverID = data.message.guild.id;
                 serverDataJson = JSON.parse(serverDataJson);
                 if (data.serverIsListed(serverDataJson)) {
-                    data.arrayOfMods = serverDataJson.Servers[data.serverIndex(serverDataJson)].moderators;
+                    data.arrayOfMods = serverDataJson.Servers[serverID].moderators;
+                    data.antispam = serverDataJson.Servers[serverID].antispam.isOn;
+                    data.spamCount = serverDataJson.Servers[serverID].antispam.messageCount;
+                    data.spamTime = serverDataJson.Servers[serverID].antispam.timeLimitInSeconds;
                     return callback();
                     // add all the logic of server initial data here!!!!!!!!!
                 }
@@ -90,20 +98,9 @@ exports.Data = function (message, bot) {
         `Moderators reserve the right to kick/bans users basing on judgement calls.`;
 
     data.serverIsListed = function (serverDataJson) {
-        if (data.message) {
-            for (i in serverDataJson.Servers) {
-                if (serverDataJson.Servers[i].id == data.message.guild.id)
-                    return true;
-            };
-        }
+        if (serverDataJson.Servers.hasOwnProperty(data.message.guild.id))
+            return true;
         return false;
-    };
-    data.serverIndex = function (serverDataJson) {
-        for (i in serverDataJson.Servers) {
-            if (serverDataJson.Servers[i].id == data.message.guild.id)
-                return i;
-        };
-        return -1;
     };
     data.userIsNotThisBot = function () {
         if (message.author.id !== bot.user.id)

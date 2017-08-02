@@ -206,6 +206,14 @@ exports.Answer = function (data) {
             return mods.showList();
     };
 
+    answer.toAntiSpam = function () {
+        var Mods = require('./mod/mods.js');
+        var mods = new Mods.Mods(data);
+        
+        if (input.removeKeyword(data.message.content) == ``)
+            return mods.turnAntiSpamOnOrOff();
+        return mods.setUpAntiSpam();
+    };
     answer.toStreamerList = function () {
         var Follow = require('./data/follow.js');
         var follow = new Follow.Follow(data);

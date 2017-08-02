@@ -37,8 +37,6 @@ exports.Roles = function (member) {
             .then(success => {
                 if (roles.requestedManually)
                     post.message(`Role **[${roleName.toUpperCase()}]** assigned to ${member.user.username} with utmost efficiency.`);
-                var d = new Date();
-                console.log(`${d} - ${member.user.username} started streaming, streaming role assigned`);
             }).catch(error => {
                 if (roles.requestedManually)
                     post.message(`Failed to assign the **[${roleName.toUpperCase()}]** role.`);
@@ -59,8 +57,6 @@ exports.Roles = function (member) {
             .then(success => {
                 if (roles.requestedManually)
                     post.message(`**[${roleName.toUpperCase()}]** succesfully removed from ${member.user.username}.`);
-                var d = new Date();
-                console.log(`${d} - ${member.user.username} started streaming, streaming role assigned`);
             }).catch(error => {
                 if (roles.requestedManually)
                     post.message(`Failed to remove the **[${roleName.toUpperCase()}]** role.`);
@@ -84,6 +80,14 @@ exports.Roles = function (member) {
         };
         return false;
     };
+    roles.userRankRoleRequested = function (roleName) {
+        var arrayOfUserRanks = [`Fresh Acolyte`, `Junior Assistant`, `Hextech Progenitor`, `Arcane Android`];
+        for (i in arrayOfUserRanks) {
+            if (roleName.toLowerCase() == arrayOfUserRanks[i].toLowerCase())
+                return true;
+        };
+        return false;
+    };
 
     roles.allRequirementsMet = function (roleAction, roleName, wrongChatRoom, userHasOrHasNotRole) {
         var post = new Post.Post(roles.data);
@@ -99,6 +103,8 @@ exports.Roles = function (member) {
                 `1. **Screenshot your profile** with nickname and rank badge visible, like that: http://i.imgur.com/aiRJudZ.png \n` +
                 `2. Post the screenshot in the #assign_role room. \n\n` +
                 `The colour will be based off *Ranked Solo/Duo* - Ranked Flex and Ranked 3v3 aren't taken into account.`, false]]);
+        if (roles.userRankRoleRequested(roleName))
+            return post.message(`:warning: This role can't be added neither removed manually.`);
         if (!roles.roleExists(roleName)) {
             post.message(`Such role doesn't exist.`);
             return false;

@@ -31,11 +31,17 @@ bot.on('message', message => {
     };
 
     data.loadServerData(() => {
-        if (data.userIsNotThisBot()) {
+        if (data.userIsNotThisBot() && !data.message.author.bot) {
             try {
+                var MessageCount = require('./classes/mod/messageCount.js');
+                var mc = new MessageCount.MessageCount(data);
                 var userMessage = new UserMessage.UserMessage(data);
                 var answer = new Answer.Answer(data);
 
+                mc.increment((worked, antispamOn) => {
+                    if (worked && antispamOn)
+                        mc.checkAntiSpam(); 
+                });                
                 answer.toEmoteReactionTrigger();
                 if (userMessage.hasCapsLockTrigger())
                     answer.toCapsLock();

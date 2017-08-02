@@ -194,6 +194,13 @@ exports.Commands = function (answer) {
             isAvailable: true,
             isModCommand: true
         },
+        'antispam': {
+            triggers: `toAntiSpam`,
+            typeOfResponse: `function`,
+            description: `turns antispam on or off. Settings: !antispam <number_of_messages>|<time_limit>\n`,
+            isAvailable: true,
+            isModCommand: true
+        },
         'setstatus': {
             triggers: `toStatusChangeRequest`,
             typeOfResponse: `function`,

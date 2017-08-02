@@ -38,14 +38,15 @@
                 return console.log(`Reading mods file: ${err}`);
             }
             var modNick = data.message.mentions.users.find('id', modID).username;
+            var serverID = data.message.guild.id;
             serverDataJson = JSON.parse(serverDataJson);
+
             if (!mods.serverIsListed(serverDataJson))
                 return;
-            var modList = serverDataJson.Servers[mods.serverIndex(serverDataJson)].moderators;
-
+            var modList = serverDataJson.Servers[serverID].moderators;
             if (mods.modIsOnTheList(modList, modID) != -1)
                 return post.embed(`:warning:`, [[`___`, `${modNick} already is a moderator.`, false]]);
-            serverDataJson.Servers[mods.serverIndex(serverDataJson)].moderators.push(modID);
+            serverDataJson.Servers[serverID].moderators.push(modID);
             fs.writeFile(serverDataPath, JSON.stringify(serverDataJson), err => {
                 if (err) {
                     post.embed(`:no_entry:`, [[`___`, `Something went wrong <:SMB4:310138833377165312>`, false]]);
@@ -71,15 +72,17 @@
                 return console.log(`Reading mod file: ${err}`);
             };
             var modNick = data.message.mentions.users.find('id', modID).username;
+            var serverID = data.message.guild.id;
             serverDataJson = JSON.parse(serverDataJson);
+
             if (!mods.serverIsListed(serverDataJson))
                 return;
-            var modList = serverDataJson.Servers[mods.serverIndex(serverDataJson)].moderators;
+            var modList = serverDataJson.Servers[serverID].moderators;
 
             if (mods.modIsOnTheList(modList, modID) == -1)
                 return post.embed(`:warning:`, [[`___`, `${modNick} is not a moderator.`, false]]);
             var id = mods.modIsOnTheList(modList, modID);
-            serverDataJson.Servers[mods.serverIndex(serverDataJson)].moderators.splice(id, 1);
+            serverDataJson.Servers[serverID].moderators.splice(id, 1);
             fs.writeFile(serverDataPath, JSON.stringify(serverDataJson), err => {
                 if (err) {
                     post.embed(`:no_entry:`, [[`___`, `Something went wrong <:SMB4:310138833377165312>`, false]]);
@@ -98,10 +101,12 @@
                 post.embed(`:no_entry:`, [[`___`, `Something went wrong <:SMB4:310138833377165312>`, false]]);
                 return console.log(`Reading mod file: ${err}`);
             };
+            
             serverDataJson = JSON.parse(serverDataJson);
             if (!mods.serverIsListed(serverDataJson))
                 return;
-            var modJson = serverDataJson.Servers[mods.serverIndex(serverDataJson)].moderators;
+            var serverID = data.message.guild.id;
+            var modJson = serverDataJson.Servers[serverID].moderators;
             for (i in modJson) {
                 try {
                     modList += `**${(parseInt(i) + 1)}**: ` +
@@ -125,13 +130,12 @@
                 console.log(`Downloading server data: ${err}`);
                 return post.message(`:warning: Downloading server data unsuccesful.`);
             }
+            var serverID = data.message.guild.id;
             serverDataJson = JSON.parse(serverDataJson);
-            for (i in serverDataJson.Servers) {
-                if (serverDataJson.Servers[i].id == data.message.guild.id)
-                    return post.message(`:warning: This server is already listed.`);
-            };
-            serverDataJson.Servers.push({
-                "id": data.message.guild.id,
+
+            if (serverDataJson.Servers.hasOwnProperty(serverID))
+                return post.message(`:warning: This server is already listed.`);
+            serverDataJson.Servers[serverID] = {
                 "name": data.message.guild.name,
                 "rooms": [{
                     "roles": data.message.guild.defaultChannel.id,
@@ -140,8 +144,13 @@
                     "follow": data.message.guild.defaultChannel.id,
                     "general": data.message.guild.defaultChannel.id
                 }],
-                "moderators": [data.message.guild.ownerID]
-            });
+                "moderators": [data.message.guild.ownerID],
+                "antispam": {
+                    "isOn": false,
+                    "messageCount": 4,
+                    "timeLimitInSeconds": 20
+                }
+            };
             fs.writeFile(serverDataPath, JSON.stringify(serverDataJson), err => {
                 if (err) {
                     post.embed(`:no_entry:`, [[`___`, `Something went wrong <:SMB4:310138833377165312>`, false]]);
@@ -168,27 +177,81 @@
         return post.message(`Not implemented yet.`);
     };
 
+    // antispam stuff
+    mods.turnAntiSpamOnOrOff = function () {
+        var fs = require(`fs`);
+        fs.readFile(serverDataPath, `utf8`, (err, serverData) => {
+            if (err)
+                return;
+            serverData = JSON.parse(serverData);
+            if (!mods.serverIsListed(serverData))
+                return;
+            var serverID = data.message.guild.id;
+            var isOn = serverData.Servers[serverID].antispam.isOn;
+
+            serverData.Servers[serverID].antispam.isOn = !isOn;
+            data.antispam = serverData.Servers[data.message.guild.id].antispam.isOn;
+
+            fs.writeFile(serverDataPath, JSON.stringify(serverData), err => {
+                if (err)
+                    return;
+                if (data.antispam)
+                    return post.embed(`:information_source: ANTISPAM: ${data.antispam}`, [
+                        [`Settings`, `Amount of messages: \`\`${data.spamCount}\`\`\n` +
+                            `Time between them: \`\`${data.spamTime}s\`\``, false]]);
+                return post.embed(`:information_source: ANTISPAM: ${data.antispam}`, [
+                    [`___`, `Antispam is OFF.`, false]]);
+            });
+        });
+    };
+    mods.setUpAntiSpam = function () {
+        var Input = require('../input.js');
+        var input = new Input.Input();
+        var fs = require('fs');
+        var spamSettings = input.removeKeyword(data.message.content);
+
+        if (!data.antispam)
+            return post.embed(`:warning: Your settings weren't applied...`, [[`___`, `...because antispam is OFF. \nTo turn on antispam, write \`\`!antispam\`\``, false]]); 
+        if (spamSettings.indexOf('|') == -1)
+            return post.embed(`:warning: Incorrect input`, [[`__`, `This command requires the symbol \"**|**\" to separate \`\`number of messages\`\` from \`\`time limit in seconds\`\`.`, false]]);
+        spamSettings = spamSettings.split('|');
+        if (spamSettings[0] < 2)
+            return post.embed(`:warning: Incorrect number of messages`, [[`___`, `You can't set up antispam to react for the number of messages lower than 2 because it makes no sense.`, false]]); 
+
+        fs.readFile(serverDataPath, `utf8`, (err, serverData) => {
+            if (err)
+                return;
+            serverData = JSON.parse(serverData);
+            if (!mods.serverIsListed(serverData))
+                return;
+
+            var serverID = data.message.guild.id;
+            serverData.Servers[serverID].antispam.messageCount = spamSettings[0];
+            serverData.Servers[serverID].antispam.timeLimitInSeconds = spamSettings[1];
+            data.spamCount = serverData.Servers[data.message.guild.id].antispam.messageCount;
+            data.spamTime = serverData.Servers[data.message.guild.id].antispam.timeLimitInSeconds;
+
+            fs.writeFile(serverDataPath, JSON.stringify(serverData), err => {
+                if (err)
+                    return;
+                return post.embed(`:information_source: ANTISPAM: ${data.antispam}`, [
+                    [`Settings`, `Amount of messages: \`\`${data.spamCount}\`\`\n` +
+                        `Time between them: \`\`${data.spamTime}s\`\``, false]]);
+            });
+        });
+    };
     // smaller functions
     mods.serverIsListed = function (serverDataJson) {
         var serverListed = false;
 
-        for (i in serverDataJson.Servers) {
-            if (serverDataJson.Servers[i].id == data.message.guild.id)
-                serverListed = true;
-        };
+        if (serverDataJson.Servers.hasOwnProperty(data.message.guild.id))
+            serverListed = true;
         if (!serverListed) {
             post.embed(`:no_entry_sign: Error`, [[`___`, `To use this command, this server needs to be listed first!\n\n` +
                 `To list this server, the server owner needs to use the \`\`/locateserver\`\` command.`, false]]);
             return false;
         }
         return true;
-    };
-    mods.serverIndex = function (serverDataJson) {
-        for (i in serverDataJson.Servers) {
-            if (serverDataJson.Servers[i].id == data.message.guild.id)
-                return i;
-        };
-        return - 1;
     };
 	mods.modIsOnTheList = function (input, desiredId) {
 		for (i in input) {

@@ -26,7 +26,9 @@
         return output;
     };
     input.removeKeyword = function (_input) {
-        var output = _input.slice(_input.indexOf(` `)).trim();
+        var output = ``;
+        if (_input.indexOf(` `) != -1)
+            output = _input.slice(_input.indexOf(` `)).trim();
         return output;
     };
     input.extractKeyword = function (_input) {
