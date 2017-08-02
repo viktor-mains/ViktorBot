@@ -116,7 +116,7 @@
                         `\n\nFrom now on, you are known as one of the **${fossilRole}s**, carrying the Evolution's legacy with yourself wherever you go.`, false]]);
                 return;
             }
-            else if (userData.messageCount >= 10 && Date.now() - userData.firstMessage > 10518984000 && !roles.userHasRole(regularRole)) { //10518984000 = 4 months
+            if (userData.messageCount >= 10 && Date.now() - userData.firstMessage > 10518984000 && !roles.userHasRole(regularRole) && !roles.userHasRole(fossilRole)) { //10518984000 = 4 months
                 roles.addRoleToUser(regularRole);
                 if (roles.userHasRole(memberRole))
                     roles.removeRoleFromUser(memberRole);
@@ -125,7 +125,7 @@
                         `\n\nFrom now on, you are known as one of the **${regularRole}s**. Have this cookie: :cookie:`, false]]);
                 return;
             }
-            else if (userData.messageCount >= 5 && !roles.userHasRole(memberRole)) {
+            if (userData.messageCount >= 5 && !roles.userHasRole(memberRole) && !roles.userHasRole(regularRole) && !roles.userHasRole(fossilRole)) {
                 roles.addRoleToUser(memberRole);
                 post.embed(`:bouquet: ${data.message.author.username} promoted to ${memberRole}!`, [
                     [`___`, `You start getting comfy in our little community, do you? \n\nAs a gift for your initial commitment, you now have the **${memberRole}** rank! Keep it up.`, false]]);
