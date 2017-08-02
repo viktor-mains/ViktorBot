@@ -111,7 +111,7 @@
                 roles.addRoleToUser(fossilRole);
                 if (roles.userHasRole(regularRole))
                     roles.removeRoleFromUser(regularRole);
-                post.embedToChannel(`:trophy: ${data.message.author.username} promoted to ${fossilRole}!`, [
+                post.embed(`:trophy: ${data.message.author.username} promoted to ${fossilRole}!`, [
                     [`___`, `You're amongst us for over a year already. Your loyality for the Evolution have been recognized, and you deserve the best treatment.` +
                         `\n\nFrom now on, you are known as one of **${fossilRole}s**, carrying the Evolution's legacy with yourself wherever you go.`, false]]);
                 return;
@@ -120,14 +120,14 @@
                 roles.addRoleToUser(regularRole);
                 if (roles.userHasRole(memberRole))
                     roles.removeRoleFromUser(memberRole);
-                post.embedToChannel(`:cake: ${data.message.author.username} promoted to ${regularRole}!`, [
+                post.embed(`:cake: ${data.message.author.username} promoted to ${regularRole}!`, [
                     [`___`, `You're amongst the most loyal Acolytes and regularly participate in our little community. Thank you.` +
                         `\n\nFrom now on, you are known as one of **${regularRole}s**. Have this cookie: :cookie:`, false]]);
                 return;
             }
             if (userData.messageCount >= 5 && !roles.userHasRole(memberRole)) {
                 roles.addRoleToUser(memberRole);
-                post.embedToChannel(`:bouquet: ${data.message.author.username} promoted to ${memberRole}!`, [
+                post.embed(`:bouquet: ${data.message.author.username} promoted to ${memberRole}!`, [
                     [`___`, `You start getting comfy in our little community, do you? \n\nAs a gift for your initial commitment, you now have the **${memberRole}** rank! Keep it up.`, false]]);
                 return;
             }
