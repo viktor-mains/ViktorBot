@@ -107,16 +107,16 @@
         var roles = new Roles.Roles(data.message.guild.members.find('id', data.message.author.id));
 
         if (roles.roleExists(memberRole) && roles.roleExists(regularRole) && roles.roleExists(fossilRole)) {
-            if (userData.messageCount >= 10 && Date.now() - userData.firstMessage > 31536000000 && !roles.userHasRole(fossilRole)) { //31536000000 = 1 year
+            if (userData.messageCount >= 5000 && Date.now() - userData.firstMessage > 31536000000 && !roles.userHasRole(fossilRole)) { //31536000000 = 1 year
                 roles.addRoleToUser(fossilRole);
                 if (roles.userHasRole(regularRole))
                     roles.removeRoleFromUser(regularRole);
                 post.embed(`:trophy: ${data.message.author.username} promoted to ${fossilRole}!`, [
-                    [`___`, `You're amongst us for over a year already. Your loyality for the Evolution have been recognized, and you deserve the best treatment.` +
+                    [`___`, `You have been amongst us for over a year already. Your loyalty to the Evolution has been recognized, and you deserve the best treatment.` +
                         `\n\nFrom now on, you are known as one of the **${fossilRole}s**, carrying the Evolution's legacy with yourself wherever you go.`, false]]);
                 return;
             }
-            if (userData.messageCount >= 10 && Date.now() - userData.firstMessage > 10518984000 && !roles.userHasRole(regularRole) && !roles.userHasRole(fossilRole)) { //10518984000 = 4 months
+            if (userData.messageCount >= 5000 && Date.now() - userData.firstMessage > 10518984000 && !roles.userHasRole(regularRole) && !roles.userHasRole(fossilRole)) { //10518984000 = 4 months
                 roles.addRoleToUser(regularRole);
                 if (roles.userHasRole(memberRole))
                     roles.removeRoleFromUser(memberRole);
@@ -125,10 +125,10 @@
                         `\n\nFrom now on, you are known as one of the **${regularRole}s**. Have this cookie: :cookie:`, false]]);
                 return;
             }
-            if (userData.messageCount >= 5 && !roles.userHasRole(memberRole) && !roles.userHasRole(regularRole) && !roles.userHasRole(fossilRole)) {
+            if (userData.messageCount >= 50 && !roles.userHasRole(memberRole) && !roles.userHasRole(regularRole) && !roles.userHasRole(fossilRole)) {
                 roles.addRoleToUser(memberRole);
                 post.embed(`:bouquet: ${data.message.author.username} promoted to ${memberRole}!`, [
-                    [`___`, `You start getting comfy in our little community, do you? \n\nAs a gift for your initial commitment, you now have the **${memberRole}** rank! Keep it up.`, false]]);
+                    [`___`, `You started getting comfy in our little community, do you? \n\nAs a gift for your initial commitment, you now have the **${memberRole}** rank! Keep it up.`, false]]);
                 return;
             }
         }   
