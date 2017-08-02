@@ -109,14 +109,12 @@
         if (roles.roleExists(memberRole) && roles.roleExists(regularRole) && roles.roleExists(fossilRole)) {
             if (userData.messageCount >= 5000 && Date.now() - userData.firstMessage > 31536000000 && !roles.userHasRole(fossilRole)) { //31536000000 = 1 year
                 roles.addRoleToUser(fossilRole);
-                if (roles.userHasRole(regularRole))
-                    roles.removeRoleFromUser(regularRole);
                 post.embed(`:trophy: ${data.message.author.username} promoted to ${fossilRole}!`, [
                     [`___`, `You have been amongst us for over a year already. Your loyalty to the Evolution has been recognized, and you deserve the best treatment.` +
                         `\n\nFrom now on, you are known as one of the **${fossilRole}s**, carrying the Evolution's legacy with yourself wherever you go.`, false]]);
                 return;
             }
-            if (userData.messageCount >= 5000 && Date.now() - userData.firstMessage > 10518984000 && !roles.userHasRole(regularRole) && !roles.userHasRole(fossilRole)) { //10518984000 = 4 months
+            else if (userData.messageCount >= 5000 && Date.now() - userData.firstMessage > 10518984000 && !roles.userHasRole(regularRole)) { //10518984000 = 4 months
                 roles.addRoleToUser(regularRole);
                 if (roles.userHasRole(memberRole))
                     roles.removeRoleFromUser(memberRole);
@@ -125,7 +123,7 @@
                         `\n\nFrom now on, you are known as one of the **${regularRole}s**. Have this cookie: :cookie:`, false]]);
                 return;
             }
-            if (userData.messageCount >= 50 && !roles.userHasRole(memberRole) && !roles.userHasRole(regularRole) && !roles.userHasRole(fossilRole)) {
+            else if (userData.messageCount >= 50 && !roles.userHasRole(memberRole) && !roles.userHasRole(regularRole) && !roles.userHasRole(fossilRole)) {
                 roles.addRoleToUser(memberRole);
                 post.embed(`:bouquet: ${data.message.author.username} promoted to ${memberRole}!`, [
                     [`___`, `You started getting comfy in our little community, do you? \n\nAs a gift for your initial commitment, you now have the **${memberRole}** rank! Keep it up.`, false]]);
