@@ -173,10 +173,12 @@
                 };
                 joinDate = (new Date(data.message.guild.members.find('id', userID).joinedTimestamp)).toUTCString();
             };
-            
-            return post.embed(`:notebook: ${data.message.author.username} membership data`, [
-                [`Messages written:`, numberOfMessages, true],
-                [`Member since:`, joinDate, true],]);
+
+            if (joinDate)
+                return post.embed(`:notebook: ${data.message.author.username} membership data`, [
+                    [`Messages written:`, numberOfMessages, true],
+                    [`Member since:`, joinDate, true],]);
+            return post.message(`:warning: This server does not have the messages database, therefore this command won't work.`);
         });
     };
 };
