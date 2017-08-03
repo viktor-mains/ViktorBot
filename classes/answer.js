@@ -206,6 +206,12 @@ exports.Answer = function (data) {
             return mods.showList();
     };
 
+
+    answer.toMembership = function () {
+        var MessageCount = require('./mod/messageCount.js');
+        var mc = new MessageCount.MessageCount(data);
+        mc.toMembership();
+    };
     answer.toAntiSpam = function () {
         var Mods = require('./mod/mods.js');
         var mods = new Mods.Mods(data);

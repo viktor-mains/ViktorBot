@@ -41,7 +41,7 @@ bot.on('message', message => {
                 mc.increment((worked, antispamOn) => {
                     if (worked && antispamOn)
                         mc.checkAntiSpam(); 
-                });                
+                });
                 answer.toEmoteReactionTrigger();
                 if (userMessage.hasCapsLockTrigger())
                     answer.toCapsLock();

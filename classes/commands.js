@@ -70,7 +70,14 @@ exports.Commands = function (answer) {
             `- are you a Viktor streamer? Type !iam Viktor Streamer\n`,
             title: `Self-assignable roles`,
             typeOfResponse: `embed`,
-            description: `shows the list of self-assignable roles\n`,
+            description: `shows the list of self-assignable roles`,
+            isAvailable: true,
+            isModCommand: false
+        },
+        'membership': {
+            triggers: `toMembership`,
+            typeOfResponse: `function`,
+            description: `shows your loyality to our server\n`,
             isAvailable: true,
             isModCommand: false
         },

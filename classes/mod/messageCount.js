@@ -1,6 +1,8 @@
 ﻿exports.MessageCount = function (data) {
     var messageCount = this;
     var fs = require(`fs`);
+    var Post = require(`../post.js`);
+    var post = new Post.Post(data);
     var messageCountPath = `../data/mod/messageCount.json`;
 
     messageCount.checkAntiSpam = function () {
@@ -12,7 +14,14 @@
             }
             var serverID = data.message.guild.id;
             var userID = data.message.author.id;
-            messageData = JSON.parse(messageData);
+            try {
+                messageData = JSON.parse(messageData);
+            }
+            catch (err) {
+                var d = new Date();
+                console.log(`${d} - ${err} on antispam\n`);
+                return;
+            }
 
             if (messageData.Servers.hasOwnProperty(serverID)) {
                 if (messageData.Servers[serverID][userID].lastMsg == data.message.content
@@ -61,17 +70,25 @@
             }
             var serverID = data.message.guild.id;
             var userID = data.message.author.id;
-            messageData = JSON.parse(messageData);
+            try {
+                messageData = JSON.parse(messageData);
+            }
+            catch (err) {
+                var d = new Date();
+                console.log(`${d} - ${err} on increment\n`);
+                return callback(false, data.antispam);
+            }
 
             if (messageData.Servers.hasOwnProperty(serverID)) {
                 var mc = 0;
+                var newMsg = data.message.content.replace(/"/g, "")
                 if (!messageData.Servers[serverID].hasOwnProperty(userID)) {
                     messageData.Servers[serverID][userID] = {
                         "messageCount": 0,
                         "firstMessage": Date.now(),
                         "lastMsg": null,
                         "lastMsgTimer": null,
-                        "newMsg": data.message.content,
+                        "newMsg": newMsg,
                         "newMsgTimer": Date.now()
                     };
                 }
@@ -80,7 +97,7 @@
                 messageData.Servers[serverID][userID].messageCount = mc;
                 messageData.Servers[serverID][userID].lastMsg = messageData.Servers[serverID][userID].newMsg;
                 messageData.Servers[serverID][userID].lastMsgTimer = messageData.Servers[serverID][userID].newMsgTimer;
-                messageData.Servers[serverID][userID].newMsg = data.message.content;
+                messageData.Servers[serverID][userID].newMsg = newMsg;
                 messageData.Servers[serverID][userID].newMsgTimer = Date.now();
                 messageCount.checkRegularRequirements(messageData.Servers[serverID][userID]);
 
@@ -102,8 +119,6 @@
         var fossilRole = 'Arcane Android';
 
         var Roles = require(`../roles.js`);
-        var Post = require(`../post.js`);
-        var post = new Post.Post(data);
         var roles = new Roles.Roles(data.message.guild.members.find('id', data.message.author.id));
 
         if (roles.roleExists(memberRole) && roles.roleExists(regularRole) && roles.roleExists(fossilRole)) {
@@ -127,12 +142,41 @@
             if (userData.messageCount >= 50 && !roles.userHasRole(memberRole) && !roles.userHasRole(regularRole) && !roles.userHasRole(fossilRole)) {
                 roles.addRoleToUser(memberRole);
                 post.embed(`:bouquet: ${data.message.author.username} promoted to ${memberRole}!`, [
-                    [`___`, `You started getting comfy in our little community, do you? \n\nAs a gift for your initial commitment, you now have the **${memberRole}** rank! Keep it up.`, false]]);
+                    [`___`, `You started getting comfy in our little community, didn't you? \n\nAs a gift for your initial commitment, you now have the **${memberRole}** rank! Keep it up.`, false]]);
                 return;
             }
         }   
     };
-    messageCount.getServerMessageCount = function () {
+    messageCount.toMembership = function () {
+        var joinDate = '';
+        var numberOfMessages = '0';
+        var serverID = data.message.guild.id;
+        var userID = data.message.author.id;
 
+        fs.readFile(messageCountPath, 'utf8', (err, messageData) => {
+            if (err)
+                return;
+            try {
+                messageData = JSON.parse(messageData);
+            }
+            catch (err) {
+                var d = new Date();
+                console.log(`${d} - ${err}\n`);
+                post.embed(`:no_entry: Something _very bad_ happened.`, [
+                    [`___`, `I can't proc this command and it's an indicator of something catastrophical happening. \nPlease, ping @Arcyvilk ASAP.`, false]]);
+                return;
+            }
+
+            if (messageData.Servers.hasOwnProperty(serverID)) {
+                if (messageData.Servers[serverID].hasOwnProperty(userID)) {
+                    numberOfMessages = messageData.Servers[serverID][userID].messageCount;
+                };
+                joinDate = (new Date(data.message.guild.members.find('id', userID).joinedTimestamp)).toUTCString();
+            };
+            
+            return post.embed(`:notebook: ${data.message.author.username} membership data`, [
+                [`Messages written:`, numberOfMessages, true],
+                [`Member since:`, joinDate, true],]);
+        });
     };
 };
