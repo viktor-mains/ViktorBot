@@ -354,6 +354,13 @@ exports.Commands = function (answer) {
             isAvailable: true,
             isModCommand: false
         },
+        'comics': {
+            triggers: `toComics`,
+            typeOfResponse: `function`,
+            description: `returns the list of Viktor-themed comics`,
+            isAvailable: true,
+            isModCommand: false
+        },
         'choose': {
             triggers: `toChoose`,
             typeOfResponse: `function`,

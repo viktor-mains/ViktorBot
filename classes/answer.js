@@ -64,10 +64,15 @@ exports.Answer = function (data) {
         helpContents += '```';
         post.toDM(helpContents);
     };
-
     answer.toVersion = data.version;
     answer.toTest = `>:3`;
     answer.notImplemented = `Not implemented yet.`;
+    answer.toComics = function () {
+        post.embed(``, [
+            [`Becoming the Herald`, `http://becoming-the-herald-comic.tumblr.com/2Intro \nHow did Viktor become the Machine Herald and is he really that fearful villain everyone are talking about?`, false],
+            [`The Rift`, `http://the-rift-comics.tumblr.com/post/141545049953/the-rift-league-of-legends-fancomics-start \nWhat's the worst that could happen, when you force Viktor and Ekko to face an upcoming Apocalypse together?`, false],
+            [`Viktor vs Jayce`, `http://www.league-art.com/viktorjayce.htm \nPortraining the canon Jayce lore events`, false]]);
+    };
 
 
     answer.userIsAMod = function () {
