@@ -67,21 +67,23 @@ bot.on('messageUpdate', (oldMessage, newMessage) => {
 
     try {
         if (data.userIsNotThisBot() && !data.message.author.bot) {
-            var Post = require('./classes/post.js');
-            var post = new Post.Post(data);
-            var oldTimestamp = new Date(oldMessage.createdTimestamp);
-            var newTimestamp = new Date(newMessage.editedTimestamp);
-            oldTimestamp = oldTimestamp.toISOString();
-            newTimestamp = newTimestamp.toISOString();
+            if (oldMessage.content !== newMessage.content) {
+                var Post = require('./classes/post.js');
+                var post = new Post.Post(data);
+                var oldTimestamp = new Date(oldMessage.createdTimestamp);
+                var newTimestamp = new Date(newMessage.editedTimestamp);
+                oldTimestamp = oldTimestamp.toISOString();
+                newTimestamp = newTimestamp.toISOString();
 
-            post.embedToChannel(`:clipboard: MESSAGE EDITED`, [
-                [`Author`, `${oldMessage.author.username}#${oldMessage.author.discriminator}`, true],
-                [`Channel`, `<#${oldMessage.channel.id}>`, true],
-                [`Old message`, `\`\`\`${oldMessage.content}\`\`\``, false],
-                [`New message`, `\`\`\`${newMessage.content}\`\`\``, false],
-                [`Created at`, oldTimestamp, true],
-                [`Edited at`, newTimestamp, true]
+                post.embedToChannel(`:clipboard: MESSAGE EDITED`, [
+                    [`Author`, `${oldMessage.author.username}#${oldMessage.author.discriminator}`, true],
+                    [`Channel`, `<#${oldMessage.channel.id}>`, true],
+                    [`Old message`, `\`\`\`${oldMessage.content}\`\`\``, false],
+                    [`New message`, `\`\`\`${newMessage.content}\`\`\``, false],
+                    [`Created at`, oldTimestamp, true],
+                    [`Edited at`, newTimestamp, true]
                 ], data.logChannel, '83C4F2');
+            }
         }
     }
     catch (err) {
