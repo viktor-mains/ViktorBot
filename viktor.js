@@ -66,7 +66,7 @@ bot.on('messageUpdate', (oldMessage, newMessage) => {
     catch (err) { }//this triggers when message was sent in DM
 
     try {
-        if (data.userIsNotThisBot()) {
+        if (data.userIsNotThisBot() && !data.message.author.bot) {
             var Post = require('./classes/post.js');
             var post = new Post.Post(data);
             var oldTimestamp = new Date(oldMessage.createdTimestamp);
@@ -96,7 +96,7 @@ bot.on('messageDelete', message => {
     catch (err) { }//this triggers when message was sent in DM
 
     try {
-        if (data.userIsNotThisBot()) {
+        if (data.userIsNotThisBot() && !data.message.author.bot) {
             var Post = require('./classes/post.js');
             var post = new Post.Post(data);
             var oldTimestamp = new Date(message.createdTimestamp);
