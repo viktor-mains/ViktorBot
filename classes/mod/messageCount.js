@@ -81,7 +81,7 @@
 
             if (messageData.Servers.hasOwnProperty(serverID)) {
                 var mc = 0;
-                var newMsg = data.message.content.replace(/"/g, "")
+                var newMsg = data.message.content.replace(/"/g, "");
                 if (!messageData.Servers[serverID].hasOwnProperty(userID)) {
                     messageData.Servers[serverID][userID] = {
                         "messageCount": 0,
