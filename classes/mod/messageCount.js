@@ -124,7 +124,7 @@
         if (roles.roleExists(memberRole) && roles.roleExists(regularRole) && roles.roleExists(fossilRole)) {
             if (userData.messageCount >= 5000 && Date.now() - userData.firstMessage > 31536000000 && !roles.userHasRole(fossilRole)) { //31536000000 = 1 year
                 roles.addRoleToUser(fossilRole);
-                post.embed(`:trophy: ${data.message.author.username} promoted to ${fossilRole}!`, [
+                post.embed(`<:hc3:236234891023482880> ${data.message.author.username} promoted to ${fossilRole}! :trophy:`, [
                     [`___`, `You have been amongst us for over a year already. Your loyalty to the Evolution has been recognized, and you deserve the best treatment.` +
                         `\n\nFrom now on, you are known as one of the **${fossilRole}s**, carrying the Evolution's legacy with yourself wherever you go.`, false]]);
                 return;
@@ -134,14 +134,14 @@
                 if (roles.userHasRole(memberRole))
                     roles.removeRoleFromUser(memberRole);
                 if (!roles.userHasRole(fossilRole))
-                post.embed(`:cake: ${data.message.author.username} promoted to ${regularRole}!`, [
+                    post.embed(`<:hc2:236234890532749313> ${data.message.author.username} promoted to ${regularRole}! :cake:`, [
                     [`___`, `You're amongst the most loyal Acolytes and regularly participate in our little community. Thank you.` +
                         `\n\nFrom now on, you are known as one of the **${regularRole}s**. Have this cookie: :cookie:`, false]]);
                 return;
             }
             if (userData.messageCount >= 100 && !roles.userHasRole(memberRole) && !roles.userHasRole(regularRole) && !roles.userHasRole(fossilRole)) {
                 roles.addRoleToUser(memberRole);
-                post.embed(`:bouquet: ${data.message.author.username} promoted to ${memberRole}!`, [
+                post.embed(`<:hc1:236234890813636608> ${data.message.author.username} promoted to ${memberRole}! :bouquet:`, [
                     [`___`, `You started getting comfy in our little community, didn't you? \n\nAs a gift for your initial commitment, you now have the **${memberRole}** rank! Keep it up.`, false]]);
                 return;
             }
