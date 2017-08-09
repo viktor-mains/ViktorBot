@@ -139,7 +139,7 @@
                         `\n\nFrom now on, you are known as one of the **${regularRole}s**. Have this cookie: :cookie:`, false]]);
                 return;
             }
-            if (userData.messageCount >= 50 && !roles.userHasRole(memberRole) && !roles.userHasRole(regularRole) && !roles.userHasRole(fossilRole)) {
+            if (userData.messageCount >= 100 && !roles.userHasRole(memberRole) && !roles.userHasRole(regularRole) && !roles.userHasRole(fossilRole)) {
                 roles.addRoleToUser(memberRole);
                 post.embed(`:bouquet: ${data.message.author.username} promoted to ${memberRole}!`, [
                     [`___`, `You started getting comfy in our little community, didn't you? \n\nAs a gift for your initial commitment, you now have the **${memberRole}** rank! Keep it up.`, false]]);
