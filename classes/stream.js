@@ -37,8 +37,10 @@ exports.Stream = function (member, data) {
 
             for (i in followerInfoJson.Streamers) {
                 if (followerInfoJson.Streamers[i].id == member.user.id) {
-                    for (j in followerInfoJson.Streamers[i].followers)
-                        userFollowers += `${member.guild.members.find('id', followerInfoJson.Streamers[i].followers[j]).user.toString()} `;
+                    for (j in followerInfoJson.Streamers[i].followers) {
+                        if (member.guild.members.find('id', followerInfoJson.Streamers[i].followers[j]).presence.status != 'offline')
+                            userFollowers += `${member.guild.members.find('id', followerInfoJson.Streamers[i].followers[j]).user.toString()} `;
+                    }
                 }
             };
             if (userFollowers)
