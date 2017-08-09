@@ -69,13 +69,18 @@ bot.on('messageUpdate', (oldMessage, newMessage) => {
         if (data.userIsNotThisBot()) {
             var Post = require('./classes/post.js');
             var post = new Post.Post(data);
+            var oldTimestamp = new Date(oldMessage.createdTimestamp);
+            var newTimestamp = new Date(newMessage.editedTimestamp);
+            oldTimestamp = oldTimestamp.toISOString();
+            newTimestamp = newTimestamp.toISOString();
 
             post.embedToChannel(`:clipboard: MESSAGE EDITED`, [
                 [`Author`, `${oldMessage.author.username}#${oldMessage.author.discriminator}`, true],
-                [`Timestamp`, oldMessage.createdTimestamp, true],
                 [`Channel`, `<#${oldMessage.channel.id}>`, true],
                 [`Old message`, `\`\`\`${oldMessage.content}\`\`\``, false],
-                [`New message`, `\`\`\`${newMessage.content}\`\`\``, false]
+                [`New message`, `\`\`\`${newMessage.content}\`\`\``, false],
+                [`Created at`, oldTimestamp, true],
+                [`Edited at`, newTimestamp, true]
                 ], data.logChannel, '83C4F2');
         }
     }
@@ -94,12 +99,17 @@ bot.on('messageDelete', message => {
         if (data.userIsNotThisBot()) {
             var Post = require('./classes/post.js');
             var post = new Post.Post(data);
+            var oldTimestamp = new Date(message.createdTimestamp);
+            var newTimestamp = new Date();
+            oldTimestamp = oldTimestamp.toISOString();
+            newTimestamp = newTimestamp.toISOString();
 
             post.embedToChannel(`:no_mobile_phones: MESSAGE DELETED`, [
                 [`Author`, `${message.author.username}#${message.author.discriminator}`, true],
-                [`Timestamp`, message.createdTimestamp, true],
                 [`Channel`, `<#${message.channel.id}>`, true],
-                [`Content`, `\`\`\`${message.content}\`\`\``, false]
+                [`Content`, `\`\`\`${message.content}\`\`\``, false],
+                [`Created at`, oldTimestamp, true],
+                [`Deleted at`, newTimestamp, true]
             ], data.logChannel, 'C70000');
         }
     }
@@ -127,8 +137,8 @@ bot.on('guildMemberAdd', GuildMember => {
         GuildMember.user.send(data.welcomeMessageForViktorMains);
         console.log(`${d} - new member - ${GuildMember.user.username}#${GuildMember.user.discriminator}\n`);
         post.embedToChannel(`:man: USER JOINS`, [
-            [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, true],
-            [`Joined at`, GuildMember.joinedAt, true]
+            [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, false],
+            [`Joined at`, GuildMember.joinedAt.toISOString(), true]
         ], data.logChannel, '51E61C');
     });
 });
@@ -145,8 +155,8 @@ bot.on('guildMemberRemove', GuildMember => {
     console.log(`${d} - member left - ${GuildMember.user.username}#${GuildMember.user.discriminator}\n`);
 
     post.embedToChannel(`:wave: USER LEAVES`, [
-        [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, true],
-        [`Leaves at`, d, true]
+        [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, false],
+        [`Leaves at`, d.toISOString(), true]
     ], data.logChannel, 'FDC000');
 });
 
