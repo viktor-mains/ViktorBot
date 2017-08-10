@@ -1,7 +1,9 @@
 exports.DearViktorAnswers = function () {
     var answers = this;
     
-    answers.arcy = ["arcyvilk", "arcy", "your creator", "your maker", "person who made you", "man who made you", "guy who made you", "artsee", "artzy", "arzy", "4rcy"];
+    answers.arcy = ["arcyvilk", "arcy", "your creator", "your maker", "person who made you", "man who made you", "guy who made you",
+        "person who coded you", "man who coded you", "guy who coded you", "your coder", "your programmer",
+        "artsee", "artzy", "arzy", "4rcy", "your designer", "your author", "your maker"];
     answers.arcyAnswers = ["You mean Arcy? That's, like, the single best person in existence.",
         "I'm sorry, I can't hear you over my creator's pure _awesomeness_.",
         "Arcy is the best and I agree with them on everything."];
