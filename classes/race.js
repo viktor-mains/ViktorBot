@@ -50,8 +50,9 @@
 
                 return post.embed(`:trophy: ${rankDesired} Race!`, [
                     [`Participants:`, `${participants}`, false],
-                    [`Winners:`, `${winners}`, false], [`___`, `\n\nTo join the ${rankDesired} Race, write **!${rankDesired.toLowerCase()}race add <IGN>|<server>** . ` +
-                        `Disclaimer: you have to be ${rankCurrent}.`, false]]);
+                    [`Winners:`, `${winners}`, false], [`___`, `\n\n~~To join the ${rankDesired} Race, write **!${rankDesired.toLowerCase()}race add <IGN>|<server>**~~ ` +
+                        `Currently manual joining is unavailable - to join the race, ping Arcyvilk with your IGN and server. \n\n` +
+                        `Disclaimer: you have to be ${rankCurrent} and have Viktor in your top 3 played champions this season.`, false]]);
             });
         });
     };
@@ -85,7 +86,7 @@
 
                 api.extractPlayerRanksData(server, playerID, rankJson => {
                     if (rankJson.toString().startsWith(`:warning:`)) {
-                        post.message(`:warning: Error while downloading ${raceJson.Participants[i].nickname}'s data.`);
+                        post.message(rankJson);
                         callback(`error`);
                         return;
                     };
