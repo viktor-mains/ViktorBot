@@ -34,8 +34,6 @@ exports.API = function () {
     
     api.extractPlayerRanksData = function (server, playerID, callback) {
         api.extractFromURL(api.playersRanksData(server, playerID), ranksAPI => {
-            if (ranksAPI == `error 403`)
-                return callback(`:warning: The key expired.`);
             if (!api.everythingOkay(ranksAPI))
                 return callback(`:warning: Error retrieving ranks data.`);
             return callback(JSON.parse(ranksAPI));
@@ -71,8 +69,6 @@ exports.API = function () {
     };
     api.extractPlayerID = function (server, playerIGNAndServer, callback) {
         api.extractFromURL(api.URLsummonerID(server, playerIGNAndServer[0]), playerIDAPI => {
-            if (playerIDAPI == `error 403`)
-                return callback(`:warning: The key expired.`);
             if (!api.everythingOkay(playerIDAPI))
                 return callback(`:warning: Player ${decodeURIComponent(playerIGNAndServer[0]).toUpperCase()} doesn't exist.`);
             return callback((JSON.parse(playerIDAPI)).id.toString());
@@ -80,8 +76,6 @@ exports.API = function () {
     };
     api.extractPlayerAccountID = function (server, playerIGNAndServer, callback) {
         api.extractFromURL(api.URLsummonerID(server, playerIGNAndServer[0]), playerIDAPI => {
-            if (playerIDAPI == `error 403`)
-                return callback(`:warning: The key expired.`);
             if (!api.everythingOkay(playerIDAPI))
                 return callback(`:warning: Player ${decodeURIComponent(playerIGNAndServer[0]).toUpperCase()} doesn't exist.`);
             return callback((JSON.parse(playerIDAPI)).accountId.toString());

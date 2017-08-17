@@ -234,14 +234,14 @@ exports.Commands = function (answer) {
             arguments: `:game_die:`,
             typeOfResponse: `function`,
             description: `syntax: !ingame <ign>|<server> - shows info of an ongoing League game`,
-            isAvailable: false,
+            isAvailable: true,
             isModCommand: false
         },
         'lastgame': {
             triggers: `toLastGameRequest`,
             typeOfResponse: `function`,
             description: `syntax: !lastgame <ign>|<server> - shows info of last game of a particular player`,
-            isAvailable: false,
+            isAvailable: true,
             isModCommand: false
         },
         'mastery': {
@@ -249,7 +249,7 @@ exports.Commands = function (answer) {
             arguments: `<:viktorgod:269479031009837056> Viktor mastery points for`,
             typeOfResponse: `function`,
             description: `syntax: !mastery <ign>|<server> - returns Viktor mastery for the particular player`,
-            isAvailable: false,
+            isAvailable: true,
             isModCommand: false
         },
         'opgg': {
