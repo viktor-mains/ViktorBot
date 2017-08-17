@@ -90,9 +90,14 @@
                         callback(`error`);
                         return;
                     };
-                    raceJson.Participants[i].division = rankJson[0].rank;
-                    raceJson.Participants[i].leaguePoints = rankJson[0].leaguePoints;
-                    raceJson.Participants[i].points = race.calculatePlayerRacePoints(rankJson[0], rankDesired, rankCurrent, rankLower);
+                    for (prop in rankJson) {
+                        if (rankJson[prop].queueType == "RANKED_SOLO_5x5") {
+                            raceJson.Participants[i].division = rankJson[prop].rank;
+                            raceJson.Participants[i].leaguePoints = rankJson[prop].leaguePoints;
+                            raceJson.Participants[i].points = race.calculatePlayerRacePoints(rankJson[prop], rankDesired, rankCurrent, rankLower);
+                            break;
+                        }
+                    }
 
                     if (i == l - 1) 
                         callback(raceJson);
