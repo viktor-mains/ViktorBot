@@ -250,7 +250,7 @@ exports.Answer = function (data) {
     };
     answer.toSkinTimer = function () {
         var dateCreator = Date.UTC(2013, 9, 1);
-        var datePromised = Date.UTC(2018, 2, 5);
+        var datePromised = Date.UTC(2018, 4, 3);
         var dateNow = new Date(); 
         dateNow = Date.now();
 
@@ -259,7 +259,7 @@ exports.Answer = function (data) {
             `**${input.round((dateNow - dateCreator) / 60000, 0)}** minutes, or ` +
             `**${input.round((dateNow - dateCreator) / 3600000, 0)}** hours, or ` +
             `**${input.round((dateNow - dateCreator) / 86400000, 0)}** days since the last Viktor skin.`
-        var newSkinMath = `However, we've been promised at 5th of March, 2017 that we will get a skin in the next 12 months. ` +
+        var newSkinMath = `However, we've been promised at 3rd of May, 2017 that we will get a skin in the next 12 months. ` +
             `That means, that if it doesn't happen in the next `+
             `**${input.round((datePromised - dateNow) / 1000, 0)}** seconds, or ` +
             `**${input.round((datePromised - dateNow) / 60000, 0)}** minutes, or ` +
