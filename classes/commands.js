@@ -403,7 +403,7 @@ exports.Commands = function (answer) {
             isModCommand: false
         },
         'gibeskin': {
-            triggers: `https://i.imgur.com/FUn625b.jpg`,
+            triggers: `http://arcyvilk.com/greatherald/img/gibeskin.png`,
             typeOfResponse: `text`,
             description: `[legacy] calculates time since we've got the last Viktor skin\n`,
             isAvailable: true,
