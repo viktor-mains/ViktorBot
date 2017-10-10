@@ -7,6 +7,8 @@ exports.Follow = function (data) {
     var followersPath = '../data/follow.json';
 
     follow.listOfStreamers = function () {
+        var Input = require('../input.js');
+        var input = new Input.Input();
         var streamersList = ``;
         var viktorStreamers = data.message.guild.roles.find(`name`, roleName).members.forEach(member => {
             streamersList += `\`\`- ${member.user.id}\`\` - **${member.user.username}**\n`;

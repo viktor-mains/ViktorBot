@@ -13,6 +13,7 @@ exports.Commands = function (answer) {
  *  @description - description which shows in the list of commands. If UNDEFINED, command doesn't show on the list.
  *  @isModCommand - self-explanatory
  *  @isAvailable - self-explanatory
+ *  <@category> - optional for non-mod commands
  *  <@refusal> - a special response which gets sent instead of standard one, if bot decides to refuse to execute the command
  *  <@title> - title for embed messages (required).
  *  <@arguments> - arguments for functions. If function triggers an embed, use this to pass title instead of <title>.
@@ -402,9 +403,9 @@ exports.Commands = function (answer) {
             isModCommand: false
         },
         'gibeskin': {
-            triggers: `toSkinTimer`,
-            typeOfResponse: `function`,
-            description: `calculates time since we've got the last Viktor skin\n`,
+            triggers: `https://i.imgur.com/FUn625b.jpg`,
+            typeOfResponse: `text`,
+            description: `[legacy] calculates time since we've got the last Viktor skin\n`,
             isAvailable: true,
             isModCommand: false
         }
