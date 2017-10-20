@@ -202,7 +202,6 @@ function timerOn() {
         var timestamp = new Date();
         if (timestamp.getSeconds() % 10 === 0) {
             messageCount.setMsgData(msgCache.data);
-            console.log(msgCache.data);
         }
     }, 1000);
 };
