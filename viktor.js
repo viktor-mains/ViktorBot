@@ -3,18 +3,31 @@ const Discord = require('discord.js');
 var UserMessage = require('./classes/usermessage.js');
 var Answer = require('./classes/answer.js');
 var Data = require('./classes/data.js');
-
 var Roles = require('./classes/roles.js');
 var Stream = require('./classes/stream.js');
 var Ban = require('./classes/mod/ban.js');
+var MessageCount = require('./classes/mod/messageCount.js');
+var messageCount;
 
-const bot = new Discord.Client();
-const token = process.env.VIKTOR_DISCORD_TOKEN;
+var msgCache = {
+    "data": {},
+    "antispam": false,
+    "spamCount": 4,
+    "spamTime": 20
+};
 
+// bot events
 bot.login(token);
 
 bot.on('ready', () => {
     var d = new Date();
+
+    messageCount = new MessageCount.MessageCount();
+    messageCount.getMsgData(mcd => {
+        msgCache.data = mcd;
+        timerOn();
+    });
+
     bot.user.setPresence({ game: { name: `!h for help`, type: 0 } });
     console.log(`${d} - ${bot.user.username} starts working!\n`);
 });
@@ -33,15 +46,11 @@ bot.on('message', message => {
     data.loadServerData(() => {
         if (data.userIsNotThisBot() && !data.message.author.bot) {
             try {
-                var MessageCount = require('./classes/mod/messageCount.js');
-                var mc = new MessageCount.MessageCount(data);
                 var userMessage = new UserMessage.UserMessage(data);
                 var answer = new Answer.Answer(data);
 
-                mc.increment((worked, antispamOn) => {
-                    if (worked && antispamOn)
-                        mc.checkAntiSpam(); 
-                });
+                messageCount.increment(msgCache.data, message);
+                
                 answer.toEmoteReactionTrigger();
                 if (userMessage.hasCapsLockTrigger())
                     answer.toCapsLock();
@@ -184,3 +193,14 @@ bot.on('presenceUpdate', (oldMember, newMember) => {
         }
     }
 });
+
+// custom events
+function timerOn() {
+    setInterval(() => {
+        var timestamp = new Date();
+        if (timestamp.getSeconds() % 10 === 0) {
+            messageCount.setMsgData(msgCache.data);
+            console.log(msgCache.data);
+        }
+    }, 1000);
+};

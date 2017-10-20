@@ -1,106 +1,61 @@
-﻿exports.MessageCount = function (data) {
+﻿const Discord = require('discord.js');
+
+exports.MessageCount = function (data) {
     var messageCount = this;
     var fs = require(`fs`);
     var Post = require(`../post.js`);
     var post = new Post.Post(data);
     var messageCountPath = `../data/mod/messageCount.json`;
 
-    messageCount.checkAntiSpam = function () {
+    messageCount.getMsgData = function (callback) {
         fs.readFile(messageCountPath, 'utf8', (err, messageData) => {
             if (err) {
                 var d = new Date();
-                console.log(`${d} - ${err}\n`);
+                console.log(`${d} - getting message data - ${err}\n`);
                 return;
             }
-            var serverID = data.message.guild.id;
-            var userID = data.message.author.id;
-            try {
-                messageData = JSON.parse(messageData);
-            }
-            catch (err) {
-                var d = new Date();
-                console.log(`${d} - ${err} on antispam\n`);
-                return;
-            }
-
-            if (messageData.Servers.hasOwnProperty(serverID)) {
-                if (messageData.Servers[serverID][userID].lastMsg == data.message.content
-                    && messageData.Servers[serverID][userID].newMsgTimer - messageData.Servers[serverID][userID].lastMsgTimer <= (data.spamTime * 1000)) {
-                    if (!messageData.Servers[serverID][userID].hasOwnProperty('spamCounter')) {
-                        messageData.Servers[serverID][userID]['spamCounter'] = parseInt(data.spamCount) - 2;
-                    }
-                    else {
-                        messageData.Servers[serverID][userID].spamCounter = parseInt(messageData.Servers[serverID][userID].spamCounter) - 1;
-                        if (messageData.Servers[serverID][userID].spamCounter == 0) {
-                            var Roles = require(`../roles.js`);
-                            var Post = require(`../post.js`);
-                            var post = new Post.Post(data);
-                            var roles = new Roles.Roles(data.message.guild.members.find('id', data.message.author.id));
-                            var timeoutRole = `timeout`;
-
-                            messageData.Servers[serverID][userID].messageCount = parseInt(messageData.Servers[serverID][userID].messageCount) - parseInt(data.spamCount);
-                            delete messageData.Servers[serverID][userID].spamCounter;
-                            if (roles.roleExists(timeoutRole))
-                                roles.addRoleToUser(timeoutRole);
-                            post.embed(`<:banhammer:310437806772060168> ${data.message.author.username} timeouted for spam`, [[`___`, `Seriously, stop it.`, false]]);
-                            post.embedToChannel(`:timer: USER TIMEOUTED FOR SPAM`, [
-                                [`User`, `${data.message.author.username}#${data.message.author.discriminator}`, false],
-                                [`Spammed message`, `\`\`\`${data.message.content}\`\`\``, false]
-                            ], data.logChannel, 'F27900');
-                        }
-                    }
-                }
-                else {
-                    if (messageData.Servers[serverID][userID].hasOwnProperty('spamCounter'))
-                        delete messageData.Servers[serverID][userID].spamCounter;
-                };
-                fs.writeFile(messageCountPath, JSON.stringify(messageData), err => {
-                    if (err)
-                        return;
-                });
-            };
+            callback(JSON.parse(messageData));
         });
     };
-    messageCount.increment = function (callback) {  
-        fs.readFile(messageCountPath, `utf8`, (err, messageData) => {
+    messageCount.setMsgData = function (global) {
+        fs.writeFile(messageCountPath, JSON.stringify(global), err => {
             if (err) {
                 var d = new Date();
-                console.log(`${d} - ${err}\n`);
-                return callback(false, data.antispam);
+                console.log(`${d} - setting message data - ${err}\n`);
             }
-            var serverID = data.message.guild.id;
-            var userID = data.message.author.id;
-            try {
-                messageData = JSON.parse(messageData);
-            }
-            catch (err) {
-                var d = new Date();
-                console.log(`${d} - ${err} on increment\n`);
-                return callback(false, data.antispam);
-            }
+        });
+    };
 
-            if (messageData.Servers.hasOwnProperty(serverID)) {
-                var mc = 0;
-                var newMsg = data.message.content.replace(/"/g, "");
-                if (!messageData.Servers[serverID].hasOwnProperty(userID)) {
-                    messageData.Servers[serverID][userID] = {
-                        "messageCount": 0,
-                        "firstMessage": Date.now(),
-                        "lastMsg": null,
-                        "lastMsgTimer": null,
-                        "newMsg": newMsg,
-                        "newMsgTimer": Date.now()
-                    };
-                }
-                mc = parseInt(messageData.Servers[serverID][userID].messageCount);
-                mc++;
-                messageData.Servers[serverID][userID].messageCount = mc;
-                messageData.Servers[serverID][userID].lastMsg = messageData.Servers[serverID][userID].newMsg;
-                messageData.Servers[serverID][userID].lastMsgTimer = messageData.Servers[serverID][userID].newMsgTimer;
-                messageData.Servers[serverID][userID].newMsg = newMsg;
-                messageData.Servers[serverID][userID].newMsgTimer = Date.now();
-                messageCount.checkRegularRequirements(messageData.Servers[serverID][userID]);
+    messageCount.increment = function (msgCount, msg) {
+        var serverID = msg.guild.id;
+        var userID = msg.author.id;
+        var newMsg = msg.content.replace(/"/g, "");
 
+        if (!msgCount.hasOwnProperty(serverID))
+            msgCount[serverID] = {};
+        if (!msgCount[serverID].hasOwnProperty(userID)) { //if user was not registered before
+            var mc = 0;
+            msgCount[serverID][userID] = {
+                "messageCount": 0,
+                "firstMessage": Date.now(),
+                "lastMsg": null,
+                "lastMsgTimer": null,
+                "newMsg": newMsg,
+                "newMsgTimer": Date.now()
+            };
+        }
+        mc = parseInt(msgCount[serverID][userID].messageCount);
+        mc++;
+        msgCount[serverID][userID].messageCount = mc;
+        msgCount[serverID][userID].lastMsg = msgCount[serverID][userID].newMsg;
+        msgCount[serverID][userID].lastMsgTimer = msgCount[serverID][userID].newMsgTimer;
+        msgCount[serverID][userID].newMsg = newMsg;
+        msgCount[serverID][userID].newMsgTimer = Date.now();
+        messageCount.checkRegularRequirements(msgCount[serverID][userID], msg);
+    }
+
+    //i leave it only cause i don't remember that data.antispam did, so leaving it to remember it used to play a role here'
+    /*messageCount.increment = function (callback) {
                 fs.writeFile(messageCountPath, JSON.stringify(messageData), err => {
                     if (err) {
                         var d = new Date();
@@ -111,41 +66,49 @@
                 });
             };
         });
-    };
-    messageCount.checkRegularRequirements = function (userData) {
+    };*/
+    
+    messageCount.checkRegularRequirements = function (userData, msg) {
         //var arrayOfRanks = [`Fresh Acolyte`, `Junior Assistant`, `Hextech Progenitor`, `Arcane Android`];
         var memberRole = 'Junior Assistant';
         var regularRole = 'Hextech Progenitor';
         var fossilRole = 'Arcane Android';
 
         var Roles = require(`../roles.js`);
-        var roles = new Roles.Roles(data.message.guild.members.find('id', data.message.author.id));
+        var roles = new Roles.Roles(msg.guild.members.find('id', msg.author.id));
 
         if (roles.roleExists(memberRole) && roles.roleExists(regularRole) && roles.roleExists(fossilRole)) {
             if (userData.messageCount >= 5000 && Date.now() - userData.firstMessage > 31536000000 && !roles.userHasRole(fossilRole)) { //31536000000 = 1 year
                 roles.addRoleToUser(fossilRole);
-                post.embed(`<:hc3:236234891023482880> ${data.message.author.username} promoted to ${fossilRole}! :trophy:`, [
-                    [`___`, `You have been amongst us for over a year already. Your loyalty to the Evolution has been recognized, and you deserve the best treatment.` +
-                        `\n\nFrom now on, you are known as one of the **${fossilRole}s**, carrying the Evolution's legacy with yourself wherever you go.`, false]]);
-                return;
+                var embed = new Discord.RichEmbed()
+                    .setTitle(`<:hc3:236234891023482880> ${msg.author.username} promoted to ${fossilRole}! :trophy:`)
+                    .setColor(`0xFDC000`)
+                    .addField(`___`, `You have been amongst us for over a year already. Your loyalty to the Evolution has been recognized, and you deserve the best treatment.
+                              \n\nFrom now on, you are known as one of the **${fossilRole}s**, carrying the Evolution's legacy with yourself wherever you go.`, false);
+                    return msg.channel.send({ embed });
             }
             if (userData.messageCount >= 5000 && Date.now() - userData.firstMessage > 10518984000 && !roles.userHasRole(regularRole)) { //10518984000 = 4 months
                 roles.addRoleToUser(regularRole);
                 if (roles.userHasRole(memberRole))
                     roles.removeRoleFromUser(memberRole);
-                if (!roles.userHasRole(fossilRole))
-                    post.embed(`<:hc2:236234890532749313> ${data.message.author.username} promoted to ${regularRole}! :cake:`, [
-                    [`___`, `You're amongst the most loyal Acolytes and regularly participate in our little community. Thank you.` +
-                        `\n\nFrom now on, you are known as one of the **${regularRole}s**. Have this cookie: :cookie:`, false]]);
-                return;
+                if (!roles.userHasRole(fossilRole)) {
+                    var embed = new Discord.RichEmbed()
+                        .setTitle(`<:hc2:236234890532749313> ${msg.author.username} promoted to ${regularRole}! :cake:`)
+                        .setColor(`0xFDC000`)
+                        .addField(`___`, `You're amongst the most loyal Acolytes and regularly participate in our little community. Thank you.
+                                \n\nFrom now on, you are known as one of the **${regularRole}s**. Have this cookie: :cookie:`, false);
+                    return msg.channel.send({ embed });
+                }
             }
             if (userData.messageCount >= 50 && !roles.userHasRole(memberRole) && !roles.userHasRole(regularRole) && !roles.userHasRole(fossilRole)) {
                 roles.addRoleToUser(memberRole);
-                post.embed(`<:hc1:236234890813636608> ${data.message.author.username} promoted to ${memberRole}! :bouquet:`, [
-                    [`___`, `You started getting comfy in our little community, didn't you? \n\nAs a gift for your initial commitment, you now have the **${memberRole}** rank! Keep it up.`, false]]);
-                return;
+                var embed = new Discord.RichEmbed()
+                    .setTitle(`<:hc1:236234890813636608> ${msg.author.username} promoted to ${memberRole}! :bouquet:`)
+                    .setColor(`0xFDC000`)
+                    .addField(`___`, `You started getting comfy in our little community, didn't you? \n\nAs a gift for your initial commitment, you now have the **${memberRole}** rank! Keep it up.`, false);
+                return msg.channel.send({ embed });
             }
-        }   
+        }
     };
     messageCount.toMembership = function () {
         var joinDate = '';
@@ -167,9 +130,9 @@
                 return;
             }
 
-            if (messageData.Servers.hasOwnProperty(serverID)) {
-                if (messageData.Servers[serverID].hasOwnProperty(userID)) {
-                    numberOfMessages = messageData.Servers[serverID][userID].messageCount;
+            if (messageData.hasOwnProperty(serverID)) {
+                if (messageData[serverID].hasOwnProperty(userID)) {
+                    numberOfMessages = messageData[serverID][userID].messageCount;
                 };
                 joinDate = (new Date(data.message.guild.members.find('id', userID).joinedTimestamp)).toUTCString();
             };
@@ -180,5 +143,43 @@
                     [`Member since:`, joinDate, true],]);
             return post.message(`:warning: This server does not have the messages database, therefore this command won't work.`);
         });
+    };
+
+    messageCount.checkAntiSpam = function (messageData) {
+        var serverID = data.message.guild.id;
+        var userID = data.message.author.id;
+
+        if (messageData.Servers.hasOwnProperty(serverID)) {
+            if (messageData.Servers[serverID][userID].lastMsg == data.message.content
+                && messageData.Servers[serverID][userID].newMsgTimer - messageData.Servers[serverID][userID].lastMsgTimer <= (data.spamTime * 1000)) {
+                if (!messageData.Servers[serverID][userID].hasOwnProperty('spamCounter')) {
+                    messageData.Servers[serverID][userID]['spamCounter'] = parseInt(data.spamCount) - 2;
+                }
+                else {
+                    messageData.Servers[serverID][userID].spamCounter = parseInt(messageData.Servers[serverID][userID].spamCounter) - 1;
+                    if (messageData.Servers[serverID][userID].spamCounter == 0) {
+                        var Roles = require(`../roles.js`);
+                        var Post = require(`../post.js`);
+                        var post = new Post.Post(data);
+                        var roles = new Roles.Roles(data.message.guild.members.find('id', data.message.author.id));
+                        var timeoutRole = `timeout`;
+
+                        messageData.Servers[serverID][userID].messageCount = parseInt(messageData.Servers[serverID][userID].messageCount) - parseInt(data.spamCount);
+                        delete messageData.Servers[serverID][userID].spamCounter;
+                        if (roles.roleExists(timeoutRole))
+                            roles.addRoleToUser(timeoutRole);
+                        post.embed(`<:banhammer:310437806772060168> ${data.message.author.username} timeouted for spam`, [[`___`, `Seriously, stop it.`, false]]);
+                        post.embedToChannel(`:timer: USER TIMEOUTED FOR SPAM`, [
+                            [`User`, `${data.message.author.username}#${data.message.author.discriminator}`, false],
+                            [`Spammed message`, `\`\`\`${data.message.content}\`\`\``, false]
+                        ], data.logChannel, 'F27900');
+                    }
+                }
+            }
+            else {
+                if (messageData.Servers[serverID][userID].hasOwnProperty('spamCounter'))
+                    delete messageData.Servers[serverID][userID].spamCounter;
+            };
+        };
     };
 };
