@@ -101,7 +101,7 @@ exports.Roles = function (member) {
         if (roles.rankRoleRequested(roleName) && roleAction==`add`)
             return post.embed(`:information_source: This is not how rank roles are assigned`, [[`___`, `Rank roles are assigned manually by moderators.\n\n` +
                 `1. **Screenshot your profile** with nickname and rank badge visible, like that: http://i.imgur.com/aiRJudZ.png \n` +
-                `2. Post the screenshot in the #assign_role room. \n\n` +
+                `2. Post the screenshot in the #bot_commands room. \n\n` +
                 `The colour will be based off *Ranked Solo/Duo* - Ranked Flex and Ranked 3v3 aren't taken into account.`, false]]);
         if (roles.userRankRoleRequested(roleName))
             return post.message(`:warning: This role can't be added neither removed manually.`);
