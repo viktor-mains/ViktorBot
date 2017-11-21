@@ -67,7 +67,7 @@ exports.Commands = function (answer) {
             isModCommand: false
         },
         'roles': {
-            triggers: `- servers: BR | EUW | EUNE | NA | JP | CN | SEA | KR | LAN | LAS | OCE | RU | TR\n` +
+            triggers: `- servers: BR | EUW | EUNE | NA | JP | CN | SEA | KR | LAN | LAS | OCE | RU | TR | PBE\n` +
             `- are you a Viktor streamer? Type !iam Viktor Streamer\n`,
             title: `Self-assignable roles`,
             typeOfResponse: `embed`,
@@ -96,6 +96,14 @@ exports.Commands = function (answer) {
             isAvailable: true,
             isModCommand: false,
             arguments: `**♥ GLORIOUS MINIGUIDE TO BUILD ♥**`
+        },
+        'runes': {
+            triggers: `Since we're still pretty early in preseason and rune are still being changed, there's no one main consensus regarding runes now. Check #ask_viktor_main room to ask community members about their preffered choices.`,
+            typeOfResponse: `text`,
+            description: `returns some info on recommended rune pages`,
+            isAvailable: true,
+            isModCommand: true,
+            arguments: `Viktor runepages!`
         },
         'clubs': {
             triggers: `https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.`,
