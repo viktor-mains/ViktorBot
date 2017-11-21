@@ -25,18 +25,17 @@ exports.Answer = function (data) {
             `**< 1250 gold:** <:darkseal:315619117103316992> + <:refillable:315619119007531028> / <:doran:315619117287735306> + <:refillable:315619119007531028>\n` +
             `**To Lich Bane Build:** <:hc1:315619117346586625> + <:refillable:315619119007531028>\n` +            
             `**To Morello Build:** <:lostchapter:320701853681713153> + <:refillable:315619119007531028>`, false];
-        build[1] = [`Morello's Tornment Build For Relevant Midgame`, `<:lostchapter:320701853681713153> → <:hc1:315619117346586625> → <:boot_sorcs:315619116641812481> → ` +
-            `<:morello:315619118264877057> → <:hc3:315619117782532098> → <:liandry:315636873647357952> → <:voidstaff:315619119376367635> → ` +
-            `<:zhonya:315619119544401920>/<:rabadon:315619119019982848>` +
-            `\n\n**Important:** DFT mastery is necessary for this build.`+
-            `\n\n**Pros:** \n• relevant early- and midgame \n• allows you to trade aggressively in lane \n• you stay relevant even when forced out of lane before 1250 gold ` +
-            `\n• gives you early skirmishing power \n• allows you to delete a squishy in late game with only ER(R) `+
-            `\n**Cons:** \n• unable to shove in early game \n• lower late game DPS than with Lich Bane build \n• less effective vs tanks`, false];
-        build[2] = [`Classic Lich Bane Build`, `<:hc1:315619117346586625> → <:sheen:315619119133360128>/<:hc2:315619117958692864> → ` +
+        build[1] = [`Classic Lich Bane Build`, `<:hc1:315619117346586625> → <:sheen:315619119133360128>/<:hc2:315619117958692864> → ` +
             `<:lichbane:315619118340505601>/<:hc3:315619117782532098> → <:boot_ion:315619116557795338> → <:rabadon:315619119019982848>/<:voidstaff:315619119376367635> →` +
             `<:zhonya:315619119544401920>/<:banshee:315619116365119489>` +
             `\n\n**Pros:** \n• very high DPS \n• godlike late game with a potential to oneshot a squishy every ~3 seconds \n• makes Viktor a great tank killer` +
-            `\n**Cons:** \n• __very__ weak early- and midgame \n• worthless in early skirmishes \n• need to remain in autoattack range for full effectiveness`, false];
+            `\n**Cons:** \n• weak in early- and midgame \n• worthless in early skirmishes \n• need to remain in autoattack range for full effectiveness`, false];
+        build[2] = [`Alternative Morello build`, `<:lostchapter:320701853681713153> → <:hc1:315619117346586625> → <:boot_sorcs:315619116641812481> → ` +
+            `<:morello:315619118264877057> → <:hc3:315619117782532098> → <:liandry:315636873647357952> → <:voidstaff:315619119376367635> → ` +
+            `<:zhonya:315619119544401920>/<:rabadon:315619119019982848>` +
+            `\n\n**Pros:** \n• relevant early- and midgame \n• you stay relevant even when forced out of lane before 1250 gold ` +
+            `\n• gives you early skirmishing power \n• allows you to delete a squishy in late game with only ER(R) ` +
+            `\n**Cons:** \n• unability to shove in early game - you can be nullified just by being pushed to turret \n• lower late game DPS than with Lich Bane build \n• less effective vs heavy frontline`, false];
         /*build[3] = [`Banshee Rush Build`, `<:hc1:315619117346586625> → <:banshee:315619116365119489> → <:boot_ion:315619116557795338> → <:hc3:315619117782532098> → ` +
             `<:lichbane:315619118340505601> → <:rabadon:315619119019982848>/<:voidstaff:315619119376367635> → <:rabadon:315619119019982848>/<:voidstaff:315619119376367635>` +
             `\n\nBuild versus high AP damage threats, where MR is crucial (**LeBlanc**, **Fizz**, **Syndra**); versus **Ahri** to nullify her Charm; ` +
