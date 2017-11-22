@@ -258,7 +258,7 @@ function fetchRedComments() {
                             var Post = require('./classes/post.js');
                             var post = new Post.Post(data);
 
-                            post.embedToChannel('Viktor mentioned by Rioter on boards!', message, '315615175908655104', 'fdc000');
+                            post.embedToChannel('Viktor mentioned by Rioter on boards!', message, '207732593733402624', 'fdc000');
                         }
                     })
                     .catch(e => { console.log(e); })
