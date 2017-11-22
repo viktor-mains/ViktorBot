@@ -82,6 +82,13 @@ exports.Commands = function (answer) {
             isAvailable: true,
             isModCommand: false
         },
+        'redtracker': {
+            triggers: 'toRedTracker',
+            typeOfResponse: `function`,
+            description: `shows all Rioter's comments on boards rearding Viktor (fetched from last 50 Rioter's comments\n`,
+            isAvailable: true,
+            isModCommand: false
+        },
         'beep': {
             triggers: `_sighs deeply_\nBeep. Boop.`,
             typeOfResponse: `text`,

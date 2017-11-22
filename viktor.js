@@ -28,6 +28,7 @@ bot.on('ready', () => {
     messageCount.getMsgData(mcd => {
         msgCache.data = mcd;
         timerOn();
+        fetchRedComments();
     });
 
     bot.user.setPresence({ game: { name: `!h for help`, type: 0 } });
@@ -205,3 +206,63 @@ function timerOn() {
         }
     }, 1000);
 };
+function fetchRedComments() {
+    require('es6-promise').polyfill();
+    require('isomorphic-fetch');
+
+    var naPath = `http://boards.na.leagueoflegends.com/en/redtracker.json`;
+    var euwPath = `http://boards.euw.leagueoflegends.com/en/redtracker.json`;
+    var message = [];
+
+    setInterval(() => {
+        require('es6-promise').polyfill();
+        require('isomorphic-fetch');
+
+        fetch(naPath, {
+            mode: 'no-cors'
+        }).then(naJ => naJ.json())
+            .then(naJson => {
+                fetch(euwPath, {
+                    mode: 'no-cors'
+                }).then(euJ => euJ.json())
+                    .then(euwJson => {
+                        var euwCom = '';
+                        var naCom = '';
+
+                        for (let i in naJson) {
+                            if (naJson[i].comment &&
+                                naJson[i].comment.message.toLowerCase().indexOf('viktor') != -1 &&
+                                Date.now() - Date.parse(euwJson[i].comment.createdAt) < 60000) {
+                                var date = new Date(naJson[i].comment.createdAt);
+                                naCom += `- ${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()} - ` +
+                                    `** ${naJson[i].comment.user.name}: ** ` +
+                                    `https://boards.na.leagueoflegends.com/en/c/${naJson[i].comment.discussion.application.shortName}/${naJson[i].comment.discussion.id}?comment=${naJson[i].comment.id}`;
+                            }
+                        }
+                        if (naCom)
+                            message.push(['NA:', naCom, false]);
+                        for (let i in euwJson) {
+                            if (euwJson[i].comment &&
+                                euwJson[i].comment.message.toLowerCase().indexOf('viktor') != -1 &&
+                                Date.now() - Date.parse(euwJson[i].comment.createdAt) < 60000) {
+                                var date = new Date(euwJson[i].comment.createdAt);
+                                euwCom += `- ${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()} - ` +
+                                    `** ${euwJson[i].comment.user.name}: ** ` +
+                                    `https://boards.na.leagueoflegends.com/en/c/${euwJson[i].comment.discussion.application.shortName}/${euwJson[i].comment.discussion.id}?comment=${euwJson[i].comment.id}`;
+                            }
+                        }
+                        if (euwCom)
+                            message.push(['EUW:', euwCom, false]);
+                        if (message) {
+                            var data = new Data.Data('', bot);
+                            var Post = require('./classes/post.js');
+                            var post = new Post.Post(data);
+
+                            post.embedToChannel('Viktor mentioned by Rioter on boards!', message, '315615175908655104', 'fdc000');
+                        }
+                    })
+                    .catch(e => { console.log(e); })
+            })
+            .catch(e => { console.log(e); })
+    }, 60000);
+}

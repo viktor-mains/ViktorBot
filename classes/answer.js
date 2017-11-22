@@ -460,6 +460,54 @@ exports.Answer = function (data) {
         var newStatus = input.removeKeyword(data.message.content);
         post.newStatus(newStatus);
     };
+    answer.toRedTracker = function () {
+        var api = new API.API();
+        var naPath = `http://boards.na.leagueoflegends.com/en/redtracker.json`;
+        var euwPath = `http://boards.euw.leagueoflegends.com/en/redtracker.json`;
+        var message = [];
+
+        require('es6-promise').polyfill();
+        require('isomorphic-fetch');
+
+        fetch(naPath, {
+            mode: 'no-cors'
+        }).then(naJ => naJ.json())
+            .then(naJson => {
+                fetch(euwPath, {
+                    mode: 'no-cors'
+                }).then(euJ => euJ.json())
+                    .then(euwJson => {
+                        var euwCom = 'No comments on those boards!';
+                        var naCom = 'No comments on those boards!';
+                        
+                        for (let i in naJson) {
+                            if (naJson[i].comment && naJson[i].comment.message.toLowerCase().indexOf('viktor') != -1) {
+                                if (naCom == 'No comments on those boards!')
+                                    naCom = '';
+                                var date = new Date(naJson[i].comment.createdAt);
+                                naCom += `- ${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()} - ` +
+                                    `** ${naJson[i].comment.user.name}: ** ` +
+                                    `https://boards.na.leagueoflegends.com/en/c/${naJson[i].comment.discussion.application.shortName}/${naJson[i].comment.discussion.id}?comment=${naJson[i].comment.id}`;
+                            }
+                        }
+                        message.push(['NA:', naCom, false]);
+                        for (let i in euwJson) {
+                            if (euwJson[i].comment && euwJson[i].comment.message.toLowerCase().indexOf('viktor') != -1) {
+                                if (euwCom == 'No comments on those boards!')
+                                    euwCom = '';
+                                var date = new Date(euwJson[i].comment.createdAt);
+                                euwCom += `- ${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()} - ` +
+                                    `** ${euwJson[i].comment.user.name}: ** ` +
+                                    `https://boards.na.leagueoflegends.com/en/c/${euwJson[i].comment.discussion.application.shortName}/${euwJson[i].comment.discussion.id}?comment=${euwJson[i].comment.id}`;
+                            }
+                        }
+                        message.push(['EUW:', euwCom, false]);
+                        post.embed('Riot comments on Boards regarding Viktor', message);
+                    })
+                    .catch(e => { post.message(`Unable to fetch NA Riot comments. ${e}`); })
+            })
+            .catch(e => { post.message(`Unable to fetch EUW Riot comments. ${e}`); })
+    };
     answer.toCatPicture = function () {
         var api = new API.API();
         api.extractFromURL('http://random.cat/meow', extractedStuff => {

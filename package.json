@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "discord.js": "^11.1.0",
-    "es6-promise": "^4.1.0",
+    "es6-promise": "^4.1.1",
     "isomorphic-fetch": "^2.2.1",
     "request": "^2.81.0"
   },
