@@ -505,6 +505,14 @@ exports.Commands = function (answer) {
         'you suck': {
             emoteResponse: `🥇`,
             chanceOfTriggering: 2
+        },
+        ' hat+vik': {
+            emoteResponse: `:JustDieAlready:288399448176853012`,
+            chanceOfTriggering: 100
+        },
+        ' hat+piktor': {
+            emoteResponse: `:JustDieAlready:288399448176853012`,
+            chanceOfTriggering: 100
         }
     };
 };
