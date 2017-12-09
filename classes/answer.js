@@ -109,12 +109,12 @@ exports.Answer = function (data) {
             answer.checkForModPrivileges(commands.listOfResponses[keyword]);
     };
     answer.toDearViktor = function () {
-        var dearviktor = new DearViktorAnswers.DearViktorAnswers();
-        if (!answer.userMessage.content.endsWith(`?`))
+        var msg = answer.userMessage.content.toLowerCase();
+        var dva = new DearViktorAnswers.DearViktorAnswers(msg);
+
+        if (!msg.endsWith(`?`))
             return post.message(`_That_ doesn't look like question to me.`);
-        if (dearviktor.arcyHappened(answer.userMessage.content))
-            return post.message(dearviktor.arcyAnswers[rng.chooseRandom(dearviktor.arcyAnswers.length)]);
-        return post.message(dearviktor.list[rng.chooseRandom(dearviktor.list.length)]);
+        return post.message(dva.determineAnswer());
     };
     answer.toEmoteReactionTrigger = function () {
         var commands = new Commands.Commands(answer);
