@@ -197,7 +197,7 @@ exports.MessageCount = function (data) {
                                 break;
                             }
                         }
-                        list += ` - ${input.justifyToRight(membersArray[i].count, 6)} msg \`\` - **${data.message.guild.members.find('id', membersArray[i].id).user.username}**`;
+                        list += ` - ${input.justifyToRight(membersArray[i].count.toString(), 6)} msg \`\` - **${data.message.guild.members.find('id', membersArray[i].id).user.username}**`;
                         j++;
                     }
                 }
