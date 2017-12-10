@@ -31,7 +31,7 @@ exports.Follow = function (data) {
             return post.embed(`:warning: Incorrect input`, [[`___`, `**<** and **>** is supposed to indicate that this is a part where you put ` +
                 `the ID. You don't _literally_ put **<** and **>** there. <:vikfacepalm:305783369302802434>`]]);
         if (isNaN(streamerID))
-            return post.embed(`:warning: Incorrect input`, [[`___`, `I suggest writing ID of a person you want to follow.`, false]]);       
+            return post.embed(`:warning: Incorrect input`, [[`___`, `I suggest writing ID of a person you want to follow.\nYou can find IDs of people to follow using the !streamers command.`, false]]);       
         if (!streamerExists)
             return post.embed(`:warning: Incorrect input`, [[`___`, `Person with such ID doesn't exist.`, false]]);
         if (!follow.isViktorStreamer(streamerID))
