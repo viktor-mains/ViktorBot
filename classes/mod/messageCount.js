@@ -5,6 +5,8 @@ exports.MessageCount = function (data) {
     var fs = require(`fs`);
     var Post = require(`../post.js`);
     var post = new Post.Post(data);
+    var Input = require(`../input.js`);
+    var input = new Input.Input();
     var messageCountPath = `../data/mod/messageCount.json`;
 
     messageCount.getMsgData = function (callback) {
@@ -144,6 +146,66 @@ exports.MessageCount = function (data) {
             return post.message(`:warning: This server does not have the messages database, therefore this command won't work.`);
         });
     };
+    messageCount.toTopMembers = function () {
+        fs.readFile(messageCountPath, 'utf8', (err, messageData) => {
+            var serverID = data.message.guild.id;
+            var membersArray = [];
+            var list = "";
+
+            if (err)
+                return;
+            try {
+                messageData = JSON.parse(messageData);
+            }
+            catch (err) {
+                var d = new Date();
+                console.log(`${d} - ${err}\n`);
+                post.embed(`:no_entry: Something _very bad_ happened.`, [
+                    [`___`, `I can't proc this command and it's an indicator of something catastrophical happening. \nPlease, ping @Arcyvilk ASAP.`, false]]);
+                return;
+            }
+
+            if (messageData.hasOwnProperty(serverID)) {
+                for (let user in messageData[serverID]) {
+                    membersArray.push({ "id": user, "count": messageData[serverID][user].messageCount });
+                }
+                membersArray.sort((user1, user2) => {
+                    return user2.count - user1.count;
+                });
+                var memberListLength = 20;
+                if (membersArray.length < memberListLength)
+                    memberListLength = membersArray.length;
+                for (let i = 0, j = 1; j < memberListLength; i++) {
+                    if (data.message.guild.members.find('id', membersArray[i].id)) { //if the listed user is still on the server
+                        switch (j) {
+                            case 1: {
+                                list += "\n🥇``";
+                                break;
+                            }
+                            case 2: {
+                                list += "\n🥈``";
+                                break;
+                            }
+                            case 3: {
+                                list += "\n🥉``";
+                                break;
+                            }
+                            default: {
+                                if (j < 10)
+                                    list += `\n\`\`#${j} `;
+                                else list += `\n\`\`#${j}`;
+                                break;
+                            }
+                        }
+                        list += ` - ${input.justifyToRight(membersArray[i].count, 6)} msg \`\` - **${data.message.guild.members.find('id', membersArray[i].id).user.username}**`;
+                        j++;
+                    }
+                }
+                return post.embed("Top members", [["___", list, false]]);
+            };
+            return post.embed("Top members", [["___", ":X: Members data for this server is not tracked. Apologies.", false]]);
+        });
+    }
 
     messageCount.checkAntiSpam = function (messageData) {
         var serverID = data.message.guild.id;

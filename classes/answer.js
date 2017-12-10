@@ -211,6 +211,12 @@ exports.Answer = function (data) {
     };
 
 
+    answer.toTopMembers = function () {
+        var MessageCount = require('./mod/messageCount.js');
+        var mc = new MessageCount.MessageCount(data);
+
+        mc.toTopMembers();
+    };
     answer.toMembership = function () {
         var MessageCount = require('./mod/messageCount.js');
         var mc = new MessageCount.MessageCount(data);

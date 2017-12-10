@@ -82,6 +82,13 @@ exports.Commands = function (answer) {
             isAvailable: true,
             isModCommand: false
         },
+        'topmembers': {
+            triggers: `toTopMembers`,
+            typeOfResponse: `function`,
+            description: `shows the top 10 of the most active users on the server\n`,
+            isAvailable: true,
+            isModCommand: false
+        },
         'redtracker': {
             triggers: 'toRedTracker',
             typeOfResponse: `function`,
