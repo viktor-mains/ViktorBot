@@ -24,7 +24,8 @@ exports.DearViktorAnswers = function (msg) {
         "artzy": "arcyanswers",
         "arzy": "arcyanswers",
         "4rcy": "arcyanswers",
-        "jayce": "jayce"
+        "jayce": "jayce",
+        "glorious evolution": "evolution"
     };
     dva.yesnoquestions = [
         "are",
@@ -47,6 +48,7 @@ exports.DearViktorAnswers = function (msg) {
         "...# are probably the worst thing that happened to mankind to date.",
         "I'm not interested in # and you should not be either.",
         "Aren't you a bit too old to be excited about #?",
+        "It's... absolutely preposterous.",
         "When I was your age, I studied quantum physics instead of wasting my time on #.",
         "Oh, # are my guilty pleasure.",
         "Heh, funny that you ask. I was _just_ finishing a book about #. I can give you a short lecture about it.",
@@ -64,6 +66,28 @@ exports.DearViktorAnswers = function (msg) {
         "If I had more time I would do more research on #, it's a fascinating topic I must admit.",
         "...well, I wouldn't expect you of all people to be interested in #...",
         "...# you say. Well. I should've expect such kind of interests from _you_."
+    ];
+    dva.verbAnswers = [
+        "Wait. Did you really expect me to #?",
+        "I have betters things to do than %.",
+        "I find % absolutely preposterous.",
+        "I don't have time to #.",
+        "% is a hobby of mine, though, I don't have time to pursue it.",
+        "...%? Waste of time.",
+        "If you wish, you can # but don't try to engage me with it.",
+        "I would like to stay as far away from % as possible.",
+        "To # or not to #, that is the question.",
+        "I enjoy % in my free time if I have no other work to do.",
+        "That might be a good occupation to some lesser life forms, I'm not interested though.",
+        "Yeah, you looked like someone who would enjoy %. _Sigh_.",
+        "That's not the best way to pass time in my humble opinion.",
+        "I find some enjoyment in that, yeah.",
+        "I'm not familiar with... _those_ kind of activities.",
+        "I would lie trying to deny.",
+        "With no unnecesary enthusiasm, it's _absolutely awesome_.",
+        "I never heard about %. Is that some sophisticated synonym of \"wasting time\"?",
+        "From what I know, it's quite popular occupation of lower Zaun's inhabitants.",
+        "I've definitely heard of worse things to do."
     ];
     dva.yesnoanswers = [
             //NOPE
@@ -129,7 +153,15 @@ exports.DearViktorAnswers = function (msg) {
             "Arcy is the best and I agree with them on everything."],
         "jayce": ["Do _not_ mention this name in my close proximity.",
             "Trust me, we do _not_ want to talk about this... person.",
-            "I have better things to do than waste my brain power for this pathetic excuse of a scientist."]
+            "I have better things to do than waste my brain power for this pathetic excuse of a scientist."],
+        "evolution": ["If you have a moment, we can talk about it. <:viksmirk:389402479177105408>",
+            "Oh, yes, I've devoted many years of my life researching ways to strip humans of their weaknessess. I hope to make it our future one day.",
+            "Heh. You know how to spark my interest.",
+            "Amount of people seemingly hostile towards change surprises me.",
+            "Steel will fix all your flaws.",
+            "Emotions are only distractions.",
+            "And here I thought I won't be able to get any coherent discussion topic with you today. What would you want to know?",
+            "Took you long enough to finally ask about something _actually interesting_."]
     };
     dva.ambivalentAnswers = [
         "Could you rephrase it? I'm not entirely sure what you mean.",
@@ -157,12 +189,18 @@ exports.DearViktorAnswers = function (msg) {
         var words = nlp(dva.msg);
 
         var nouns = dva.computeNouns(words);
+        var verbs = dva.computeVerbs(words);
         var questions = false;//dva.computeQuestions(words);
 
         if (nouns) {
             answer = dva.nounAnswers[rng.chooseRandom(dva.nounAnswers.length)];
-            answer = answer.replace("#", nouns);
-        }        
+            answer = answer.replace(/#/g, nouns);
+        }      
+        if (verbs) {
+            answer = dva.verbAnswers[rng.chooseRandom(dva.verbAnswers.length)];
+            answer = answer.replace(/#/g, verbs[0]); //words in present tense
+            answer = answer.replace(/%/g, verbs[1]); //words ending with ing
+        }
         if (questions) {
             answer = questions;
         }
@@ -180,12 +218,33 @@ exports.DearViktorAnswers = function (msg) {
         for (let i in nouns) {
             output += nouns[i];
             if (i < nouns.length - 1)
-                 output += " and ";
+                output += " and ";
         }
         if (nouns.length == 0)
             return false;
         return output;
-    }
+    };
+    dva.computeVerbs = function (words) {
+        var output = ["",""];
+        var verbs = words.verbs();
+
+        verbs.toInfinitive();
+        verbs = verbs.not(['fuck', 'do', 'think', 'is']);
+        verbs = verbs.out('array');
+        for (let i in verbs) { //words in present tense - indicated by #
+            output[0] += `${verbs[i]}`;
+            if (i < verbs.length - 1)
+                output[0] += " and ";
+        }
+        for (let i in verbs) { ////words wnding with -ing - indicated by %
+            output[1] += `${verbs[i]}ing`;
+            if (i < verbs.length - 1)
+                output[1] += " and ";
+        }
+        if (verbs.length == 0)
+            return false;
+        return output;
+    };
     dva.computeQuestions = function (words) {
         var questions = words.questions();
 
