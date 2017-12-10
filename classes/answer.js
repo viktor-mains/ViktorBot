@@ -114,7 +114,7 @@ exports.Answer = function (data) {
 
         if (!msg.endsWith(`?`))
             return post.message(`_That_ doesn't look like question to me.`);
-        return post.message(dva.determineAnswer());
+        return post.message(dva.determineAnswerType());
     };
     answer.toEmoteReactionTrigger = function () {
         var commands = new Commands.Commands(answer);

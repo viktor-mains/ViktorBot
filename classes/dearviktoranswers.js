@@ -5,19 +5,6 @@ exports.DearViktorAnswers = function (msg) {
     var dva = this;
     dva.msg = msg.substring(11).replace(",", " ").trim();
 
-    dva.determineAnswer = function () {
-        for (let i in dva.questions) {
-            if (msg.indexOf(i) != -1)
-                return dva.answers[dva.questions[i]][rng.chooseRandom(dva.answers[dva.questions[i]].length)];
-        }
-        for (let j in dva.yesnoquestions) {
-            if (dva.msg.startsWith(dva.yesnoquestions[j])) {
-                return dva.yesnoanswers[rng.chooseRandom(dva.yesnoanswers.length)];
-            }
-        }
-        return dva.computeAnswer();
-    };
-
     dva.questions = {
         "arcy": "arcyanswers",
         "your creator": "arcyanswers",
@@ -58,7 +45,7 @@ exports.DearViktorAnswers = function (msg) {
         "I can say for sure that # absolutely _suck_.",
         "Huh, #? Why would you waste my time asking about something so absolutely _insignificant_?",
         "...# are probably the worst thing that happened to mankind to date.",
-        "I'm not interested in # and you should not be too.",
+        "I'm not interested in # and you should not be either.",
         "Aren't you a bit too old to be excited about #?",
         "When I was your age, I studied quantum physics instead of wasting my time on #.",
         "Oh, # are my guilty pleasure.",
@@ -70,13 +57,13 @@ exports.DearViktorAnswers = function (msg) {
         "I'm fairly enthusiastic about #, a bright future is attached to their existence.",
         "...well, for each their own, I guess. I am interested in nuclear fusion, you are interested in #.",
         "Maybe you should just google it. I might be a cyborg but my memory's capacity is not infinite to waste it on everything.",
-        "I briefly heard something about # before. My conscious decision was to stay asfar away from this topic as I could. Cannot help you.",
+        "I briefly heard something about # before. My conscious decision was to stay as far away from this topic as I could. Cannot help you.",
         "My research suggests it's not really worth my time.",
         "Oh! Finally someone else being enthusiastic about #! Visit me in my lab sometime.",
-        "When i was younger I was fairly excited about #. It's in the past, however.",
+        "When I was younger I was fairly excited about #. It's in the past, however.",
         "If I had more time I would do more research on #, it's a fascinating topic I must admit.",
         "...well, I wouldn't expect you of all people to be interested in #...",
-        "...# you say. Well. I shou;d've expect such kind of interests from _you_."
+        "...# you say. Well. I should've expect such kind of interests from _you_."
     ];
     dva.yesnoanswers = [
             //NOPE
@@ -125,7 +112,7 @@ exports.DearViktorAnswers = function (msg) {
         "_stares silently, clearly unamused_",
         "<:vikwat:269523937669545987> _...what._",
         "I would suggest stop wasting your time asking questions and actually do something creative instead.",
-        "I am not sure how do you imagine that to happen.",
+        "I am not sure how you imagine that to happen.",
         "I am a scientist, not a fortune teller.",
         "You just need to get good.",
         "Adapt, or be removed.",
@@ -147,18 +134,37 @@ exports.DearViktorAnswers = function (msg) {
     dva.ambivalentAnswers = [
         "Could you rephrase it? I'm not entirely sure what you mean.",
         "Your phrasing confuses me.",
-        "I have no opinion on this topic."
+        "I have no opinion on this topic.",
+        "I do not understand some of those words.",
+        "Don't make me look less smart than I am and rephrase it so I can _actually understand_."
     ];
-
+    dva.determineAnswerType = function () {
+        for (let i in dva.questions) {
+            if (msg.indexOf(i) != -1)
+                return dva.answers[dva.questions[i]][rng.chooseRandom(dva.answers[dva.questions[i]].length)];
+        }
+        for (let j in dva.yesnoquestions) {
+            if (dva.msg.startsWith(dva.yesnoquestions[j])) {
+                return dva.yesnoanswers[rng.chooseRandom(dva.yesnoanswers.length)];
+            }
+        }
+        return dva.computeAnswer();
+    };
     dva.computeAnswer = function () {
         var RNG = require('./rng.js');
         var rng = new RNG.RNG();
         var answer = dva.ambivalentAnswers[rng.chooseRandom(dva.ambivalentAnswers.length)];
         var words = nlp(dva.msg);
 
-        if (words.nouns().out('text').trim() != "") {
+        var nouns = dva.computeNouns(words);
+        var questions = false;//dva.computeQuestions(words);
+
+        if (nouns) {
             answer = dva.nounAnswers[rng.chooseRandom(dva.nounAnswers.length)];
-            answer = answer.replace("#", dva.computeNouns(words));
+            answer = answer.replace("#", nouns);
+        }        
+        if (questions) {
+            answer = questions;
         }
         return answer;
     };
@@ -176,6 +182,16 @@ exports.DearViktorAnswers = function (msg) {
             if (i < nouns.length - 1)
                  output += " and ";
         }
+        if (nouns.length == 0)
+            return false;
         return output;
+    }
+    dva.computeQuestions = function (words) {
+        var questions = words.questions();
+
+        questions = questions.out('array');
+        if (questions.length == 0)
+            return false;
+        return questions;
     }
 };
