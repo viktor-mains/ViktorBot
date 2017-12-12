@@ -317,6 +317,109 @@ exports.Answer = function (data) {
             };
         });
     };
+    answer.toLastLaneRequest = function () { //todo
+        post.message(`:hourglass_flowing_sand: Getting the Last Lane data. This might take a while...`);
+
+        var _input = data.message.content;
+        if (!input.hasSeparator(_input))
+            return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!lastgame ${data.message.author.username}**|**euw\`\``);
+
+        var api = new API.API();
+        var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
+        var playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]).toUpperCase();
+        var server = swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
+        api.extractPlayerAccountID(server, playerIGNAndServer, accountID => {
+            if (accountID.toString().startsWith(`:warning:`))
+                return post.message(accountID);
+            api.extractRecentGamesData(server, accountID, recentGamesData => {
+                if (recentGamesData.toString().startsWith(`:warning:`))
+                    return post.message(recentGamesData);
+                var matchID = recentGamesData.matches[0].gameId;
+                api.extractMatchData(server, matchID, matchData => {
+                    if (matchData.toString().startsWith(`:warning:`))
+                        return post.message(matchData);
+                    var playerIndex = -1;
+                    var enemyIndex = -1;
+                    for (let i in matchData.participantIdentities) {
+                        if (matchData.participantIdentities[i].player.currentAccountId == accountID) {
+                            //playerIndex = matchData.participantIdentities[i].player.playerId;
+                            playerIndex = i;
+                            break;
+                        }
+                    };
+                    for (let j in matchData.participants) {
+                        if (j != playerIndex
+                            && matchData.participants[j].teamId != matchData.participants[playerIndex].teamId
+                            && matchData.participants[j].timeline.role == matchData.participants[playerIndex].timeline.role
+                            && matchData.participants[j].timeline.lane == matchData.participants[playerIndex].timeline.lane) {
+                            //enemyIndex = matchData.participantIdentities[j].player.playerId;
+                            enemyIndex = j;
+                            break;
+                        }
+                    };
+                    if (playerIndex == -1 || enemyIndex == -1)
+                        return post.embed(`:warning: I cannot compare stats between the laners in this game`, [[`___`,
+                            `There are three possible reasons for it: \n- it's a bot game\n- it's a FDM/ARAM game\n- one of the laners was afk, roamed a lot or run it down mid so Riot API doesn't recognize him as your lane opponent.`]]);
+                    api.extractGameTimelineData(server, matchID, timelineData => {
+                        var gameData = [];
+                        var compare = function (a, b, type) {
+                            var sub = a - b;
+                            if (sub > 0)
+                                return `${Math.abs(sub)} ${type} ahead`;
+                            return `${Math.abs(sub)} ${type} behind`;
+                        };
+                        var checkWin = function () {
+                            for (let i in matchData.teams) {
+                                if (matchData.teams[i].teamId == matchData.participants[playerIndex].teamId)
+                                    return matchData.teams[i].win.toLowerCase();
+                            }
+                            return "???";
+                        };
+                        var noobTeamAsAlways = function (time) {
+                            var allyGold = 0;
+                            var enemyGold = 0;
+                            var goldDiff = 0;
+
+                            for (let i in timelineData.frames[time].participantFrames) {
+                                if (matchData.participants[parseInt(timelineData.frames[time].participantFrames[i].participantId) - 1].teamId == matchData.participants[playerIndex].teamId
+                                    && matchData.participants[parseInt(timelineData.frames[time].participantFrames[i].participantId) - 1].participantId != (parseInt(playerIndex) + 1)) {
+                                    allyGold += timelineData.frames[time].participantFrames[i].totalGold;
+                                }
+                                if (matchData.participants[parseInt(timelineData.frames[time].participantFrames[i].participantId) - 1].teamId != matchData.participants[playerIndex].teamId
+                                    && matchData.participants[parseInt(timelineData.frames[time].participantFrames[i].participantId) - 1].participantId != (parseInt(enemyIndex) + 1)) {
+                                    enemyGold += timelineData.frames[time].participantFrames[i].totalGold;
+                                }
+                            }
+
+                            goldDiff = allyGold - enemyGold;
+                            if (goldDiff < 0)
+                                return `lose with a ${Math.abs(goldDiff)} gold disadvantage`;
+                            return `win with a ${Math.abs(goldDiff)} gold advantage`;
+                        };
+
+                        for (let i = 0; i < 3; i++) {
+                            var j = (i + 1) * 5;
+                            gameData[i] = `${matchData.participantIdentities[playerIndex].player.summonerName.toUpperCase()} is ` +
+                                `${compare(parseInt(timelineData.frames[j].participantFrames[parseInt(playerIndex) + 1].minionsKilled) + parseInt(timelineData.frames[j].participantFrames[parseInt(playerIndex) + 1].jungleMinionsKilled), parseInt(timelineData.frames[j].participantFrames[parseInt(enemyIndex) + 1].minionsKilled) + parseInt(timelineData.frames[j].participantFrames[parseInt(enemyIndex) + 1].jungleMinionsKilled), "cs") } ` +
+                                `(${parseInt(timelineData.frames[j].participantFrames[parseInt(playerIndex) + 1].minionsKilled) + parseInt(timelineData.frames[j].participantFrames[parseInt(playerIndex) + 1].jungleMinionsKilled)} ` +
+                                `vs ${parseInt(timelineData.frames[j].participantFrames[parseInt(enemyIndex) + 1].minionsKilled) + parseInt(timelineData.frames[j].participantFrames[parseInt(enemyIndex) + 1].jungleMinionsKilled) }) ` +
+                                `and ${compare(timelineData.frames[j].participantFrames[parseInt(playerIndex) + 1].totalGold, timelineData.frames[j].participantFrames[parseInt(enemyIndex) + 1].totalGold, "gold")} ` +
+                                `(${timelineData.frames[j].participantFrames[parseInt(playerIndex) + 1].totalGold} vs ${timelineData.frames[j].participantFrames[parseInt(enemyIndex) + 1].totalGold}).\n` +
+                                `Meanwhile all other lanes ${noobTeamAsAlways(j)}.`;
+                        }
+                        gameData[3] = `${matchData.participantIdentities[playerIndex].player.summonerName.toUpperCase()} ${checkWin()}s in ${parseInt(matchData.gameDuration) / 60} minutes.`;
+
+                        return post.embed(`${matchData.participantIdentities[playerIndex].player.summonerName.toUpperCase()} (as champ ${matchData.participants[playerIndex].championId}) ` +
+                            `vs ${matchData.participantIdentities[enemyIndex].player.summonerName.toUpperCase()} (as champ ${matchData.participants[enemyIndex].championId}) - ${matchData.participants[playerIndex].timeline.role.toLowerCase() } ${matchData.participants[playerIndex].timeline.lane.toLowerCase() }\n`,
+                                    [[`Minute 5`, gameData[0], false], 
+                                    [`Minute 10`, gameData[1], false],
+                                    [`Minute 15`, gameData[2], false],
+                                    [`Outcome`, gameData[3], false]]);
+                    });
+                });
+            });
+        });
+    }
     answer.toLastGameRequest = function () {
         post.message(`:hourglass_flowing_sand: Getting the Last Game data. This might take a while...`);
 

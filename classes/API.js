@@ -30,8 +30,18 @@ exports.API = function () {
     api.URLchampionData = function (server) {
         return `https://${server}.api.riotgames.com/lol/static-data/v3/champions?dataById=true&api_key=${api.RITO_KEY}`;
     };
+    api.URLgameTimeline = function (server, matchID) {
+        return `https://${server}.api.riotgames.com/lol/match/v3/timelines/by-match/${matchID}?api_key=${api.RITO_KEY}`;
+    };
 
-    
+
+    api.extractGameTimelineData = function (server, matchID, callback) {
+        api.extractFromURL(api.URLgameTimeline(server, matchID), timelineAPI => {
+            if (!api.everythingOkay(timelineAPI))
+                return callback(`:warning: Error retrieving game timeline.`);
+            return callback(JSON.parse(timelineAPI));
+        });
+    };
     api.extractPlayerRanksData = function (server, playerID, callback) {
         api.extractFromURL(api.playersRanksData(server, playerID), ranksAPI => {
             if (!api.everythingOkay(ranksAPI))
