@@ -90,8 +90,8 @@ bot.on('messageUpdate', (oldMessage, newMessage) => {
                 post.embedToChannel(`:clipboard: MESSAGE EDITED`, [
                     [`Author`, `${oldMessage.author.username}#${oldMessage.author.discriminator}`, true],
                     [`Channel`, `<#${oldMessage.channel.id}>`, true],
-                    [`Old message`, `\`\`\`${oldMessage.content}\`\`\``, false],
-                    [`New message`, `\`\`\`${newMessage.content}\`\`\``, false],
+                    [`Old message`, oldMessage.content, false],
+                    [`New message`, newMessage.content, false],
                     [`Created at`, oldTimestamp, true],
                     [`Edited at`, newTimestamp, true]
                 ], data.logChannel, '83C4F2');
@@ -121,7 +121,7 @@ bot.on('messageDelete', message => {
             post.embedToChannel(`:no_mobile_phones: MESSAGE DELETED`, [
                 [`Author`, `${message.author.username}#${message.author.discriminator}`, true],
                 [`Channel`, `<#${message.channel.id}>`, true],
-                [`Content`, `\`\`\`${message.content}\`\`\``, false],
+                [`Content`, message.content, false],
                 [`Created at`, oldTimestamp, true],
                 [`Deleted at`, newTimestamp, true]
             ], data.logChannel, 'C70000');
@@ -149,7 +149,6 @@ bot.on('guildMemberAdd', GuildMember => {
         }
 
         GuildMember.user.send(data.welcomeMessageForViktorMains);
-        console.log(`${d} - new member - ${GuildMember.user.username}#${GuildMember.user.discriminator}\n`);
         post.embedToChannel(`:man: USER JOINS`, [
             [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, false],
             [`Joined at`, GuildMember.joinedAt.toISOString(), true]
@@ -165,8 +164,6 @@ bot.on('guildMemberRemove', GuildMember => {
 
     try { data.whatServer(GuildMember.guild.id); }
     catch (err) { }//this triggers when message was sent in DM
-
-    console.log(`${d} - member left - ${GuildMember.user.username}#${GuildMember.user.discriminator}\n`);
 
     post.embedToChannel(`:wave: USER LEAVES`, [
         [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, false],
