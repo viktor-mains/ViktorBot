@@ -516,16 +516,12 @@ exports.Commands = function (answer) {
             emoteResponse: `🐱`,
             chanceOfTriggering: 2
         },
-        'you suck': {
-            emoteResponse: `🥇`,
-            chanceOfTriggering: 2
-        },
-        ' hat+vik': {
-            emoteResponse: `:JustDieAlready:288399448176853012`,
+        'predator': {
+            emoteResponse: `:viknotagain:323906349106724864`,
             chanceOfTriggering: 100
         },
-        ' hat+piktor': {
-            emoteResponse: `:JustDieAlready:288399448176853012`,
+        'communism': {
+            emoteResponse: `:viknotagain:323906349106724864`,
             chanceOfTriggering: 100
         }
     };
