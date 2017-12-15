@@ -29,11 +29,12 @@ exports.DearViktorAnswers = function (msg) {
     };
     dva.yesnoquestions = [
         "are",
-        "do you",
+        "do ",
         "did",
+        "does",
         "have you",
         "should",
-        "is",
+        "is ",
         "am i",
         "can",
         "shall",
@@ -196,12 +197,12 @@ exports.DearViktorAnswers = function (msg) {
             answer = dva.nounAnswers[rng.chooseRandom(dva.nounAnswers.length)];
             answer = answer.replace(/#/g, nouns);
         }      
-        if (verbs) {
+        else if (verbs) {
             answer = dva.verbAnswers[rng.chooseRandom(dva.verbAnswers.length)];
             answer = answer.replace(/#/g, verbs[0]); //words in present tense
             answer = answer.replace(/%/g, verbs[1]); //words ending with ing
         }
-        if (questions) {
+        else if (questions) {
             answer = questions;
         }
         return answer;
