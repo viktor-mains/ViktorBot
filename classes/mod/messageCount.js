@@ -89,7 +89,7 @@ exports.MessageCount = function (data) {
                               \n\nFrom now on, you are known as one of the **${fossilRole}s**, carrying the Evolution's legacy with yourself wherever you go.`, false);
                     return msg.channel.send({ embed });
             }
-            if (userData.messageCount >= 5000 && Date.now() - userData.firstMessage > 10518984000 && !roles.userHasRole(regularRole)) { //10518984000 = 4 months
+            if (userData.messageCount >= 3000 && Date.now() - userData.firstMessage > 10518984000 && !roles.userHasRole(regularRole)) { //10518984000 = 4 months
                 roles.addRoleToUser(regularRole);
                 if (roles.userHasRole(memberRole))
                     roles.removeRoleFromUser(memberRole);
