@@ -84,14 +84,21 @@ bot.on('messageUpdate', (oldMessage, newMessage) => {
                 var post = new Post.Post(data);
                 var oldTimestamp = new Date(oldMessage.createdTimestamp);
                 var newTimestamp = new Date(newMessage.editedTimestamp);
+                var oldMes = oldMessage.content;
+                var newMes = newMessage.content;
+                if (oldMes == '')
+                    oldMes = '_<empty message or picture>_';
+                if (newMes == '')
+                    newMes = '_<empty message or picture>_';
+
                 oldTimestamp = oldTimestamp.toISOString();
                 newTimestamp = newTimestamp.toISOString();
 
                 post.embedToChannel(`:clipboard: MESSAGE EDITED`, [
                     [`Author`, `${oldMessage.author.username}#${oldMessage.author.discriminator}`, true],
                     [`Channel`, `<#${oldMessage.channel.id}>`, true],
-                    [`Old message`, oldMessage.content, false],
-                    [`New message`, newMessage.content, false],
+                    [`Old message`, oldMes, false],
+                    [`New message`, newMes, false],
                     [`Created at`, oldTimestamp, true],
                     [`Edited at`, newTimestamp, true]
                 ], data.logChannel, '83C4F2');
@@ -115,13 +122,16 @@ bot.on('messageDelete', message => {
             var post = new Post.Post(data);
             var oldTimestamp = new Date(message.createdTimestamp);
             var newTimestamp = new Date();
+            var delMessage = message.content;
+            if (delMessage == '')
+                delMessage = `_<empty message or picture>_`;
             oldTimestamp = oldTimestamp.toISOString();
             newTimestamp = newTimestamp.toISOString();
 
             post.embedToChannel(`:no_mobile_phones: MESSAGE DELETED`, [
                 [`Author`, `${message.author.username}#${message.author.discriminator}`, true],
                 [`Channel`, `<#${message.channel.id}>`, true],
-                [`Content`, message.content, false],
+                [`Content`, delMessage, false],
                 [`Created at`, oldTimestamp, true],
                 [`Deleted at`, newTimestamp, true]
             ], data.logChannel, 'C70000');

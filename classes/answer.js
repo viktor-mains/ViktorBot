@@ -580,11 +580,17 @@ exports.Answer = function (data) {
 
         fetch(naPath, {
             mode: 'no-cors'
-        }).then(naJ => naJ.json())
+        }).then(naJ => {
+            try { console.log(naJ.json()); }
+            catch (e) { console.log(`Error parsing NA redtracker! - ${e}`); return; };
+        })
             .then(naJson => {
                 fetch(euwPath, {
                     mode: 'no-cors'
-                }).then(euJ => euJ.json())
+                }).then(euJ => {
+                    try { euJ.json() }
+                    catch (e) { console.log(`Error parsing EU redtracker - ${e}`); return; }
+                })
                     .then(euwJson => {
                         var euwCom = 'No comments on those boards!';
                         var naCom = 'No comments on those boards!';
