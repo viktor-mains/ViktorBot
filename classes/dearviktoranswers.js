@@ -186,6 +186,8 @@ exports.DearViktorAnswers = function (msg) {
     dva.computeAnswer = function () {
         var RNG = require('./rng.js');
         var rng = new RNG.RNG();
+        return dva.yesnoanswers[rng.chooseRandom(dva.yesnoanswers.length)];
+        /*
         var answer = dva.ambivalentAnswers[rng.chooseRandom(dva.ambivalentAnswers.length)];
         var words = nlp(dva.msg);
 
@@ -206,6 +208,7 @@ exports.DearViktorAnswers = function (msg) {
             answer = questions;
         }
         return answer;
+        */
     };
     dva.computeNouns = function (words) {
         var output = "";
