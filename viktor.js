@@ -28,7 +28,7 @@ bot.on('ready', () => {
     messageCount.getMsgData(mcd => {
         msgCache.data = mcd;
         timerOn();
-        fetchRedComments();
+        //fetchRedComments();
     });
 
     bot.user.setPresence({ game: { name: `!h for help`, type: 0 } });
