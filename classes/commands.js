@@ -431,6 +431,22 @@ exports.Commands = function (answer) {
             isAvailable: true,
             isModCommand: false
         },
+        'herringpls': {
+            triggers: `:white_sun_small_cloud:\n\n` +
+            `       <:herring:396803239552483331>\n` +
+            `          |:open_hands:\n` +
+            `         / _\n` +
+            `━━━━━┓ ＼＼ \n` +
+            `┓┓┓┓┓┃\n` +
+            `┓┓┓┓┓┃ ヽ<:viktor:232941841815830536>ノ\n` +
+            `┓┓┓┓┓┃      /\n` +
+            `┓┓┓┓┓┃  ノ) \n` +
+            `┓┓┓┓┓┃\n` +
+            `┓┓┓┓┓┃\n`,
+            typeOfResponse: `text`,
+            isAvailable: true,
+            isModCommand: false
+        },
         'gibeskin': {
             triggers: `http://arcyvilk.com/greatherald/img/gibeskin.png`,
             typeOfResponse: `text`,
