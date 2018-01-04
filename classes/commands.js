@@ -127,12 +127,20 @@ exports.Commands = function (answer) {
             isModCommand: false
         },
         'dun': {
-            triggers: `- OP.gg - https://na.op.gg/summoner/userName=duniswashedup\n- Stream - http://twitch.tv/dunlol`,
+            triggers: `- OP.gg:\n-- https://na.op.gg/summoner/userName=dun\n-- https://na.op.gg/summoner/userName=dunv2\n-- https://na.op.gg/summoner/userName=devìlangel\n-- https://na.op.gg/summoner/userName=season6crown\n- Stream:\n-- http://twitch.tv/dunlol`,
             typeOfResponse: `embed`,
-            description: `returns someinfo about Dun, challenger Viktor main`,
+            description: `returns some info about Dun, challenger Viktor main`,
             isAvailable: true,
             isModCommand: false,
             title: `Dun, Challenger Viktor main`
+        },
+        'crown': {
+            triggers: `- http://www.op.gg/summoner/userName=ksvmidcrown\n-http://www.op.gg/summoner/userName=%EC%82%BC%EC%84%B1%EA%B0%A4%EB%9F%AD%EC%8B%9C%ED%81%AC%EB%9D%BC%EC%9A%B4`,
+            typeOfResponse: `embed`,
+            description: `returns some info about Crown`,
+            isAvailable: true,
+            isModCommand: false,
+            title: `Crown's known accounts`
         },
         'faq': {
             triggers: `Useful tips and tricks for new Viktor players: https://www.reddit.com/r/viktormains/wiki/faq`,
@@ -428,22 +436,6 @@ exports.Commands = function (answer) {
             `┓┓┓┓┓┃\n`,
             typeOfResponse: `text`,
             description: `>:3`,
-            isAvailable: true,
-            isModCommand: false
-        },
-        'herringpls': {
-            triggers: `:white_sun_small_cloud:\n\n` +
-            `       <:herring:396803239552483331>\n` +
-            `          |:open_hands:\n` +
-            `         / _\n` +
-            `━━━━━┓ ＼＼ \n` +
-            `┓┓┓┓┓┃\n` +
-            `┓┓┓┓┓┃ ヽ<:viktor:232941841815830536>ノ\n` +
-            `┓┓┓┓┓┃      /\n` +
-            `┓┓┓┓┓┃  ノ) \n` +
-            `┓┓┓┓┓┃\n` +
-            `┓┓┓┓┓┃\n`,
-            typeOfResponse: `text`,
             isAvailable: true,
             isModCommand: false
         },
