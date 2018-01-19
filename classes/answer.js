@@ -43,6 +43,25 @@ exports.Answer = function (data) {
         
         post.embedToDM(title, build, data.message.author);
     }
+    answer.toFrozenBuild = function (title) {
+        var build = [];
+        build[0] = ["Core runepage",
+            "Glacial Augment - Biscuits - Magical Footwear - Cosmic Insight | Celerity Scorch",
+            false];
+        build[1] = ["Variations",
+            "**Against AP:**\n - Nullifying Orb > Scorch \n **Against AP/ AD assassin/ gank heavy jungle:** - Nullifying Orb or Manaflow > Scorch \n- Stopwatch > Biscuits",
+            false];
+        build[2] = ["Core",
+            "<:hc3:315619117782532098> <:glp:403683089173446656> <:boot_ion:315619116557795338>\nAside from core Build, build situationally! Imagine you play standard Viktor build, only with GLP instead of Lich Bane.",
+            false];
+        build[3] = ["Overall playstyle",
+            "Your goal with this build is to stall out a weak early, and then dominate in early/mid game teamfights." +
+            "\nWork to get 1st hexcore upgrade on first back. If not able to, work on GLP components. Revolver is main focus, but if extra sustain and stalling is needed, go Catalyst."+
+            "\nOnce Core is built look for skirmishes and ganks. GLP plus Glacial Augment passive is your bread and butter, use it as much as possible to secure kills or objectives."+
+            "\nRest of the game is basic Viktor Stuff!"];
+
+        post.embedToDM(title, build, data.message.author);
+    }
     answer.showHelpContents = function () {
         var Commands = require('./commands.js');
         var commands = new Commands.Commands('');

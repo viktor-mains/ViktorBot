@@ -111,6 +111,14 @@ exports.Commands = function (answer) {
             isModCommand: false,
             arguments: `**♥ GLORIOUS MINIGUIDE TO BUILD ♥**`
         },
+        'frozen': {
+            triggers: 'toFrozenBuild',
+            typeOfResponse: `function`,
+            description: `returns the experimental build by Viktorious - Frozen viktor`,
+            isAvailable: true,
+            isModCommand: false,
+            arguments: `**♥ GLORIOUS MINIGUIDE TO FROZEN VIKTOR ♥**`
+        },
         'runes': {
             triggers: `Since we're still pretty early in preseason and rune are still being changed, there's no one main consensus regarding runes now. Check #ask_viktor_main room to ask community members about their preffered choices.`,
             typeOfResponse: `text`,
