@@ -46,7 +46,7 @@ exports.Answer = function (data) {
     answer.toFrozenBuild = function (title) {
         var build = [];
         build[0] = ["Core runepage",
-            "Glacial Augment - Biscuits - Magical Footwear - Cosmic Insight | Celerity Scorch",
+            "- **Inspiration:** Glacial Augment - Biscuits - Magical Footwear - Cosmic Insight\n- **Sorcery:** Celerity - Scorch",
             false];
         build[1] = ["Variations",
             "**Against AP:**\n - Nullifying Orb > Scorch \n**Against AP/ AD assassin/ gank heavy jungle:**\n- Nullifying Orb or Manaflow > Scorch \n- Stopwatch > Biscuits",
