@@ -58,6 +58,9 @@ exports.Answer = function (data) {
             "Your goal with this build is to __stall out a weak early__, and then __dominate in early/mid game teamfights__." +
             "\n\nWork to get 1st Hexcore upgrade on first back. If not able to, work on GLP components. Revolver is main focus, but if extra sustain and stalling is needed, go Catalyst."+
             "\n\nOnce Core is built look for skirmishes and ganks. GLP plus Glacial Augment passive is your bread and butter, use it as much as possible to secure kills or objectives. Rest of the game is basic Viktor Stuff!"];
+        build[4] = ["Additional info",
+            "This build's founder, Viktorious#6497, is currently creating a more in-depth guide about the build. For the time being you can contact him for more details.",
+            false]
 
         post.embedToDM(title, build, data.message.author);
     }
