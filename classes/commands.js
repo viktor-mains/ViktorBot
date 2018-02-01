@@ -481,32 +481,12 @@ exports.Commands = function (answer) {
         'hello': {
             triggers: `Greetings, inferior construct!`,
             typeOfResponse: `text`,
-            chanceOfTriggering: 70
-        },
-        ':questionmark:': {
-            triggers: `<:questionmark:244535324737273857>`,
-            typeOfResponse: `text`,
-            chanceOfTriggering: 30
+            chanceOfTriggering: 20
         },
         'shrug': {
             triggers: `¯\\\\_ <:viktor:232941841815830536> \\_/¯`,
             typeOfResponse: `text`,
             chanceOfTriggering: 70
-        },
-        'notice me+senpai': {
-            triggers: `_looks away, unamused_`,
-            typeOfResponse: `text`,
-            chanceOfTriggering: 80
-        },
-        'ily+ vik': {
-            triggers: `http://i.imgur.com/yuXRObM.png`,
-            typeOfResponse: `text`,
-            chanceOfTriggering: 10
-        },
-        'expirence': {
-            triggers: `_**e x p e r i e n c e**_ <:JustDieAlready:288399448176853012>`,
-            typeOfResponse: `text`,
-            chanceOfTriggering: 100
         },
         ' build+ vik': {
             triggers: `It's highly advised to check the !build command.`,
@@ -528,9 +508,9 @@ exports.Commands = function (answer) {
  *  @chanceOfTriggering - % chance of the reaction getting trigered
 */
     commands.listOfEmoteReactionResponses = {
-        'kys': {
-            emoteResponse: `<:salt:289489052212789250>`,
-            chanceOfTriggering: 2
+        ':questionmark:': {
+            emoteResponse: `:questionmark:244535324737273857`,
+            chanceOfTriggering: 100
         },
         'smh': {
             emoteResponse: `:vikfacepalm:305783369302802434`,
@@ -539,10 +519,6 @@ exports.Commands = function (answer) {
         ' cat ': {
             emoteResponse: `🐱`,
             chanceOfTriggering: 2
-        },
-        'predator': {
-            emoteResponse: `:viknotagain:323906349106724864`,
-            chanceOfTriggering: 100
         }
     };
 };
