@@ -78,7 +78,7 @@ exports.Commands = function (answer) {
         'membership': {
             triggers: `toMembership`,
             typeOfResponse: `function`,
-            description: `shows your loyality to our server\n`,
+            description: `shows your loyality to our server`,
             isAvailable: true,
             isModCommand: false
         },
@@ -109,7 +109,7 @@ exports.Commands = function (answer) {
             description: `returns the recommended by /r/ViktorMains build`,
             isAvailable: true,
             isModCommand: false,
-            arguments: `**♥ GLORIOUS MINIGUIDE TO BUILD ♥**`
+            arguments: `**♥ GLORIOUS MINIGUIDE TO CLASSIC VIKTOR BUILD ♥**`
         },
         'frozen': {
             triggers: 'toFrozenBuild',
@@ -117,7 +117,15 @@ exports.Commands = function (answer) {
             description: `returns the experimental build by Viktorious - Frozen viktor`,
             isAvailable: true,
             isModCommand: false,
-            arguments: `**♥ GLORIOUS MINIGUIDE TO FROZEN VIKTOR ♥**`
+            arguments: `**♥ GLORIOUS MINIGUIDE TO FROZEN VIKTOR BUILD ♥**`
+        },
+        'tankbuild': {
+            triggers: 'toTankBuild',
+            typeOfResponse: `function`,
+            description: `returns Dun's tank Viktor build`,
+            isAvailable: true,
+            isModCommand: false,
+            arguments: `**♥ GLORIOUS MINIGUIDE TO TANK VIKTOR BUILD ♥**`
         },
         'runes': {
             triggers: `Since we're still pretty early in preseason and rune are still being changed, there's no one main consensus regarding runes now. Check #ask_viktor_main room to ask community members about their preffered choices.`,
