@@ -68,7 +68,7 @@ exports.Answer = function (data) {
         var role1 = data.message.member.roles.find(role => role.name.toLowerCase() === 'Hextech Progenitor'.toLowerCase());
         var role2 = data.message.member.roles.find(role => role.name.toLowerCase() === 'Junior Assistant'.toLowerCase());
 
-        if (!role2 && !role2)
+        if (!role1 && !role2)
             post.message(`It's highly advised to check the following commands: !build | !frozen`);
     }
     answer.showHelpContents = function () {
