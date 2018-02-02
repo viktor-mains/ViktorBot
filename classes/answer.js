@@ -23,18 +23,16 @@ exports.Answer = function (data) {
        
         build[0] = [`First Back Purchases`,
             `**< 1250 gold:** <:darkseal:315619117103316992> + <:refillable:315619119007531028> / <:doran:315619117287735306> + <:refillable:315619119007531028>\n` +
-            `**>= 1250 gold: <:hc1:315619117346586625> + <:refillable:315619119007531028>\n`,
+            `**>= 1250 gold:** <:hc1:315619117346586625> + <:refillable:315619119007531028>\n`,
             false];
         build[1] = [`Classic build path`,
             `<:hc1:315619117346586625> → <:sheen:315619119133360128>/<:hc2:315619117958692864> → ` +
             `<:lichbane:315619118340505601>/<:hc3:315619117782532098> → <:boot_ion:315619116557795338> → <:voidstaff:315619119376367635> →` +
-            `<:zhonya:315619119544401920>/<:banshee:315619116365119489> → <:rabadon:315619119019982848>`,
-            false];
-        build[2] = [`Notes`,
+            `<:zhonya:315619119544401920>/<:banshee:315619116365119489> → <:rabadon:315619119019982848>`+
             `\n\n**Pros:** \n• very high DPS \n• godlike late game with a potential to oneshot a squishy every ~3 seconds \n• makes Viktor a great tank killer` +
             `\n**Cons:** \n• weak in early- and midgame \n• worthless in early skirmishes \n• need to remain in autoattack range for full effectiveness`,
             false];
-        build[3] = [`Alternative builds`,
+        build[2] = [`Alternative builds`,
             '``!frozen`` - Viktorious\' Frozen Viktor build\n``!tankbuild`` - Dun\'s tanky midlane Viktor build',
             false]
         
