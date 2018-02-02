@@ -488,7 +488,7 @@ exports.Commands = function (answer) {
             typeOfResponse: `text`,
             chanceOfTriggering: 70
         },
-        ' build+ vik': {
+        'build+ vik': {
             triggers: `toBuildTrigger`,
             typeOfResponse: `function`,
             chanceOfTriggering: 100
