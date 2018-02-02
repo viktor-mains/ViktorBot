@@ -64,6 +64,13 @@ exports.Answer = function (data) {
 
         post.embedToDM(title, build, data.message.author);
     }
+    answer.toBuildTrigger = function () {
+        var role1 = data.message.member.guild.roles.find(role => role.name.toLowerCase() === 'Hextech Progenitor'.toLowerCase()).id;
+        var role2 = data.message.member.guild.roles.find(role => role.name.toLowerCase() === 'Junior Assistant'.toLowerCase()).id;
+
+        if (!role2 && !role2)
+            post.message(`It's highly advised to check the following commands: !build | !frozen`);
+    }
     answer.showHelpContents = function () {
         var Commands = require('./commands.js');
         var commands = new Commands.Commands('');

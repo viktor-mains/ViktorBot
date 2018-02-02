@@ -489,8 +489,8 @@ exports.Commands = function (answer) {
             chanceOfTriggering: 70
         },
         ' build+ vik': {
-            triggers: `It's highly advised to check the !build command.`,
-            typeOfResponse: `text`,
+            triggers: `toBuildTrigger`,
+            typeOfResponse: `function`,
             chanceOfTriggering: 100
         },
         ' club+ vik': {
