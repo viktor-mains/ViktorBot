@@ -372,7 +372,7 @@ exports.Answer = function (data) {
 
         var _input = data.message.content;
         if (!input.hasSeparator(_input))
-            return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!lastgame ${data.message.author.username}**|**euw\`\``);
+            return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!lastgame ${data.message.author.username}|euw\`\``);
 
         var api = new API.API();
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
@@ -475,7 +475,7 @@ exports.Answer = function (data) {
 
         var _input = data.message.content;
         if (!input.hasSeparator(_input))
-            return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!lastgame ${data.message.author.username}**|**euw\`\``);
+            return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!lastgame ${data.message.author.username}|euw\`\``);
 
         var api = new API.API();
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
@@ -507,7 +507,7 @@ exports.Answer = function (data) {
         post.message(`:hourglass_flowing_sand: Getting the Live Game data. This might take a while...`);
         var _input = data.message.content;
         if (!input.hasSeparator(_input))
-            return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!giveid ${data.message.author.username}**|**euw\`\``);
+            return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!giveid ${data.message.author.username}|euw\`\``);
 
         var api = new API.API();
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
@@ -585,7 +585,7 @@ exports.Answer = function (data) {
     answer.toPlayerIDRequest = function () {
         var _input = data.message.content;
         if (!input.hasSeparator(_input))
-            return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!giveid ${data.message.author.username}**|**euw\`\``);
+            return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!giveid ${data.message.author.username}|euw\`\``);
 
         var api = new API.API();
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
@@ -601,7 +601,7 @@ exports.Answer = function (data) {
     answer.toViktorMastery = function (title) {
         var _input = data.message.content;
         if (!input.hasSeparator(_input))
-            return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!mastery ${data.message.author.username}**|**euw\`\``);
+            return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!mastery ${data.message.author.username}|euw\`\``);
         var api = new API.API();
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
         var playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]);
@@ -700,7 +700,7 @@ exports.Answer = function (data) {
     answer.toOPGG = function () {
         var _input = data.message.content;
         if (!input.hasSeparator(_input))
-            return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ !opgg ${data.message.author.username}**|**euw`);
+            return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!opgg ${data.message.author.username}|euw\`\``);
         var playerData = input.returnModifiedIGNAndServer(_input);
         post.message("https://" + playerData[1] + ".op.gg/summoner/userName=" + playerData[0]);
     };
