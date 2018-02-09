@@ -165,7 +165,7 @@ exports.Commands = function (answer) {
             title: `Dun, Challenger Viktor main`
         },
         'crown': {
-            triggers: `- http://www.op.gg/summoner/userName=ksvmidcrown\n-http://www.op.gg/summoner/userName=%EC%82%BC%EC%84%B1%EA%B0%A4%EB%9F%AD%EC%8B%9C%ED%81%AC%EB%9D%BC%EC%9A%B4`,
+            triggers: `- http://www.op.gg/summoner/userName=ksvmidcrown\n-http://www.op.gg/summoner/userName=%EC%82%BC%EC%84%B1%EA%B0%A4%EB%9F%AD%EC%8B%9C%ED%81%AC%EB%9D%BC%EC%9A%B4\n-http://www.op.gg/summoner/userName=%EA%B3%BC%EC%97%B0%EB%A7%88%EC%A7%80%EB%A7%89%EC%9D%BC%EA%B9%8C`,
             typeOfResponse: `embed`,
             description: `returns some info about Crown, a pro player known from his Viktor play`,
             isAvailable: true,
