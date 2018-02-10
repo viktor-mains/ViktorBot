@@ -158,7 +158,7 @@ exports.Answer = function (data) {
         if (commands.listOfResponses.hasOwnProperty(keyword))
             answer.checkForModPrivileges(commands.listOfResponses[keyword]);
         else
-            data.message.react('<:questionmark:244535324737273857>');
+            data.message.react(':questionmark:244535324737273857');
     };
     answer.toDearViktor = function () {
         var msg = answer.userMessage.content.toLowerCase();
