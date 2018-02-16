@@ -14,13 +14,14 @@
 
         var playerIGNAndServer;
         var server;
+        var playerNickDecoded;
         var rankDesired = rankDesiredCurrentAndLower[0];
         var rankCurrent = rankDesiredCurrentAndLower[1];
         var msg = input.removeKeyword(data.message.content).substring(4).trim();
         var racePath = `../data/race/${rankDesired.toLowerCase()}race.json`;
         
         if (!roles.userHasRole('Junior Assistant') && !roles.userHasRole('Hextech Progenitor'))
-            return post.message(`:warning: Only members of our community can join races! Participate a bit more before joining.`);
+            return post.message(`:warning: Only members of community can join races! Participate a bit more before joining. Junior Assistant has a very low requirement to get!`);
         if (msg.indexOf(`<`) !== -1)
             return post.message(`**<** and **>** is supposed to indicate that this is a part where you put your IGN and server. You don't _literally_  ` +
                 `put **<** and **>** there. <:vikfacepalm:305783369302802434>`);
@@ -30,7 +31,10 @@
         post.message(`:hourglass_flowing_sand: This might take a while...`);
 
         playerIGNAndServer = msg.split('|');
+        playerIGNAndServer[0] = input.getRidOfSpecialSymbols(playerIGNAndServer[0]);
+        playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]).toUpperCase();
         server = swap.serverToEndPoint(playerIGNAndServer[1]);
+
         api.extractPlayerID(server, playerIGNAndServer, playerID => {
             if (playerID.toString().startsWith(`:warning:`))
                 return post.message(playerID);
@@ -40,7 +44,7 @@
 
                 function checkForSoloQStats(i) {
                     if (ranksData.length <= i)
-                        return post.message(`:warning: Player ${playerIGNAndServer[0].toUpperCase()} is unranked. To join the race, you need to be ranked exactly one tier below the desired tier (example: to join Diamond race you need to be Platinum).`);
+                        return post.message(`:warning: Player ${playerNickDecoded} is unranked. To join the race, you need to be ranked exactly one tier below the desired tier (example: to join Diamond race you need to be Platinum).`);
 
                     if (ranksData[i].queueType == 'RANKED_SOLO_5x5') {
                         if (ranksData[i].tier.toLowerCase() != rankCurrent.toLowerCase())
@@ -50,18 +54,18 @@
                                 return post.message(`:warning: Something went wrong during saving your data. Try joining the race later.`);
                             fileData = JSON.parse(fileData);
                             for (participant in fileData.Participants) {
-                                if (fileData.Participants[participant].nickname == playerIGNAndServer[0].toUpperCase())
-                                    return post.message(`:warning: Player ${playerIGNAndServer[0].toUpperCase()} already participates in this race.`);
+                                if (fileData.Participants[participant].nickname == playerNickDecoded)
+                                    return post.message(`:warning: Player ${playerNickDecoded} already participates in this race.`);
                             }
                             fileData.Participants.push({
-                                "nickname": playerIGNAndServer[0].toUpperCase(),
+                                "nickname": playerNickDecoded,
                                 "id": playerID,
                                 "server": playerIGNAndServer[1].toUpperCase()
                             });
                             fs.writeFile(racePath, JSON.stringify(fileData), err => {
                                 if (err)
                                     return post.message(`:warning: Something went wrong during saving your data. Try joining the race later.`);
-                                return post.message(`Player ${playerIGNAndServer[0].toUpperCase()} succesfully joined the ${rankDesired} race.`);
+                                return post.message(`Player ${playerNickDecoded} succesfully joined the ${rankDesired} race.`);
                             });
                         });
                     }

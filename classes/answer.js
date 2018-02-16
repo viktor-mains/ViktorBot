@@ -369,7 +369,7 @@ exports.Answer = function (data) {
 
         var _input = data.message.content;
         if (!input.hasSeparator(_input))
-            return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!lastgame ${data.message.author.username}|euw\`\``);
+            return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!lastlane ${data.message.author.username}|euw\`\``);
 
         var api = new API.API();
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
