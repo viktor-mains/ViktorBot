@@ -195,7 +195,7 @@ exports.API = function () {
                     return callback("error " + response.statusCode);
                 }
                 catch (err) {
-                    return callback("error" + err);
+                    return callback("error " + err);
                 }
             }
         });
