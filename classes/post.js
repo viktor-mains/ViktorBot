@@ -64,8 +64,8 @@ exports.Post = function (data) {
                 data.message.author.send({ embed })
                     .then(m => post.reactionToMessage('📩'))
                     .catch(err => {
-                        return post.embed(":warning: I'm unable to reply to you!", ["___", `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
-                        \n\nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command!`, false]);
+                        return post.embed("", [[":warning: I'm unable to reply to you!", `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
+                        \nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command!`, false]]);
                     });
                 break;
             }
@@ -83,7 +83,7 @@ exports.Post = function (data) {
             .catch(err => {
                 return post.embed("", [[":warning: I'm unable to reply to you!",
                     `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
-                        \n\nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command!`,
+                        \nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command!`,
                     false]]);
             });
     };
