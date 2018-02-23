@@ -61,7 +61,12 @@ exports.Post = function (data) {
                 embedTitleBodyAndArgs[i][1],
                 embedTitleBodyAndArgs[i][2]);
             if (i === embedTitleBodyAndArgs.length - 1) {
-                data.message.author.send({ embed });
+                data.message.author.send({ embed })
+                    .then(m => post.reactionToMessage('📩'))
+                    .catch(err => {
+                        return post.embed(":warning: I'm unable to reply to you!", ["___", `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
+                        \n\nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command!`, false]);
+                    });
                 break;
             }
         }
@@ -73,6 +78,13 @@ exports.Post = function (data) {
         data.bot.user.setPresence({ game: { name: newStatus, type: 0 } });
     };
     post.toDM = function (messageToSend) {
-        data.message.author.send(messageToSend);
+        data.message.author.send(messageToSend)
+            .then(m => post.reactionToMessage('📩'))
+            .catch(err => {
+                return post.embed("", [[":warning: I'm unable to reply to you!",
+                    `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
+                        \n\nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command!`,
+                    false]]);
+            });
     };
 };

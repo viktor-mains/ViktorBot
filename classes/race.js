@@ -31,6 +31,8 @@
         post.message(`:hourglass_flowing_sand: This might take a while...`);
 
         playerIGNAndServer = msg.split('|');
+        playerIGNAndServer[0] = playerIGNAndServer[0].trim();
+        playerIGNAndServer[1] = playerIGNAndServer[1].trim();
         playerIGNAndServer[0] = input.getRidOfSpecialSymbols(playerIGNAndServer[0]);
         playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]).toUpperCase();
         server = swap.serverToEndPoint(playerIGNAndServer[1]);
