@@ -32,58 +32,7 @@ exports.Answer = function (data) {
             `\n\n**Pros:** \n• very high DPS \n• godlike late game with a potential to oneshot a squishy every ~3 seconds \n• makes Viktor a great tank killer` +
             `\n**Cons:** \n• weak in early- and midgame \n• worthless in early skirmishes \n• need to remain in autoattack range for full effectiveness`,
             false];
-        build[2] = [`Alternative builds`,
-            '``!frozen`` - Viktorious\' Frozen Viktor build\n``!tankbuild`` - Dun\'s tanky midlane Viktor build',
-            false]
         
-        post.embedToDM(title, build, data.message.author);
-    }
-    answer.toFrozenBuild = function (title) {
-        var build = [];
-        build[0] = ["Core runepage",
-            "- **Inspiration:** Glacial Augment - Biscuits - Magical Footwear - Cosmic Insight\n- **Sorcery:** Celerity - Scorch",
-            false];
-        build[1] = ["Variations",
-            "**Against AP:**\n - Nullifying Orb > Scorch \n**Against AP/ AD assassin/ gank heavy jungle:**\n- Nullifying Orb or Manaflow > Scorch \n- Stopwatch > Biscuits",
-            false];
-        build[2] = ["Core",
-            "<:hc3:315619117782532098> → <:glp:403683089173446656> → <:boot_ion:315619116557795338>\nAside from core Build, build situationally! Imagine you play standard Viktor build, only with GLP instead of Lich Bane.",
-            false];
-        build[3] = ["Overall playstyle",
-            "Your goal with this build is to __stall out a weak early__, and then __dominate in early/mid game teamfights__." +
-            "\n\nWork to get 1st Hexcore upgrade on first back. If not able to, work on GLP components. Revolver is main focus, but if extra sustain and stalling is needed, go Catalyst."+
-            "\n\nOnce Core is built look for skirmishes and ganks. GLP plus Glacial Augment passive is your bread and butter, use it as much as possible to secure kills or objectives. Rest of the game is basic Viktor Stuff!"];
-        build[4] = ["Additional info",
-            "This build's founder, Viktorious#6497, is currently creating a more in-depth guide about the build. For the time being you can contact him for more details.",
-            false];
-        build[5] = [`Alternative builds`,
-            '``!build`` - classic Viktor build\n``!tankbuild`` - Dun\'s tanky midlane Viktor build',
-            false]
-
-        post.embedToDM(title, build, data.message.author);
-    }
-    answer.toTankBuild = function (title) {
-        var build = [];
-        build[0] = ["Core runepage",
-            "- **Inspiration:** Unsealed Spellbook - Perfect Timing - Future Market - Cosmic Insight\n- **Sorcery:** Transcendence/Celerity - Manaflow Band/Scorch/Gathering Storm" +
-            "\n\nThis build is not cheap - core items cost around 8k gold. Unsealed allows you to start with Heal for safer early game, swap for TP to farm more effectively, and then adjust your summoner to the game. Future Market allows you to get your core faster.",
-            false];
-        build[1] = ["Build",
-            "<:doran:315619117287735306> → <:hc3:315619117782532098> → <:boot_ion:315619116557795338> → <:abyssal:408968473239093248> → <:iceborn:408968473985941504> → <:voidstaff:315619119376367635>/<:rabadon:315619119019982848>" +
-            "\nAdjust your first tanky item to the lane opponent and the game. You don't want to get Abyssal before Iceborn if you face Zed, for example." +
-            "\n<:hc3:315619117782532098> _needs_ to be your first full item purchase, since it's going to be your only source of AP for the next ~6k gold.",
-            false];
-        build[2] = ["Playstyle",
-            "In early game you want to play a bit safer. This build is best when ahead and basically worthless when behind, so you don't want situation where you start losing from the early game. " +
-            "Only take short trades and play patiently, but do not fall into a trap of playing overly passively because that's not the point." +
-            "\n\nAfter <:hc3:315619117782532098>+<:abyssal:408968473239093248> you get pretty tanky. You won't be able to burst, you're a battlemage now - stay in AA range and dish out constant DPS. The pinnacle of this playstyle is reached atfer completing <:iceborn:408968473985941504>, " +
-            "since you reach the 45% CDR and additional AA empower." +
-            "\n\nImportant thing to remember is that this build scales very bad, therefore you should aim to close the game as soon after completing <:iceborn:408968473985941504> because you'll start inevitably falling off.",
-            false];
-        build[3] = [`Alternative builds`,
-            '``!build`` - classic Viktor build\n``!frozen`` - Viktorious\' Frozen Viktor build',
-            false]
-
         post.embedToDM(title, build, data.message.author);
     }
     answer.toBuildTrigger = function () {

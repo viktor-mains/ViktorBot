@@ -111,22 +111,6 @@ exports.Commands = function (answer) {
             isModCommand: false,
             arguments: `**♥ GLORIOUS MINIGUIDE TO CLASSIC VIKTOR BUILD ♥**`
         },
-        'frozen': {
-            triggers: 'toFrozenBuild',
-            typeOfResponse: `function`,
-            description: `returns the experimental build by Viktorious - Frozen viktor`,
-            isAvailable: true,
-            isModCommand: false,
-            arguments: `**♥ GLORIOUS MINIGUIDE TO FROZEN VIKTOR BUILD ♥**`
-        },
-        'tankbuild': {
-            triggers: 'toTankBuild',
-            typeOfResponse: `function`,
-            description: `returns Dun's tank Viktor build`,
-            isAvailable: true,
-            isModCommand: false,
-            arguments: `**♥ GLORIOUS MINIGUIDE TO TANK VIKTOR BUILD ♥**`
-        },
         'runes': {
             triggers: `Since we're still pretty early in preseason and rune are still being changed, there's no one main consensus regarding runes now. Check #ask_viktor_main room to ask community members about their preffered choices.`,
             typeOfResponse: `text`,
@@ -157,7 +141,7 @@ exports.Commands = function (answer) {
             isModCommand: false
         },
         'dun': {
-            triggers: `- OP.gg:\n-- https://na.op.gg/summoner/userName=dun\n-- https://na.op.gg/summoner/userName=dunv2\n-- https://na.op.gg/summoner/userName=devìlangel\n-- https://na.op.gg/summoner/userName=season6crown\n- Stream:\n-- http://twitch.tv/dunlol\n- Dun's tank build:\n--\`\`!tankbuild\`\``,
+            triggers: `- OP.gg:\n-- https://na.op.gg/summoner/userName=dun\n-- https://na.op.gg/summoner/userName=dunv2\n-- https://na.op.gg/summoner/userName=devìlangel\n-- https://na.op.gg/summoner/userName=season6crown\n- Stream:\n-- http://twitch.tv/dunlol`,
             typeOfResponse: `embed`,
             description: `returns some info about Dun, challenger Viktor main`,
             isAvailable: true,
