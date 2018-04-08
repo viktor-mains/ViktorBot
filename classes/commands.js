@@ -141,7 +141,7 @@ exports.Commands = function (answer) {
             isModCommand: false
         },
         'dun': {
-            triggers: `- OP.gg:\n-- https://na.op.gg/summoner/userName=dun\n-- https://na.op.gg/summoner/userName=dunv2\n-- https://na.op.gg/summoner/userName=devìlangel\n-- https://na.op.gg/summoner/userName=season6crown\n- Stream:\n-- http://twitch.tv/dunlol`,
+            triggers: `- OP.gg:\n-- https://na.op.gg/summoner/userName=dun\n-- http://na.op.gg/summoner/userName=cupcakes29\n- Stream:\n-- http://twitch.tv/dunlol`,
             typeOfResponse: `embed`,
             description: `returns some info about Dun, challenger Viktor main`,
             isAvailable: true,
