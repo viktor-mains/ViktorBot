@@ -1,3 +1,0 @@
-X:\Programowanko\ViktorBot\ViktorBot\bin\Microsoft.NodejsTools.WebRole.dll
-X:\Boty\ViktorBot\ViktorBot\obj\Debug\ViktorBot.njsprojResolveAssemblyReference.cache
-X:\Boty\ViktorBot\ViktorBot\bin\Microsoft.NodejsTools.WebRole.dll
