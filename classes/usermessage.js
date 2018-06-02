@@ -1,5 +1,3 @@
-var input = require('./input');
-
 exports.UserMessage = function (data) {
     var userMessage = this;
 
@@ -17,11 +15,7 @@ exports.UserMessage = function (data) {
             return true;
         return false;
     };
-    userMessage.hasKeywordTrigger = function () {
-        if (input.findKeywords())
-            return true;
-        return false;
-    };
+
     userMessage.hasDearViktorTrigger = function () {
         if ((userMessage.content.toLowerCase()).startsWith('dear viktor'))
             return true;
