@@ -1,15 +1,28 @@
 ﻿var request = require('request');
 var Swap = require('./swap.js');
 var input = require('./input.js');
+const url = require('url')
 
 /**
  * Sends a request to the given URL and calls the callback when it receives a response.
  *
  * @param {String} url The url to send a request to.
+ * @param {Object} [headers] A list of headers to supply to the server. This may be omitted.
  * @param {Function} cb A callback function. This follows typical node conventions: The first argument will be an error (In this case, an error String) if one occurred, otherwise it will be undefined and the second argument will be the retrieved data.
  */
-function extractFromUrl(url, cb) {
-    request(url, (error, response, body) => {
+function extractFromUrl(url, headers, cb) {
+    // Allows for omission of the 'headers' argument.
+    if (typeof headers === 'function') {
+        cb = headers;
+        headers = {};
+    }
+
+    if (typeof headers !== 'object') {
+        throw new TypeError('if headers are specified, they must be an object');
+    }
+
+    const options = { url, headers };
+    request(options, (error, response, body) => {
         if (!error && response.statusCode === 200) {
             return cb(undefined, error);
         }
@@ -23,96 +36,119 @@ function extractFromUrl(url, cb) {
     })
 }
 
+/**
+ * Makes a request to the Riot API Servers.
+ * This will automatically append the Riot API key to the request.
+ * @param {String} server The server to send the request to.
+ * @param {String} path The path of the server to request.
+ * @param {Function} cb A callback function. This follows typical node conventions: The first argument will be an error (In this case, an error String) if one occurred, otherwise it will be undefined and the second argument will be the retrieved data.
+ */
+function makeRiotRequest(server, path, cb) {
+    const headers = {
+        'X-Riot-Token': process.env.RITO_KEY
+    };
+
+    const uri = url.format({
+        protocol: 'https',
+        hostname: `${server}.api.riotgames.com`,
+        path
+    });
+
+    extractFromUrl(uri, headers, cb);
+}
+
+function URLmatchData(matchID) {
+    return `/lol/match/v3/matches/${matchID}`;
+}
+
+function URLrecentGamesData(accountID) {
+    return `/lol/match/v3/matchlists/by-account/${accountID}/recent`;
+}
+
+function URLsummonerID(playerIGN) {
+    return `/lol/summoner/v3/summoners/by-name/${playerIGN}`;
+}
+
+function URLmasteryData(playerID) {
+    return `/lol/champion-mastery/v3/champion-masteries/by-summoner/${playerID}/by-champion/112`
+}
+
+function URLliveGameData(playerID) {
+    return `/lol/spectator/v3/active-games/by-summoner/${playerID}`;
+}
+
+function playersRanksData(playerID) {
+    return `/lol/league/v3/positions/by-summoner/${playerID}`;
+}
+
+function URLchampionData() {
+    return `/lol/static-data/v3/champions?dataById=true`;
+}
+
+function URLgameTimeline(matchID) {
+    return `/lol/match/v3/timelines/by-match/${matchID}`;
+}
 
 exports.API = function () {
     var api = this;
-
-    api.RITO_KEY = process.env.RITO_KEY;
-
-
-    api.URLmatchData = function (server, matchID) {
-        return `https://${server}.api.riotgames.com/lol/match/v3/matches/${matchID}?api_key=${api.RITO_KEY}`;
-    };
-    api.URLrecentGamesData = function (server, accountID) {
-        return `https://${server}.api.riotgames.com/lol/match/v3/matchlists/by-account/${accountID}/recent?api_key=${api.RITO_KEY}`;
-    };
-    api.URLsummonerID = function (server, playerIGN) {
-        return `https://${server}.api.riotgames.com/lol/summoner/v3/summoners/by-name/${playerIGN}?api_key=${api.RITO_KEY}`;
-    };
-    api.URLmasteryData = function (server, playerID) {
-        return `https://${server}.api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/${playerID}/by-champion/112?api_key=${api.RITO_KEY}`
-    };
-    api.URLliveGameData = function (server, playerID) {
-        return `https://${server}.api.riotgames.com/lol/spectator/v3/active-games/by-summoner/${playerID}?api_key=${api.RITO_KEY}`;
-    };
-    api.playersRanksData = function (server, playerID) {
-        return `https://${server}.api.riotgames.com/lol/league/v3/positions/by-summoner/${playerID}?api_key=${api.RITO_KEY}`;
-    };
-    api.URLchampionData = function (server) {
-        return `https://${server}.api.riotgames.com/lol/static-data/v3/champions?dataById=true&api_key=${api.RITO_KEY}`;
-    };
-    api.URLgameTimeline = function (server, matchID) {
-        return `https://${server}.api.riotgames.com/lol/match/v3/timelines/by-match/${matchID}?api_key=${api.RITO_KEY}`;
-    };
-
     api.extractGameTimelineData = function (server, matchID, callback) {
-        extractFromUrl(api.URLgameTimeline(server, matchID), (err, timelineAPI) => {
+        makeRiotRequest(server, URLgameTimeline(matchID), (err, timelineAPI) => {
             if (err)
                 return callback(`:warning: Error retrieving game timeline.`);
             return callback(JSON.parse(timelineAPI));
         });
     };
     api.extractPlayerRanksData = function (server, playerID, callback) {
-        extractFromUrl(api.playersRanksData(server, playerID), (err, ranksAPI) => {
+        makeRiotRequest(server, api.playersRanksData(playerID), (err, ranksAPI) => {
             if (err)
                 return callback(`:warning: Error retrieving ranks data.`);
             return callback(JSON.parse(ranksAPI));
         });
     };
     api.extractMatchData = function (server, matchID, callback) {
-        extractFromUrl(api.URLmatchData(server, matchID), (err, matchDataAPI) => {
+        makeRiotRequest(server, URLmatchData(matchID), (err, matchDataAPI) => {
             if (err)
                 return callback(":warning: Error retrieving match data.");
             return callback(JSON.parse(matchDataAPI));
         });
     };
     api.extractRecentGamesData = function (server, accountID, callback) {
-        extractFromUrl(api.URLrecentGamesData(server, accountID), (err, gameDataAPI) => {
+        makeRiotRequest(server, URLrecentGamesData(accountID), (err, gameDataAPI) => {
             if (err)
                 return callback(":warning: Error retrieving recent games data.");
             return callback(JSON.parse(gamesDataAPI));
         });
     };
     api.extractChampionData = function (server, callback) {
-        extractFromUrl(api.URLchampionData(server), (err, championDataAPI) => {
+        makeRiotRequest(server, URLchampionData(), (err, championDataAPI) => {
             if (err)
                 return callback(":warning: Error retrieving champion data.");
             return callback(JSON.parse(championDataAPI));
         });
     };
     api.extractPlayersLiveGameData = function (server, playerID, callback) {
-        extractFromUrl(api.URLliveGameData(server, playerID), (err, liveGameDataAPI) => {
+        makeRiotRequest(server, URLliveGameData(playerID), (err, liveGameDataAPI) => {
             if (err)
                 return callback(`:warning: This person either is not in game, or you did something wrong.`);
             return callback(JSON.parse(liveGameDataAPI));
         });
     };
     api.extractPlayerID = function (server, playerIGNAndServer, callback) {
-        extractFromUrl(api.URLsummonerID(server, playerIGNAndServer[0]), (err, playerIDAPI) => {
+        makeRiotRequest(server, URLsummonerID(playerIGNAndServer[0]), (err, playerIDAPI) => {
             if (err)
                 return callback(`:warning: Player ${decodeURIComponent(playerIGNAndServer[0]).toUpperCase()} doesn't exist.`);
             return callback((JSON.parse(playerIDAPI)).id.toString());
         });
     };
     api.extractPlayerAccountID = function (server, playerIGNAndServer, callback) {
-        extractFromUrl(api.URLsummonerID(server, playerIGNAndServer[0]), (err, playerIDAPI) => {
+        makeRiotRequest(server, URLsummonerID(playerIGNAndServer[0]), (err, playerIDAPI) => {
             if (err)
                 return callback(`:warning: Player ${decodeURIComponent(playerIGNAndServer[0]).toUpperCase()} doesn't exist.`);
             return callback((JSON.parse(playerIDAPI)).accountId.toString());
         });
     };
     api.extractPlayerMastery = function (server, playerID, callback) {
-        extractFromUrl(api.URLmasteryData(server, playerID), (err, championMasteryDataAPI) => {
+        makeRiotRequest(server, URLmasteryData(playerID), (err, championMasteryDataAPI) => {
             if (err)
                 return callback(`:warning: This person didn't play a single game of me. _Phew_.`);
 
