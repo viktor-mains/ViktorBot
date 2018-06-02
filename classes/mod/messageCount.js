@@ -1,12 +1,11 @@
-﻿const Discord = require('discord.js');
+﻿var input = require('../input')
+const Discord = require('discord.js');
 
 exports.MessageCount = function (data) {
     var messageCount = this;
     var fs = require(`fs`);
     var Post = require(`../post.js`);
     var post = new Post.Post(data);
-    var Input = require(`../input.js`);
-    var input = new Input.Input();
     var messageCountPath = `../data/mod/messageCount.json`;
 
     messageCount.getMsgData = function (callback) {
@@ -69,7 +68,7 @@ exports.MessageCount = function (data) {
             };
         });
     };*/
-    
+
     messageCount.checkRegularRequirements = function (userData, msg) {
         //var arrayOfRanks = [`Fresh Acolyte`, `Junior Assistant`, `Hextech Progenitor`, `Arcane Android`];
         var memberRole = 'Junior Assistant';

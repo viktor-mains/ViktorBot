@@ -1,4 +1,6 @@
-﻿exports.Mods = function(data) {
+﻿var input = require('../input')
+
+exports.Mods = function(data) {
 	var mods = this;
 	var Post = require(`../post.js`);
 	var post = new Post.Post(data);
@@ -8,8 +10,6 @@
     mods.showModCommands = function () {
         var Commands = require('../commands.js');
         var commands = new Commands.Commands('');
-        var Input = require('../input.js');
-        var input = new Input.Input();
         var helpContents = '```Moderator commands:\n\n';
 
         for (var property in commands.listOfResponses) {
@@ -24,8 +24,6 @@
     // commands to moderate mods
 	mods.promote = function () {
 		var fs = require('fs');
-		var Input = require('../input.js');
-        var input = new Input.Input();
 
 		var modID = input.getIDOfMentionedPerson(data.message.content);
 		var modExists = data.message.mentions.users.find('id', modID);
@@ -58,8 +56,6 @@
 	};
 	mods.demote = function () {
 		var fs = require('fs');
-		var Input = require('../input.js');
-		var input = new Input.Input();
 
 		var modID = input.getIDOfMentionedPerson(data.message.content);
 		var modExists = data.message.mentions.users.find('id', modID);
@@ -101,7 +97,7 @@
                 post.embed(`:no_entry:`, [[`___`, `Something went wrong <:SMB4:310138833377165312>`, false]]);
                 return console.log(`Reading mod file: ${err}`);
             };
-            
+
             serverDataJson = JSON.parse(serverDataJson);
             if (!mods.serverIsListed(serverDataJson))
                 return;
@@ -161,8 +157,6 @@
         });
     };
     mods.restrictCommand = function () {
-        var Input = require('../input.js');
-        var input = new Input.Input();
         var commandAndRoom = input.removeKeyword(data.message.content);
 
         if (!commandAndRoom)
@@ -205,18 +199,16 @@
         });
     };
     mods.setUpAntiSpam = function () {
-        var Input = require('../input.js');
-        var input = new Input.Input();
         var fs = require('fs');
         var spamSettings = input.removeKeyword(data.message.content);
 
         if (!data.antispam)
-            return post.embed(`:warning: Your settings weren't applied...`, [[`___`, `...because antispam is OFF. \nTo turn on antispam, write \`\`!antispam\`\``, false]]); 
+            return post.embed(`:warning: Your settings weren't applied...`, [[`___`, `...because antispam is OFF. \nTo turn on antispam, write \`\`!antispam\`\``, false]]);
         if (spamSettings.indexOf('|') == -1)
             return post.embed(`:warning: Incorrect input`, [[`__`, `This command requires the symbol \"**|**\" to separate \`\`number of messages\`\` from \`\`time limit in seconds\`\`.`, false]]);
         spamSettings = spamSettings.split('|');
         if (spamSettings[0] < 2)
-            return post.embed(`:warning: Incorrect number of messages`, [[`___`, `You can't set up antispam to react for the number of messages lower than 2 because it makes no sense.`, false]]); 
+            return post.embed(`:warning: Incorrect number of messages`, [[`___`, `You can't set up antispam to react for the number of messages lower than 2 because it makes no sense.`, false]]);
 
         fs.readFile(serverDataPath, `utf8`, (err, serverData) => {
             if (err)

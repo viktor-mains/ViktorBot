@@ -1,8 +1,7 @@
-var Input = require('./input.js');
+var input = require('./input');
 
 exports.UserMessage = function (data) {
     var userMessage = this;
-    var input = new Input.Input();
 
     userMessage.content = data.message.content;
     userMessage.authorName = data.message.author.username;

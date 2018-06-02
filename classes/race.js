@@ -1,4 +1,5 @@
 ﻿var Swap = require('./swap')
+var input = require('./input');
 
 exports.Race = function (data, post) {
     var race = this;
@@ -7,8 +8,6 @@ exports.Race = function (data, post) {
         var fs = require(`fs`);
         var Roles = require('./roles.js');
         var roles = new Roles.Roles(data.message.member);
-        var Input = require('./input.js');
-        var input = new Input.Input();
         var API = require('./API.js');
         var api = new API.API();
 
@@ -84,8 +83,6 @@ exports.Race = function (data, post) {
         post.message(`:hourglass_flowing_sand: Getting the ${rankDesired} race data. This might take a while...`);
 
         var fs = require(`fs`);
-        var Input = require('./input.js');
-        var input = new Input.Input();
         var racePath = `../data/race/${rankDesired.toLowerCase()}race.json`;
 
         fs.readFile(racePath, `utf8`, function (err, raceJson) {

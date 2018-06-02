@@ -1,6 +1,6 @@
 ﻿var request = require('request');
 var Swap = require('./swap.js');
-var Input = require('./input.js');
+var input = require('./input.js');
 
 /**
  * Sends a request to the given URL and calls the callback when it receives a response.
@@ -26,7 +26,6 @@ function extractFromUrl(url, cb) {
 
 exports.API = function () {
     var api = this;
-    var input = new Input.Input();
 
     api.RITO_KEY = process.env.RITO_KEY;
 

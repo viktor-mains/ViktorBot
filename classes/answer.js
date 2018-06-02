@@ -1,6 +1,6 @@
 ﻿var Commands = require('./commands.js');
 var RNG = require('./rng.js');
-var Input = require('./input.js');
+var input = require('./input.js');
 var DearViktorAnswers = require('./dearviktoranswers.js');
 var Matchup = require('./matchup.js');
 var Roles = require('./roles.js');
@@ -12,7 +12,6 @@ var API = require('./API.js');
 exports.Answer = function (data) {
     var answer = this;
     var rng = new RNG.RNG();
-    var input = new Input.Input();
     var post = new Post.Post(data);
 
     answer.userMessage = data.message;
@@ -44,8 +43,6 @@ exports.Answer = function (data) {
     answer.showHelpContents = function () {
         var Commands = require('./commands.js');
         var commands = new Commands.Commands('');
-        var Input = require('./input.js');
-        var input = new Input.Input();
         var helpContents = '```List of commands:\n\n';
 
         for (var property in commands.listOfResponses) {

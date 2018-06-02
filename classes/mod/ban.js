@@ -1,10 +1,10 @@
-﻿exports.Ban = function (data) {
+﻿var input = require('../input');
+
+exports.Ban = function (data) {
     var ban = this;
     var Post = require('../post.js');
-    var Input = require('../input.js');
     var fs = require('fs');
     var post = new Post.Post(data);
-    var input = new Input.Input();
     var banPath = ('../data/mod/blackList.json');
 
     ban.newUserIsBlacklisted = function (GuildMember, callback) {
@@ -28,7 +28,7 @@
     ban.handleUserFromBlacklist = function (GuildMember, banIndex) {
         var d = new Date();
         var serverID = GuildMember.guild.id;
-        
+
         fs.readFile(banPath, 'utf8', (err, fileContents) => {
             if (err)
                 return console.log(`${d} - error while banning blacklisted ${GuildMember.user} who joins!`);
@@ -52,7 +52,7 @@
     };
 
 
-    ban.ban = function () { 
+    ban.ban = function () {
         var d = new Date();
         var banOptions = input.removeKeyword(data.message.content).split('|');
         var idToBan = banOptions[0];
@@ -192,7 +192,7 @@
             if (err)
                 return post.embed(`:warning: Error while unbanning user`, [[`___`, `${err}`, false]]);
             var d = new Date();
-            var serverID = data.message.guild.id; 
+            var serverID = data.message.guild.id;
             var listOfBans = '';
             fileContents = JSON.parse(fileContents);
 

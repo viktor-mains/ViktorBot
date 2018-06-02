@@ -1,4 +1,5 @@
 ﻿var Post = require('../post.js');
+var input = require('../input')
 
 exports.Follow = function (data) {
     var follow = this;
@@ -7,8 +8,6 @@ exports.Follow = function (data) {
     var followersPath = '../data/follow.json';
 
     follow.listOfStreamers = function () {
-        var Input = require('../input.js');
-        var input = new Input.Input();
         var streamersList = ``;
         var viktorStreamers = data.message.guild.roles.find(`name`, roleName).members.forEach(member => {
             streamersList += `\`\`- ${member.user.id}\`\` - **${member.user.username}**\n`;
@@ -21,8 +20,6 @@ exports.Follow = function (data) {
 
     follow.start = function () {
         var fs = require('fs');
-        var Input = require('../input.js');
-        var input = new Input.Input();
 
         var streamerID = input.removeKeyword(data.message.content);
         var streamerExists = data.message.guild.members.find('id', streamerID);
@@ -31,7 +28,7 @@ exports.Follow = function (data) {
             return post.embed(`:warning: Incorrect input`, [[`___`, `**<** and **>** is supposed to indicate that this is a part where you put ` +
                 `the ID. You don't _literally_ put **<** and **>** there. <:vikfacepalm:305783369302802434>`]]);
         if (isNaN(streamerID))
-            return post.embed(`:warning: Incorrect input`, [[`___`, `I suggest writing ID of a person you want to follow.\nYou can find IDs of people to follow using the !streamers command.`, false]]);       
+            return post.embed(`:warning: Incorrect input`, [[`___`, `I suggest writing ID of a person you want to follow.\nYou can find IDs of people to follow using the !streamers command.`, false]]);
         if (!streamerExists)
             return post.embed(`:warning: Incorrect input`, [[`___`, `Person with such ID doesn't exist.`, false]]);
         if (!follow.isViktorStreamer(streamerID))
@@ -54,7 +51,7 @@ exports.Follow = function (data) {
             }
             else {
                 var id = follow.streamerIsOnTheList(followerInfoJson.Streamers, streamerID);
-                
+
                 if (follow.userAlreadyFollows(followerInfoJson.Streamers[id]))
                     return post.embed(`:warning: Can't do it`, [[`___`,`You already follow ${userNick}.`,false]]);
                 followerInfoJson.Streamers[id].followers.push(data.message.author.id);
@@ -66,13 +63,11 @@ exports.Follow = function (data) {
                 };
             });
             return post.embed(`<:viktorgod:269479031009837056> Follower alert`, [[`___`, `**${data.message.author.username}** now follows **${userNick}**.\n\n` +
-                `To see the list of people you follow: \`\`!whoifollow\`\``, false]]); 
+                `To see the list of people you follow: \`\`!whoifollow\`\``, false]]);
         });
     };
     follow.stop = function () {
         var fs = require('fs');
-        var Input = require('../input.js');
-        var input = new Input.Input();
 
         var streamerID = input.removeKeyword(data.message.content);
         var streamerExists = data.message.guild.members.find('id', streamerID);
@@ -112,7 +107,7 @@ exports.Follow = function (data) {
                     return console.log(`Writing follow file: ${err}`);
                 };
             });
-            return post.embed(`<:JustDieAlready:288399448176853012> Unfollower alert`, [[`___`, `**${data.message.author.username}** no longer follows **${userNick}**.`, false]]); 
+            return post.embed(`<:JustDieAlready:288399448176853012> Unfollower alert`, [[`___`, `**${data.message.author.username}** no longer follows **${userNick}**.`, false]]);
         });
     };
     follow.listOfMyFollowers = function () {
