@@ -1,5 +1,6 @@
 ﻿var Swap = require('./swap')
 var input = require('./input');
+var api = require('./API');
 
 exports.Race = function (data, post) {
     var race = this;
@@ -8,9 +9,6 @@ exports.Race = function (data, post) {
         var fs = require(`fs`);
         var Roles = require('./roles.js');
         var roles = new Roles.Roles(data.message.member);
-        var API = require('./API.js');
-        var api = new API.API();
-
         var playerIGNAndServer;
         var server;
         var playerNickDecoded;
@@ -141,9 +139,6 @@ exports.Race = function (data, post) {
             return callback (raceJson);
     };
     race.assignRankPoints = function (raceJson, rankDesired, rankCurrent, rankLower, callback) {
-        var API = require('./API.js');
-        var api = new API.API();
-
         var l = raceJson.Participants.length;
 
         function raceLoop(i) {

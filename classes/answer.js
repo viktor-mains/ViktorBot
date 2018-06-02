@@ -7,7 +7,7 @@ var Roles = require('./roles.js');
 var Race = require('./race.js');
 var Post = require('./post.js');
 var Swap = require('./Swap.js');
-var API = require('./API.js');
+var api = require('./API.js');
 
 exports.Answer = function (data) {
     var answer = this;
@@ -279,8 +279,6 @@ exports.Answer = function (data) {
         return race.leaderboards(rankDesiredCurrentAndLower[0], rankDesiredCurrentAndLower[1], rankDesiredCurrentAndLower[2]);
     };
     answer.toPBE = function () {
-        var api = new API.API();
-
         api.extractFromURL(`http://www.surrenderat20.net/search/label/PBE/`, (err, surrAt20API) => {
             if (err)
                 return post.message(`Unable to fetch the newest PBE patch notes.`);
@@ -316,7 +314,6 @@ exports.Answer = function (data) {
         if (!input.hasSeparator(_input))
             return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!lastlane ${data.message.author.username}|euw\`\``);
 
-        var api = new API.API();
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
         var playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]).toUpperCase();
         var server = Swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
@@ -419,7 +416,6 @@ exports.Answer = function (data) {
         if (!input.hasSeparator(_input))
             return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!lastgame ${data.message.author.username}|euw\`\``);
 
-        var api = new API.API();
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
         var playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]).toUpperCase();
         var server = Swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
@@ -451,7 +447,6 @@ exports.Answer = function (data) {
         if (!input.hasSeparator(_input))
             return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!giveid ${data.message.author.username}|euw\`\``);
 
-        var api = new API.API();
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
         var playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]).toUpperCase();
         var server = Swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
@@ -529,7 +524,6 @@ exports.Answer = function (data) {
         if (!input.hasSeparator(_input))
             return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!giveid ${data.message.author.username}|euw\`\``);
 
-        var api = new API.API();
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
         var playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]).toUpperCase();
         var server = Swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
@@ -544,7 +538,6 @@ exports.Answer = function (data) {
         var _input = data.message.content;
         if (!input.hasSeparator(_input))
             return post.message(`This command requires the symbol \"**|**\" to separate region from nickname. \n_Example:_ \`\`!mastery ${data.message.author.username}|euw\`\``);
-        var api = new API.API();
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
         var playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]);
         var server = Swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
@@ -562,7 +555,6 @@ exports.Answer = function (data) {
         post.newStatus(newStatus);
     };
     answer.toRedTracker = function () {
-        var api = new API.API();
         var naPath = `http://boards.na.leagueoflegends.com/en/redtracker.json`;
         var euwPath = `http://boards.euw.leagueoflegends.com/en/redtracker.json`;
         var message = [];
@@ -616,7 +608,6 @@ exports.Answer = function (data) {
             .catch(e => { post.message(`Unable to fetch EUW Riot comments. ${e}`); })
     };
     answer.toCatPicture = function () {
-        var api = new API.API();
         api.extractFromURL('http://random.cat/meow', (err, extractedStuff) => {
             if (err)
                 return post.message('Unable to get a cat.');
@@ -625,7 +616,6 @@ exports.Answer = function (data) {
         });
     };
     answer.toDogPicture = function () {
-        var api = new API.API();
         api.extractFromURL('http://random.dog/woof', (err, extractedStuff) => {
             if (err)
                 return post.message('Unable to get a dog.');
