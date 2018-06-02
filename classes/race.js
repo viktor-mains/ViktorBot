@@ -1,4 +1,6 @@
-﻿exports.Race = function (data, post) {
+﻿var Swap = require('./swap')
+
+exports.Race = function (data, post) {
     var race = this;
 
     race.join = function (rankDesiredCurrentAndLower) {
@@ -9,8 +11,6 @@
         var input = new Input.Input();
         var API = require('./API.js');
         var api = new API.API();
-        var Swap = require('./swap.js');
-        var swap = new Swap.Swap();
 
         var playerIGNAndServer;
         var server;
@@ -19,7 +19,7 @@
         var rankCurrent = rankDesiredCurrentAndLower[1];
         var msg = input.removeKeyword(data.message.content).substring(4).trim();
         var racePath = `../data/race/${rankDesired.toLowerCase()}race.json`;
-        
+
         if (!roles.userHasRole('Junior Assistant') && !roles.userHasRole('Hextech Progenitor'))
             return post.message(`:warning: Only members of community can join races! Participate a bit more before joining. Junior Assistant has a very low requirement to get!`);
         if (msg.indexOf(`<`) !== -1)
@@ -35,7 +35,7 @@
         playerIGNAndServer[1] = playerIGNAndServer[1].trim();
         playerIGNAndServer[0] = input.getRidOfSpecialSymbols(playerIGNAndServer[0]);
         playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]).toUpperCase();
-        server = swap.serverToEndPoint(playerIGNAndServer[1]);
+        server = SAwap.serverToEndPoint(playerIGNAndServer[1]);
 
         api.extractPlayerID(server, playerIGNAndServer, playerID => {
             if (playerID.toString().startsWith(`:warning:`))
@@ -86,10 +86,8 @@
         var fs = require(`fs`);
         var Input = require('./input.js');
         var input = new Input.Input();
-        var Swap = require('./swap.js');
-        var swap = new Swap.Swap();
         var racePath = `../data/race/${rankDesired.toLowerCase()}race.json`;
-        
+
         fs.readFile(racePath, `utf8`, function (err, raceJson) {
             if (err)
                 return post.message(`Cannot retrieve data because ${err}.`);
@@ -110,7 +108,7 @@
                     catch (err) {
                         return post.embed(`:warning: Error`, [[`___`, `Can't read ${updatedRaceJson.Participants[i].nickname}'s data. Try again in a few moments.`, false]]);
                     }
-                    participants += `\`\`${input.justifyToLeft(`#${parseInt(i) + 1}:`, 4)} ${rankCurrent.toUpperCase()} ${swap.romanToArabic(updatedRaceJson.Participants[i].division)} ` +
+                    participants += `\`\`${input.justifyToLeft(`#${parseInt(i) + 1}:`, 4)} ${rankCurrent.toUpperCase()} ${Swap.romanToArabic(updatedRaceJson.Participants[i].division)} ` +
                         `- ${LP } LP |\`\` ${updatedRaceJson.Participants[i].nickname}\n`;
                 };
                 for (i in updatedRaceJson.Winners) {
@@ -146,8 +144,6 @@
             return callback (raceJson);
     };
     race.assignRankPoints = function (raceJson, rankDesired, rankCurrent, rankLower, callback) {
-        var Swap = require('./swap.js');
-        var swap = new Swap.Swap();
         var API = require('./API.js');
         var api = new API.API();
 
@@ -155,7 +151,7 @@
 
         function raceLoop(i) {
             if (i < l) {
-                var server = swap.serverToEndPoint(raceJson.Participants[i].server);
+                var server = Swap.serverToEndPoint(raceJson.Participants[i].server);
                 var playerID = raceJson.Participants[i].id;
 
                 api.extractPlayerRanksData(server, playerID, rankJson => {
@@ -173,7 +169,7 @@
                         }
                     }
 
-                    if (i == l - 1) 
+                    if (i == l - 1)
                         callback(raceJson);
                     return raceLoop(i + 1);
                 });
@@ -182,9 +178,7 @@
         raceLoop(0);
     };
     race.calculatePlayerRacePoints = function (rankJson, rankDesired, rankCurrent, rankLower) {
-        var Swap = require('./swap.js');
-        var swap = new Swap.Swap();
-        var division = swap.romanToArabic(rankJson.rank)*100;
+        var division = Swap.romanToArabic(rankJson.rank)*100;
         var points = rankJson.leaguePoints;
         var racePoints = division - points;
 
@@ -234,7 +228,7 @@
                 return callback(updatedRaceJson);
             };
         };
-        updateLoop(0);        
+        updateLoop(0);
     };
     race.saveUpdateInFile = function (jsonToSave, racePath) {
         var fs = require(`fs`);
@@ -243,12 +237,12 @@
             delete jsonToSave.Participants[i].points;
             delete jsonToSave.Participants[i].division;
             delete jsonToSave.Participants[i].leaguePoints;
-        };  
+        };
         for (i in jsonToSave.Winners) {
             delete jsonToSave.Winners[i].points;
             delete jsonToSave.Winners[i].division;
             delete jsonToSave.Winners[i].leaguePoints;
-        }; 
+        };
         fs.writeFile(racePath, JSON.stringify(jsonToSave), err => {
             if (err) {
                 var d = new Date();

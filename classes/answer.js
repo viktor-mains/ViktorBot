@@ -6,7 +6,7 @@ var Matchup = require('./matchup.js');
 var Roles = require('./roles.js');
 var Race = require('./race.js');
 var Post = require('./post.js');
-var Swap = require('./swap.js');
+var Swap = require('./Swap.js');
 var API = require('./API.js');
 
 exports.Answer = function (data) {
@@ -14,7 +14,6 @@ exports.Answer = function (data) {
     var rng = new RNG.RNG();
     var input = new Input.Input();
     var post = new Post.Post(data);
-    var swap = new Swap.Swap();
 
     answer.userMessage = data.message;
 
@@ -323,7 +322,7 @@ exports.Answer = function (data) {
         var api = new API.API();
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
         var playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]).toUpperCase();
-        var server = swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
+        var server = Swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
         api.extractPlayerAccountID(server, playerIGNAndServer, accountID => {
             if (accountID.toString().startsWith(`:warning:`))
                 return post.message(accountID);
@@ -426,7 +425,7 @@ exports.Answer = function (data) {
         var api = new API.API();
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
         var playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]).toUpperCase();
-        var server = swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
+        var server = Swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
 
         api.extractPlayerAccountID(server, playerIGNAndServer, accountID => {
             if (accountID.toString().startsWith(`:warning:`))
@@ -458,7 +457,7 @@ exports.Answer = function (data) {
         var api = new API.API();
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
         var playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]).toUpperCase();
-        var server = swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
+        var server = Swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
 
         api.extractPlayerID(server, playerIGNAndServer, playerID => {
             if (playerID.toString().startsWith(`:warning:`))
@@ -473,7 +472,7 @@ exports.Answer = function (data) {
                     var ids = "";
                     for (var i = 0; i < game.participants.length; i++)
                         ids += "," + game.participants[i].summonerId;
-                    //api.extractPlayerRanksData(swap.endPointToServer(server), ids.slice(1), ranksData => {
+                    //api.extractPlayerRanksData(Swap.endPointToServer(server), ids.slice(1), ranksData => {
                     //    if (ranksData.toString().startsWith(`:warning:`))
                     //        return post.message(ranksData);
                         var champions = championDataAPI;
@@ -485,7 +484,7 @@ exports.Answer = function (data) {
 
                         for (var i = 0; i <= game.participants.length; i++) {
                             if (i == game.participants.length) {
-                                post.embed(`${title} Live game of ${playerNickDecoded.toUpperCase()} | ${game.gameMode} ${swap.gameModeIDToName(game.gameQueueConfigId)}`,
+                                post.embed(`${title} Live game of ${playerNickDecoded.toUpperCase()} | ${game.gameMode} ${Swap.gameModeIDToName(game.gameQueueConfigId)}`,
                                     [[`:large_blue_circle: Blue Team`, blueTeam, true],
                                     [`:red_circle: Red Team`, redTeam, true],[`___`,`:warning: Ranks and win ratio are temporarily unavailable.`,false]]);
                                 break;
@@ -496,9 +495,9 @@ exports.Answer = function (data) {
                             var wins = 0;
                             var losses = 0;
                             var winRatio = `---`;
-                            var summonerSpells = swap.spellIDToSpellIcon(game.participants[i].spell1Id)+swap.spellIDToSpellIcon(game.participants[i].spell2Id);
+                            var summonerSpells = Swap.spellIDToSpellIcon(game.participants[i].spell1Id)+Swap.spellIDToSpellIcon(game.participants[i].spell2Id);
                             /*if (ranks[game.participants[i].summonerId] != undefined) {
-                                rank = ranks[game.participants[i].summonerId][0].tier.substring(0, 1) + swap.romanToArabic(ranks[game.participants[i].summonerId][0].entries[0].division);
+                                rank = ranks[game.participants[i].summonerId][0].tier.substring(0, 1) + Swap.romanToArabic(ranks[game.participants[i].summonerId][0].entries[0].division);
 
                                 wins = ranks[game.participants[i].summonerId][0].entries[0].wins;
                                 losses = ranks[game.participants[i].summonerId][0].entries[0].losses;
@@ -536,7 +535,7 @@ exports.Answer = function (data) {
         var api = new API.API();
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
         var playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]).toUpperCase();
-        var server = swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
+        var server = Swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
 
         api.extractPlayerID(server, playerIGNAndServer, playerID => {
             if (playerID.toString().startsWith(`:warning:`))
@@ -551,7 +550,7 @@ exports.Answer = function (data) {
         var api = new API.API();
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
         var playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]);
-        var server = swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
+        var server = Swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
 
         api.extractPlayerID(server, playerIGNAndServer, playerID => {
             if (playerID.startsWith(`:warning:`))
