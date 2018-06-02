@@ -1,5 +1,27 @@
-﻿var Swap = require('./swap.js');
+﻿var request = require('request');
+var Swap = require('./swap.js');
 var Input = require('./input.js');
+
+/**
+ * Sends a request to the given URL and calls the callback when it receives a response.
+ *
+ * @param {String} url The url to send a request to.
+ * @param {Function} cb A callback function. This follows typical node conventions: The first argument will be an error (In this case, an error String) if one occurred, otherwise it will be undefined and the second argument will be the retrieved data.
+ */
+function extractFromUrl(url, cb) {
+    request(url, (error, response, body) => {
+        if (!error && response.statusCode === 200) {
+            return cb(undefined, error);
+        }
+
+        // TODO: Why is this try/catch here?
+        try {
+            return callback("error " + response.statusCode);
+        } catch (err) {
+            return callback("error " + err);
+        }
+    })
+}
 
 exports.API = function () {
     var api = this;
@@ -34,66 +56,65 @@ exports.API = function () {
         return `https://${server}.api.riotgames.com/lol/match/v3/timelines/by-match/${matchID}?api_key=${api.RITO_KEY}`;
     };
 
-
     api.extractGameTimelineData = function (server, matchID, callback) {
-        api.extractFromURL(api.URLgameTimeline(server, matchID), timelineAPI => {
-            if (!api.everythingOkay(timelineAPI))
+        api.extractFromURL(api.URLgameTimeline(server, matchID), (err, timelineAPI) => {
+            if (err)
                 return callback(`:warning: Error retrieving game timeline.`);
             return callback(JSON.parse(timelineAPI));
         });
     };
     api.extractPlayerRanksData = function (server, playerID, callback) {
-        api.extractFromURL(api.playersRanksData(server, playerID), ranksAPI => {
-            if (!api.everythingOkay(ranksAPI))
+        api.extractFromURL(api.playersRanksData(server, playerID), (err, ranksAPI) => {
+            if (err)
                 return callback(`:warning: Error retrieving ranks data.`);
             return callback(JSON.parse(ranksAPI));
         });
     };
     api.extractMatchData = function (server, matchID, callback) {
-        api.extractFromURL(api.URLmatchData(server, matchID), matchDataAPI => {
-            if (!api.everythingOkay(matchDataAPI))
+        api.extractFromURL(api.URLmatchData(server, matchID), (err, matchDataAPI) => {
+            if (err)
                 return callback(":warning: Error retrieving match data.");
             return callback(JSON.parse(matchDataAPI));
         });
     };
     api.extractRecentGamesData = function (server, accountID, callback) {
-        api.extractFromURL(api.URLrecentGamesData(server, accountID), gamesDataAPI => {
-            if (!api.everythingOkay(gamesDataAPI))
+        api.extractFromURL(api.URLrecentGamesData(server, accountID), (err, gameDataAPI) => {
+            if (err)
                 return callback(":warning: Error retrieving recent games data.");
             return callback(JSON.parse(gamesDataAPI));
         });
     };
     api.extractChampionData = function (server, callback) {
-        api.extractFromURL(api.URLchampionData(server), championDataAPI => {
-            if (!api.everythingOkay(championDataAPI))
+        api.extractFromURL(api.URLchampionData(server), (err, championDataAPI) => {
+            if (err)
                 return callback(":warning: Error retrieving champion data.");
             return callback(JSON.parse(championDataAPI));
         });
     };
     api.extractPlayersLiveGameData = function (server, playerID, callback) {
-        api.extractFromURL(api.URLliveGameData(server, playerID), liveGameDataAPI => {
-            if (!api.everythingOkay(liveGameDataAPI)) 
+        api.extractFromURL(api.URLliveGameData(server, playerID), (err, liveGameDataAPI) => {
+            if (err)
                 return callback(`:warning: This person either is not in game, or you did something wrong.`);
             return callback(JSON.parse(liveGameDataAPI));
         });
     };
     api.extractPlayerID = function (server, playerIGNAndServer, callback) {
-        api.extractFromURL(api.URLsummonerID(server, playerIGNAndServer[0]), playerIDAPI => {
-            if (!api.everythingOkay(playerIDAPI))
+        api.extractFromURL(api.URLsummonerID(server, playerIGNAndServer[0]), (err, playerIDAPI) => {
+            if (err)
                 return callback(`:warning: Player ${decodeURIComponent(playerIGNAndServer[0]).toUpperCase()} doesn't exist.`);
             return callback((JSON.parse(playerIDAPI)).id.toString());
         });
     };
     api.extractPlayerAccountID = function (server, playerIGNAndServer, callback) {
-        api.extractFromURL(api.URLsummonerID(server, playerIGNAndServer[0]), playerIDAPI => {
-            if (!api.everythingOkay(playerIDAPI))
+        api.extractFromURL(api.URLsummonerID(server, playerIGNAndServer[0]), (err, playerIDAPI) => {
+            if (err)
                 return callback(`:warning: Player ${decodeURIComponent(playerIGNAndServer[0]).toUpperCase()} doesn't exist.`);
             return callback((JSON.parse(playerIDAPI)).accountId.toString());
         });
     };
     api.extractPlayerMastery = function (server, playerID, callback) {
-        api.extractFromURL(api.URLmasteryData(server, playerID), championMasteryDataAPI => {
-            if (!api.everythingOkay(championMasteryDataAPI))
+        api.extractFromURL(api.URLmasteryData(server, playerID), (err, championMasteryDataAPI) => {
+            if (err)
                 return callback(`:warning: This person didn't play a single game of me. _Phew_.`);
 
             var mastery = JSON.parse(championMasteryDataAPI);
@@ -183,27 +204,5 @@ exports.API = function () {
         return `RED`;
     };
 
-
-
-    api.extractFromURL = function (url, callback) {
-        var request = require('request');
-        request(url, function (error, response, body) {
-            if (!error && response.statusCode == 200)
-                return callback(body);
-            else {
-                try {
-                    return callback("error " + response.statusCode);
-                }
-                catch (err) {
-                    return callback("error " + err);
-                }
-            }
-        });
-    }
-    api.everythingOkay = function (input) {
-        if (!input.startsWith('error'))
-            return true;
-        console.log(input.toString());
-        return false;
-    };
+    api.extractFromURL = extractFromUrl;
 };

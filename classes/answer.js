@@ -20,7 +20,7 @@ exports.Answer = function (data) {
 
     answer.toBuild = function (title) {
         var build = [];
-       
+
         build[0] = [`First Back Purchases`,
             `**< 1250 gold:** <:darkseal:315619117103316992> + <:refillable:315619119007531028> / <:doran:315619117287735306> + <:refillable:315619119007531028>\n` +
             `**>= 1250 gold:** <:hc1:315619117346586625> + <:refillable:315619119007531028>\n`,
@@ -32,7 +32,7 @@ exports.Answer = function (data) {
             `\n\n**Pros:** \n• very high DPS \n• godlike late game with a potential to oneshot a squishy every ~3 seconds \n• makes Viktor a great tank killer` +
             `\n**Cons:** \n• weak in early- and midgame \n• worthless in early skirmishes \n• need to remain in autoattack range for full effectiveness`,
             false];
-        
+
         post.embedToDM(title, build, data.message.author);
     }
     answer.toBuildTrigger = function () {
@@ -174,7 +174,7 @@ exports.Answer = function (data) {
             answer[cmd.triggers](cmd.arguments);
         }
     };
-    
+
 
     answer.toBan = function (typeOfRequest) {
         var Ban = require('./mod/ban.js');
@@ -226,7 +226,7 @@ exports.Answer = function (data) {
     answer.toAntiSpam = function () {
         var Mods = require('./mod/mods.js');
         var mods = new Mods.Mods(data);
-        
+
         if (input.removeKeyword(data.message.content) == ``)
             return mods.turnAntiSpamOnOrOff();
         return mods.setUpAntiSpam();
@@ -257,7 +257,7 @@ exports.Answer = function (data) {
     answer.toSkinTimer = function () {
         var dateCreator = Date.UTC(2013, 9, 1);
         var datePromised = Date.UTC(2018, 4, 3);
-        var dateNow = new Date(); 
+        var dateNow = new Date();
         dateNow = Date.now();
 
         var creatorMath = `Creator skin got released at 1st of October, 2013. That gives us ` +
@@ -285,8 +285,8 @@ exports.Answer = function (data) {
     answer.toPBE = function () {
         var api = new API.API();
 
-        api.extractFromURL(`http://www.surrenderat20.net/search/label/PBE/`, surrAt20API => {
-            if (!api.everythingOkay(surrAt20API))
+        api.extractFromURL(`http://www.surrenderat20.net/search/label/PBE/`, (err, surrAt20API) => {
+            if (err)
                 return post.message(`Unable to fetch the newest PBE patch notes.`);
             var findThis = `<h1 class='news-title' itemprop='name'>`;
             surrAt20API = surrAt20API.toString();
@@ -294,8 +294,8 @@ exports.Answer = function (data) {
                 surrAt20API = surrAt20API.substring(surrAt20API.indexOf(findThis) + findThis.length);
                 surrAt20API = surrAt20API.substring(surrAt20API.indexOf(`<a href='`) + 9, surrAt20API.indexOf(`'>`));
 
-                api.extractFromURL(surrAt20API, currentPatchHTML => {
-                    if (!api.everythingOkay(currentPatchHTML))
+                api.extractFromURL(surrAt20API, (err, currentPatchHTML) => {
+                    if (err)
                         return post.message(`Unable to fetch the newest PBE patch notes.`);
                     var newestPBEPatchVersion = currentPatchHTML.toString();
                     try {
@@ -407,7 +407,7 @@ exports.Answer = function (data) {
 
                         return post.embed(`${matchData.participantIdentities[playerIndex].player.summonerName.toUpperCase()} (as champ ${matchData.participants[playerIndex].championId}) ` +
                             `vs ${matchData.participantIdentities[enemyIndex].player.summonerName.toUpperCase()} (as champ ${matchData.participants[enemyIndex].championId}) - ${matchData.participants[playerIndex].timeline.role.toLowerCase() } ${matchData.participants[playerIndex].timeline.lane.toLowerCase() }\n`,
-                                    [[`Minute 5`, gameData[0], false], 
+                                    [[`Minute 5`, gameData[0], false],
                                     [`Minute 10`, gameData[1], false],
                                     [`Minute 15`, gameData[2], false],
                                     [`Outcome`, gameData[3], false]]);
@@ -448,7 +448,7 @@ exports.Answer = function (data) {
                 });
             });
         });
-    }; 
+    };
     answer.toLiveGameRequest = function (title) { //full rework!!!!!
         post.message(`:hourglass_flowing_sand: Getting the Live Game data. This might take a while...`);
         var _input = data.message.content;
@@ -552,7 +552,7 @@ exports.Answer = function (data) {
         var playerIGNAndServer = input.returnModifiedIGNAndServer(_input);
         var playerNickDecoded = input.readdSpecialSymbols(playerIGNAndServer[0]);
         var server = swap.serverToEndPoint(playerIGNAndServer[1]); //TODO: this is what every Rito API command looks like - unifize it somehow
-        
+
         api.extractPlayerID(server, playerIGNAndServer, playerID => {
             if (playerID.startsWith(`:warning:`))
                 return post.message(playerID);
@@ -590,7 +590,7 @@ exports.Answer = function (data) {
                     .then(euwJson => {
                         var euwCom = 'No comments on those boards!';
                         var naCom = 'No comments on those boards!';
-                        
+
                         for (let i in naJson) {
                             if (naJson[i].comment && naJson[i].comment.message.toLowerCase().indexOf('viktor') != -1) {
                                 if (naCom == 'No comments on those boards!')
@@ -621,8 +621,8 @@ exports.Answer = function (data) {
     };
     answer.toCatPicture = function () {
         var api = new API.API();
-        api.extractFromURL('http://random.cat/meow', extractedStuff => {
-            if (!api.everythingOkay(extractedStuff))
+        api.extractFromURL('http://random.cat/meow', (err, extractedStuff) => {
+            if (err)
                 return post.message('Unable to get a cat.');
             var cat = JSON.parse(extractedStuff).file;
             post.message(`${cat} 🐱 :3`);
@@ -630,8 +630,8 @@ exports.Answer = function (data) {
     };
     answer.toDogPicture = function () {
         var api = new API.API();
-        api.extractFromURL('http://random.dog/woof', extractedStuff => {
-            if (!api.everythingOkay(extractedStuff))
+        api.extractFromURL('http://random.dog/woof', (err, extractedStuff) => {
+            if (err)
                 return post.message('Unable to get a dog.');
             post.message(`http://random.dog/${extractedStuff} 🐶 :3`);
         });
