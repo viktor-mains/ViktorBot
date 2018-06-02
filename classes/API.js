@@ -57,63 +57,63 @@ exports.API = function () {
     };
 
     api.extractGameTimelineData = function (server, matchID, callback) {
-        api.extractFromURL(api.URLgameTimeline(server, matchID), (err, timelineAPI) => {
+        extractFromUrl(api.URLgameTimeline(server, matchID), (err, timelineAPI) => {
             if (err)
                 return callback(`:warning: Error retrieving game timeline.`);
             return callback(JSON.parse(timelineAPI));
         });
     };
     api.extractPlayerRanksData = function (server, playerID, callback) {
-        api.extractFromURL(api.playersRanksData(server, playerID), (err, ranksAPI) => {
+        extractFromUrl(api.playersRanksData(server, playerID), (err, ranksAPI) => {
             if (err)
                 return callback(`:warning: Error retrieving ranks data.`);
             return callback(JSON.parse(ranksAPI));
         });
     };
     api.extractMatchData = function (server, matchID, callback) {
-        api.extractFromURL(api.URLmatchData(server, matchID), (err, matchDataAPI) => {
+        extractFromUrl(api.URLmatchData(server, matchID), (err, matchDataAPI) => {
             if (err)
                 return callback(":warning: Error retrieving match data.");
             return callback(JSON.parse(matchDataAPI));
         });
     };
     api.extractRecentGamesData = function (server, accountID, callback) {
-        api.extractFromURL(api.URLrecentGamesData(server, accountID), (err, gameDataAPI) => {
+        extractFromUrl(api.URLrecentGamesData(server, accountID), (err, gameDataAPI) => {
             if (err)
                 return callback(":warning: Error retrieving recent games data.");
             return callback(JSON.parse(gamesDataAPI));
         });
     };
     api.extractChampionData = function (server, callback) {
-        api.extractFromURL(api.URLchampionData(server), (err, championDataAPI) => {
+        extractFromUrl(api.URLchampionData(server), (err, championDataAPI) => {
             if (err)
                 return callback(":warning: Error retrieving champion data.");
             return callback(JSON.parse(championDataAPI));
         });
     };
     api.extractPlayersLiveGameData = function (server, playerID, callback) {
-        api.extractFromURL(api.URLliveGameData(server, playerID), (err, liveGameDataAPI) => {
+        extractFromUrl(api.URLliveGameData(server, playerID), (err, liveGameDataAPI) => {
             if (err)
                 return callback(`:warning: This person either is not in game, or you did something wrong.`);
             return callback(JSON.parse(liveGameDataAPI));
         });
     };
     api.extractPlayerID = function (server, playerIGNAndServer, callback) {
-        api.extractFromURL(api.URLsummonerID(server, playerIGNAndServer[0]), (err, playerIDAPI) => {
+        extractFromUrl(api.URLsummonerID(server, playerIGNAndServer[0]), (err, playerIDAPI) => {
             if (err)
                 return callback(`:warning: Player ${decodeURIComponent(playerIGNAndServer[0]).toUpperCase()} doesn't exist.`);
             return callback((JSON.parse(playerIDAPI)).id.toString());
         });
     };
     api.extractPlayerAccountID = function (server, playerIGNAndServer, callback) {
-        api.extractFromURL(api.URLsummonerID(server, playerIGNAndServer[0]), (err, playerIDAPI) => {
+        extractFromUrl(api.URLsummonerID(server, playerIGNAndServer[0]), (err, playerIDAPI) => {
             if (err)
                 return callback(`:warning: Player ${decodeURIComponent(playerIGNAndServer[0]).toUpperCase()} doesn't exist.`);
             return callback((JSON.parse(playerIDAPI)).accountId.toString());
         });
     };
     api.extractPlayerMastery = function (server, playerID, callback) {
-        api.extractFromURL(api.URLmasteryData(server, playerID), (err, championMasteryDataAPI) => {
+        extractFromUrl(api.URLmasteryData(server, playerID), (err, championMasteryDataAPI) => {
             if (err)
                 return callback(`:warning: This person didn't play a single game of me. _Phew_.`);
 
@@ -204,5 +204,5 @@ exports.API = function () {
         return `RED`;
     };
 
-    api.extractFromURL = extractFromUrl;
+    api.extractFromUrl = extractFromUrl;
 };
