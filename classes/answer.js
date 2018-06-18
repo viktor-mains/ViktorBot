@@ -40,7 +40,7 @@ exports.Answer = function (data) {
         var role2 = data.message.member.roles.find(role => role.name.toLowerCase() === 'Junior Assistant'.toLowerCase());
 
         if (!role1 && !role2)
-            post.message('It\'s highly advised to check the following commands: ``!build | !frozen | !tankbuild``');
+            post.message('It\'s highly advised to check the ``!build`` command.');
     }
     answer.showHelpContents = function () {
         var Commands = require('./commands.js');
