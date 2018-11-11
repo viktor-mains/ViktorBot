@@ -1,5 +1,5 @@
 exports.DearViktorAnswers = function (msg) {
-    var nlp = require('compromise');
+    // var nlp = require('compromise');
     var RNG = require('./rng.js');
     var rng = new RNG.RNG();
     var dva = this;
