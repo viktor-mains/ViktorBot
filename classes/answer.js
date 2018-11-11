@@ -621,7 +621,7 @@ exports.Answer = function (data) {
     };
     answer.toCatPicture = function () {
         var api = new API.API();
-        api.extractFromURL('http://random.cat/meow', extractedStuff => {
+        api.extractFromURL('http://aws.random.cat/meow', extractedStuff => {
             if (!api.everythingOkay(extractedStuff))
                 return post.message('Unable to get a cat.');
             var cat = JSON.parse(extractedStuff).file;
