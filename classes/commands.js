@@ -104,12 +104,13 @@ exports.Commands = function (answer) {
             isModCommand: false
         },
         'build': {
-            triggers: 'toBuild',
-            typeOfResponse: `function`,
+            triggers: 'https://docs.google.com/document/d/1cMamRmGurvKtJPKiEjNmV5LcN-0hh0f6yYYpisHWbgk/edit',
+            typeOfResponse: `embed`,
             description: `returns the recommended by /r/ViktorMains build`,
             isAvailable: true,
             isModCommand: false,
-            arguments: `**♥ GLORIOUS MINIGUIDE TO CLASSIC VIKTOR BUILD ♥**`
+            title: `Remmi's Viktor MIDLANE guide with proposed build patches: `
+            // arguments: `**♥ GLORIOUS MINIGUIDE TO CLASSIC VIKTOR BUILD ♥**`
         },
         'runes': {
             triggers: `Since we're still pretty early in preseason and rune are still being changed, there's no one main consensus regarding runes now. Check #ask_viktor_main room to ask community members about their preffered choices.`,
@@ -134,11 +135,12 @@ exports.Commands = function (answer) {
             isModCommand: false
         },
         'matchup': {
-            triggers: `toMatchup`,
-            typeOfResponse: `function`,
-            description: `syntax: !matchup <championname> - returns link to the Viktor vs <Champion> matchup tips\n`,
+            triggers: `- Remmi's Viktor guide (includes matchups from A to I): https://docs.google.com/document/d/1cMamRmGurvKtJPKiEjNmV5LcN-0hh0f6yYYpisHWbgk/edit\n- subreddit matchup discussions (sorted by new): https://www.reddit.com/r/viktormains/search?q=matchup%20discussion&restrict_sr=1&sort=new\n`,
+            typeOfResponse: `embed`,
+            description: `links to useful Viktor matchups' resources`,
             isAvailable: true,
-            isModCommand: false
+            isModCommand: false,
+            title: 'Matchup resources for Viktor'
         },
         'dun': {
             triggers: `- OP.gg:\n-- https://na.op.gg/summoner/userName=dun\n-- http://na.op.gg/summoner/userName=cupcakes29\n- Stream:\n-- http://twitch.tv/dunlol`,
@@ -283,13 +285,13 @@ exports.Commands = function (answer) {
             isAvailable: true,
             isModCommand: false
         },
-        'lastlane': {
-            triggers: `toLastLaneRequest`,
-            typeOfResponse: `function`,
-            description: `syntax: !lastlane <ign>|<server> - shows info of laning phase from the last game of a particular player`,
-            isAvailable: true,
-            isModCommand: false
-        },
+        // 'lastlane': {
+        //     triggers: `toLastLaneRequest`,
+        //     typeOfResponse: `function`,
+        //     description: `syntax: !lastlane <ign>|<server> - shows info of laning phase from the last game of a particular player`,
+        //     isAvailable: true,
+        //     isModCommand: false
+        // },
         'mastery': {
             triggers: `toViktorMastery`,
             arguments: `<:viktorgod:269479031009837056> Viktor mastery points for`,
@@ -359,7 +361,15 @@ exports.Commands = function (answer) {
             description: `Silver Race!\n`,
             isAvailable: true,
             isModCommand: false,
-            arguments: `Silver+Bronze+Unranked`
+            arguments: `Silver+Bronze+Iron`
+        },
+        'bronzerace': {
+            triggers: `toRace`,
+            typeOfResponse: `function`,
+            description: `Bronze Race!\n`,
+            isAvailable: true,
+            isModCommand: false,
+            arguments: `Bronze+Iron+Unranked`
         },
         'streamers': {
             triggers: `toStreamerList`,

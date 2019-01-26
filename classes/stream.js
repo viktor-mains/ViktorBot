@@ -45,9 +45,9 @@ exports.Stream = function (member, data) {
                     }
                 }
             };
-            if (userFollowers)
-                return post.messageToChannel(`📺 **${member.user.username} started streaming!**\n${member.presence.game.url}\n\n**Tagging:** ${userFollowers}`, data.strChannel);
-            return post.messageToChannel(`📺 **${member.user.username} started streaming!**\n${member.presence.game.url}`, data.strChannel);
+            // if (userFollowers)
+            //     return post.messageToChannel(`📺 **${member.user.username} started streaming!**\n${member.presence.game.url}\n\n**Tagging:** ${userFollowers}`, data.strChannel);
+            // return post.messageToChannel(`📺 **${member.user.username} started streaming!**\n${member.presence.game.url}`, data.strChannel);
         });
     };
     stream.addStreamingRoleIfTheyDontHaveItYet = function () {
