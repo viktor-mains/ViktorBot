@@ -109,7 +109,7 @@ exports.Commands = function (answer) {
             description: `returns the recommended by /r/ViktorMains build`,
             isAvailable: true,
             isModCommand: false,
-            title: `Remmi's Viktor MIDLANE guide with proposed build patches: `
+            title: `Remmi's Viktor guide (midlane) with proposed build paths`
             // arguments: `**♥ GLORIOUS MINIGUIDE TO CLASSIC VIKTOR BUILD ♥**`
         },
         'runes': {
@@ -135,7 +135,7 @@ exports.Commands = function (answer) {
             isModCommand: false
         },
         'matchup': {
-            triggers: `- Remmi's Viktor guide (includes matchups from A to I): https://docs.google.com/document/d/1cMamRmGurvKtJPKiEjNmV5LcN-0hh0f6yYYpisHWbgk/edit\n- subreddit matchup discussions (sorted by new): https://www.reddit.com/r/viktormains/search?q=matchup%20discussion&restrict_sr=1&sort=new\n`,
+            triggers: `- Remmi's Viktor guide (includes matchups from A to I): \n-- https://docs.google.com/document/d/1cMamRmGurvKtJPKiEjNmV5LcN-0hh0f6yYYpisHWbgk/edit\n- subreddit matchup discussions (sorted by new): \n-- https://www.reddit.com/r/viktormains/search?q=matchup%20discussion&restrict_sr=1&sort=new\n`,
             typeOfResponse: `embed`,
             description: `links to useful Viktor matchups' resources`,
             isAvailable: true,
