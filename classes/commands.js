@@ -67,7 +67,8 @@ exports.Commands = function (answer) {
             isModCommand: false
         },
         'roles': {
-            triggers: `- servers: BR | EUW | EUNE | NA | JP | CN | SEA | KR | LAN | LAS | OCE | RU | TR | PBE\n` +
+            triggers: `To self-assign a role, write \`\`!iam <rolename>\`\` in a designated channel.\n`+
+            `- servers: BR | EUW | EUNE | NA | JP | CN | SEA | KR | LAN | LAS | OCE | RU | TR | PBE\n` +
             `- are you a Viktor streamer? Type !iam Viktor Streamer\n`,
             title: `Self-assignable roles`,
             typeOfResponse: `embed`,
@@ -458,7 +459,7 @@ exports.Commands = function (answer) {
             isModCommand: false
         },
         'gibeskin': {
-            triggers: `http://arcyvilk.com/greatherald/img/gibeskin.png`,
+            triggers: `http://89.47.165.141/greatherald/img/gibeskin.png`,
             typeOfResponse: `text`,
             description: `[legacy] calculates time since we've got the last Viktor skin\n`,
             isAvailable: true,
