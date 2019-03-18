@@ -10,28 +10,28 @@ exports.API = function () {
 
 
     api.URLmatchData = function (server, matchID) {
-        return `https://${server}.api.riotgames.com/lol/match/v3/matches/${matchID}?api_key=${api.RITO_KEY}`;
+        return `https://${server}.api.riotgames.com/lol/match/v4/matches/${matchID}?api_key=${api.RITO_KEY}`;
     };
     api.URLrecentGamesData = function (server, accountID) {
-        return `https://${server}.api.riotgames.com/lol/match/v3/matchlists/by-account/${accountID}/recent?api_key=${api.RITO_KEY}`;
+        return `https://${server}.api.riotgames.com/lol/match/v4/matchlists/by-account/${accountID}?api_key=${api.RITO_KEY}`;
     };
     api.URLsummonerID = function (server, playerIGN) {
-        return `https://${server}.api.riotgames.com/lol/summoner/v3/summoners/by-name/${playerIGN}?api_key=${api.RITO_KEY}`;
+        return `https://${server}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${playerIGN}?api_key=${api.RITO_KEY}`;
     };
     api.URLmasteryData = function (server, playerID) {
-        return `https://${server}.api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/${playerID}/by-champion/112?api_key=${api.RITO_KEY}`
+        return `https://${server}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${playerID}/by-champion/112?api_key=${api.RITO_KEY}`
     };
     api.URLliveGameData = function (server, playerID) {
-        return `https://${server}.api.riotgames.com/lol/spectator/v3/active-games/by-summoner/${playerID}?api_key=${api.RITO_KEY}`;
+        return `https://${server}.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/${playerID}?api_key=${api.RITO_KEY}`;
     };
     api.playersRanksData = function (server, playerID) {
-        return `https://${server}.api.riotgames.com/lol/league/v3/positions/by-summoner/${playerID}?api_key=${api.RITO_KEY}`;
+        return `https://${server}.api.riotgames.com/lol/league/v4/positions/by-summoner/${playerID}?api_key=${api.RITO_KEY}`;
     };
     api.URLchampionData = function (server) {
-        return `https://${server}.api.riotgames.com/lol/static-data/v3/champions?dataById=true&api_key=${api.RITO_KEY}`;
+        return 'https://ddragon.leagueoflegends.com/cdn/9.5.1/data/en_US/championFull.json';
     };
     api.URLgameTimeline = function (server, matchID) {
-        return `https://${server}.api.riotgames.com/lol/match/v3/timelines/by-match/${matchID}?api_key=${api.RITO_KEY}`;
+        return `https://${server}.api.riotgames.com/lol/match/v4/timelines/by-match/${matchID}?api_key=${api.RITO_KEY}`;
     };
 
 
@@ -118,8 +118,8 @@ exports.API = function () {
     };
     api.lastGameSummary = function (matchData, server, callback) {
         var gameSummary = `${matchData.gameMode}${swap.gameModeIDToName(matchData.queueId)} [${input.convertMinutesToHoursAndMinutes(matchData.gameDuration)}]`;
-        var blueTeam = `\`\`.       |    KDA   |  gold |    dmg | lv |\`\`\n\`\`------------------------------------------\`\`\n`;
-        var redTeam = `\`\`.       |    KDA   |  gold |    dmg | lv |\`\`\n\`\`------------------------------------------\`\`\n`;
+        var blueTeam = '`` summs |    KDA   |  gold |    dmg | lv |\`\`\n\`\`------------------------------------------``\n';
+        var redTeam = '`` summs |    KDA   |  gold |    dmg | lv |\`\`\n\`\`------------------------------------------``\n';
         api.extractChampionData(server, championDataAPI => {
             if (championDataAPI.toString().startsWith(`:warning:`))
                 return callback("error", championDataAPI);
@@ -137,11 +137,11 @@ exports.API = function () {
 
                 if (player.teamId == 100) {
                     blueTeam += `${summonerSpells} \`\`| ${input.justifyToRight(kda, 8)} | ${input.justifyToRight(gold, 5)} | ${input.justifyToRight(damage, 6)} | ${input.justifyToRight(level, 2)} ` +
-                        `| \`\` **${champions.data[player.championId].name}** ${playerNick} \n`;
+                        `| \`\` **${champions.data[champions.keys[player.championId]].name}** ${playerNick} \n`;
                 }
                 else {
                     redTeam += `${summonerSpells} \`\`| ${input.justifyToRight(kda, 8)} | ${input.justifyToRight(gold, 5)} | ${input.justifyToRight(damage, 6)} | ${input.justifyToRight(level, 2)} ` +
-                        `| \`\` **${champions.data[player.championId].name}** ${playerNick} \n`;
+                        `| \`\` **${champions.data[champions.keys[player.championId]].name}** ${playerNick} \n`;
                 }
             };
             return callback(`${gameSummary}`,

@@ -286,13 +286,13 @@ exports.Commands = function (answer) {
             isAvailable: true,
             isModCommand: false
         },
-        // 'lastlane': {
-        //     triggers: `toLastLaneRequest`,
-        //     typeOfResponse: `function`,
-        //     description: `syntax: !lastlane <ign>|<server> - shows info of laning phase from the last game of a particular player`,
-        //     isAvailable: true,
-        //     isModCommand: false
-        // },
+        'lastlane': {
+            triggers: `toLastLaneRequest`,
+            typeOfResponse: `function`,
+            description: `syntax: !lastlane <ign>|<server> - shows info of laning phase from the last game of a particular player`,
+            isAvailable: true,
+            isModCommand: false
+        },
         'mastery': {
             triggers: `toViktorMastery`,
             arguments: `<:viktorgod:269479031009837056> Viktor mastery points for`,

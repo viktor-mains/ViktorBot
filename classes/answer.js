@@ -512,7 +512,7 @@ exports.Answer = function (data) {
                             player += `\`\`|${rank}|`;
 
                             var nick = game.participants[i].summonerName.trim().replace(/ /g, "");
-                            var championAndNick = `**${champions.data[game.participants[i].championId].name}** | ${nick}`;
+                            var championAndNick = `**${champions.data[champions.keys[game.participants[i].championId]].name}** | ${nick}`;
                             //if (championAndNick.length > 22)
                             //    championAndNick = championAndNick.substring(0,22)+`...`;
                             if (nick.toLowerCase().trim() == playerNickDecoded.toLowerCase().trim())

@@ -14,7 +14,7 @@ exports.Data = function (message, bot) {
     data.message = message;
     data.bot = bot;
     
-    data.version = 'The Great Herald beta 2.5.6: Following command!';
+    data.version = 'The Great Herald beta 2.6.0: API commands fixed';
 
     data.server = '';
     data.logChannel = '';
