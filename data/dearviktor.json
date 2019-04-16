@@ -28,11 +28,11 @@
             "list": [ "jayce" ]
         },
         {
-            "id": "glorious evolution",
+            "id": "evolution",
             "list": [ "evolution" ]
         },
         {
-            "id": "yesnoquestions",
+            "id": "yesno",
             "list": [
                 "are",
                 "do ",
@@ -154,7 +154,13 @@
             "This query makes me question your sanity.",
             "Heh. So _naive_.",
             "I hope it will never happen in my close proximity.",
-            "_grunting noises_\nStop bothering me ;-;"
+            "_grunting noises_\nStop bothering me ;-;",
+            
+            "Could you rephrase it? I'm not entirely sure what you mean.",
+            "Your phrasing confuses me.",
+            "I have no opinion on this topic.",
+            "I do not understand some of those words.",
+            "Don't make me look less smart than I am and rephrase it so I can _actually understand_."
         ],
         "arcyanswers": [
             "You mean Arcy? That's, like, the single best person in existence.",
@@ -175,13 +181,6 @@
             "Emotions are only distractions.",
             "And here I thought I won't be able to get any coherent discussion topic with you today. What would you want to know?",
             "Took you long enough to finally ask about something _actually interesting_."
-        ],
-        "ambivalent": [
-            "Could you rephrase it? I'm not entirely sure what you mean.",
-            "Your phrasing confuses me.",
-            "I have no opinion on this topic.",
-            "I do not understand some of those words.",
-            "Don't make me look less smart than I am and rephrase it so I can _actually understand_."
         ]
     }
 }
