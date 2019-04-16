@@ -1,0 +1,12 @@
+{
+    "options": {
+        "commandSymbol": "!"
+    },
+    "list": [
+        {
+            "keyword": "test",
+            "response": "This is a test function.",
+            "protected": true
+        }
+    ]
+}
