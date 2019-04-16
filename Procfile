@@ -1,1 +1,0 @@
-worker: node viktor.js

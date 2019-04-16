@@ -1,30 +1,27 @@
 {
   "name": "viktorbot",
-  "version": "2.6.0",
-  "description": "Custom bot for the /r/viktormains Discord channel!",
+  "version": "2.0.0",
+  "description": "",
   "main": "viktor.js",
-  "engines": {
-    "node": "6.11.1"
-  },
-  "dependencies": {
-    "discord.js": "^11.3.2",
-    "es6-promise": "^4.2.4",
-    "isomorphic-fetch": "^2.2.1",
-    "request": "^2.87.0"
-  },
-  "devDependencies": {},
   "scripts": {
-    "test": "!test"
+    "test": "test",
+    "start": "node main"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Arcyvilk/GreatHerald.git"
   },
   "author": "Arcyvilk",
   "license": "ISC",
-  "keywords": [],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Arcyvilk/GreatHeraldRemastered.git"
-  },
   "bugs": {
-    "url": "https://github.com/Arcyvilk/GreatHeraldRemastered/issues"
+    "url": "https://github.com/Arcyvilk/GreatHerald/issues"
   },
-  "homepage": "https://github.com/Arcyvilk/GreatHeraldRemastered#readme"
+  "homepage": "https://github.com/Arcyvilk/GreatHerald#readme",
+  "dependencies": {
+    "discord.js": "^11.4.2"
+  },
+  "devDependencies": {
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0"
+  }
 }
