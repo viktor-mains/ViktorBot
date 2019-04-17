@@ -1,64 +1,38 @@
-declare const require: any;
+import Discord from 'discord.js';
 
-const dearViktor = require('../data/dearviktor.json');
-const commands = require('../data/commands.json');
-const reactions = require('../data/reactions.json');
+import dearViktor from '../data/dearviktor.json';
+import commands from '../data/commands.json';
+import reactions from '../data/reactions.json';
 
-import { log } from '../log';
+import { getKeyword } from './helpers';
 import { 
     chooseRandom,
-    botRefuses,
     happensWithAChanceOf,
 } from './rng';
+import { Command } from '../lib/commands/commands'
 
-import { ICommand } from './interfaces/command';
 import { 
     IReaction, 
     IReactionDetails 
-} from './interfaces/reaction';
-import { 
-    IDearViktor, 
-    IDVKeywords 
-} from './interfaces/dearviktor';
+} from './types/reaction';
+import { IDVKeywords } from './types/dearviktor';
 
-// logic
+// LOGIC
 
-export const classifyMessage = (msg:any) => {
-    if (isUserBot(msg))
-        return;
-    if (isMessageDearViktor(msg))
-        return answerDearViktor(msg);
-    if (isMessageDearVictor(msg))
-        return answerDearVictor(msg);
+const isChannelDM = (msg:Discord.Message) => msg.author.id === msg.channel.id;
+const isUserAdmin = (msg:Discord.Message) => msg.member.hasPermission('ADMINISTRATOR');
+const isUserBot = (msg:Discord.Message) => msg.author.bot;
+const isUserArcy = (msg:Discord.Message) => msg.author.id === '165962236009906176';
+const messageStartsWithCommandSymbol = (msg:Discord.Message) => msg.content.startsWith(commands.options.commandSymbol);
+const isMessageRant = (msg:Discord.Message) => msg.content === msg.content.toUpperCase() && msg.content.length > 20;
+const isMessageDearViktor = (msg:Discord.Message) => msg.content.toLowerCase().startsWith('dear viktor');
+const isMessageDearVictor = (msg:Discord.Message) => msg.content.toLowerCase().startsWith('dear victor');
 
-    if (isChannelDM(msg) && !isUserArcy(msg))
-        return answer(msg, 'Only my glorious creator can talk to me in private.');
-
-    if (messageStartsWithCommandSymbol(msg)) 
-        return answerCommand(msg);
-
-    checkForReactionKeywords(msg);
-}
-
-const isChannelDM = (msg:any) => msg.author.id === msg.channel.id;
-
-const isUserAdmin = (msg:any) => msg.member.hasPermission('ADMINISTRATOR');
-const isUserBot = (msg:any) => msg.author.bot;
-const isUserArcy = (msg:any) => msg.author.id === '165962236009906176';
-
-const messageStartsWithCommandSymbol = (msg:any) => msg.content.startsWith(commands.options.commandSymbol);
-
-const isMessageRant = (msg:any) => msg.content === msg.content.toUpperCase() && msg.content.length > 20;
-const isMessageDearViktor = (msg:any) => msg.content.toLowerCase().startsWith('dear viktor');
-const isMessageDearVictor = (msg:any) => msg.content.toLowerCase().startsWith('dear victor');
-
-
-const answer = (msg:any, answer:string) => msg.channel.send(answer);
-
-const answerDearViktor = (msg:any) => {
+const answer = (msg:Discord.Message, answer:string) => msg.channel.send(answer);
+const answerDearViktor = (msg:Discord.Message) => {
     if (msg.content.endsWith('?')) {
         const keywordDetected = dearViktor.keywords.find(
-            (category:IDVKeywords) => category.list.find(
+            (category:any) => category.list.find(
                 (keyword:string) => msg.content.toLowerCase().indexOf(keyword) !== -1)
             );
         keywordDetected
@@ -68,26 +42,16 @@ const answerDearViktor = (msg:any) => {
     }
     answer(msg, '_That_ doesn\'t look like question to me.')
 };
-
-const answerDearVictor = (msg:any) => answer(msg, '...what have you just call me. <:SilentlyJudging:288396957922361344>');
-
-const answerCommand = (msg:any) => {
-    const cmd = commandObject(msg);
-
-    if (!cmd)
-        return msg.react(':questionmark:244535324737273857');
-    if (cmd.isDisabled)
-        return msg.react('🚧');
-    if (cmd.isModCommand && isUserAdmin(msg))
-        return msg.react('🚫');
-    if (botRefuses())
-        return cmd.refusal || 'I won\'t execute your petty command.';
-
-    return answer(msg, cmd.response.content);
-};
-
-const checkForReactionKeywords = (msg:any) => {
-    const appropiateReactions = reactions.filter((reaction:IReaction) => msg.content.indexOf(reaction.keyword) !== -1);
+const answerDearVictor = (msg:Discord.Message) => answer(msg, '...what have you just call me. <:SilentlyJudging:288396957922361344>');
+const answerCommand = (msg:Discord.Message) => {
+    const command = commandObject(msg);
+    command
+        ? Command[getKeyword(msg)](command, msg)
+        : msg.react(':questionmark:244535324737273857');
+    
+}
+const checkForReactionKeywords = (msg:Discord.Message) => {
+    const appropiateReactions = reactions.filter((reaction:any) => msg.content.indexOf(reaction.keyword) !== -1);
     if (appropiateReactions.length === 0)
         return;
     const chosenKeyword = chooseRandom(appropiateReactions);
@@ -95,13 +59,31 @@ const checkForReactionKeywords = (msg:any) => {
     if (chosenReaction)
         msg.react(chosenReaction.emoji);
 };
+const commandObject = (msg:Discord.Message) => commands.list.find(cmd => cmd.keyword === getKeyword(msg));
 
-const commandObject = (msg:any) => commands.list.find((cmd:ICommand) => cmd.keyword === getKeyword(msg));
+// MAIN FUNCTION
 
-const getKeyword = (msg:any) => {
-    const argumentsPresent = msg.content.indexOf(' ') !== -1;
-    const keyword = argumentsPresent
-        ? msg.content.substring(1, msg.content.indexOf(' '))
-        : msg.content.substring(1);
-    return keyword;
-};
+const classifyMessage = (msg:Discord.Message) => {
+    if (isUserBot(msg)) {
+        return;
+    }
+    if (isMessageDearViktor(msg)) {
+        answerDearViktor(msg);
+        return;
+    }        
+    if (isMessageDearVictor(msg)) {
+        answerDearVictor(msg);
+        return;
+    }
+    if (isChannelDM(msg) && !isUserArcy(msg)) {
+        answer(msg, 'Only my glorious creator can talk to me in private.');
+        return;
+    }
+    if (messageStartsWithCommandSymbol(msg)) {
+        answerCommand(msg);
+        return;
+    }
+    checkForReactionKeywords(msg);
+}
+
+export { classifyMessage, isUserAdmin };

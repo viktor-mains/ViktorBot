@@ -1,9 +1,9 @@
-export interface IReactionDetails {
+export type IReactionDetails = {
     chance: number,
     emoji: string
 }
 
-export interface IReaction {
+export type IReaction = {
     id?: string,
     keyword?: string,
     list: [ IReactionDetails ]

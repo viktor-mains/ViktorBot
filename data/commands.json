@@ -4,11 +4,27 @@
     },
     "list": [
         {
-            "keyword": "test",
+            "keyword": "testtext",
             "description": "Simple test function.",
             "isProtected": true,
             "isDisabled": false,
-            "isModCommand": true,        
+            "isModOnly": true,        
+            "refusal": "Nope."
+        },
+        {
+            "keyword": "testembed",
+            "description": "Embed test function.",
+            "isProtected": true,
+            "isDisabled": false,
+            "isModOnly": true,
+            "refusal": "Nope."
+        },
+        {
+            "keyword": "testcustom",
+            "description": "Custom test function.",
+            "isProtected": true,
+            "isDisabled": false,
+            "isModOnly": true,        
             "refusal": "Nope."
         }
     ]
