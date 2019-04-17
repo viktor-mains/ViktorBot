@@ -1,7 +1,7 @@
 {
   "name": "viktorbot",
-  "version": "2.0.0",
-  "description": "",
+  "version": "3.0.0",
+  "description": "Viktor Mains Discord Bot",
   "main": "viktor.js",
   "scripts": {
     "test": "test",
