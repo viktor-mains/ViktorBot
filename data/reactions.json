@@ -1,3 +1,55 @@
-{
-    
-}
+[
+    {
+        "id": "rant",
+        "list": [
+            {
+                "chance": 10,
+                "emoji": ":ahaok:288392049873518602"
+            },
+            {
+                "chance": 10,
+                "emoji": ":qqsob:292446164622770187"
+            },
+            {
+                "chance": 20,
+                "emoji": "🍿"
+            }
+        ]
+    },
+    {
+        "keyword": "test",
+        "list": [
+            {
+                "chance": 100,
+                "emoji": "🍿"
+            }
+        ]
+    },
+    {
+        "keyword": ":questionmark:",
+        "list": [
+            {
+                "chance": 100,
+                "emoji": ":questionmark:244535324737273857"
+            }
+        ]
+    },
+    {
+        "keyword": "smh",
+        "list": [
+            {
+                "chance": 20,
+                "emoji": ":vikfacepalm:305783369302802434"
+            }
+        ]
+    },
+    {
+        "keyword": "cat",
+        "list": [
+            {
+                "chance": 2,
+                "emoji": "🐱"
+            }
+        ]
+    }
+]
