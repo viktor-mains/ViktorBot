@@ -5,7 +5,9 @@
   "main": "viktor.js",
   "scripts": {
     "test": "test",
-    "start": "node main"
+    "build": "tsc",
+    "start": "node main",
+    "bot": "npm run build && npm start"
   },
   "repository": {
     "type": "git",
@@ -22,6 +24,7 @@
   },
   "devDependencies": {
     "babel-preset-env": "^1.7.0",
-    "babel-register": "^6.26.0"
+    "babel-register": "^6.26.0",
+    "typescript": "^3.4.3"
   }
 }

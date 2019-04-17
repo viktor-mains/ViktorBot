@@ -5,38 +5,10 @@
     "list": [
         {
             "keyword": "test",
-            "response": {
-                "type": "text",
-                "content": "This is a test function."
-            },
             "description": "Simple test function.",
             "isProtected": true,
             "isDisabled": false,
             "isModCommand": true,        
-            "refusal": "Nope."
-        },
-        {
-            "keyword": "test2",
-            "response": {
-                "type": "text",
-                "content": "This is a test function."
-            },
-            "description": "Simple test function.",
-            "isProtected": true,
-            "isDisabled": true,
-            "isModCommand": false,        
-            "refusal": "Nope."
-        },
-        {
-            "keyword": "test3",
-            "response": {
-                "type": "text",
-                "content": "This is a test function."
-            },
-            "description": "Simple test function.",
-            "isProtected": true,
-            "isDisabled": false,
-            "isModCommand": false,        
             "refusal": "Nope."
         }
     ]
