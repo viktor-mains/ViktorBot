@@ -1,10 +1,11 @@
 export type IReactionDetails = {
     chance: number,
-    emoji: string
+    emoji?: string,
+    response?: string
 }
 
 export type IReaction = {
     id?: string,
-    keyword?: string,
-    list: [ IReactionDetails ]
+    keywords: [ string ] | [ null ],
+    reaction_list: [ IReactionDetails ]
 }

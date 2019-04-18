@@ -68,7 +68,6 @@ const checkForReactionTriggers = (msg:Discord.Message) => { // this function nee
         chosenReaction.response && msg.channel.send(chosenReaction.response);
     }
 };
-const handleReactionTrigger = (msg:Discord.Message) => {}
 const commandObject = (msg:Discord.Message) => commands.list.find(cmd => cmd.keyword === getKeyword(msg));
 
 // MAIN FUNCTION
