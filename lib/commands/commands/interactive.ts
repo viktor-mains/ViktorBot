@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
 
-import { removeKeyword } from '../../helpers';
+import { removeKeyword, extractNicknameAndServer } from '../../helpers';
 import { chooseRandom } from '../../rng';
 
 export const choose = (msg:Discord.Message) => {
@@ -11,4 +11,9 @@ export const choose = (msg:Discord.Message) => {
     return argsArray.length === 1
         ? msg.channel.send('...is that supposed to be a choice?')
         : msg.channel.send(`You should ${ randomThing }.`)
+}
+export const opgg = (msg:Discord.Message) => {
+    const { nickname, server } = extractNicknameAndServer(msg);
+    if (nickname && server)
+        msg.channel.send(`https://${ server }.op.gg/summoner/userName=${ nickname }`)
 }
