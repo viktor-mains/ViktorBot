@@ -7,3 +7,5 @@ export const getKeyword = (msg:Discord.Message) => {
         : msg.content.substring(1);
     return keyword.toLowerCase();
 };
+
+export const removeKeyword = (msg:Discord.Message) => msg.content.substring(msg.content.indexOf(' '));

@@ -43,6 +43,11 @@
             "keyword": "woof",
             "description": "Returns a dog",
             "refusal": "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really_?"
+        },
+        {
+            "keyword": "choose",
+            "description": "Chooses a random thing from the provided list of things (syntax: ``!choose thing1|thing2|thing3``).",
+            "refusal": "You're an adult, decide for yourself."
         }
     ]
 }

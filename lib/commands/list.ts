@@ -9,7 +9,7 @@ import {
 
 import { meow, woof } from './commands/animals';
 import { rito } from './commands/simple_commands';
-
+import { choose } from './commands/interactive';
 
 export const Command: { [key:string]: (command:ICommand, msg:Discord.Message) => string | void} = {
     test: (command:ICommand, msg:Discord.Message) => new TextCommand(command, msg).execute('This is a test.'),
@@ -23,4 +23,5 @@ export const Command: { [key:string]: (command:ICommand, msg:Discord.Message) =>
 
     meow: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(meow, msg),
     woof: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(woof, msg),
+    choose: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(choose, msg),
 };
