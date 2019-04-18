@@ -4,28 +4,14 @@
     },
     "list": [
         {
-            "keyword": "testtext",
-            "description": "Simple test function.",
-            "isProtected": true,
-            "isDisabled": false,
-            "isModOnly": true,        
-            "refusal": "Nope."
+            "keyword": "meow",
+            "description": "Returns a cat",
+            "refusal": "Out of all things in the world you ask me for a _cat photo_?"
         },
         {
-            "keyword": "testembed",
-            "description": "Embed test function.",
-            "isProtected": true,
-            "isDisabled": false,
-            "isModOnly": true,
-            "refusal": "Nope."
-        },
-        {
-            "keyword": "testcustom",
-            "description": "Custom test function.",
-            "isProtected": true,
-            "isDisabled": false,
-            "isModOnly": true,        
-            "refusal": "Nope."
+            "keyword": "woof",
+            "description": "Returns a dog",
+            "refusal": "Out of all things in the world you ask me for a _puppy photo_?"
         }
     ]
 }

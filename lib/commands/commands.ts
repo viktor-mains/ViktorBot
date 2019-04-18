@@ -1,4 +1,6 @@
 import Discord from 'discord.js';
+import axios from 'axios';
+
 import { ICommand } from '../types/command';
 import { 
     TextCommand,
@@ -7,9 +9,15 @@ import {
 } from './main';
 
 export const Command: { [key:string]: (command:ICommand, msg:Discord.Message) => string | void} = {
-    testtext: (command:ICommand, msg:Discord.Message) => new TextCommand(command, msg).execute('This is a test.'),
-    testcustom: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(testCustom),
-    testembed: (command:ICommand, msg:Discord.Message) => new EmbedCommand(command, msg).execute([{ 'title': 'Title', 'content': 'Content' }]),
+    meow: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(meow, msg),
+    woof: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(woof, msg),
 };
 
-const testCustom = () => console.log('I work!!');
+const meow = async (msg:Discord.Message) => {
+    const cat:any = await axios.get('http://aws.random.cat/meow');
+    msg.channel.send(`😺 ${cat.data.file}`);
+}
+const woof = async (msg:Discord.Message) => {
+    const dog:any = await axios.get('http://random.dog/woof');
+    msg.channel.send(`🐶 http://random.dog/${dog.data}`);
+}

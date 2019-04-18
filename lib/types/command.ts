@@ -21,5 +21,5 @@ export type IExecuteEmbed = {
     execute: (fields?: [ IEmbedField ]) => string | void;
 }
 export type IExecuteCustom = {
-    execute: (fn:Function) => any;
+    execute: (fn:Function, ...args: any) => any;
 }

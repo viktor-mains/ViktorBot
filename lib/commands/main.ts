@@ -1,5 +1,4 @@
 import Discord from 'discord.js';
-import commands from '../../data/commands.json';
 import { 
     ICommand,
     IExecuteText, 
@@ -7,14 +6,12 @@ import {
     IExecuteEmbed, 
     IEmbedField
 } from '../types/command';
-import { getKeyword } from '../helpers';
 import { botRefuses } from '../rng';
 import { isUserAdmin } from '../message';
 
 class Command {
-    public channel: any;
+    public channel: Discord.TextChannel | Discord.DMChannel | Discord.GroupDMChannel;
     public canBeExecuted: boolean;
-    public keyword: string;
     private isDisabled: boolean;
     private isModOnly: boolean;
     private isProtected: boolean;
@@ -24,8 +21,8 @@ class Command {
         this.channel = msg.channel;
         this.isDisabled = command.isDisabled || false;
         this.isModOnly = command.isModOnly || false;
-        this.isProtected = command.isProtected || false;
-        this.refusal = command.refusal || 'I won\'t execute yout petty command.';
+        this.isProtected = command.isProtected || true;
+        this.refusal = command.refusal || 'I won\'t execute your petty command.';
         this.canBeExecuted = this._canBeExecuted(msg);
     }
 
@@ -48,22 +45,16 @@ class Command {
 
 export class TextCommand extends Command implements IExecuteText {
     public execute(content:string) {
-        if (this.canBeExecuted) {
-            this.channel.send(content);
-        }
+        this.canBeExecuted && this.channel.send(content);
     }
 }
 export class EmbedCommand extends Command implements IExecuteEmbed {
     public execute(fields:[ IEmbedField ]) {
-        if (this.canBeExecuted) {
-            // do stuff
-        }
+        this.canBeExecuted && this.channel.send('Embeds aren\'t supported yet.');
     }
 }
 export class CustomCommand extends Command implements IExecuteCustom {
-    public execute(fn:Function) { 
-        if (this.canBeExecuted) {
-            return fn() 
-        }
+    public execute(fn:Function, ...args:any) { 
+        this.canBeExecuted && fn(...args);
     }
 }

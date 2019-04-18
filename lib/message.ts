@@ -46,19 +46,23 @@ const answerDearVictor = (msg:Discord.Message) => answer(msg, '...what have you 
 const answerCommand = (msg:Discord.Message) => {
     const command = commandObject(msg);
     command
-        ? Command[getKeyword(msg)](command, msg)
-        : msg.react(':questionmark:244535324737273857');
-    
-}
-const checkForReactionKeywords = (msg:Discord.Message) => {
-    const appropiateReactions = reactions.filter((reaction:any) => msg.content.indexOf(reaction.keyword) !== -1);
+        ? Command[getKeyword(msg)] && Command[getKeyword(msg)](command, msg)
+        : msg.react(':questionmark:244535324737273857');    
+};
+const checkForReactionTriggers = (msg:Discord.Message) => {
+    let appropiateReactions;
+    let chosenTrigger;
+    let chosenReaction;
+
+    appropiateReactions = reactions.filter((reaction:any) => msg.content.indexOf(reaction.keyword) !== -1);
     if (appropiateReactions.length === 0)
         return;
-    const chosenKeyword = chooseRandom(appropiateReactions);
-    const chosenReaction = chosenKeyword.list.find((reaction:IReactionDetails) => happensWithAChanceOf(reaction.chance));
+    chosenTrigger = chooseRandom(appropiateReactions);
+    chosenReaction = chosenTrigger.list.find((reaction:IReactionDetails) => happensWithAChanceOf(reaction.chance));
     if (chosenReaction)
         msg.react(chosenReaction.emoji);
 };
+const handleReactionTrigger = (msg:Discord.Message) => {}
 const commandObject = (msg:Discord.Message) => commands.list.find(cmd => cmd.keyword === getKeyword(msg));
 
 // MAIN FUNCTION
@@ -83,7 +87,7 @@ const classifyMessage = (msg:Discord.Message) => {
         answerCommand(msg);
         return;
     }
-    checkForReactionKeywords(msg);
+    checkForReactionTriggers(msg);
 }
 
 export { classifyMessage, isUserAdmin };
