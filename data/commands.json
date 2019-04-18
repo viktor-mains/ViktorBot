@@ -4,14 +4,45 @@
     },
     "list": [
         {
+            "keyword": "test",
+            "description": "Simple test function.",
+            "isModOnly": true
+        },
+        {
+            "keyword": "beep"
+        },
+        {
+            "keyword": "runes",
+            "description": "returns info about recommended runes"
+        },
+        {
+            "keyword": "clubs",
+            "description": "returns info about clubs that we know about"
+        },
+        {
+            "keyword": "faq",
+            "description": "returns the link to our FAQ with some useful stuff for new Viktor players"
+        },
+        {
+            "keyword": "joke"
+        },
+        { 
+            "keyword": "rito",
+            "description": ">:3"
+        },
+        {
+            "keyword": "gibeskin",
+            "description": "[legacy] calculates time since we've got the last Viktor skin"
+        },
+        {
             "keyword": "meow",
             "description": "Returns a cat",
-            "refusal": "Out of all things in the world you ask me for a _cat photo_?"
+            "refusal": "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a cat photo. _Really_?"
         },
         {
             "keyword": "woof",
             "description": "Returns a dog",
-            "refusal": "Out of all things in the world you ask me for a _puppy photo_?"
+            "refusal": "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really_?"
         }
     ]
 }

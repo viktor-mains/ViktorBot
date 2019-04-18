@@ -5,5 +5,5 @@ export const getKeyword = (msg:Discord.Message) => {
     const keyword = argumentsPresent
         ? msg.content.substring(1, msg.content.indexOf(' '))
         : msg.content.substring(1);
-    return keyword;
+    return keyword.toLowerCase();
 };

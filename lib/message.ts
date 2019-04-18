@@ -9,7 +9,7 @@ import {
     chooseRandom,
     happensWithAChanceOf,
 } from './rng';
-import { Command } from '../lib/commands/commands'
+import { Command } from './commands/list';
 
 import { 
     IReaction, 
@@ -49,18 +49,24 @@ const answerCommand = (msg:Discord.Message) => {
         ? Command[getKeyword(msg)] && Command[getKeyword(msg)](command, msg)
         : msg.react(':questionmark:244535324737273857');    
 };
-const checkForReactionTriggers = (msg:Discord.Message) => {
+const checkForReactionTriggers = (msg:Discord.Message) => { // this function needs refactorization badly
+    // add also responses only triggering for people WITHOUT specific roles
     let appropiateReactions;
     let chosenTrigger;
     let chosenReaction;
 
-    appropiateReactions = reactions.filter((reaction:any) => msg.content.indexOf(reaction.keyword) !== -1);
+    if (isMessageRant(msg)) // make it more sophisticated
+        appropiateReactions = reactions.filter((reaction:any) => reaction.id === 'rant');
+    else appropiateReactions = reactions.filter((reaction:any) => 
+        reaction.keywords.filter((keyword:string) => msg.content.indexOf(keyword) !== -1).length === reaction.keywords.length && reaction.keywords.length > 0);
     if (appropiateReactions.length === 0)
         return;
     chosenTrigger = chooseRandom(appropiateReactions);
-    chosenReaction = chosenTrigger.list.find((reaction:IReactionDetails) => happensWithAChanceOf(reaction.chance));
-    if (chosenReaction)
-        msg.react(chosenReaction.emoji);
+    chosenReaction = chosenTrigger.reaction_list.find((reaction:IReactionDetails) => happensWithAChanceOf(reaction.chance));
+    if (chosenReaction) {
+        chosenReaction.emoji && msg.react(chosenReaction.emoji);
+        chosenReaction.response && msg.channel.send(chosenReaction.response);
+    }
 };
 const handleReactionTrigger = (msg:Discord.Message) => {}
 const commandObject = (msg:Discord.Message) => commands.list.find(cmd => cmd.keyword === getKeyword(msg));
