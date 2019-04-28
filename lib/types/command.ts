@@ -1,5 +1,6 @@
 export type ICommand = {
     keyword: string,
+    text?: string,
     description?: string,
     isProtected?: boolean,
     isDisabled?: boolean,
@@ -21,5 +22,5 @@ export type IExecuteEmbed = {
     execute: (fields?: [ IEmbedField ]) => string | void;
 }
 export type IExecuteCustom = {
-    execute: (fn:Function, ...args: any) => any;
+    execute: (fn:Function, ...args:Array<any>) => any;
 }

@@ -54,7 +54,7 @@ export class EmbedCommand extends Command implements IExecuteEmbed {
     }
 }
 export class CustomCommand extends Command implements IExecuteCustom {
-    public execute(fn:Function, ...args:any) { 
+    public execute(fn:Function, ...args:Array<any>) { 
         this.canBeExecuted && fn(...args);
     }
 }

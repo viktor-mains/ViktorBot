@@ -9,22 +9,22 @@
             "isModOnly": true
         },
         {
-            "keyword": "beep"
-        },
-        {
-            "keyword": "runes",
-            "description": "returns info about recommended runes"
+            "keyword": "beep",
+            "text": "_sighs deeply_\nBeep. Boop."
         },
         {
             "keyword": "clubs",
+            "text": "https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.",
             "description": "returns info about clubs that we know about"
         },
         {
             "keyword": "faq",
+            "text": "Useful tips and tricks for new Viktor players: https://www.reddit.com/r/viktormains/wiki/faq",
             "description": "returns the link to our FAQ with some useful stuff for new Viktor players"
         },
         {
-            "keyword": "joke"
+            "keyword": "joke",
+            "text": "I won't waste my precious time for the sake of your personal amusement."
         },
         { 
             "keyword": "rito",
@@ -32,6 +32,7 @@
         },
         {
             "keyword": "gibeskin",
+            "text": "http://arcyvilk.com/greatherald/img/gibeskin.png",
             "description": "[legacy] calculates time since we've got the last Viktor skin"
         },
         {
@@ -43,6 +44,15 @@
             "keyword": "woof",
             "description": "Returns a dog",
             "refusal": "You have been given an opportunity to ask me, an evolved being, for anything; and you ask for a puppy photo. _Really_?"
+        },
+        {
+            "keyword": "status",
+            "description": "sets a custom status message",
+            "isModOnly": true
+        },
+        {
+            "keyword": "iam",
+            "description": "assigns a role (if it exists)"
         }
     ]
 }

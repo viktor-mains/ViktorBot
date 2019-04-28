@@ -1,8 +1,10 @@
 import Discord from 'discord.js';
 
-import dearViktor from '../data/dearviktor.json';
-import commands from '../data/commands.json';
-import reactions from '../data/reactions.json';
+import { TextCommand } from './commands/logic';
+
+import dearViktor from '../data/global/dearviktor.json';
+import commands from '../data/global/commands.json';
+import reactions from '../data/global/reactions.json';
 
 import { getKeyword } from './helpers';
 import { 
@@ -46,7 +48,9 @@ const answerDearVictor = (msg:Discord.Message) => answer(msg, '...what have you 
 const answerCommand = (msg:Discord.Message) => {
     const command = commandObject(msg);
     command
-        ? Command[getKeyword(msg)] && Command[getKeyword(msg)](command, msg)
+        ? command.text
+            ? new TextCommand(command, msg).execute(command.text)
+            : Command[getKeyword(msg)] && Command[getKeyword(msg)](command, msg)
         : msg.react(':questionmark:244535324737273857');    
 };
 const checkForReactionTriggers = (msg:Discord.Message) => { // this function needs refactorization badly
