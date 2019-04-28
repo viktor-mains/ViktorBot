@@ -25,3 +25,5 @@ export const extractNicknameAndServer = (msg:Discord.Message) => {
         server
     }
 }
+
+export const extractArguments = (msg:Discord.Message) => removeKeyword(msg).split('|');

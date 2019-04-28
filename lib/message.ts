@@ -47,11 +47,15 @@ const answerDearViktor = (msg:Discord.Message) => {
 const answerDearVictor = (msg:Discord.Message) => answer(msg, '...what have you just call me. <:SilentlyJudging:288396957922361344>');
 const answerCommand = (msg:Discord.Message) => {
     const command = commandObject(msg);
-    command
-        ? command.text
-            ? new TextCommand(command, msg).execute(command.text)
-            : Command[getKeyword(msg)] && Command[getKeyword(msg)](command, msg)
-        : msg.react(':questionmark:244535324737273857');    
+    if (command && command.text) {
+        new TextCommand(command, msg).execute(command.text);
+        return;
+    }
+    if (command && Command[getKeyword(msg)]) {
+        Command[getKeyword(msg)](command, msg)
+        return;
+    }
+    msg.react(':questionmark:244535324737273857');    
 };
 const checkForReactionTriggers = (msg:Discord.Message) => { // this function needs refactorization badly
     // add also responses only triggering for people WITHOUT specific roles
