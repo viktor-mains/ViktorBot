@@ -35,7 +35,7 @@ const answerDearViktor = (msg:Discord.Message) => {
     if (msg.content.endsWith('?')) {
         const keywordDetected = dearViktor.keywords.find(
             (category:any) => category.list.find(
-                (keyword:string) => msg.content.toLowerCase().indexOf(keyword) !== -1)
+                (keyword:string) => msg.content.toLowerCase().includes(keyword))
             );
         keywordDetected
             ? answer(msg, chooseRandom(dearViktor.answers[keywordDetected.id]))
@@ -62,7 +62,7 @@ const checkForReactionTriggers = (msg:Discord.Message) => { // this function nee
     if (isMessageRant(msg)) // make it more sophisticated
         appropiateReactions = reactions.filter((reaction:any) => reaction.id === 'rant');
     else appropiateReactions = reactions.filter((reaction:any) => 
-        reaction.keywords.filter((keyword:string) => msg.content.indexOf(keyword) !== -1).length === reaction.keywords.length && reaction.keywords.length > 0);
+        reaction.keywords.filter((keyword:string) => msg.content.includes(keyword)).length === reaction.keywords.length && reaction.keywords.length > 0);
     if (appropiateReactions.length === 0)
         return;
     chosenTrigger = chooseRandom(appropiateReactions);
