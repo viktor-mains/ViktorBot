@@ -35,7 +35,7 @@ const answerDearViktor = (msg:Discord.Message) => {
     if (msg.content.endsWith('?')) {
         const keywordDetected = dearViktor.keywords.find(
             (category:any) => category.list.find(
-                (keyword:string) => msg.content.toLowerCase().indexOf(keyword) !== -1)
+                (keyword:string) => msg.content.toLowerCase().includes(keyword))
             );
         keywordDetected
             ? answer(msg, chooseRandom(dearViktor.answers[keywordDetected.id]))
@@ -47,11 +47,15 @@ const answerDearViktor = (msg:Discord.Message) => {
 const answerDearVictor = (msg:Discord.Message) => answer(msg, '...what have you just call me. <:SilentlyJudging:288396957922361344>');
 const answerCommand = (msg:Discord.Message) => {
     const command = commandObject(msg);
-    command
-        ? command.text
-            ? new TextCommand(command, msg).execute(command.text)
-            : Command[getKeyword(msg)] && Command[getKeyword(msg)](command, msg)
-        : msg.react(':questionmark:244535324737273857');    
+    if (command && command.text) {
+        new TextCommand(command, msg).execute(command.text);
+        return;
+    }
+    if (command && Command[getKeyword(msg)]) {
+        Command[getKeyword(msg)](command, msg)
+        return;
+    }
+    msg.react(':questionmark:244535324737273857');    
 };
 const checkForReactionTriggers = (msg:Discord.Message) => { // this function needs refactorization badly
     // add also responses only triggering for people WITHOUT specific roles
@@ -62,7 +66,7 @@ const checkForReactionTriggers = (msg:Discord.Message) => { // this function nee
     if (isMessageRant(msg)) // make it more sophisticated
         appropiateReactions = reactions.filter((reaction:any) => reaction.id === 'rant');
     else appropiateReactions = reactions.filter((reaction:any) => 
-        reaction.keywords.filter((keyword:string) => msg.content.indexOf(keyword) !== -1).length === reaction.keywords.length && reaction.keywords.length > 0);
+        reaction.keywords.filter((keyword:string) => msg.content.includes(keyword)).length === reaction.keywords.length && reaction.keywords.length > 0);
     if (appropiateReactions.length === 0)
         return;
     chosenTrigger = chooseRandom(appropiateReactions);

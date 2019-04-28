@@ -14,12 +14,12 @@
         },
         {
             "keyword": "clubs",
-            "text": "https://www.reddit.com/r/viktormains/wiki/clubs - the list of NA/EUW/EUNE in-game clubs we know about.",
+            "text": "List of in-game clubs we know about: <https://www.reddit.com/r/viktormains/wiki/clubs>",
             "description": "returns info about clubs that we know about"
         },
         {
             "keyword": "faq",
-            "text": "Useful tips and tricks for new Viktor players: https://www.reddit.com/r/viktormains/wiki/faq",
+            "text": "Useful tips and tricks for new Viktor players: <https://www.reddit.com/r/viktormains/wiki/faq>",
             "description": "returns the link to our FAQ with some useful stuff for new Viktor players"
         },
         {
@@ -51,8 +51,18 @@
             "isModOnly": true
         },
         {
-            "keyword": "iam",
-            "description": "assigns a role (if it exists)"
+            "keyword": "choose",
+            "description": "Chooses a random thing from the provided list of things (syntax: ``!choose thing1|thing2|thing3``).",
+            "refusal": "You're an adult, decide for yourself."
+        },
+        {
+            "keyword": "opgg",
+            "description": "Returns link to given person's OP.gg"
+        },
+        {
+            "keyword": "impersonate",
+            "description": "Impersonates.",
+            "isModOnly": true
         }
     ]
 }
