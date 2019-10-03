@@ -124,6 +124,9 @@ bot.on('messageDelete', message => {
             var oldTimestamp = new Date(message.createdTimestamp);
             var newTimestamp = new Date();
             var delMessage = message.content;
+            var attachments = message.attachments 
+                ? message.attachments.map(att => att.proxyURL).join(' ')
+                : 'none';
             if (delMessage == '')
                 delMessage = `_<empty message or picture>_`;
             oldTimestamp = oldTimestamp.toISOString();
@@ -133,7 +136,7 @@ bot.on('messageDelete', message => {
                 [`Author`, `${message.author.username}#${message.author.discriminator}`, true],
                 [`Channel`, `<#${message.channel.id}>`, true],
                 [`Content`, delMessage, false],
-                [`Attachments`, `${message.attachments ? message.attachments : 'none'}`, false],
+                [`Attachments`, attachments, false],
                 [`Created at`, oldTimestamp, true],
                 [`Deleted at`, newTimestamp, true]
             ], data.logChannel, 'C70000');
