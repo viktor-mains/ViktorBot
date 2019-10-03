@@ -124,7 +124,7 @@ bot.on('messageDelete', message => {
             var oldTimestamp = new Date(message.createdTimestamp);
             var newTimestamp = new Date();
             var delMessage = message.content;
-            var attachments = message.attachments 
+            var attachments = Object.entries(message.attachments).length != 0
                 ? message.attachments.map(att => att.proxyURL).join(' ')
                 : 'none';
             if (delMessage == '')
