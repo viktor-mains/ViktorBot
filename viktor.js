@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const bot = new Discord.Client();
-const token = process.env.VIKTOR_DISCORD_TOKEN;
+const config = require('./config.json');
+const token = config.DISCORD_TOKEN;
 
 var UserMessage = require('./classes/usermessage.js');
 var Answer = require('./classes/answer.js');
@@ -132,6 +133,7 @@ bot.on('messageDelete', message => {
                 [`Author`, `${message.author.username}#${message.author.discriminator}`, true],
                 [`Channel`, `<#${message.channel.id}>`, true],
                 [`Content`, delMessage, false],
+                [`Attachments`, `${message.attachments ? message.attachments : 'none'}`, false],
                 [`Created at`, oldTimestamp, true],
                 [`Deleted at`, newTimestamp, true]
             ], data.logChannel, 'C70000');

@@ -114,7 +114,8 @@ exports.MessageCount = function (data) {
     };
     messageCount.toMembership = function () {
         var joinDate = '';
-        var numberOfMessages = '0';
+        var numberOfMessages = 0;
+        var messagesPerDay = 0;
         var serverID = data.message.guild.id;
         var userID = data.message.author.id;
 
@@ -136,13 +137,16 @@ exports.MessageCount = function (data) {
                 if (messageData[serverID].hasOwnProperty(userID)) {
                     numberOfMessages = messageData[serverID][userID].messageCount;
                 };
-                joinDate = (new Date(data.message.guild.members.find('id', userID).joinedTimestamp)).toUTCString();
+                joinDate = new Date(data.message.guild.members.find('id', userID).joinedTimestamp);
+                messagesPerDay = (numberOfMessages/((Date.now()-joinDate)/86400000)).toFixed(3);
             };
 
             if (joinDate)
                 return post.embed(`:notebook: ${data.message.author.username} membership data`, [
                     [`Messages written:`, numberOfMessages, true],
-                    [`Member since:`, joinDate, true],]);
+                    [`Messages per day:`, messagesPerDay, true],
+                    [`Member since:`, joinDate.toUTCString(), true],
+                ]);
             return post.message(`:warning: This server does not have the messages database, therefore this command won't work.`);
         });
     };
