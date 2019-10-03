@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const bot = new Discord.Client();
-const token = process.env.VIKTOR_DISCORD_TOKEN;
+const config = require('./config.json');
+const token = config.DISCORD_TOKEN;
 
 var UserMessage = require('./classes/usermessage.js');
 var Answer = require('./classes/answer.js');

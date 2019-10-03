@@ -1,12 +1,13 @@
 ﻿var Swap = require('./swap.js');
 var Input = require('./input.js');
+const config = require('../config.json');
 
 exports.API = function () {
     var api = this;
     var swap = new Swap.Swap();
     var input = new Input.Input();
 
-    api.RITO_KEY = process.env.RITO_KEY;
+    api.RITO_KEY = config.RIOT_API_TOKEN;
 
 
     api.URLmatchData = function (server, matchID) {
