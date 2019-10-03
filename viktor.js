@@ -133,6 +133,7 @@ bot.on('messageDelete', message => {
                 [`Author`, `${message.author.username}#${message.author.discriminator}`, true],
                 [`Channel`, `<#${message.channel.id}>`, true],
                 [`Content`, delMessage, false],
+                [`Attachments`, `${message.attachments ? message.attachments : 'none'}`, false],
                 [`Created at`, oldTimestamp, true],
                 [`Deleted at`, newTimestamp, true]
             ], data.logChannel, 'C70000');
