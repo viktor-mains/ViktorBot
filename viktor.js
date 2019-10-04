@@ -102,7 +102,7 @@ bot.on('messageUpdate', (oldMessage, newMessage) => {
                     [`New message`, newMes, false],
                     [`Created at`, oldTimestamp, true],
                     [`Edited at`, newTimestamp, true]
-                ], data.logChannel, '83C4F2');
+                ], data.logChannelMessages, '83C4F2');
             }
         }
     }
@@ -139,7 +139,7 @@ bot.on('messageDelete', message => {
                 [`Attachments`, attachments, false],
                 [`Created at`, oldTimestamp, true],
                 [`Deleted at`, newTimestamp, true]
-            ], data.logChannel, 'C70000');
+            ], data.logChannelMessages, 'C70000');
         }
     }
     catch (err) {
@@ -167,7 +167,7 @@ bot.on('guildMemberAdd', GuildMember => {
         post.embedToChannel(`:man: USER JOINS`, [
             [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, false],
             [`Joined at`, GuildMember.joinedAt.toISOString(), true]
-        ], data.logChannel, '51E61C');
+        ], data.logChannelUsers, '51E61C');
     });
 });
 
@@ -183,7 +183,7 @@ bot.on('guildMemberRemove', GuildMember => {
     post.embedToChannel(`:wave: USER LEAVES`, [
         [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, false],
         [`Leaves at`, d.toISOString(), true]
-    ], data.logChannel, 'FDC000');
+    ], data.logChannelUsers, 'FDC000');
 });
 
 bot.on('presenceUpdate', (oldMember, newMember) => {   

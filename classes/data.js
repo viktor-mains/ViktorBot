@@ -17,7 +17,8 @@ exports.Data = function (message, bot) {
     data.version = 'The Great Herald beta 2.6.0: API commands fixed';
 
     data.server = '';
-    data.logChannel = '';
+    data.logChannelMessages = '';
+    data.logChannelUsers = '';
     data.roleChannel = '';
     data.spamChannel = '';
     data.strChannel = '';
@@ -60,7 +61,8 @@ exports.Data = function (message, bot) {
             case '207732593733402624': //vikmains
                 {
                     data.server = `vikmains`;
-                    data.logChannel = '315258332749234189';
+                    data.logChannelMessages = '315258332749234189';
+                    data.logChannelUsers = '629782913654718484';
                     data.roleChannel = '268354627781656577';
                     data.spamChannel = '290601371370127361';
                     data.strChannel = '340933657437143044';
@@ -70,7 +72,8 @@ exports.Data = function (message, bot) {
             case '234740225782317057': //arcytesting
                 {
                     data.server = `arcytesting`;
-                    data.logChannel = '310735697260707841';
+                    data.logChannelMessages = '310735697260707841';
+                    data.logChannelUsers = '310735697260707841';
                     data.roleChannel = '310735697260707841';
                     data.spamChannel = '310735697260707841';
                     data.strChannel = '310735697260707841';

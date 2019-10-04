@@ -38,7 +38,7 @@
                 [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, false],
                 [`Reason for blacklist`, reason, false],
                 [`Joined at`, GuildMember.joinedAt, false]
-            ], data.logChannel, 'A600F2');
+            ], data.logChannelUsers, 'A600F2');
             console.log(`${d} - blacklisted user joins - ${GuildMember.user.username}#${GuildMember.user.discriminator}\n`);
 
             fileContents.Blacklist[serverID].bans.splice(banIndex, 1);
@@ -68,7 +68,7 @@
                         [`Last message`, data.message.mentions.users.first().lastMessage, false],
                         [`Reason`, banOptions[1], false],
                         [`Date`, d, false],
-                    ], data.logChannel, `F27900`);
+                    ], data.logChannelUsers, `F27900`);
                     return post.embed(`:white_check_mark: Success!`, [[`___`, `${banOptions[0]} banned! Hopefully they deserved it.`, false]]);
                 })
                 .catch(error => {
@@ -85,7 +85,7 @@
                             [`Banned by`, data.message.author.username, true],
                             [`Reason`, banOptions[1], false],
                             [`Date`, d, false],
-                        ], data.logChannel, `F27900`);
+                        ], data.logChannelUsers, `F27900`);
                         return post.embed(`:white_check_mark: Success!`, [[`___`, `${userIsOnThisServer.user.username} banned! Hopefully they deserved it.`, false]]);
                     })
                     .catch(error => {
@@ -142,7 +142,7 @@
                                 [`Unbanned by`, data.message.author.username, true],
                                 //  [`Reason for original ban`, wasOnBanList.reason, false],
                                 [`Date`, d, false],
-                            ], data.logChannel, `FF0088`);
+                            ], data.logChannelUsers, `FF0088`);
                             return post.embed(`:white_check_mark: Success!`, [[`___`, `${idToUnban} unbanned!`, false]]);
                         })
                         .catch(error => {
@@ -171,7 +171,7 @@
                                             [`Unbanned by`, data.message.author.username, true],
                                             [`Reason for original ban`, reason, false],
                                             [`Date`, d, false],
-                                        ], data.logChannel, `FF0088`);
+                                        ], data.logChannelUsers, `FF0088`);
                                         return post.embed(`:white_check_mark: Success!`, [[`___`, `${idToUnban} removed from blacklist!`, false]]);
                                     });
                                 }

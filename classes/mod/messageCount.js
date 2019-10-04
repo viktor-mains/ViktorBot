@@ -238,7 +238,7 @@ exports.MessageCount = function (data) {
                         post.embedToChannel(`:timer: USER TIMEOUTED FOR SPAM`, [
                             [`User`, `${data.message.author.username}#${data.message.author.discriminator}`, false],
                             [`Spammed message`, `\`\`\`${data.message.content}\`\`\``, false]
-                        ], data.logChannel, 'F27900');
+                        ], data.logChannelUsers, 'F27900');
                     }
                 }
             }
