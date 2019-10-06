@@ -4,10 +4,11 @@ import {
     IExecuteText, 
     IExecuteCustom, 
     IExecuteEmbed, 
-    IEmbedField
+    IEmbedField,
 } from '../types/command';
 import { botRefuses } from '../rng';
 import { isUserAdmin } from '../message';
+import { createEmbed } from '../helpers';
 
 class Command {
     public channel: Discord.TextChannel | Discord.DMChannel | Discord.GroupDMChannel;
@@ -22,7 +23,7 @@ class Command {
         this.isDisabled = command.isDisabled || false;
         this.isModOnly = command.isModOnly || false;
         this.isProtected = command.isProtected || true;
-        this.refusal = command.refusal || 'I won\'t execute your petty command.';
+        this.refusal = command.refusal || 'Your commands tire me.';
         this.canBeExecuted = this._canBeExecuted(msg);
     }
 
@@ -43,14 +44,23 @@ class Command {
     }
 }
 
+class Reaction {
+    public channel: Discord.TextChannel | Discord.DMChannel | Discord.GroupDMChannel;
+
+    constructor(msg:Discord.Message) {
+        this.channel = msg.channel;
+    }
+}
+
 export class TextCommand extends Command implements IExecuteText {
     public execute(content:string) {
         this.canBeExecuted && this.channel.send(content);
     }
 }
 export class EmbedCommand extends Command implements IExecuteEmbed {
-    public execute(fields:[ IEmbedField ]) {
-        this.canBeExecuted && this.channel.send('Embeds aren\'t supported yet.');
+    public execute(title:string, fields:[ IEmbedField ], color?:string) {
+        const embed = createEmbed(title, fields, color);
+        this.canBeExecuted && this.channel.send(embed);
     }
 }
 export class CustomCommand extends Command implements IExecuteCustom {
@@ -58,3 +68,14 @@ export class CustomCommand extends Command implements IExecuteCustom {
         this.canBeExecuted && fn(...args);
     }
 }
+
+export class TextReaction extends Reaction implements IExecuteText {
+    public execute(content:string) {
+        this.channel.send(content);
+    }
+}
+export class CustomReaction extends Reaction implements IExecuteCustom {
+    public execute(fn:Function, ...args:Array<any>) { 
+        fn(...args);
+    }
+}   

@@ -1,16 +1,13 @@
 import Discord from 'discord.js';
 
 import { TextCommand } from './commands/logic';
+import { Reaction } from './commands/reactions'
 
 import dearViktor from '../data/global/dearviktor.json';
-import commands from '../data/global/commands.json';
-import reactions from '../data/global/reactions.json';
 
-import { getKeyword } from './helpers';
-import { 
-    chooseRandom,
-    happensWithAChanceOf,
-} from './rng';
+import { cache } from './storage/cache';
+import { getKeyword, getCommandSymbol } from './helpers';
+import { chooseRandom, happensWithAChanceOf } from './rng';
 import { Command } from './commands/list';
 
 import { 
@@ -21,14 +18,16 @@ import { IDVKeywords } from './types/dearviktor';
 
 // LOGIC
 
-const isChannelDM = (msg:Discord.Message) => msg.author.id === msg.channel.id;
 const isUserAdmin = (msg:Discord.Message) => msg.member.hasPermission('ADMINISTRATOR');
+const isChannelDM = (msg:Discord.Message) => msg.author.id === msg.channel.id;
 const isUserBot = (msg:Discord.Message) => msg.author.bot;
 const isUserArcy = (msg:Discord.Message) => msg.author.id === '165962236009906176';
-const messageStartsWithCommandSymbol = (msg:Discord.Message) => msg.content.startsWith(commands.options.commandSymbol);
+const messageStartsWithCommandSymbol = (msg:Discord.Message) => msg.content.startsWith(getCommandSymbol());
 const isMessageRant = (msg:Discord.Message) => msg.content === msg.content.toUpperCase() && msg.content.length > 20;
 const isMessageDearViktor = (msg:Discord.Message) => msg.content.toLowerCase().startsWith('dear viktor');
 const isMessageDearVictor = (msg:Discord.Message) => msg.content.toLowerCase().startsWith('dear victor');
+
+const commandObject = (msg:Discord.Message) => cache["commands"].find(cmd => cmd.keyword === getKeyword(msg));
 
 const answer = (msg:Discord.Message, answer:string) => msg.channel.send(answer);
 const answerDearViktor = (msg:Discord.Message) => {
@@ -44,7 +43,7 @@ const answerDearViktor = (msg:Discord.Message) => {
     }
     answer(msg, '_That_ doesn\'t look like question to me.')
 };
-const answerDearVictor = (msg:Discord.Message) => answer(msg, '...what have you just call me. <:SilentlyJudging:288396957922361344>');
+const answerDearVictor = (msg:Discord.Message) => answer(msg, '...what have you just called me. <:SilentlyJudging:288396957922361344>');
 const answerCommand = (msg:Discord.Message) => {
     const command = commandObject(msg);
     if (command && command.text) {
@@ -57,16 +56,16 @@ const answerCommand = (msg:Discord.Message) => {
     }
     msg.react(':questionmark:244535324737273857');    
 };
-const checkForReactionTriggers = (msg:Discord.Message) => { // this function needs refactorization badly
-    // add also responses only triggering for people WITHOUT specific roles
-    let appropiateReactions;
+const checkForReactionTriggers = (msg:Discord.Message) => { 
+    let appropiateReactions = new Array();
     let chosenTrigger;
     let chosenReaction;
 
-    if (isMessageRant(msg)) // make it more sophisticated
-        appropiateReactions = reactions.filter((reaction:any) => reaction.id === 'rant');
-    else appropiateReactions = reactions.filter((reaction:any) => 
-        reaction.keywords.filter((keyword:string) => msg.content.includes(keyword)).length === reaction.keywords.length && reaction.keywords.length > 0);
+    if (isMessageRant(msg)) 
+        appropiateReactions.push(...cache["reactions"].filter((reaction:any) => reaction.id === 'rant'));
+    appropiateReactions.push(...cache["reactions"].filter((reaction:any) => 
+        reaction.keywords.filter((keyword:string) => msg.content.toLowerCase().includes(keyword)).length === reaction.keywords.length && reaction.keywords.length > 0));
+
     if (appropiateReactions.length === 0)
         return;
     chosenTrigger = chooseRandom(appropiateReactions);
@@ -74,9 +73,9 @@ const checkForReactionTriggers = (msg:Discord.Message) => { // this function nee
     if (chosenReaction) {
         chosenReaction.emoji && msg.react(chosenReaction.emoji);
         chosenReaction.response && msg.channel.send(chosenReaction.response);
+        chosenReaction.function && Reaction[chosenReaction.function] && Reaction[chosenReaction.function](msg);
     }
 };
-const commandObject = (msg:Discord.Message) => commands.list.find(cmd => cmd.keyword === getKeyword(msg));
 
 // MAIN FUNCTION
 

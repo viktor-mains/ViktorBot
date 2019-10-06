@@ -7,12 +7,18 @@ import {
     CustomCommand,
 } from './logic';
 
-import { meow, woof } from './commands/animals';
-import { rito } from './commands/simple_commands';
-import { status, impersonate } from './commands/administration';
-import { choose, opgg } from './commands/interactive';
+import { help, opgg } from './commands/basic';
+import { } from './commands/faq';
+import { meow, woof, rito, choose } from './commands/fun';
+import { status, impersonate } from './commands/mod';
 
 export const Command: { [key:string]: (command:ICommand, msg:Discord.Message) => string | void} = {
+    help: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(help, msg),
+    beep: (command:ICommand, msg:Discord.Message) => new TextCommand(command, msg).execute('_sighs deeply_\nBeep. Boop.'),
+    clubs: (command:ICommand, msg:Discord.Message) => new TextCommand(command, msg).execute('List of in-game clubs we know about: <https://www.reddit.com/r/viktormains/wiki/clubs>'),
+    faq: (command:ICommand, msg:Discord.Message) => new TextCommand(command, msg).execute('Useful tips and tricks for new Viktor players: <https://www.reddit.com/r/viktormains/wiki/faq>'),
+    gibeskin: (command:ICommand, msg:Discord.Message) => new TextCommand(command, msg).execute('http://arcyvilk.com/greatherald/img/gibeskin.png'),
+    joke: (command:ICommand, msg:Discord.Message) => new TextCommand(command, msg).execute('I won\'t waste my precious time for sake of your personal amusement.'),
     rito: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(rito, msg),
     status: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(status, msg),
     meow: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(meow, msg),
