@@ -1,10 +1,14 @@
 import Discord from 'discord.js';
 
 type IBotCache = {
-    bot?: Discord.Client;
+    bot?: Discord.Client,
+    dbs?: { },
 }
 
-let botCache:IBotCache = {};
+let botCache:IBotCache = {
+    bot: undefined,
+    dbs: { },
+};
 
 class BotCache {
     constructor() {
@@ -12,11 +16,8 @@ class BotCache {
             return botCache;
         botCache = this;
 
-        botCache.bot = undefined;
-
         return botCache;
     }
-
 }
 
 export let cache = new BotCache();

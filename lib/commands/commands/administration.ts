@@ -1,7 +1,7 @@
 import Discord from 'discord.js';
-import { log } from '../../../log';
+import { log } from '../../log';
 import { removeKeyword, extractArguments } from '../../helpers';
-import { cache } from '../../../cache';
+import { cache } from '../../storage/cache';
 
 // @ts-ignore
 export const status = (msg:Discord.Message) => cache.bot.user.setPresence({ game: { name: removeKeyword(msg), type: 0}})
