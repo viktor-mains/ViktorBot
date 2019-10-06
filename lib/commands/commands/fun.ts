@@ -1,14 +1,15 @@
 import Discord from 'discord.js';
+import axios from 'axios';
 import { removeKeyword } from '../../helpers';
 import { chooseRandom } from '../../rng';
 
 export const meow = async (msg:Discord.Message) => {
-    const cat:any = await fetch('http://aws.random.cat/meow')
+    const cat:any = await axios('http://aws.random.cat/meow')
         .catch(() => msg.channel.send('Unable to get a cat.'));
     msg.channel.send(`😺 ${cat.data.file}`);
 }
 export const woof = async (msg:Discord.Message) => {
-    const dog:any = await fetch('http://random.dog/woof')
+    const dog:any = await axios('http://random.dog/woof')
         .catch(() => msg.channel.send('Unable to get a dog.'));;
     msg.channel.send(`🐶 http://random.dog/${dog.data}`);
 }
