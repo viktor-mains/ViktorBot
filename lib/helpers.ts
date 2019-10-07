@@ -75,7 +75,7 @@ export const extractNicknameAndServer = (msg:Discord.Message) => {
 
 export const splitArrayByObjectKey = (array:Array<Object>, sortBy:string) =>
     array.reduce((reducer, obj) => {
-        let key = obj[sortBy];   // unique `loc` key
+        let key = obj[sortBy]; 
         if (reducer[key] || (reducer[key]=[])) 
             reducer[key].push(obj);
         return reducer;

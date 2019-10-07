@@ -11,6 +11,7 @@ import { help, hmod, opgg } from './commands/basic';
 import { } from './commands/faq';
 import { meow, woof, rito, choose } from './commands/fun';
 import { status, impersonate } from './commands/mod';
+import { updatechampions, lastlane } from './commands/riot';
 
 export const Command: { [key:string]: (command:ICommand, msg:Discord.Message) => string | void} = {
     help: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(help, msg),
@@ -27,4 +28,6 @@ export const Command: { [key:string]: (command:ICommand, msg:Discord.Message) =>
     choose: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(choose, msg),
     opgg: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(opgg, msg),
     impersonate: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(impersonate, msg),
+    updatechampions: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(updatechampions, msg),
+    lastlane: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(lastlane, msg),
 };
