@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const bot = new Discord.Client();
+const moment = require('moment');
 const config = require('./config.json');
 const token = config.DISCORD_TOKEN;
 
@@ -100,8 +101,8 @@ bot.on('messageUpdate', (oldMessage, newMessage) => {
                     [`Channel`, `<#${oldMessage.channel.id}>`, true],
                     [`Old message`, oldMes, false],
                     [`New message`, newMes, false],
-                    [`Created at`, oldTimestamp, true],
-                    [`Edited at`, newTimestamp, true]
+                    [`Created at`, moment(oldTimestamp).format("MMMM Do YYYY, HH:mm:ss"), true],
+                    [`Edited at`, moment(newTimestamp).format("MMMM Do YYYY, HH:mm:ss"), true]
                 ], data.logChannelMessages, '83C4F2');
             }
         }
@@ -137,8 +138,8 @@ bot.on('messageDelete', message => {
                 [`Channel`, `<#${message.channel.id}>`, true],
                 [`Content`, delMessage, false],
                 [`Attachments`, attachments, false],
-                [`Created at`, oldTimestamp, true],
-                [`Deleted at`, newTimestamp, true]
+                [`Created at`, moment(oldTimestamp).format("MMMM Do YYYY, HH:mm:ss"), true],
+                [`Deleted at`, moment(newTimestamp).format("MMMM Do YYYY, HH:mm:ss"), true]
             ], data.logChannelMessages, 'C70000');
         }
     }
@@ -166,7 +167,7 @@ bot.on('guildMemberAdd', GuildMember => {
         GuildMember.user.send(data.welcomeMessageForViktorMains);
         post.embedToChannel(`:man: USER JOINS`, [
             [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, false],
-            [`Joined at`, GuildMember.joinedAt.toISOString(), true]
+            [`Joined at`, moment(GuildMember.joinedAt.toISOString()).format("MMMM Do YYYY, HH:mm:ss"), true]
         ], data.logChannelUsers, '51E61C');
     });
 });
@@ -182,8 +183,9 @@ bot.on('guildMemberRemove', GuildMember => {
 
     post.embedToChannel(`:wave: USER LEAVES`, [
         [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, false],
-        [`Leaves at`, d.toISOString(), true]
-    ], data.logChannelUsers, 'FDC000');
+        [`Was a member for`, toDDHHMMSS(GuildMember.joinedAt), true],
+        [`Leaves at`, moment(d.toISOString()).format("MMMM Do YYYY, HH:mm:ss a"), true]
+    ], data.logChannelUsers, 'C70000');
 });
 
 bot.on('presenceUpdate', (oldMember, newMember) => {   
@@ -218,6 +220,25 @@ function timerOn() {
         }
     }, 1000);
 };
+function toDDHHMMSS(joinedAt) {
+    const start = moment(joinedAt);
+    const end = moment();
+    const diff = moment.duration(end.diff(start));
+
+    return `${
+        moment.duration(diff).years() ? moment.duration(diff).years() + 'y ' : ''
+    }${
+        moment.duration(diff).months() ? moment.duration(diff).months() + 'm ' : ''
+    }${
+        moment.duration(diff).days() ? moment.duration(diff).days() + 'd ' : ''
+    }${
+        moment.duration(diff).hours() ? moment.duration(diff).hours() + 'h ' : ''
+    }${
+        moment.duration(diff).minutes() ? moment.duration(diff).minutes() + 'm ' : ''
+    }${
+        moment.duration(diff).seconds() ? moment.duration(diff).seconds() + 's ' : ''
+    }`
+} 
 function fetchRedComments() {
     require('es6-promise').polyfill();
     require('isomorphic-fetch');

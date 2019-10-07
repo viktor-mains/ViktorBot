@@ -37,7 +37,7 @@
             post.embedToChannel(`:man: BLACKLISTED USER TRIES TO JOIN`, [
                 [`User`, `${GuildMember.user.username}#${GuildMember.user.discriminator}`, false],
                 [`Reason for blacklist`, reason, false],
-                [`Joined at`, GuildMember.joinedAt, false]
+                [`Joined at`, moment(GuildMember.joinedAt).format("MMMM Do YYYY, HH:mm:ss a"), false]
             ], data.logChannelUsers, 'A600F2');
             console.log(`${d} - blacklisted user joins - ${GuildMember.user.username}#${GuildMember.user.discriminator}\n`);
 
@@ -67,7 +67,7 @@
                         [`Banned by`, data.message.author.username, true],
                         [`Last message`, data.message.mentions.users.first().lastMessage, false],
                         [`Reason`, banOptions[1], false],
-                        [`Date`, d, false],
+                        [`Date`, moment(d).format("MMMM Do YYYY, HH:mm:ss a"), false],
                     ], data.logChannelUsers, `F27900`);
                     return post.embed(`:white_check_mark: Success!`, [[`___`, `${banOptions[0]} banned! Hopefully they deserved it.`, false]]);
                 })
@@ -141,7 +141,7 @@
                                 [`User unbanned`, `${idToUnban})`, true],
                                 [`Unbanned by`, data.message.author.username, true],
                                 //  [`Reason for original ban`, wasOnBanList.reason, false],
-                                [`Date`, d, false],
+                                [`Date`, moment(d.toISOString()).format("MMMM Do YYYY, HH:mm:ss a"), false],
                             ], data.logChannelUsers, `FF0088`);
                             return post.embed(`:white_check_mark: Success!`, [[`___`, `${idToUnban} unbanned!`, false]]);
                         })

@@ -29,7 +29,7 @@ exports.API = function () {
         return `https://${server}.api.riotgames.com/lol/league/v4/positions/by-summoner/${playerID}?api_key=${api.RITO_KEY}`;
     };
     api.URLchampionData = function (server) {
-        return 'https://ddragon.leagueoflegends.com/cdn/9.5.1/data/en_US/championFull.json';
+        return 'https://ddragon.leagueoflegends.com/cdn/9.19.1/data/en_US/championFull.json';
     };
     api.URLgameTimeline = function (server, matchID) {
         return `https://${server}.api.riotgames.com/lol/match/v4/timelines/by-match/${matchID}?api_key=${api.RITO_KEY}`;

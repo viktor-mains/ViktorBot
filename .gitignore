@@ -4,3 +4,4 @@ bin/
 obj/
 *.njsproj
 node_modules/
+config.json

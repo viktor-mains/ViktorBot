@@ -1,6 +1,6 @@
 {
   "name": "viktorbot",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "description": "Custom bot for the /r/viktormains Discord channel!",
   "main": "viktor.js",
   "engines": {
@@ -10,6 +10,7 @@
     "discord.js": "^11.3.2",
     "es6-promise": "^4.2.4",
     "isomorphic-fetch": "^2.2.1",
+    "moment": "^2.24.0",
     "request": "^2.87.0"
   },
   "devDependencies": {},
