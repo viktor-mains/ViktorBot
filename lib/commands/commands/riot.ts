@@ -151,17 +151,25 @@ export const lastlane = async (msg:Discord.Message) => {
                     })
                 });
 
-                const playerChampionName = ourPlayer.champion ? ourPlayer.champion.name : '???';
+                Object.values(timeline).map((player:any) => {
+                    const currentPlayer = players.find((p:any) => p.gameId === player.participantId);
+                    if (currentPlayer && currentPlayer.teamId !== ourPlayer.teamId && currentPlayer.lane !== ourPlayer.lane)
+                        gameFrames[`min${minute}`].enemyTeam += player.totalGold;
+                    if (currentPlayer && currentPlayer.teamId === ourPlayer.teamId && currentPlayer.lane !== ourPlayer.lane)
+                        gameFrames[`min${minute}`].allyTeam += player.totalGold;
+                });
+
+                const playerChampionName = ourPlayer.champion ? ourPlayer.champion.name : '[unknown ally champion]';
+                const enemyChampionName = enemies[0].champion ? enemies[0].champion.name : '[unknown senemy champion]';
                 const playerGold = gameFrames[`min${minute}`].player.gold;
                 const playerCs = gameFrames[`min${minute}`].player.cs;
                 const enemyCs = gameFrames[`min${minute}`].enemies[0].cs;
                 const enemyGold = gameFrames[`min${minute}`].enemies[0].gold;
                 const allyTeamGoldAdvantage = gameFrames[`min${minute}`].allyTeam - gameFrames[`min${minute}`].enemyTeam;
                 const minuteSummary = gameFrames[`min${minute}`]
-                    ? `${playerChampionName} has **${
-                        Math.abs(playerGold - enemyGold)}** gold ${playerGold - enemyGold > 0 ? 'advantage' : 'disadvantage'}.
-                        CS scores are ${playerChampionName}'s **${playerCs}** to ${enemies[0].champion ? enemies[0].champion.name : '???'}'s **${enemyCs}**.
-                        All other lanes ${allyTeamGoldAdvantage >= 0 ? 'win' : 'lose'} with **${allyTeamGoldAdvantage}** gold ${allyTeamGoldAdvantage >= 0? 'advantage' : 'disadvantage'}.`
+                    ? `${playerChampionName} has **${Math.abs(playerGold - enemyGold)}** gold ${playerGold - enemyGold > 0 ? 'advantage' : 'disadvantage'}.
+                        CS scores are ${playerChampionName}'s **${playerCs}** to ${enemyChampionName}'s **${enemyCs}**.
+                        All other lanes ${allyTeamGoldAdvantage >= 0 ? 'win' : 'lose'} with **${Math.abs(allyTeamGoldAdvantage)}** gold ${allyTeamGoldAdvantage >= 0? 'advantage' : 'disadvantage'}.`
                     : 'Game ended by now.';
                 embed.addField(`Minute ${minute}`, minuteSummary)
             }
@@ -169,8 +177,6 @@ export const lastlane = async (msg:Discord.Message) => {
     }
 
     msg.channel.send(embed);
-
-    console.log(pathLastGameTimeline); // [dev]
 }
 
 export const updatechampions = async (msg:Discord.Message) => {
