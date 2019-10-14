@@ -112,61 +112,8 @@ export const lastlane = async (msg:Discord.Message) => {
             .addField('Some info', content)
     }
     else {
-        const gameFrames:any = {
-            min5: {
-                player: {},
-                enemies: [],
-                allyTeam: 0,
-                enemyTeam: 0,
-            },
-            min10: {
-                player: {},
-                enemies: [],
-                allyTeam: 0,
-                enemyTeam: 0,
-            },
-            min15: {
-                player: {},
-                enemies: [],
-                allyTeam: 0,
-                enemyTeam: 0,
-            }
-        }
-        for (let min = 5; min <= 15; min += 5) {
-            if (lastGameTimeline.data.frames[min]) {
-                const timeline = lastGameTimeline.data.frames[min].participantFrames;
-                const player:any = Object.values(timeline).find((player:any) => player.participantId === ourPlayer.gameId);
-                gameFrames[`min${min}`].player.cs = player.minionsKilled + player.jungleMinionsKilled;
-                gameFrames[`min${min}`].player.gold = player.totalGold;
-                gameFrames[`min${min}`].player.level = player.level;
-
-                enemies.map((enemy:any) => {
-                    const player:any = Object.values(timeline).find((player:any) => player.participantId === enemy.gameId);
-                    gameFrames[`min${min}`].enemies.push({
-                        id: enemy.gameId,
-                        cs: player.minionsKilled + player.jungleMinionsKilled,
-                        gold: player.totalGold,
-                        level: player.level,
-                    })
-                })
-            }
-        }
-
-        const min5 = gameFrames.min5
-            ? `${ourPlayer.champion ? ourPlayer.champion.name : '???'} has ${
-                Math.abs(gameFrames.min5.player.gold - gameFrames.min5.enemies[0].gold)} gold ${gameFrames.min5.player.gold - gameFrames.min5.enemies[0].gold > 0 ? 'advantage' : 'disadvantage'}.
-                CS scores are ${ourPlayer.champion ? ourPlayer.champion.name : '???'}'s ${gameFrames.min5.player.cs} to ${enemies[0].champion ? enemies[0].champion.name : '???'}'s ${gameFrames.min5.enemies[0].cs}.`
-            : 'Game ended by now.'
-        const min10 = gameFrames.min5
-            ? `${ourPlayer.champion ? ourPlayer.champion.name : '???'} has ${
-                Math.abs(gameFrames.min10.player.gold - gameFrames.min10.enemies[0].gold)} gold ${gameFrames.min10.player.gold - gameFrames.min10.enemies[0].gold > 0 ? 'advantage' : 'disadvantage'}.
-                CS scores are ${ourPlayer.champion ? ourPlayer.champion.name : '???'}'s ${gameFrames.min10.player.cs} to ${enemies[0].champion ? enemies[0].champion.name : '???'}'s ${gameFrames.min10.enemies[0].cs}.`
-            : 'Game ended by now.'
-        const min15 = gameFrames.min5
-            ? `${ourPlayer.champion ? ourPlayer.champion.name : '???'} has ${
-                Math.abs(gameFrames.min15.player.gold - gameFrames.min15.enemies[0].gold)} gold ${gameFrames.min15.player.gold - gameFrames.min15.enemies[0].gold > 0 ? 'advantage' : 'disadvantage'}.
-                CS scores are ${ourPlayer.champion ? ourPlayer.champion.name : '???'}'s ${gameFrames.min15.player.cs} to ${enemies[0].champion ? enemies[0].champion.name : '???'}'s ${gameFrames.min15.enemies[0].cs}.`
-            : 'Game ended by now.'
+        const relevantMinutes = [ 5, 10, 15 ];
+        const gameFrames:any = { };
 
         embed
             .setTitle(`${ourPlayer.champion 
@@ -176,15 +123,54 @@ export const lastlane = async (msg:Discord.Message) => {
             .setDescription(`**${ourPlayer.name}'s** ${ourPlayer.champion ? ourPlayer.champion.name : '???' 
             } ${ourPlayer.win ? 'wins' : 'loses'
             } vs ${enemies.map((enemy:any) => ` **${enemy.name}'s** ${enemy.champion ? enemy.champion.name : '???'} `)
-            } in ${ Math.round(parseInt(lastGameData.data.gameDuration)/60) } minutes.`)
-            .addField('Minute 5', min5)
-            .addField('Minute 10', min10)
-            .addField('Minute 15', min15)
+            } in ${ Math.round(parseInt(lastGameData.data.gameDuration)/60) } minutes.`);
+
+        relevantMinutes.map((minute:number) => {
+            if (lastGameTimeline.data.frames[minute]) {
+                const timeline = lastGameTimeline.data.frames[minute].participantFrames;
+                const player:any = Object.values(timeline).find((player:any) => player.participantId === ourPlayer.gameId);
+
+                gameFrames[`min${minute}`] = {
+                    player: {
+                        cs: player.minionsKilled + player.jungleMinionsKilled,
+                        gold: player.totalGold,
+                        level: player.level
+                    },
+                    enemies: [],
+                    allyTeam: 0,
+                    enemyTeam: 0,
+                };
+
+                enemies.map((enemy:any) => {
+                    const player:any = Object.values(timeline).find((player:any) => player.participantId === enemy.gameId);
+                    gameFrames[`min${minute}`].enemies.push({
+                        id: enemy.gameId,
+                        cs: player.minionsKilled + player.jungleMinionsKilled,
+                        gold: player.totalGold,
+                        level: player.level,
+                    })
+                });
+
+                const playerChampionName = ourPlayer.champion ? ourPlayer.champion.name : '???';
+                const playerGold = gameFrames[`min${minute}`].player.gold;
+                const playerCs = gameFrames[`min${minute}`].player.cs;
+                const enemyCs = gameFrames[`min${minute}`].enemies[0].cs;
+                const enemyGold = gameFrames[`min${minute}`].enemies[0].gold;
+                const allyTeamGoldAdvantage = gameFrames[`min${minute}`].allyTeam - gameFrames[`min${minute}`].enemyTeam;
+                const minuteSummary = gameFrames[`min${minute}`]
+                    ? `${playerChampionName} has **${
+                        Math.abs(playerGold - enemyGold)}** gold ${playerGold - enemyGold > 0 ? 'advantage' : 'disadvantage'}.
+                        CS scores are ${playerChampionName}'s **${playerCs}** to ${enemies[0].champion ? enemies[0].champion.name : '???'}'s **${enemyCs}**.
+                        All other lanes ${allyTeamGoldAdvantage >= 0 ? 'win' : 'lose'} with **${allyTeamGoldAdvantage}** gold ${allyTeamGoldAdvantage >= 0? 'advantage' : 'disadvantage'}.`
+                    : 'Game ended by now.';
+                embed.addField(`Minute ${minute}`, minuteSummary)
+            }
+        })
     }
 
     msg.channel.send(embed);
 
-    console.log(pathLastGameTimeline);
+    console.log(pathLastGameTimeline); // [dev]
 }
 
 export const updatechampions = async (msg:Discord.Message) => {
