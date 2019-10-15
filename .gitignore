@@ -1,7 +1,4 @@
-.vscode
-.vs
-bin/
-obj/
-*.njsproj
-node_modules/
+/node_modules
+/dist
+/config.json
 config.json
