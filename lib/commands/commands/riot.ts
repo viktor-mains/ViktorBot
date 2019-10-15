@@ -160,7 +160,7 @@ export const lastlane = async (msg:Discord.Message) => {
                 });
 
                 const playerChampionName = ourPlayer.champion ? ourPlayer.champion.name : '[unknown ally champion]';
-                const enemyChampionName = enemies[0].champion ? enemies[0].champion.name : '[unknown senemy champion]';
+                const enemyChampionName = enemies[0].champion ? enemies[0].champion.name : '[unknown enemy champion]';
                 const playerGold = gameFrames[`min${minute}`].player.gold;
                 const playerCs = gameFrames[`min${minute}`].player.cs;
                 const enemyCs = gameFrames[`min${minute}`].enemies[0].cs;
