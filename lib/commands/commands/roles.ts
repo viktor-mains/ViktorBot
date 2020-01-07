@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
 import { log } from '../../log';
-import { removeKeyword, extractArguments } from '../../helpers';
+import { createEmbed, extractArguments } from '../../helpers';
 import { updateCache } from '../../storage/db';
 import { cache } from '../../storage/cache';
 import config from '../../../config.json';
@@ -81,7 +81,25 @@ export const iamnot = (msg:Discord.Message) => {
     return;
 }
 export const roles = (msg:Discord.Message) => {
-    msg.channel.send('WIP')
+    msg.channel.startTyping();
+    const existingRoles = msg.guild.roles.array().map(role => role.name);
+    const assignableRoles = cache["options"].find(option => option.option === 'assignableRoles')
+        ? cache["options"].find(option => option.option === 'assignableRoles').value
+        : null;
+    const availableRoles:string[] = [];
+    
+    if (!existingRoles || !assignableRoles) {
+        msg.channel.stopTyping();
+        return;
+    }
+    assignableRoles.map((assignableRole:string) => {
+        existingRoles.find(existingRole => existingRole.toLowerCase() === assignableRole.toLowerCase())
+        && availableRoles.push(`- ${assignableRole}`)
+    })
+
+    const embed = createEmbed('Self-assignable roles', [{ title: '\_\_\_', content: availableRoles.join('\n')}])
+    msg.channel.stopTyping();
+    msg.channel.send(embed);
 }
 export const membership = (msg:Discord.Message) => {
     msg.channel.send('WIP')
