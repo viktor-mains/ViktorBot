@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
 import { log } from '../../log';
-import { createEmbed, extractArguments } from '../../helpers';
+import { createEmbed, extractArguments, removeKeyword } from '../../helpers';
 import { updateCache } from '../../storage/db';
 import { cache } from '../../storage/cache';
 import config from '../../../config.json';
@@ -33,11 +33,62 @@ const requestWasSendInApropriateChannel = (msg:Discord.Message) => {
         return true;
     return false;
 };
+const specialRoleRequested = (roleName, msg:Discord.Message) => {
+    const jokeRole = cache["options"].find(option => option.option === 'jokeRoles')
+        ? cache["options"].find(option => option.option === 'jokeRoles').value.find(role => role.toLowerCase() === roleName.toLowerCase())
+        : null;
+    const membershipRole = cache["options"].find(option => option.option === 'membershipRoles')
+        ? cache["options"].find(option => option.option === 'membershipRoles').value.find(role => role.toLowerCase() === roleName.toLowerCase())
+        : null;
+    const rankRole = cache["options"].find(option => option.option === 'rankRoles')
+        ? cache["options"].find(option => option.option === 'rankRoles').value.find(role => role.toLowerCase() === roleName.toLowerCase())
+        : null;
+    const modRole = cache["options"].find(option => option.option === 'modRoles')
+        ? cache["options"].find(option => option.option === 'modRoles').value.find(role => role.toLowerCase() === roleName.toLowerCase())
+        : null;
+    if (jokeRole) {
+        msg.channel.send('Indeed. You are.');
+        return true;
+    }
+    if (membershipRole) {
+        const embed = createEmbed(':information_source: This is not how membership roles are assigned',
+        [{
+            title: '\_\_\_',
+            content: `You can unlock membership roles for active participation in the server.\n\n`+
+            `- **Junior Assistant** for initial participation¹\n`+
+            `- **Hextech Progenitor** for active participation¹ of at least 4 months\n`+
+            `- **Arcane Android** for active participation¹ of at least 1 year\n\n`+
+            `¹ participation: a certain amount of messages`
+        }])
+        msg.channel.send(embed);
+        return true;
+    }
+    if (rankRole) {
+        const embed = createEmbed(
+            ':information_source: This is not how rank roles are assigned',
+            [{ 
+                title: '\_\_\_', 
+                content: `Rank roles are assigned manually by moderators.\n\n` +
+                `1. **Screenshot your profile** with nickname and rank badge visible, like that: http://i.imgur.com/aiRJudZ.png \n` +
+                `2. Post the screenshot in the #bot_commands room. \n\n` +
+                `The colour will be based off *Ranked Solo/Duo* - Ranked Flex, Ranked 3v3, Teamfight Tactics etc. aren't taken into account.`
+            }])
+        msg.channel.send(embed);
+        return true;
+    }
+    if (modRole) {
+        msg.channel.send('Heh, you\'d want it to be so simple.');
+        return true;
+    }
+    return false;
+}
 
 export const iam = (msg:Discord.Message) => {
-    const roleName = extractArguments(msg)[0];
+    const roleName = removeKeyword(msg);
     const member = msg.member;
     
+    if (specialRoleRequested(roleName, msg))
+        return;
     if (!roleName)
         return msg.channel.send(`Excuse me, you are _what?_`);
     if (!roleExists(roleName, member))
