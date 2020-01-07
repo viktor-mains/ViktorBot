@@ -6,8 +6,8 @@
   "scripts": {
     "test": "test",
     "build": "rimraf dist/ && babel ./ --out-dir dist/ --extensions \".js,.ts\" --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
-    "viktor": "node dist/viktor.js",
-    "start": "npm run build && npm run viktor",
+    "start": "node dist/viktor.js",
+    "viktor": "npm run build && npm run start",
     "start-dev": "node viktor",
     "check-types": "tsc"
   },
