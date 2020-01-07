@@ -14,6 +14,7 @@ export const opgg = (msg:Discord.Message) => {
 }
 
 export const help = (msg:Discord.Message) => {
+    msg.channel.startTyping();
     let fields = new Array<TField>();
     let commands = cache["commands"]
         .filter(command => command.isModOnly === false && command.description);
@@ -27,10 +28,12 @@ export const help = (msg:Discord.Message) => {
     }
         
     const embed = createEmbed('📜 List of commands', fields);
+    msg.channel.stopTyping();
     msg.channel.send(embed);
 }
 
 export const hmod = (msg:Discord.Message) => {
+    msg.channel.startTyping();
     let fields = new Array<TField>();
     let commands = cache["commands"]
         .filter(command => command.isModOnly === true && command.description);
@@ -44,5 +47,6 @@ export const hmod = (msg:Discord.Message) => {
     }
         
     const embed = createEmbed('📜 List of moderator commands', fields);
+    msg.channel.stopTyping();
     msg.channel.send(embed);
 }

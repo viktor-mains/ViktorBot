@@ -4,13 +4,17 @@ import { removeKeyword } from '../../helpers';
 import { chooseRandom } from '../../rng';
 
 export const meow = async (msg:Discord.Message) => {
+    msg.channel.startTyping();
     const cat:any = await axios('http://aws.random.cat/meow')
         .catch(() => msg.channel.send('Unable to get a cat.'));
+    msg.channel.stopTyping();
     msg.channel.send(`😺 ${cat.data.file}`);
 }
 export const woof = async (msg:Discord.Message) => {
+    msg.channel.startTyping();
     const dog:any = await axios('http://random.dog/woof')
         .catch(() => msg.channel.send('Unable to get a dog.'));;
+    msg.channel.stopTyping();
     msg.channel.send(`🐶 http://random.dog/${dog.data}`);
 }
 
