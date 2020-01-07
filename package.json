@@ -6,8 +6,8 @@
   "scripts": {
     "test": "test",
     "build": "rimraf dist/ && babel ./ --out-dir dist/ --extensions \".js,.ts\" --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
-    "viktor": "node dist/viktor.js",
-    "start": "npm run build && npm run viktor",
+    "start": "node dist/viktor.js",
+    "viktor": "npm run build && npm run start",
     "start-dev": "node viktor",
     "check-types": "tsc"
   },
@@ -25,6 +25,7 @@
     "@types/node": "^11.13.4",
     "axios": "^0.18.1",
     "discord.js": "^11.4.2",
+    "moment": "^2.24.0",
     "mongodb": "^3.3.2",
     "rimraf": "^2.6.3",
     "saslprep": "^1.0.3"
