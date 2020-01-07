@@ -1,7 +1,9 @@
 import Discord from 'discord.js';
 import { log } from '../../log';
 import { removeKeyword, extractArguments } from '../../helpers';
+import { updateCache } from '../../storage/db';
 import { cache } from '../../storage/cache';
+import config from '../../../config.json';
 
 export const status = (msg:Discord.Message) => cache["bot"].user.setPresence({ game: { name: removeKeyword(msg), type: 0}})
 
@@ -21,4 +23,9 @@ export const impersonate = (msg:Discord.Message) => {
             msg.channel.send(`Something went wrong.`)
             log.WARN(e);
         });
+}
+
+export const refresh = (msg:Discord.Message) => {
+    config.DATABASES.map(db => updateCache(db.symbol));
+    return msg.react('✔️');
 }
