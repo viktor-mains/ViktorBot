@@ -121,22 +121,45 @@ const verifyCode = async (nickname:string, server:string, uuid:string, msg:Disco
     // }
     const { tier, rank } = await getTierAndDivision(msg, nickname, server);
     const mastery = await getMastery(msg, nickname, server);
-    const userData = {
-        discordId: msg.author.id,
-        updated: Date.now(),
-        accounts: [{
+    let userData = {};
+
+    const oldData = cache["users"].find(user => user.discordId === msg.author.id);
+    if (oldData) {
+        const isThisAccountRegistered = oldData["accounts"].find(account => account.id === playerId);
+        const account = {
             server: server.toUpperCase(),
             id: playerId,
             tier,
             rank,
             mastery
-        }]
-    };
+        };
+        if (isThisAccountRegistered) {
+            msg.channel.send(createEmbed(`❌This account is already registered`, [{ title: '\_\_\_', content: `This account is already registered.` }]));
+            msg.channel.stopTyping();
+            return;
+        }
+        userData = oldData;
+        userData["accounts"].push(account);
+    }
+    else {
+        userData = {
+            discordId: msg.author.id,
+            updated: Date.now(),
+            accounts: [{
+                server: server.toUpperCase(),
+                id: playerId,
+                tier,
+                rank,
+                mastery
+            }]
+        };
+    }
     upsertOne('vikbot', 'users', { discordId: msg.author.id }, userData, err => {
         err
             ? msg.channel.send(createEmbed(`❌ Cannot verify user`, [{ title: '\_\_\_', content: `Getting user's data failed, probably due to problem with database. Try again later.` }]))
             : msg.channel.send(createEmbed(`✅ Profile verified succesfully`, [{ title: '\_\_\_', content: `To check your profile, you can use \`\`!profile\`\` command now.`}]));
-    })
+    });
+    msg.channel.stopTyping();
 }
 
 const getTierAndDivision = async (msg:Discord.Message, nickname:string, server:string) => {
@@ -181,7 +204,7 @@ export const profile = async (msg:Discord.Message) => {
     msg.channel.startTyping();
     const userData = cache["users"].find(user => user.discordId === msg.author.id);
     if (!userData) {
-        msg.channel.send(`You didn't register yet. Use the \`\`!register <IGN> | <server>\`\` command to create your profile.`);
+        msg.channel.send(createEmbed(`:information_source: You didn't register yet`, [{ title: '\_\_\_', content: `Use the \`\`!register <IGN> | <server>\`\` command to create your profile.` }]));
         msg.channel.stopTyping();
         return;
     }
@@ -193,7 +216,7 @@ export const profile = async (msg:Discord.Message) => {
         .setFooter(`Last profile's update`)
         // @ts-ignore:next-line
         .setTimestamp(new Date(userData.updated).toLocaleDateString())
-        .setTitle(`${msg.author.username}'s League of Legends profile`);
+        .setTitle(`:information_source: ${msg.author.username}'s League of Legends profile`);
     const addAccountField = async (index:number) => {
         const account = userData.accounts[index];
         const url = `https://${getRealm(account.server)}.api.riotgames.com/lol/summoner/v4/summoners/${account.id}?api_key=${config.RIOT_API_TOKEN}`;
