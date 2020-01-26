@@ -1,6 +1,7 @@
 import Discord from 'discord.js';
 import axios from 'axios';
 import v4 from 'uuid/v4';
+import TinyURL from 'tinyurl';
 import { log } from '../../log';
 import { cache } from '../../storage/cache';
 import { upsertOne } from '../../storage/db';
@@ -174,4 +175,47 @@ const getMastery = async (msg:Discord.Message, nickname:string, server:string) =
         }
         : {}
     return masteryData;
+}
+
+export const profile = async (msg:Discord.Message) => {
+    msg.channel.startTyping();
+    const userData = cache["users"].find(user => user.discordId === msg.author.id);
+    if (!userData) {
+        msg.channel.send(`You didn't register yet. Use the \`\`!register <IGN> | <server>\`\` command to create your profile.`);
+        msg.channel.stopTyping();
+        return;
+    }
+    let viktorMastery = 0;
+    let lastViktorGame = 0;
+    const embed = new Discord.RichEmbed()
+        .setColor('FDC000')
+        .setThumbnail(msg.author.avatarURL)
+        .setFooter(`Last profile's update`)
+        // @ts-ignore:next-line
+        .setTimestamp(new Date(userData.updated).toLocaleDateString())
+        .setTitle(`${msg.author.username}'s League of Legends profile`);
+    const addAccountField = async (index:number) => {
+        const account = userData.accounts[index];
+        const url = `https://${getRealm(account.server)}.api.riotgames.com/lol/summoner/v4/summoners/${account.id}?api_key=${config.RIOT_API_TOKEN}`;
+        const userAccountData = await axios(url).catch(err => log.WARN(err));
+        const name = userAccountData && userAccountData.data && userAccountData.data.name ? userAccountData.data.name : 'UNKNOWN NAME';
+        const opgg = await TinyURL.shorten(`https://${account.server}.op.gg/summoner/userName=${name}`);
+        const content = `IGN: **${name}**\nRank: **${account.tier} ${account.rank === 'UNRANKED' ? '' : account.rank }**\nOP.gg: ${opgg}`;
+        viktorMastery += account.mastery.points;
+        lastViktorGame = lastViktorGame > account.mastery.lastPlayed ? lastViktorGame : account.mastery.lastPlayed;
+        embed.addField(account.server, content, true);
+
+        if (userData.accounts[index + 1])
+            addAccountField(index+1);
+        else
+            finalize();
+    }
+    const finalize = () => {
+        embed.addField('Collective Viktor mastery', viktorMastery, false);
+        embed.addField('Last Viktor game played', lastViktorGame === 0 ? 'never >:C' : new Date(lastViktorGame).toLocaleDateString(), false);
+        msg.channel.send(embed);
+        msg.channel.stopTyping();
+    }
+
+    addAccountField(0);
 }
