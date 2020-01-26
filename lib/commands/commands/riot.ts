@@ -32,6 +32,26 @@ export const getSummonerId = async (ign:string|undefined, server:string|undefine
         log.WARN(err);
         return undefined;
     }
+    return summoner.data.id;
+}
+
+export const getAccountId = async (ign:string|undefined, server:string|undefined) => {
+    if (!ign || !server) {
+        return undefined;
+    }
+    const realm = getRealm(server)
+    let summoner;
+    if (!realm) {
+        return undefined;
+    }
+    try {
+        const path = `https://${realm}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${ign}?api_key=${config.RIOT_API_TOKEN}`;
+        summoner = await axios(path);
+    }
+    catch(err) {
+        log.WARN(err);
+        return undefined;
+    }
     return summoner.data.accountId;
 }
 
@@ -40,7 +60,7 @@ export const lastlane = async (msg:Discord.Message) => {
 
     const champions = cache["champions"];
     const { nickname, server } = extractNicknameAndServer(msg);
-    const playerId = await getSummonerId(nickname, server);
+    const playerId = await getAccountId(nickname, server);
     const realm = getRealm(server);
 
     if (!nickname || !server)
