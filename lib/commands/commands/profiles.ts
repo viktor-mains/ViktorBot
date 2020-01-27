@@ -2,6 +2,7 @@ import Discord from 'discord.js';
 import axios from 'axios';
 import v4 from 'uuid/v4';
 import { log } from '../../log';
+import { initData } from '../../events';
 import { cache } from '../../storage/cache';
 import { upsertOne } from '../../storage/db';
 import { extractNicknameAndServer, createEmbed, removeKeyword, toDDHHMMSS } from '../../helpers';
@@ -222,6 +223,13 @@ export const profile = async (msg:Discord.Message) => {
             embed.addField('Viktor mastery', viktorMastery, true);
             embed.addField('Last Viktor game', lastViktorGame === 0 ? 'never >:C' : new Date(lastViktorGame).toLocaleDateString(), true);
         }
+        const memberData = userData.membership;
+        if (memberData) {
+            const messagesPerDay = (memberData.messageCount/((Date.now()-memberData.joined)/86400000)).toFixed(3);
+            embed.addField('Member since', new Date(memberData.joined).toUTCString(), false);
+            embed.addField('Messages written', memberData.messageCount, true);
+            embed.addField('Messages per day', messagesPerDay, true);
+        }
         msg.channel.send(embed);
         msg.channel.stopTyping();
     }
@@ -244,16 +252,9 @@ export const description = (msg:Discord.Message) => {
         msg.channel.send(createEmbed(`:information_source: Your description is too long`, [{ title: '\_\_\_', content: `Description must not exceed 1024 characters, so I've cut it down a bit.` }]));
     }
 
-    if (!userData) {
-        userData = {
-            discordId: msg.author.id,
-            updated: Date.now(),
-            description,
-            accounts: [],
-            membership: { } // [TODO]
-        }
-    }
-    else userData.description = description;
+    if (!userData) 
+        userData = initData(msg.member);
+    userData.description = description;
 
     upsertOne('vikbot', 'users', { discordId: msg.author.id }, userData, err => {
         if (err) {

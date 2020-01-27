@@ -1,6 +1,7 @@
 import Discord from "discord.js";
 import moment from 'moment';
 import { log } from './log';
+import { upsertOne } from './storage/db';
 import { createEmbed, toDDHHMMSS } from './helpers';
 import { cache } from './storage/cache';
 
@@ -56,6 +57,12 @@ export const userJoin = (member:Discord.GuildMember) => {
         { title: `Joined at`, content: moment(member.joinedAt.toISOString()).format("MMMM Do YYYY, HH:mm:ss"), inline: true }
     ], '51E61C');
     sendLog(log, 'room_log_users');
+
+    const returningMember = cache["users"].find(user => user.discordId === member.id);
+    if (!returningMember)
+        upsertOne('vikbot', 'users', { discordId: member.id }, initData(member), err => 
+            // @ts-ignore:next-line
+            err && log.WARN(err));
 }
 
 export const userLeave = (member:Discord.GuildMember) => { 
@@ -66,4 +73,32 @@ export const userLeave = (member:Discord.GuildMember) => {
     ], 'C70000');
 
     sendLog(log, 'room_log_users');
+}
+
+export const initData = (member:Discord.GuildMember) => ({
+    discordId: member.id,
+    updated: Date.now(),
+    accounts: [],
+    membership: {
+        messageCount: 0,
+        firstMessage: 0,
+        joined: member.joinedAt ? new Date(member.joinedAt).getTime() : Date.now()
+    }
+})
+
+export const handleUserNotInDatabase = async (member:Discord.GuildMember) => {
+    const update = (memberInDataBase) => {
+        memberInDataBase.membership.messageCount = memberInDataBase.membership.messageCount + 1;
+        if (memberInDataBase.membership.joined === 0) 
+            memberInDataBase.membership.joined = Date.now();
+        if (memberInDataBase.membership.firstMessage === 0) 
+            memberInDataBase.membership.firstMessage = Date.now();
+        upsertOne('vikbot', 'users', { discordId: member.id }, memberInDataBase, err => err && log.WARN(err));
+    }
+
+    let memberInDataBase = cache["users"].find(user => user.discordId === member.id);
+    if (!memberInDataBase)
+        update(initData(member));
+    else
+        update(memberInDataBase);
 }

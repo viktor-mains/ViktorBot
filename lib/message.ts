@@ -1,20 +1,15 @@
 import Discord from 'discord.js';
-
 import { TextCommand } from './commands/logic';
 import { Reaction } from './commands/reactions'
-
-import dearViktor from '../data/global/dearviktor.json';
-
 import { cache } from './storage/cache';
 import { getKeyword, getCommandSymbol } from './helpers';
+import { handleUserNotInDatabase } from './events';
 import { chooseRandom, happensWithAChanceOf } from './rng';
 import { Command } from './commands/list';
-
-import { 
-    IReaction, 
-    IReactionDetails 
-} from './types/reaction';
+import { IReaction, IReactionDetails } from './types/reaction';
 import { IDVKeywords } from './types/dearviktor';
+
+import dearViktor from '../data/global/dearviktor.json';
 
 // LOGIC
 
@@ -79,7 +74,9 @@ const checkForReactionTriggers = (msg:Discord.Message) => {
 
 // MAIN FUNCTION
 
-const classifyMessage = (msg:Discord.Message) => {
+const classifyMessage = async (msg:Discord.Message) => {
+    handleUserNotInDatabase(msg.member);
+    
     if (isUserBot(msg)) {
         return;
     }
