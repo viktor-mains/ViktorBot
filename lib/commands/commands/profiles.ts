@@ -4,53 +4,11 @@ import v4 from 'uuid/v4';
 import { log } from '../../log';
 import { cache } from '../../storage/cache';
 import { upsertOne } from '../../storage/db';
-import { extractNicknameAndServer, createEmbed, removeKeyword } from '../../helpers';
+import { extractNicknameAndServer, createEmbed, removeKeyword, toDDHHMMSS } from '../../helpers';
 import { getSummonerId, getRealm } from './riot';
 import config from '../../../config.json';
 
-// profiles stuff
-export const register = async (msg:Discord.Message) => {
-    msg.channel.startTyping();
-
-    const { nickname, server } = extractNicknameAndServer(msg); // [TODO] you can register multiple accounts
-    const uuid = `VIKBOT-${v4()}`;
-    
-    if (!nickname || !server)
-        return msg.channel.stopTyping();
-
-    // const embed = createEmbed('Your unique verification code!', [{ title: '\_\_\_', content: 
-    //     `\`\`${uuid}\`\`
-    //     \nCopy the above code, open League client, go into Settings -> Verification, paste the code in the text box and click "Send".
-    //     \nAfter it's done, react with the :white_check_mark:.
-    //     \nPicture: https://i.imgur.com/Oa4N6V5.png`}]);
-    // msg.channel.send(embed)
-    //     .then(sentEmbed => {
-    //         const reactions = [ '✅', '❌' ];
-    //         const filter = (reaction, user) => msg.author.id === user.id && (reaction.emoji.name === '❌' || reaction.emoji.name === '✅');
-    //         const iterateReactions = (index:number) => {
-    //             if (index >= reactions.length)
-    //                 return;
-    //             // @ts-ignore:next-line
-    //             sentEmbed.react(reactions[index]);
-    //             setTimeout(() => iterateReactions(index + 1), 500);
-    //         }
-    //         iterateReactions(0);
-            
-    //         // @ts-ignore:next-line
-    //         sentEmbed.awaitReactions(filter, {
-    //             time: 300000,
-    //             maxEmojis: 1
-    //         })
-    //         .then(collected => {
-    //             console.log(collected);
-                verifyCode(nickname, server, uuid, msg);
-    //         })
-    //         .catch(e => console.log(e))
-    //     })
-    //     .catch(err => log.WARN(err));
-    // msg.channel.stopTyping();
-    // return;
-}
+const timeout = 30000;
 
 const verifyCode = async (nickname:string, server:string, uuid:string, msg:Discord.Message ) => {
     const playerId = await getSummonerId(nickname, server);
@@ -152,33 +110,103 @@ const getMastery = async (msg:Discord.Message, nickname:string, server:string) =
     return masteryData;
 }
 
+export const register = async (msg:Discord.Message) => {
+    msg.channel.startTyping();
+
+    const { nickname, server } = extractNicknameAndServer(msg); // [TODO] you can register multiple accounts
+    const uuid = `VIKBOT-${v4()}`;
+    
+    if (!nickname || !server)
+        return msg.channel.stopTyping();
+
+    // const embed = new Discord.RichEmbed()
+    //     .setColor('FDC000')
+    //     .setFooter(`Your code expires at ${toDDHHMMSS(new Date(Date.now() + timeout))}`)
+    //     .setTitle(`Your unique verification code!`)
+    //     .addField('\_\_\_', `\`\`${uuid}\`\`
+    //         \nCopy the above code, open League client, go into Settings -> Verification, paste the code in the text box and click "Send".
+    //         \nAfter it's done, react with the :white_check_mark:.
+    //         \nPicture: https://i.imgur.com/Oa4N6V5.png`);
+    // msg.channel.send(embed)
+    //     .then(sentEmbed => {
+    //         const reactions = [ '✅', '❌' ];
+    //         const filter = (reaction, user) => msg.author.id === user.id && (reaction.emoji.name === '❌' || reaction.emoji.name === '✅');
+    //         const iterateReactions = (index:number) => {
+    //             if (index >= reactions.length)
+    //                 return;
+    //             // @ts-ignore:next-line
+    //             sentEmbed.react(reactions[index]);
+    //             setTimeout(() => iterateReactions(index + 1), 500);
+    //         }
+    //         iterateReactions(0);
+            
+    //         // @ts-ignore:next-line
+    //         sentEmbed.awaitReactions(filter, {
+    //             time: timeout,
+    //             maxEmojis: 1
+    //         })
+    //         .then(collected => {
+    //             console.log(collected);
+                verifyCode(nickname, server, uuid, msg);
+    //         })
+    //         .catch(e => console.log(e))
+    //     })
+    //     .catch(err => log.WARN(err));
+    // msg.channel.stopTyping();
+    // return;
+}
+
 export const profile = async (msg:Discord.Message) => {
     msg.channel.startTyping();
-    const userData = cache["users"].find(user => user.discordId === msg.author.id);
-    if (!userData) {
-        msg.channel.send(createEmbed(`:information_source: You didn't register yet`, [{ title: '\_\_\_', content: `Use the \`\`!register <IGN> | <server>\`\` command to create your profile.` }]));
-        msg.channel.stopTyping();
-        return;
-    }
+    
     let viktorMastery = 0;
     let lastViktorGame = 0;
+    const mentions = [ ...msg.mentions.users.values() ];
+    const user:Discord.User = mentions.length === 0 ? msg.author : msg.guild.members.find(member => member.id === mentions[0].id).user;
+    const userData = cache["users"].find(u => u.discordId === user.id);
+    if (!userData || userData["accounts"].length === 0) {
+        if (user.id === msg.author.id) {
+            msg.channel.send(createEmbed(`:information_source: You didn't register yet`, [{ title: '\_\_\_', content: `Use the \`\`!register <IGN> | <server>\`\` command to create your profile.` }]));
+            msg.channel.stopTyping();
+            return;
+        }
+        else {
+            msg.channel.send(createEmbed(`:information_source: This user didn't register yet`, [{ title: '\_\_\_', content: `You cannot see profile of this user as they didn't register yet.` }]));
+            msg.channel.stopTyping();
+            return;
+        }
+    }
+
     const embed = new Discord.RichEmbed()
         .setColor('FDC000')
-        .setThumbnail(msg.author.avatarURL)
+        .setThumbnail(user.avatarURL)
         .setFooter(`Last profile's update`)
         // @ts-ignore:next-line
         .setTimestamp(new Date(userData.updated).toLocaleDateString())
-        .setTitle(`:information_source: ${msg.author.username}'s profile`);
+        .setTitle(`:information_source: ${user.username}'s profile`);
     const addAccountField = async (index:number) => {
         if (!userData.accounts[index]) {
             finalize();
             return;
         }
         const account = userData.accounts[index];
-        const url = `https://${getRealm(account.server)}.api.riotgames.com/lol/summoner/v4/summoners/${account.id}?api_key=${config.RIOT_API_TOKEN}`;
-        const userAccountData = await axios(url).catch(err => log.WARN(err));
-        const name = userAccountData && userAccountData.data && userAccountData.data.name ? userAccountData.data.name : 'UNKNOWN NAME';
-        const opgg = `https://${account.server}.op.gg/summoner/userName=${name}`;
+        let url;
+        let userAccountData;
+        let name;
+        let opgg;
+        if (account.id) {
+            url = `https://${getRealm(account.server)}.api.riotgames.com/lol/summoner/v4/summoners/${account.id}?api_key=${config.RIOT_API_TOKEN}`;
+            userAccountData = await axios(url).catch(err => log.WARN(err));
+        }
+        name = account.name
+            ? account.name
+            : userAccountData && userAccountData.data && userAccountData.data.name 
+                ? userAccountData.data.name 
+                : 'UNKNOWN NAME';
+        opgg = account.opgg 
+            ? account.opgg 
+            : `https://${account.server}.op.gg/summoner/userName=${name}`;
+
         const content = `IGN: [**${name}**](${opgg})\nRank: **${account.tier} ${account.rank === 'UNRANKED' ? '' : account.rank }**`;
         viktorMastery += account.mastery.points;
         lastViktorGame = lastViktorGame > account.mastery.lastPlayed ? lastViktorGame : account.mastery.lastPlayed;
