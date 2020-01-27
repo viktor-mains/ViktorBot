@@ -7,7 +7,8 @@ import {
     CustomCommand,
 } from './logic';
 
-import { help, hmod, opgg, register, profile } from './commands/basic';
+import { help, hmod, opgg } from './commands/basic';
+import { register, profile, description } from './commands/profiles';
 import { } from './commands/faq';
 import { meow, woof, rito, choose } from './commands/fun';
 import { status, impersonate, refresh } from './commands/mod';
@@ -18,8 +19,10 @@ export const Command: { [key:string]: (command:ICommand, msg:Discord.Message) =>
     help: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(help, msg),
     hmod: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(hmod, msg),
     opgg: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(opgg, msg),
+    
     register: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(register, msg),
     profile: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(profile, msg),
+    description: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(description, msg),
 
     meow: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(meow, msg),
     woof: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(woof, msg),
