@@ -39,7 +39,7 @@ const specialRoleRequested = (roleName, msg:Discord.Message) => {
         ? cache["options"].find(option => option.option === 'membershipRoles').value.find(role => role.name.toLowerCase() === roleName.toLowerCase())
         : null;
     const rankRole = cache["options"].find(option => option.option === 'rankRoles')
-        ? cache["options"].find(option => option.option === 'rankRoles').value.find(role => role.toLowerCase() === roleName.toLowerCase())
+        ? cache["options"].find(option => option.option === 'rankRoles').value.find(role => role.rank.toLowerCase() === roleName.toLowerCase())
         : null;
     const modRole = cache["options"].find(option => option.option === 'modRoles')
         ? cache["options"].find(option => option.option === 'modRoles').value.find(role => role.toLowerCase() === roleName.toLowerCase())
@@ -66,10 +66,9 @@ const specialRoleRequested = (roleName, msg:Discord.Message) => {
             ':information_source: This is not how rank roles are assigned',
             [{ 
                 title: '\_\_\_', 
-                content: `Rank roles are assigned manually by moderators.\n\n` +
-                `1. **Screenshot your profile** with nickname and rank badge visible, like that: http://i.imgur.com/aiRJudZ.png \n` +
-                `2. Post the screenshot in the #bot_commands room. \n\n` +
-                `The colour will be based off *Ranked Solo/Duo* - Ranked Flex, Ranked 3v3, Teamfight Tactics etc. aren't taken into account.`
+                content: `Rank roles are assigned using the \`\`!register IGN|server\`\` command - You can register unlimited amount of accounts that belong to you.\n` +
+                `Doing so unlocks the \`\`!profile\`\` command for you, as well as gives you access to the #get_vikmains_advice room.\n` +
+                `You will also get a colour based off your *Ranked Solo/Duo* rank - Ranked Flex, Ranked 3v3, Teamfight Tactics etc. aren't taken into account.`
             }])
         msg.channel.send(embed);
         return true;

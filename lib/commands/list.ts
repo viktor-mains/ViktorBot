@@ -8,7 +8,7 @@ import {
 } from './logic';
 
 import { help, hmod, opgg } from './commands/basic';
-import { register, profile, description, topmembers } from './commands/profiles';
+import { register, profile, description, update, topmembers } from './commands/profiles';
 import { } from './commands/faq';
 import { meow, woof, rito, choose } from './commands/fun';
 import { status, impersonate, refresh } from './commands/mod';
@@ -23,6 +23,7 @@ export const Command: { [key:string]: (command:ICommand, msg:Discord.Message) =>
     register: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(register, msg),
     profile: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(profile, msg),
     description: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(description, msg),
+    update: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(update, msg),
     topmembers: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(topmembers, msg),
 
     meow: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(meow, msg),

@@ -5,14 +5,18 @@ import { upsertOne } from './storage/db';
 import { createEmbed, toDDHHMMSS } from './helpers';
 import { cache } from './storage/cache';
 
-const sendLog = (embed:Discord.RichEmbed, room:string) => {
+const sendLog = (guild:any, embed:Discord.RichEmbed, room:string) => {
     const room_log = cache["options"].find(option => option.option === room)
-        ? cache["options"].find(option => option.option === room).value
+        ? cache["options"].find(option => option.option === room).value.find(g => g.guild === guild)
+            ? cache["options"].find(option => option.option === room).value.find(g => g.guild === guild).id
+            : null
         : null;
-    const channel = cache["bot"].channels.get(room_log);
-    if (channel)
+    if (room_log) {
+        const channel = cache["bot"].channels.get(room_log);
+        if (channel)
         channel.send(embed)
             .catch(err => log.WARN(`Something went wrong. ${ err }`))
+    }
 }
 
 export const msgEdit = (oldMsg:Discord.Message, newMsg:Discord.Message) => { 
@@ -28,7 +32,8 @@ export const msgEdit = (oldMsg:Discord.Message, newMsg:Discord.Message) => {
         { title: `Created at`, content: moment(oldTimestamp).format("MMMM Do YYYY, HH:mm:ss"), inline: true},
         { title: `Edited at`, content: moment(newTimestamp).format("MMMM Do YYYY, HH:mm:ss"), inline: true}
     ], '83C4F2');
-    sendLog(log, 'room_log_msgs');
+    const guild = oldMsg.guild.id;
+    sendLog(guild, log, 'room_log_msgs');
 }
 
 export const msgDelete = (msg:Discord.Message) => { 
@@ -48,7 +53,8 @@ export const msgDelete = (msg:Discord.Message) => {
         { title: `Created at`, content: moment(oldTimestamp).format("MMMM Do YYYY, HH:mm:ss"), inline: true },
         { title: `Deleted at`, content: moment(newTimestamp).format("MMMM Do YYYY, HH:mm:ss"), inline: true}
     ], 'C70000');
-    sendLog(log, 'room_log_msgs');
+    const guild = msg.guild.id;
+    sendLog(guild, log, 'room_log_msgs');
 }
 
 export const userJoin = (member:Discord.GuildMember) => { 
@@ -56,7 +62,8 @@ export const userJoin = (member:Discord.GuildMember) => {
         { title: `User`, content: `${member.user.username}#${member.user.discriminator}`, inline: false },
         { title: `Joined at`, content: moment(member.joinedAt.toISOString()).format("MMMM Do YYYY, HH:mm:ss"), inline: true }
     ], '51E61C');
-    sendLog(log, 'room_log_users');
+    const guild = member.guild.id;
+    sendLog(guild, log, 'room_log_users');
 
     if (member.user.bot)
         return;
@@ -65,9 +72,8 @@ export const userJoin = (member:Discord.GuildMember) => {
         upsertOne('vikbot', 'users', { discordId: member.id }, initData(member), err => 
             // @ts-ignore:next-line
             err && log.WARN(err));
-    else { // [TODO] he might not be in this server!
-
-    }
+    else 
+        handleUserNotInDatabase(member);
 }
 
 export const userLeave = (member:Discord.GuildMember) => { 
@@ -76,8 +82,8 @@ export const userLeave = (member:Discord.GuildMember) => {
         { title: `Was a member for`, content: toDDHHMMSS(member.joinedAt), inline: true },
         { title: `Leaves at`, content: moment(new Date().toISOString()).format("MMMM Do YYYY, HH:mm:ss a"), inline: true }
     ], 'C70000');
-
-    sendLog(log, 'room_log_users');
+    const guild = member.guild.id;
+    sendLog(guild, log, 'room_log_users');
 }
 
 export const initData = (member:Discord.GuildMember) => ({

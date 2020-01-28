@@ -6,25 +6,25 @@ import { log } from '../../log';
 import { initData } from '../../events';
 import { cache } from '../../storage/cache';
 import { upsertOne } from '../../storage/db';
-import { extractNicknameAndServer, createEmbed, removeKeyword, toDDHHMMSS, justifyToRight, justifyToLeft } from '../../helpers';
+import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft } from '../../helpers';
 import { getSummonerId, getRealm } from './riot';
 import config from '../../../config.json';
 
-const timeout = 30000;
+const timeout = 300000;
 
 const verifyCode = async (nickname:string, server:string, uuid:string, msg:Discord.Message ) => {
     const playerId = await getSummonerId(nickname, server);
     const realm = getRealm(server);
-    // const url = `https://${realm}.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
+    const url = `https://${realm}.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
     
     // const verificationCode:any = await axios(url)
     //     .catch(err => {
     //         log.WARN(err);
-    //         msg.channel.send(createEmbed(`❌Cannot get verification code`, [{ title: '\_\_\_', content: `Getting 3rd party code failed.` }]));
+    //         msg.channel.send(createEmbed(`❌ Cannot get verification code`, [{ title: '\_\_\_', content: `Getting 3rd party code failed.` }]));
     //         msg.channel.stopTyping();
     //     })
     // if (uuid !== verificationCode.data) {
-    //     msg.channel.send(createEmbed(`❌Incorrect verification code`, [{ title: '\_\_\_', content: `The verification code you've set is incorrect, try again.` }]));
+    //     msg.channel.send(createEmbed(`❌ Incorrect verification code`, [{ title: '\_\_\_', content: `The verification code you've set is incorrect, try again.\nIf this happens consistently, reset the League client.` }]));
     //     msg.channel.stopTyping();
     //     return;
     // }
@@ -43,7 +43,7 @@ const verifyCode = async (nickname:string, server:string, uuid:string, msg:Disco
             mastery
         };
         if (isThisAccountRegistered) {
-            msg.channel.send(createEmbed(`❌This account is already registered`, [{ title: '\_\_\_', content: `This account is already registered.` }]));
+            msg.channel.send(createEmbed(`❌ This account is already registered`, [{ title: '\_\_\_', content: `This account is already registered.` }]));
             msg.channel.stopTyping();
             return;
         }
@@ -66,16 +66,34 @@ const verifyCode = async (nickname:string, server:string, uuid:string, msg:Disco
             membership: {}
         };
     }
+    updateRankRoles(msg, userData);    
     upsertOne('vikbot', 'users', { discordId: msg.author.id }, userData, err => {
         err
             ? msg.channel.send(createEmbed(`❌ Cannot verify user`, [{ title: '\_\_\_', content: `Getting user's data failed, probably due to problem with database. Try again later.` }]))
-            : msg.channel.send(createEmbed(`✅ Profile verified succesfully`, [{ title: '\_\_\_', content: `To check your profile, you can use \`\`!profile\`\` command now.`}]));
+            : msg.channel.send(createEmbed(`✅ Profile verified succesfully`, [{ title: '\_\_\_', content: `To check your profile, you can use \`\`!profile\`\` command.`}]));
     });
     msg.channel.stopTyping();
 }
 
-const getTierAndDivision = async (msg:Discord.Message, nickname:string, server:string) => {
-    const playerId = await getSummonerId(nickname, server);
+const updateRankRoles = (msg:Discord.Message, userData) => {
+    const ranksWeighted = cache["options"].find(option => option.option === 'rankRoles').value;
+    let highestTier = 'UNRANKED';
+    userData["accounts"].map(account => {
+        const rW = ranksWeighted.find(rankWeighted => rankWeighted.rank.toLowerCase() === account.tier.toLowerCase())
+        const rHT = ranksWeighted.find(rankWeighted => rankWeighted.rank.toLowerCase() === highestTier.toLowerCase())
+        if (rW.weight < rHT.weight)
+            highestTier = rW.rank;
+    });
+
+    const rolesToRemove = msg.member.roles.filter(role => ranksWeighted.find(r => r.rank === role.name));
+    const roleToAdd = msg.guild.roles.find(role => role.name.toLowerCase() === highestTier.toLowerCase());
+    msg.member.removeRoles(rolesToRemove)
+        .then(() => msg.member.addRole(roleToAdd))
+        .catch(err => log.WARN(err));
+}
+
+const getTierAndDivision = async (msg:Discord.Message, nickname:string, server:string, _playerId?:any) => {
+    const playerId = _playerId ? _playerId : await getSummonerId(nickname, server);
     const realm = getRealm(server);
     const url = `https://${realm}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
     const userLeagues:any = await axios(url)
@@ -92,8 +110,8 @@ const getTierAndDivision = async (msg:Discord.Message, nickname:string, server:s
     return soloQRank;
 }
 
-const getMastery = async (msg:Discord.Message, nickname:string, server:string) => {
-    const playerId = await getSummonerId(nickname, server);
+const getMastery = async (msg:Discord.Message, nickname:string, server:string, _playerId?:any) => {
+    const playerId = _playerId ? _playerId : await getSummonerId(nickname, server);
     const realm = getRealm(server);
     const url = `https://${realm}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${playerId}/by-champion/112?api_key=${config.RIOT_API_TOKEN}`;
     const userMastery:any = await axios(url)
@@ -116,7 +134,7 @@ const getMastery = async (msg:Discord.Message, nickname:string, server:string) =
 export const register = async (msg:Discord.Message) => {
     msg.channel.startTyping();
 
-    const { nickname, server } = extractNicknameAndServer(msg); // [TODO] you can register multiple accounts
+    const { nickname, server } = extractNicknameAndServer(msg);
     const uuid = `VIKBOT-${v4()}`;
     
     if (!nickname || !server)
@@ -124,7 +142,7 @@ export const register = async (msg:Discord.Message) => {
 
     // const embed = new Discord.RichEmbed()
     //     .setColor('FDC000')
-    //     .setFooter(`Your code expires at ${toDDHHMMSS(new Date(Date.now() + timeout))}`)
+    //     .setFooter(`Your code expires at ${(new Date(Date.now() + timeout)).toLocaleTimeString()}`)
     //     .setTitle(`Your unique verification code!`)
     //     .addField('\_\_\_', `\`\`${uuid}\`\`
     //         \nCopy the above code, open League client, go into Settings -> Verification, paste the code in the text box and click "Send".
@@ -148,15 +166,14 @@ export const register = async (msg:Discord.Message) => {
     //             time: timeout,
     //             maxEmojis: 1
     //         })
-    //         .then(collected => {
-    //             console.log(collected);
-                verifyCode(nickname, server, uuid, msg);
-    //         })
+    //         .then(collected => 
+                    verifyCode(nickname, server, uuid, msg)
+                    // )
     //         .catch(e => console.log(e))
     //     })
     //     .catch(err => log.WARN(err));
     // msg.channel.stopTyping();
-    // return;
+    return;
 }
 
 export const profile = async (msg:Discord.Message) => {
@@ -279,7 +296,32 @@ export const description = (msg:Discord.Message) => {
 }
 
 export const update = (msg:Discord.Message) => {
+    const member = cache["users"].find(user => user.discordId === msg.author.id);
+    const updateAccounts = async (index:number) => {
+        if (!member.accounts[index])
+            return finalize();
+        const account = member.accounts[index];
+        const { tier, rank } = await getTierAndDivision(msg, '', account.server, account.id);
+        const mastery = await getMastery(msg, '', account.server, account.id);
+        const updatedAcc = { ...account };
+        updatedAcc.tier = tier;
+        updatedAcc.rank = rank;
+        updatedAcc.mastery = mastery;
+        member.accounts[index] = updatedAcc;
+        updateAccounts(index + 1);
+    }
+    const finalize = () => {
+        updateRankRoles(msg, member);
+        member.updated = Date.now();
+        upsertOne('vikbot', 'users', { discordId: msg.author.id }, member, err => {
+            err
+                ? msg.channel.send(createEmbed(`❌ Cannot update user`, [{ title: '\_\_\_', content: `Updating user's data failed. Try again later.` }]))
+                : msg.channel.send(createEmbed(`✅ Profile updated succesfully`, [{ title: '\_\_\_', content: `To check your profile, you can use \`\`!profile\`\` command.`}]));
+        });
+        msg.channel.stopTyping();
+    }
 
+    updateAccounts(0);
 }
 
 export const topmembers = (msg:Discord.Message) => {
