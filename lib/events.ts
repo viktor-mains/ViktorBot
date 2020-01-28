@@ -58,11 +58,16 @@ export const userJoin = (member:Discord.GuildMember) => {
     ], '51E61C');
     sendLog(log, 'room_log_users');
 
+    if (member.user.bot)
+        return;
     const returningMember = cache["users"].find(user => user.discordId === member.id);
     if (!returningMember)
         upsertOne('vikbot', 'users', { discordId: member.id }, initData(member), err => 
             // @ts-ignore:next-line
             err && log.WARN(err));
+    else { // [TODO] he might not be in this server!
+
+    }
 }
 
 export const userLeave = (member:Discord.GuildMember) => { 
@@ -79,26 +84,40 @@ export const initData = (member:Discord.GuildMember) => ({
     discordId: member.id,
     updated: Date.now(),
     accounts: [],
-    membership: {
+    membership: [{
+        serverId: member.guild.id,
         messageCount: 0,
         firstMessage: 0,
         joined: member.joinedAt ? new Date(member.joinedAt).getTime() : Date.now()
-    }
+    }]
 })
 
 export const handleUserNotInDatabase = async (member:Discord.GuildMember) => {
     const update = (memberInDataBase) => {
-        memberInDataBase.membership.messageCount = memberInDataBase.membership.messageCount + 1;
-        if (memberInDataBase.membership.joined === 0) 
-            memberInDataBase.membership.joined = Date.now();
-        if (memberInDataBase.membership.firstMessage === 0) 
-            memberInDataBase.membership.firstMessage = Date.now();
-        upsertOne('vikbot', 'users', { discordId: member.id }, memberInDataBase, err => err && log.WARN(err));
+        const memberIndex = memberInDataBase.membership.findIndex(m => m.serverId === member.guild.id);
+        if (memberIndex !== -1) { // user is in the database and in the server
+            memberInDataBase.membership[memberIndex].messageCount = memberInDataBase.membership[memberIndex].messageCount + 1;
+                if (memberInDataBase.membership[memberIndex].joined === 0) 
+                    memberInDataBase.membership[memberIndex].joined = Date.now();
+                if (memberInDataBase.membership[memberIndex].firstMessage === 0) 
+                    memberInDataBase.membership[memberIndex].firstMessage = Date.now();
+                upsertOne('vikbot', 'users', { discordId: member.id }, memberInDataBase, err => err && log.WARN(err));
+        }
+        else { // user is in database but not in the server
+            const serverData = {
+                serverId: member.guild.id,
+                messageCount: 1,
+                firstMessage: Date.now(),
+                joined: member.joinedAt ? new Date(member.joinedAt).getTime() : Date.now()
+            }
+            memberInDataBase.membership.push(serverData);
+            upsertOne('vikbot', 'users', { discordId: member.id }, memberInDataBase, err => err && log.WARN(err));
+        }
     }
 
     let memberInDataBase = cache["users"].find(user => user.discordId === member.id);
-    if (!memberInDataBase)
+    if (!memberInDataBase) // user not in database at all
         update(initData(member));
-    else
+    else // user in database
         update(memberInDataBase);
 }

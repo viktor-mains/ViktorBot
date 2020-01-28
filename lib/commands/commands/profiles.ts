@@ -1,11 +1,12 @@
 import Discord from 'discord.js';
 import axios from 'axios';
 import v4 from 'uuid/v4';
+import { orderBy } from 'lodash';
 import { log } from '../../log';
 import { initData } from '../../events';
 import { cache } from '../../storage/cache';
 import { upsertOne } from '../../storage/db';
-import { extractNicknameAndServer, createEmbed, removeKeyword, toDDHHMMSS } from '../../helpers';
+import { extractNicknameAndServer, createEmbed, removeKeyword, toDDHHMMSS, justifyToRight, justifyToLeft } from '../../helpers';
 import { getSummonerId, getRealm } from './riot';
 import config from '../../../config.json';
 
@@ -48,8 +49,8 @@ const verifyCode = async (nickname:string, server:string, uuid:string, msg:Disco
         }
         userData = oldData;
         userData["accounts"]
-            ? userData["accounts"] = [ account ]
-            : userData["accounts"].push(account);
+            ? userData["accounts"].push(account)
+            : userData["accounts"] = [ account ]
     }
     else {
         userData = {
@@ -82,6 +83,7 @@ const getTierAndDivision = async (msg:Discord.Message, nickname:string, server:s
             log.WARN(err);
             msg.channel.send(createEmbed(`❌Cannot get user's data`, [{ title: '\_\_\_', content: `Getting user's data failed. Try again later.` }]));
             msg.channel.stopTyping();
+            return;
         })
     const soloQ = userLeagues.data.find(queue => queue.queueType === 'RANKED_SOLO_5x5');
     const soloQRank = soloQ 
@@ -183,7 +185,7 @@ export const profile = async (msg:Discord.Message) => {
         .setThumbnail(user.avatarURL)
         .setFooter(`Last profile's update`)
         // @ts-ignore:next-line
-        .setTimestamp(new Date(userData.updated).toLocaleDateString())
+        .setTimestamp(new Date(userData.updated).toLocaleString())
         .setTitle(`:information_source: ${user.username}'s profile`);
     const addAccountField = async (index:number) => {
         if (!userData.accounts[index]) {
@@ -209,8 +211,12 @@ export const profile = async (msg:Discord.Message) => {
             : `https://${account.server}.op.gg/summoner/userName=${name}`;
 
         const content = `IGN: [**${name}**](${opgg})\nRank: **${account.tier} ${account.rank === 'UNRANKED' ? '' : account.rank }**`;
-        viktorMastery += account.mastery.points;
-        lastViktorGame = lastViktorGame > account.mastery.lastPlayed ? lastViktorGame : account.mastery.lastPlayed;
+        viktorMastery = typeof account.mastery.points === 'number' 
+            ? viktorMastery + account.mastery.points 
+            : account.mastery.points; // for inifinity symbols
+        lastViktorGame = lastViktorGame > account.mastery.lastPlayed 
+            ? lastViktorGame 
+            : account.mastery.lastPlayed;
         embed.addField(account.server, content, true);
         
         addAccountField(index+1);
@@ -221,12 +227,18 @@ export const profile = async (msg:Discord.Message) => {
             : `This user has no description yet.`, false);
         if (userData.accounts.length > 0) {
             embed.addField('Viktor mastery', viktorMastery, true);
-            embed.addField('Last Viktor game', lastViktorGame === 0 ? 'never >:C' : new Date(lastViktorGame).toLocaleDateString(), true);
+            embed.addField('Last Viktor game', lastViktorGame === 0 
+                ? 'never >:C' 
+                : new Date(lastViktorGame).toLocaleDateString(), true);
         }
-        const memberData = userData.membership;
+        const memberData = userData.membership 
+            ? userData.membership.find(member => member.serverId === msg.guild.id) 
+            : null;
         if (memberData) {
             const messagesPerDay = (memberData.messageCount/((Date.now()-memberData.joined)/86400000)).toFixed(3);
-            embed.addField('Member since', new Date(memberData.joined).toUTCString(), false);
+            embed.addField('Member since', memberData.joined < memberData.firstMessage 
+                ? new Date(memberData.joined).toUTCString() 
+                : new Date(memberData.firstMessage).toUTCString(), false);
             embed.addField('Messages written', memberData.messageCount, true);
             embed.addField('Messages per day', messagesPerDay, true);
         }
@@ -264,4 +276,28 @@ export const description = (msg:Discord.Message) => {
     })
     msg.channel.send(createEmbed(`✅ Description updated succesfully`, [{ title: '\_\_\_', content: `To check your profile, you can use \`\`!profile\`\` command.`}]));
     msg.channel.stopTyping();
+}
+
+export const update = (msg:Discord.Message) => {
+
+}
+
+export const topmembers = (msg:Discord.Message) => {
+    const count = cache["options"].find(option => option.option === 'topmembers')
+        ? cache["options"].find(option => option.option === 'topmembers').value
+        : 20;
+    let members = cache["users"]
+        .filter(user => user.membership && user.membership.find(member => member.serverId === msg.guild.id && msg.guild.members.find(m => m.id === user.discordId )))
+        .map(user => {
+            return {
+                id: user.discordId,
+                messageCount: user.membership.find(member => member.serverId === msg.guild.id).messageCount || 0
+            }});
+    members = orderBy(members, ['messageCount'], ['desc']);
+    let content = '';
+    members.map((member, index) => index < count 
+        ? content += `\`\`#${justifyToLeft((index+1).toString(), 2)} - ${justifyToRight(member.messageCount.toString(), 6)} msg\`\` - ${msg.guild.members.find(m => m.id === member.id).user.username}` 
+        : {})
+    const embed = createEmbed(`Top ${count} members`, [{ title: '\_\_\_', content }])
+    msg.channel.send(embed);
 }

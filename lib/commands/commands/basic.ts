@@ -14,7 +14,6 @@ export const opgg = (msg:Discord.Message) => {
 }
 
 export const help = (msg:Discord.Message) => {
-    msg.channel.startTyping();
     let fields = new Array<TField>();
     let commands = cache["commands"]
         .filter(command => command.isModOnly === false && command.description);
@@ -23,17 +22,21 @@ export const help = (msg:Discord.Message) => {
     for (let category in commands) {
         const title = `Category ${category.toUpperCase()}`;
         let content = '';
-        commands[category].map(command => content += `\`\`-\`\`**${getCommandSymbol()}${command.keyword}** - ${command.description}\n`);
+        commands[category].map(command => content += `- **${getCommandSymbol()}${command.keyword}** - ${command.description}\n`);
         fields.push({ title, content })
     }
         
     const embed = createEmbed('📜 List of commands', fields);
-    msg.channel.stopTyping();
-    msg.channel.send(embed);
+    msg.author.send({ embed })
+        .then(() => msg.react('📩'))
+        .catch(err =>
+            msg.channel.send(createEmbed(':warning: I am unable to reply to you', [{ title: '\_\_\_', content: `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
+            \nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command.` }]
+            ))
+        );
 }
 
 export const hmod = (msg:Discord.Message) => {
-    msg.channel.startTyping();
     let fields = new Array<TField>();
     let commands = cache["commands"]
         .filter(command => command.isModOnly === true && command.description);
@@ -47,6 +50,11 @@ export const hmod = (msg:Discord.Message) => {
     }
         
     const embed = createEmbed('📜 List of moderator commands', fields);
-    msg.channel.stopTyping();
-    msg.channel.send(embed);
+    msg.author.send({ embed })
+        .then(() => msg.react('📩'))
+        .catch(err =>
+            msg.channel.send(createEmbed(':warning: I am unable to reply to you', [{ title: '\_\_\_', content: `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
+            \nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command.` }]
+            ))
+        );
 }

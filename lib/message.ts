@@ -1,5 +1,5 @@
 import Discord from 'discord.js';
-import { TextCommand } from './commands/logic';
+import { TextCommand, EmbedCommand } from './commands/logic';
 import { Reaction } from './commands/reactions'
 import { cache } from './storage/cache';
 import { getKeyword, getCommandSymbol } from './helpers';
@@ -45,6 +45,10 @@ const answerCommand = (msg:Discord.Message) => {
         new TextCommand(command, msg).execute(command.text);
         return;
     }
+    if (command && command.embed) {
+        new EmbedCommand(command, msg).execute(command.embed.title, command.embed.fields, command.embed.color);
+        return;
+    }
     if (command && Command[getKeyword(msg)]) {
         Command[getKeyword(msg)](command, msg)
         return;
@@ -75,11 +79,12 @@ const checkForReactionTriggers = (msg:Discord.Message) => {
 // MAIN FUNCTION
 
 const classifyMessage = async (msg:Discord.Message) => {
-    handleUserNotInDatabase(msg.member);
-    
     if (isUserBot(msg)) {
         return;
     }
+
+    handleUserNotInDatabase(msg.member);
+
     if (isMessageDearViktor(msg)) {
         answerDearViktor(msg);
         return;

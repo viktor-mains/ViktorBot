@@ -39,7 +39,7 @@ export const splitByFirstSymbol = (msg:Discord.Message, symbol:string) => {
     return args;
 }
 
-export const createEmbed = (title: string, fields:Array<IEmbedField>, color?: string, thumbnail?: string, footer?: string) => {
+export const createEmbed = (title:string, fields:Array<IEmbedField>, color?:string, thumbnail?:string, footer?:string) => {
     const embed = thumbnail
         ? new Discord.RichEmbed()
             .setTitle(title)
@@ -101,3 +101,17 @@ export const toDDHHMMSS = (joinedAt:Date) => {
         moment.duration(diff).seconds() ? moment.duration(diff).seconds() + 's ' : ''
     }`
 } 
+
+export const justifyToRight = (input:string, desiredLength:number) => {
+    let output = input; 
+    while (output.length < desiredLength)
+        output = ` ${output}`;
+    return output;
+};
+
+export const justifyToLeft = (input:string, desiredLength:number) => {
+    let output = input; 
+    while (output.length < desiredLength)
+        output += ` `;
+    return output;
+};

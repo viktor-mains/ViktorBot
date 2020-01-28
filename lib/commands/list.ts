@@ -8,12 +8,12 @@ import {
 } from './logic';
 
 import { help, hmod, opgg } from './commands/basic';
-import { register, profile, description } from './commands/profiles';
+import { register, profile, description, topmembers } from './commands/profiles';
 import { } from './commands/faq';
 import { meow, woof, rito, choose } from './commands/fun';
 import { status, impersonate, refresh } from './commands/mod';
 import { updatechampions, lastlane } from './commands/riot';
-import { iam, iamnot, roles, membership, topmembers } from './commands/roles';
+import { iam, iamnot, roles } from './commands/roles';
 
 export const Command: { [key:string]: (command:ICommand, msg:Discord.Message) => string | void} = {
     help: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(help, msg),
@@ -23,16 +23,13 @@ export const Command: { [key:string]: (command:ICommand, msg:Discord.Message) =>
     register: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(register, msg),
     profile: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(profile, msg),
     description: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(description, msg),
+    topmembers: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(topmembers, msg),
 
     meow: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(meow, msg),
     woof: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(woof, msg),
     rito: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(rito, msg),
     choose: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(choose, msg),
-    beep: (command:ICommand, msg:Discord.Message) => new TextCommand(command, msg).execute('_sighs deeply_\nBeep. Boop.'),
-    clubs: (command:ICommand, msg:Discord.Message) => new TextCommand(command, msg).execute('List of in-game clubs we know about: <https://www.reddit.com/r/viktormains/wiki/clubs>'),
-    faq: (command:ICommand, msg:Discord.Message) => new TextCommand(command, msg).execute('Useful tips and tricks for new Viktor players: <https://www.reddit.com/r/viktormains/wiki/faq>'),
     joke: (command:ICommand, msg:Discord.Message) => new TextCommand(command, msg).execute('I won\'t waste my precious time for sake of your personal amusement.'),
-    gibeskin: (command:ICommand, msg:Discord.Message) => new TextCommand(command, msg).execute('http://arcyvilk.com/greatherald/img/gibeskin.png'),
     
     status: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(status, msg),
     impersonate: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(impersonate, msg),
@@ -44,6 +41,4 @@ export const Command: { [key:string]: (command:ICommand, msg:Discord.Message) =>
     iam: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(iam, msg),
     iamnot: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(iamnot, msg),
     roles: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(roles, msg),
-    membership: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(membership, msg),
-    topmembers: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(topmembers, msg),
 };

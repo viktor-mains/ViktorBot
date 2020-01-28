@@ -1,9 +1,7 @@
 import Discord from 'discord.js';
 import { log } from '../../log';
 import { createEmbed, extractArguments, removeKeyword } from '../../helpers';
-import { updateCache } from '../../storage/db';
 import { cache } from '../../storage/cache';
-import config from '../../../config.json';
 
 const returnRoleID = (roleName, member) => {
     const role = member.guild.roles.find(role => role.name.toLowerCase() === roleName.toLowerCase()).id;
@@ -38,7 +36,7 @@ const specialRoleRequested = (roleName, msg:Discord.Message) => {
         ? cache["options"].find(option => option.option === 'jokeRoles').value.find(role => role.toLowerCase() === roleName.toLowerCase())
         : null;
     const membershipRole = cache["options"].find(option => option.option === 'membershipRoles')
-        ? cache["options"].find(option => option.option === 'membershipRoles').value.find(role => role.toLowerCase() === roleName.toLowerCase())
+        ? cache["options"].find(option => option.option === 'membershipRoles').value.find(role => role.name.toLowerCase() === roleName.toLowerCase())
         : null;
     const rankRole = cache["options"].find(option => option.option === 'rankRoles')
         ? cache["options"].find(option => option.option === 'rankRoles').value.find(role => role.toLowerCase() === roleName.toLowerCase())
@@ -151,10 +149,4 @@ export const roles = (msg:Discord.Message) => {
     const embed = createEmbed('Self-assignable roles', [{ title: '\_\_\_', content: availableRoles.join('\n')}])
     msg.channel.stopTyping();
     msg.channel.send(embed);
-}
-export const membership = (msg:Discord.Message) => {
-    msg.channel.send('WIP')
-}
-export const topmembers = (msg:Discord.Message) => {
-    msg.channel.send('WIP')
 }
