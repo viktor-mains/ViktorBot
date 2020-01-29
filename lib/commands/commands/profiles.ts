@@ -248,7 +248,9 @@ export const profile = async (msg:Discord.Message) => {
     }
     const finalize = () => {
         embed.addField('Description', userData.description 
-            ? userData.description.replace(replaceAll('MEMBER_NICKNAME'), user.username)
+            ? userData.description
+                .replace(replaceAll('MEMBER_NICKNAME'), user.username)
+                .replace(replaceAll('<br>'), '\n')
             : `This user has no description yet.`, false);
         if (userData.accounts.length > 0) {
             embed.addField('Viktor mastery', viktorMastery, true);
