@@ -3,7 +3,7 @@ import { orderBy } from 'lodash';
 import moment from 'moment';
 import { log } from './log';
 import { upsertOne } from './storage/db';
-import { createEmbed, toDDHHMMSS, removeKeyword } from './helpers';
+import { createEmbed, toDDHHMMSS, removeKeyword, replaceAll } from './helpers';
 import { cache } from './storage/cache';
 
 const sendLog = (guild:any, embed:Discord.RichEmbed, room:string) => {
@@ -187,7 +187,7 @@ export const handlePossibleMembershipRole = async (msg:Discord.Message) => {
     const neededRoles = orderBy(membershipRoles, ['weight'], ['desc'])
         .filter(role => 
             role.requirement.messages <= memberMsgCount 
-            && role.requirement.time <= memberJoinDate)
+            && role.requirement.time <= Date.now() - memberJoinDate)
         .filter((role, index) => role.persistent || index === 0) //only persistent roles and one with highest weight
     membershipRoles.map(mR => {
         if (neededRoles.find(nR => nR.name === mR.name) 
@@ -208,12 +208,12 @@ export const handlePossibleMembershipRole = async (msg:Discord.Message) => {
 
 const informAboutPromotion = (msg:Discord.Message, role:any) => {
     const embedTitle:string = role.message.title
-        .replace('MEMBER_USERNAME', msg.author.username)
-        .replace('MEMBERSHIP_ROLE', role.name);
+        .replace(replaceAll('MEMBER_USERNAME'), msg.author.username)
+        .replace(replaceAll('MEMBERSHIP_ROLE'), role.name);
     const embedContent:string = role.message.content
-        .replace('MEMBER_USERNAME', msg.author.username)
-        .replace('MEMBERSHIP_ROLE', role.name)
-        .replace('\\n', '\n')
+        .replace(replaceAll('MEMBER_USERNAME'), msg.author.username)
+        .replace(replaceAll('MEMBERSHIP_ROLE'), role.name)
+        .replace(replaceAll('<br>'), '\n')
     const embedColor:string = role.message.color;
     const embedIcon:string = role.message.icon;
     const embed = new Discord.RichEmbed()
@@ -221,7 +221,7 @@ const informAboutPromotion = (msg:Discord.Message, role:any) => {
         .setThumbnail(msg.author.avatarURL)
         .setColor(embedColor)
         .addField(`\_\_\_`, embedContent, false)
-        .setFooter(`${embedIcon} Powered by Glorious Evolution`)
+        .setFooter(`Powered by Glorious Evolution`)
         .setTimestamp(new Date());
     msg.channel.send(embed);
 }

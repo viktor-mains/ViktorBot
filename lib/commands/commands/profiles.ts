@@ -6,7 +6,7 @@ import { log } from '../../log';
 import { initData, descriptionChange } from '../../events';
 import { cache } from '../../storage/cache';
 import { upsertOne } from '../../storage/db';
-import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft, toDDHHMMSS } from '../../helpers';
+import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft, replaceAll } from '../../helpers';
 import { getSummonerId, getRealm } from './riot';
 import config from '../../../config.json';
 
@@ -238,7 +238,7 @@ export const profile = async (msg:Discord.Message) => {
     }
     const finalize = () => {
         embed.addField('Description', userData.description 
-            ? userData.description.replace('MEMBER_NICKNAME', user.username)
+            ? userData.description.replace(replaceAll('MEMBER_NICKNAME'), user.username)
             : `This user has no description yet.`, false);
         if (userData.accounts.length > 0) {
             embed.addField('Viktor mastery', viktorMastery, true);

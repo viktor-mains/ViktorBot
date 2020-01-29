@@ -115,3 +115,5 @@ export const justifyToLeft = (input:string, desiredLength:number) => {
         output += ` `;
     return output;
 };
+
+export const replaceAll = (stringToReplace:string) => new RegExp(stringToReplace, "gi");
