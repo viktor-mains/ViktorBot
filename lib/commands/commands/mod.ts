@@ -115,17 +115,19 @@ export const msgupdate = (msg:Discord.Message) => {
             if (!joinDate) console.log(mTU.discordId);
             if (userIsInDB) { // if user IS in database, just update his membership
                 membersData = { ...userIsInDB };
-                if (!membersData.membership) return; // probably bot
+                if (!membersData.membership) 
+                    return; // probably bot
                 let serverDataIndex = membersData.membership.findIndex(mShip => mShip.serverId === mTU.serverId);
                 if (serverDataIndex !== -1) { // if this server of user is in database
-                    membersData.membership[serverDataIndex] = {
-                        serverId: mTU.serverId,
-                        messageCount: mTU.messageCount,
-                        firstMessage: mTU.firstMessage,
-                        joined: joinDate
-                    }
+                    // membersData.membership[serverDataIndex] = {
+                    //     serverId: mTU.serverId,
+                    //     messageCount: mTU.messageCount,
+                    //     firstMessage: mTU.firstMessage,
+                    //     joined: joinDate
+                    // }
                 }
                 else { // if this server of user is not in database
+                    console.log(mTU.discordId);
                     membersData.membership.push({
                         serverId: mTU.serverId,
                         messageCount: mTU.messageCount,
@@ -135,16 +137,16 @@ export const msgupdate = (msg:Discord.Message) => {
                 }
             }   
             else { // if user ISNT in database, init him and then add all his servers
-                const savedMemberData = initData(null, mTU.discordId);
-                membersData = {
-                    ...savedMemberData,
-                    membership: [{
-                        serverId: mTU.serverId,
-                        messageCount: mTU.messageCount,
-                        firstMessage: mTU.firstMessage,
-                        joined: joinDate
-                    }]
-                }
+                // const savedMemberData = initData(null, mTU.discordId);
+                // membersData = {
+                //     ...savedMemberData,
+                //     membership: [{
+                //         serverId: mTU.serverId,
+                //         messageCount: mTU.messageCount,
+                //         firstMessage: mTU.firstMessage,
+                //         joined: joinDate
+                //     }]
+                // }
             }
             upsertOne('vikbot', 'users', { discordId: mTU.discordId }, membersData, err => err && log.WARN(err));
         })
