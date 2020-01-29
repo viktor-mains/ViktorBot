@@ -2,7 +2,7 @@ import Discord from "discord.js";
 import moment from 'moment';
 import { log } from './log';
 import { upsertOne } from './storage/db';
-import { createEmbed, toDDHHMMSS } from './helpers';
+import { createEmbed, toDDHHMMSS, removeKeyword } from './helpers';
 import { cache } from './storage/cache';
 
 const sendLog = (guild:any, embed:Discord.RichEmbed, room:string) => {
@@ -18,9 +18,25 @@ const sendLog = (guild:any, embed:Discord.RichEmbed, room:string) => {
             .catch(err => log.WARN(`Something went wrong. ${ err }`))
     }
 }
+const sendGlobalLog = (embed:Discord.RichEmbed, guild:Discord.Guild) => {
+    const room = 'room_global';
+    const room_log = cache["options"].find(option => option.option === room)
+        ? cache["options"].find(option => option.option === room).value
+        : null;
+
+    embed.addField('Guild name', guild.name, true)
+    embed.addField('Guild id', guild.id, true)
+
+    if (room_log) {
+        const channel = cache["bot"].channels.get(room_log);
+        if (channel)
+        channel.send(embed)
+            .catch(err => log.WARN(`Something went wrong. ${ err }`))
+    }
+}
 
 export const msgEdit = (oldMsg:Discord.Message, newMsg:Discord.Message) => { 
-    if (oldMsg.channel.type === 'dm' || oldMsg.author.bot)
+    if (oldMsg.channel.type === 'dm' || oldMsg.author.bot || oldMsg.content === newMsg.content || !oldMsg.content)
         return;
     const oldTimestamp = new Date(oldMsg.createdTimestamp);
     const newTimestamp = new Date();
@@ -84,6 +100,25 @@ export const userLeave = (member:Discord.GuildMember) => {
     ], 'C70000');
     const guild = member.guild.id;
     sendLog(guild, log, 'room_log_users');
+}
+
+export const descriptionChange = (msg:Discord.Message) => {
+    const log = createEmbed(`✍️ USER CHANGES DESCRIPTION`, [
+        { title: `User`, content: `${msg.member.user.username}#${msg.member.user.discriminator}`, inline: false },
+        { title: `New description`, content: removeKeyword(msg), inline: false },
+        { title: `Changed at`, content: moment(new Date().toISOString()).format("MMMM Do YYYY, HH:mm:ss a"), inline: false }
+    ], '8442f5');
+    const guild = msg.member.guild.id;
+    sendLog(guild, log, 'room_log_users');
+    sendGlobalLog(log, msg.member.guild);
+}
+
+export const botJoin = (guild:Discord.Guild) => { 
+    const botLog = createEmbed(`:man: BOT JOINS GUILD`, [
+        { title: `Joined at`, content: moment(Date.now()).format("MMMM Do YYYY, HH:mm:ss"), inline: true }
+    ], '51E61C');
+    log.INFO(`Great Herald joined ${guild.id} guild!`)
+    sendGlobalLog(botLog, guild);
 }
 
 export const initData = (member:Discord.GuildMember) => ({
