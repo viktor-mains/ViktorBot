@@ -21,11 +21,11 @@ const verifyCode = async (nickname:string, server:string, uuid:string, msg:Disco
     const verificationCode:any = await axios(url)
         .catch(err => {
             log.WARN(err);
-            msg.channel.send(createEmbed(`❌ Cannot get verification code`, [{ title: '\_\_\_', content: `Getting 3rd party code failed.` }]));
+            msg.author.send(createEmbed(`❌ Cannot get verification code`, [{ title: '\_\_\_', content: `Getting 3rd party code failed.` }]));
             msg.channel.stopTyping();
         })
     if (uuid !== verificationCode.data) {
-        msg.channel.send(createEmbed(`❌ Incorrect verification code`, [{ title: '\_\_\_', content: `The verification code you've set is incorrect, try again.\nIf this happens consistently, reset the League client.` }]));
+        msg.author.send(createEmbed(`❌ Incorrect verification code`, [{ title: '\_\_\_', content: `The verification code you've set is incorrect, try again.\nIf this happens consistently, reset the League client.` }]));
         msg.channel.stopTyping();
         return;
     }
@@ -44,7 +44,7 @@ const verifyCode = async (nickname:string, server:string, uuid:string, msg:Disco
             mastery
         };
         if (isThisAccountRegistered) {
-            msg.channel.send(createEmbed(`❌ This account is already registered`, [{ title: '\_\_\_', content: `This account is already registered.` }]));
+            msg.author.send(createEmbed(`❌ This account is already registered`, [{ title: '\_\_\_', content: `This account is already registered.` }]));
             msg.channel.stopTyping();
             return;
         }
@@ -70,8 +70,8 @@ const verifyCode = async (nickname:string, server:string, uuid:string, msg:Disco
     updateRankRoles(msg, userData);    
     upsertOne('vikbot', 'users', { discordId: msg.author.id }, userData, err => {
         err
-            ? msg.channel.send(createEmbed(`❌ Cannot verify user`, [{ title: '\_\_\_', content: `Getting user's data failed, probably due to problem with database. Try again later.` }]))
-            : msg.channel.send(createEmbed(`✅ Profile verified succesfully`, [{ title: '\_\_\_', content: `To check your profile, you can use \`\`!profile\`\` command.`}]));
+            ? msg.author.send(createEmbed(`❌ Cannot verify user`, [{ title: '\_\_\_', content: `Getting user's data failed, probably due to problem with database. Try again later.` }]))
+            : msg.author.send(createEmbed(`✅ Profile verified succesfully`, [{ title: '\_\_\_', content: `To check your profile, you can use \`\`!profile\`\` command.`}]));
     });
     msg.channel.stopTyping();
 }
@@ -150,8 +150,10 @@ export const register = async (msg:Discord.Message) => {
             \nCopy the above code, open League client, go into Settings -> Verification, paste the code in the text box and click "Send".
             \nAfter it's done, react with the :white_check_mark:.
             \n[Picture visualizing it step-by-step](https://i.imgur.com/4GsXTQC.png)`);
-    msg.channel.send(embed)
+    
+    msg.author.send(embed)
         .then(sentEmbed => {
+            msg.react('📩')
             const reactions = [ '✅', '❌' ];
             const filter = (reaction, user) => msg.author.id === user.id && (reaction.emoji.name === '❌' || reaction.emoji.name === '✅');
             const iterateReactions = (index:number) => {
@@ -176,11 +178,15 @@ export const register = async (msg:Discord.Message) => {
                 if (collected.name === '✅')
                     verifyCode(nickname, server, uuid, msg)
                 else
-                    msg.channel.send(createEmbed(`:information_source: Profile registering aborted`, [{ title: '\_\_\_', content: `You can do it some other time.` }]));
+                    msg.author.send(createEmbed(`:information_source: Profile registering aborted`, [{ title: '\_\_\_', content: `You can do it some other time.` }]));
             })
             .catch(e => console.log(e))
         })
-        .catch(err => log.WARN(err));
+        .catch(err =>
+            msg.channel.send(createEmbed(':warning: I am unable to reply to you', [{ title: '\_\_\_', content: `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
+            \nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command.` }]
+            ))
+        );
     return;
 }
 
