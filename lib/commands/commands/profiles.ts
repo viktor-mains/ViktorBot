@@ -149,7 +149,7 @@ export const register = async (msg:Discord.Message) => {
         .addField('\_\_\_', `\`\`${uuid}\`\`
             \nCopy the above code, open League client, go into Settings -> Verification, paste the code in the text box and click "Send".
             \nAfter it's done, react with the :white_check_mark:.
-            \nPicture: https://i.imgur.com/Oa4N6V5.png`);
+            \n[Picture visualizing it step-by-step](https://i.imgur.com/4GsXTQC.png)`);
     msg.channel.send(embed)
         .then(sentEmbed => {
             const reactions = [ '✅', '❌' ];
