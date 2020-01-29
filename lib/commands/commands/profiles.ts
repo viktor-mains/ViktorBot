@@ -354,8 +354,8 @@ export const topmembers = (msg:Discord.Message) => {
     members = orderBy(members, ['messageCount'], ['desc']);
     let content = '';
     members.map((member, index) => index < count 
-        ? content += `\`\`#${justifyToLeft((index+1).toString(), 2)} - ${justifyToRight(member.messageCount.toString(), 6)} msg\`\` - ${msg.guild.members.find(m => m.id === member.id).user.username}` 
+        ? content += `\`\`#${justifyToLeft((index+1).toString(), 2)} - ${justifyToRight(member.messageCount.toString(), 6)} msg\`\` - ${msg.guild.members.find(m => m.id === member.id).user.username}\n` 
         : {})
-    const embed = createEmbed(`Top ${count} members`, [{ title: '\_\_\_', content }])
+    const embed = createEmbed(`🏆 Top ${count} members`, [{ title: '\_\_\_', content }])
     msg.channel.send(embed);
 }

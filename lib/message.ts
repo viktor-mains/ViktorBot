@@ -3,7 +3,7 @@ import { TextCommand, EmbedCommand } from './commands/logic';
 import { Reaction } from './commands/reactions'
 import { cache } from './storage/cache';
 import { getKeyword, getCommandSymbol } from './helpers';
-import { handleUserNotInDatabase } from './events';
+import { handleUserNotInDatabase, handlePossibleMembershipRole } from './events';
 import { chooseRandom, happensWithAChanceOf } from './rng';
 import { Command } from './commands/list';
 import { IReaction, IReactionDetails } from './types/reaction';
@@ -84,6 +84,7 @@ const classifyMessage = async (msg:Discord.Message) => {
     }
 
     handleUserNotInDatabase(msg.member);
+    handlePossibleMembershipRole(msg);
 
     if (isMessageDearViktor(msg)) {
         answerDearViktor(msg);

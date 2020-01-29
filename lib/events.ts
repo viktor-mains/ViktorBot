@@ -1,4 +1,5 @@
 import Discord from "discord.js";
+import { orderBy } from 'lodash';
 import moment from 'moment';
 import { log } from './log';
 import { upsertOne } from './storage/db';
@@ -161,4 +162,63 @@ export const handleUserNotInDatabase = async (member:Discord.GuildMember) => {
         update(initData(member));
     else // user in database
         update(memberInDataBase);
+}
+
+export const handlePossibleMembershipRole = async (msg:Discord.Message) => {
+    const memberData = cache["users"].find(user => user.discordId === msg.author.id)
+        ? cache["users"].find(user => user.discordId === msg.author.id).membership
+            ? cache["users"].find(user => user.discordId === msg.author.id).membership.find(guild => guild.serverId === msg.guild.id)
+            : null
+        : null;
+    const membershipRoles = cache["options"].find(option => option.option === 'membershipRoles')
+        ? cache["options"].find(option => option.option === 'membershipRoles').value
+        : null;
+
+    if (!membershipRoles || !memberData)
+        return;
+
+    const memberMsgCount = memberData.messageCount;
+    const memberJoinDate = memberData.joined < memberData.firstMessage 
+        ? memberData.joined 
+        : memberData.firstMessage;
+    const neededRoles = orderBy(membershipRoles, ['weight'], ['desc'])
+        .filter(role => 
+            role.requirement.messages <= memberMsgCount 
+            && role.requirement.time <= memberJoinDate)
+        .filter((role, index) => role.persistent || index === 0) //only persistent roles and one with highest weight
+    membershipRoles.map(mR => {
+        if (neededRoles.find(nR => nR.name === mR.name) 
+            && !msg.member.roles.some(r => r.name === mR.name)
+            && msg.member.guild.roles.find(role => role.name.toLowerCase() === mR.name.toLowerCase())) {
+                const roleToAdd = msg.member.guild.roles.find(role => role.name.toLowerCase() === mR.name.toLowerCase());
+                msg.member.addRole(roleToAdd);
+                informAboutPromotion(msg, mR);
+        }
+        else if (!neededRoles.find(nR => nR.name === mR.name) 
+            && msg.member.roles.some(r => r.name === mR.name)
+            && msg.member.guild.roles.find(role => role.name.toLowerCase() === mR.name.toLowerCase())) {
+                const roleToRemove = msg.member.guild.roles.find(role => role.name.toLowerCase() === mR.name.toLowerCase());
+                msg.member.removeRole(roleToRemove);
+        }
+    })
+}
+
+const informAboutPromotion = (msg:Discord.Message, role:any) => {
+    const embedTitle:string = role.message.title
+        .replace('MEMBER_USERNAME', msg.author.username)
+        .replace('MEMBERSHIP_ROLE', role.name);
+    const embedContent:string = role.message.content
+        .replace('MEMBER_USERNAME', msg.author.username)
+        .replace('MEMBERSHIP_ROLE', role.name)
+        .replace('\\n', '\n')
+    const embedColor:string = role.message.color;
+    const embedIcon:string = role.message.icon;
+    const embed = new Discord.RichEmbed()
+        .setTitle(`${embedIcon} ${embedTitle}`)
+        .setThumbnail(msg.author.avatarURL)
+        .setColor(embedColor)
+        .addField(`\_\_\_`, embedContent, false)
+        .setFooter(`${embedIcon} Powered by Glorious Evolution`)
+        .setTimestamp(new Date());
+    msg.channel.send(embed);
 }
