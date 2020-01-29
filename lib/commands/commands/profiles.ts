@@ -91,7 +91,9 @@ const updateRankRoles = (msg:Discord.Message, userData) => {
     if (rolesToRemove.size > 0)
         msg.member.removeRoles(rolesToRemove)
             .catch(err => log.WARN(err));
-    msg.member.addRole(roleToAdd);
+    if (roleToAdd)
+        msg.member.addRole(roleToAdd)
+            .catch(err => log.WARN(err));
 }
 
 const getTierAndDivision = async (msg:Discord.Message, nickname:string, server:string, _playerId?:any) => {
