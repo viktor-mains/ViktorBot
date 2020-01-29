@@ -58,8 +58,12 @@ export class TextCommand extends Command implements IExecuteText {
     }
 }
 export class EmbedCommand extends Command implements IExecuteEmbed {
-    public execute(title:string, fields:[ IEmbedField ], color?:string) {
-        const embed = createEmbed(title, fields, color);
+    public execute (title:string, fields:[ IEmbedField ], color?:string) {
+        const newFields = fields.map(field => ({
+            ...field,
+            content: field.content.replace('\\n', '\n')
+        }));
+        const embed = createEmbed(title, newFields, color);
         this.canBeExecuted && this.channel.send(embed);
     }
 }

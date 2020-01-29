@@ -120,7 +120,7 @@ export const upsertOne = (dbSymbol:string, collection:string, filter:Object, obj
             return cb(err);
         }
         updateCache(dbSymbol);
-        log.INFO(`Succesfully upserted data to ${dbSymbol.toUpperCase()}.${collection.toUpperCase()} collection.`)
+        // log.INFO(`Succesfully upserted data to ${dbSymbol.toUpperCase()}.${collection.toUpperCase()} collection.`) // this spams in msgCreate event
         return cb(null);
     });
 }

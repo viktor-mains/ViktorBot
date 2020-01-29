@@ -1,20 +1,15 @@
 import Discord from 'discord.js';
-
-import { TextCommand } from './commands/logic';
+import { TextCommand, EmbedCommand } from './commands/logic';
 import { Reaction } from './commands/reactions'
-
-import dearViktor from '../data/global/dearviktor.json';
-
 import { cache } from './storage/cache';
 import { getKeyword, getCommandSymbol } from './helpers';
+import { handleUserNotInDatabase, handlePossibleMembershipRole } from './events';
 import { chooseRandom, happensWithAChanceOf } from './rng';
 import { Command } from './commands/list';
-
-import { 
-    IReaction, 
-    IReactionDetails 
-} from './types/reaction';
+import { IReaction, IReactionDetails } from './types/reaction';
 import { IDVKeywords } from './types/dearviktor';
+
+import dearViktor from '../data/global/dearviktor.json';
 
 // LOGIC
 
@@ -50,6 +45,10 @@ const answerCommand = (msg:Discord.Message) => {
         new TextCommand(command, msg).execute(command.text);
         return;
     }
+    if (command && command.embed) {
+        new EmbedCommand(command, msg).execute(command.embed.title, command.embed.fields, command.embed.color);
+        return;
+    }
     if (command && Command[getKeyword(msg)]) {
         Command[getKeyword(msg)](command, msg)
         return;
@@ -79,10 +78,14 @@ const checkForReactionTriggers = (msg:Discord.Message) => {
 
 // MAIN FUNCTION
 
-const classifyMessage = (msg:Discord.Message) => {
+const classifyMessage = async (msg:Discord.Message) => {
     if (isUserBot(msg)) {
         return;
     }
+
+    handleUserNotInDatabase(msg.member);
+    handlePossibleMembershipRole(msg);
+
     if (isMessageDearViktor(msg)) {
         answerDearViktor(msg);
         return;

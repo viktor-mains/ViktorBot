@@ -1,4 +1,5 @@
 import Discord from 'discord.js';
+import moment from 'moment';
 import { IEmbedField } from './types/command';
 import { cache } from './storage/cache';
 
@@ -38,7 +39,7 @@ export const splitByFirstSymbol = (msg:Discord.Message, symbol:string) => {
     return args;
 }
 
-export const createEmbed = (title: string, fields:Array<IEmbedField>, color?: string, thumbnail?: string, footer?: string) => {
+export const createEmbed = (title:string, fields:Array<IEmbedField>, color?:string, thumbnail?:string, footer?:string) => {
     const embed = thumbnail
         ? new Discord.RichEmbed()
             .setTitle(title)
@@ -80,3 +81,37 @@ export const splitArrayByObjectKey = (array:Array<Object>, sortBy:string) =>
             reducer[key].push(obj);
         return reducer;
     }, {});
+
+export const toDDHHMMSS = (joinedAt:Date) => {
+    const start = moment(joinedAt);
+    const end = moment();
+    const diff = moment.duration(end.diff(start));
+
+    return `${
+        moment.duration(diff).years() ? moment.duration(diff).years() + 'y ' : ''
+    }${
+        moment.duration(diff).months() ? moment.duration(diff).months() + 'm ' : ''
+    }${
+        moment.duration(diff).days() ? moment.duration(diff).days() + 'd ' : ''
+    }${
+        moment.duration(diff).hours() ? moment.duration(diff).hours() + 'h ' : ''
+    }${
+        moment.duration(diff).minutes() ? moment.duration(diff).minutes() + 'm ' : ''
+    }${
+        moment.duration(diff).seconds() ? moment.duration(diff).seconds() + 's ' : ''
+    }`
+} 
+
+export const justifyToRight = (input:string, desiredLength:number) => {
+    let output = input; 
+    while (output.length < desiredLength)
+        output = ` ${output}`;
+    return output;
+};
+
+export const justifyToLeft = (input:string, desiredLength:number) => {
+    let output = input; 
+    while (output.length < desiredLength)
+        output += ` `;
+    return output;
+};

@@ -32,19 +32,44 @@ export const getSummonerId = async (ign:string|undefined, server:string|undefine
         log.WARN(err);
         return undefined;
     }
+    return summoner.data.id;
+}
+
+export const getAccountId = async (ign:string|undefined, server:string|undefined) => {
+    if (!ign || !server) {
+        return undefined;
+    }
+    const realm = getRealm(server)
+    let summoner;
+    if (!realm) {
+        return undefined;
+    }
+    try {
+        const path = `https://${realm}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${ign}?api_key=${config.RIOT_API_TOKEN}`;
+        summoner = await axios(path);
+    }
+    catch(err) {
+        log.WARN(err);
+        return undefined;
+    }
     return summoner.data.accountId;
 }
 
 export const lastlane = async (msg:Discord.Message) => {
+    msg.channel.startTyping();
+
     const champions = cache["champions"];
     const { nickname, server } = extractNicknameAndServer(msg);
-    const playerId = await getSummonerId(nickname, server);
+    const playerId = await getAccountId(nickname, server);
     const realm = getRealm(server);
 
+    if (!nickname || !server)
+        return msg.channel.stopTyping();;
     const pathRecentGames = `https://${realm}.api.riotgames.com/lol/match/v4/matchlists/by-account/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
     const recentGames:any = await axios(pathRecentGames).catch(err => {
         log.WARN(err);
         msg.channel.send(createEmbed(`❌Cannot get player games' data`, [{ title: '\_\_\_', content: `Fetching player ${nickname.toUpperCase()} data failed.` }]));
+        msg.channel.stopTyping();
         return;
     })
 
@@ -58,11 +83,13 @@ export const lastlane = async (msg:Discord.Message) => {
     const lastGameData:any = await axios(pathLastGameData).catch(err => {
         log.WARN(err);
         msg.channel.send(createEmbed(`❌Cannot get match data`, [{ title: '\_\_\_', content: `Fetching game ${matchId} data failed.` }]));
+        msg.channel.stopTyping();
         return;
     })    
     let lastGameTimeline:any = await axios(pathLastGameTimeline).catch(err =>{
         log.WARN(err);
         msg.channel.send(createEmbed(`❌Cannot get match data`, [{ title: '\_\_\_', content: `Fetching timeline of game ${matchId} data failed.` }]));
+        msg.channel.stopTyping();
         return;
     })
 
@@ -168,7 +195,7 @@ export const lastlane = async (msg:Discord.Message) => {
                 const allyTeamGoldAdvantage = gameFrames[`min${minute}`].allyTeam - gameFrames[`min${minute}`].enemyTeam;
                 const minuteSummary = gameFrames[`min${minute}`]
                     ? `${playerChampionName} has **${Math.abs(playerGold - enemyGold)}** gold ${playerGold - enemyGold > 0 ? 'advantage' : 'disadvantage'}.
-                        CS scores are ${playerChampionName}'s **${playerCs}** to ${enemyChampionName}'s **${enemyCs}**.
+                        Creep scores are ${playerChampionName}'s **${playerCs}** to ${enemyChampionName}'s **${enemyCs}**.
                         All other lanes ${allyTeamGoldAdvantage >= 0 ? 'win' : 'lose'} with **${Math.abs(allyTeamGoldAdvantage)}** gold ${allyTeamGoldAdvantage >= 0? 'advantage' : 'disadvantage'}.`
                     : 'Game ended by now.';
                 embed.addField(`Minute ${minute}`, minuteSummary)
@@ -176,6 +203,7 @@ export const lastlane = async (msg:Discord.Message) => {
         })
     }
 
+    msg.channel.stopTyping();
     msg.channel.send(embed);
 }
 
