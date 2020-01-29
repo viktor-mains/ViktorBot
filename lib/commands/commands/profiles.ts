@@ -6,7 +6,7 @@ import { log } from '../../log';
 import { initData, descriptionChange } from '../../events';
 import { cache } from '../../storage/cache';
 import { upsertOne } from '../../storage/db';
-import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft, replaceAll } from '../../helpers';
+import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft, replaceAll, modifyInput } from '../../helpers';
 import { getSummonerId, getRealm } from './riot';
 import config from '../../../config.json';
 
@@ -223,7 +223,7 @@ export const profile = async (msg:Discord.Message) => {
                 : 'UNKNOWN NAME';
         opgg = account.opgg 
             ? account.opgg 
-            : `https://${account.server}.op.gg/summoner/userName=${name}`;
+            : `https://${account.server}.op.gg/summoner/userName=${modifyInput(name)}`;
 
         const content = `IGN: [**${name}**](${opgg})\nRank: **${account.tier} ${account.rank === 'UNRANKED' ? '' : account.rank }**`;
         viktorMastery = typeof account.mastery.points === 'number' 

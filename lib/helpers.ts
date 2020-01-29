@@ -117,3 +117,5 @@ export const justifyToLeft = (input:string, desiredLength:number) => {
 };
 
 export const replaceAll = (stringToReplace:string) => new RegExp(stringToReplace, "gi");
+
+export const modifyInput = (input:string) =>  encodeURIComponent(input.replace(replaceAll(' '), ''))
