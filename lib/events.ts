@@ -122,17 +122,20 @@ export const botJoin = (guild:Discord.Guild) => {
     sendGlobalLog(botLog, guild);
 }
 
-export const initData = (member:Discord.GuildMember) => ({
-    discordId: member.id,
-    updated: Date.now(),
-    accounts: [],
-    membership: [{
-        serverId: member.guild.id,
-        messageCount: 0,
-        firstMessage: 0,
-        joined: member.joinedAt ? new Date(member.joinedAt).getTime() : Date.now()
-    }]
-})
+export const initData = (member:Discord.GuildMember|null, id?:any) => {
+    // member = null means that they used to be part of Discord but aren't anymore
+    return {
+        discordId: member ? member.id : id,
+        updated: Date.now(),
+        accounts: [],
+        membership: [{
+            serverId: member ? member.guild.id : 0,
+            messageCount: 0,
+            firstMessage: 0,
+            joined: member && member.joinedAt ? new Date(member.joinedAt).getTime() : Date.now()
+        }]
+    }
+}
 
 export const handleUserNotInDatabase = async (member:Discord.GuildMember) => {
     const update = (memberInDataBase) => {

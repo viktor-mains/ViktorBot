@@ -1,6 +1,8 @@
 import Discord from 'discord.js';
+import { readFile } from 'fs';
 import { log } from '../../log';
 import { removeKeyword, extractArguments, createEmbed } from '../../helpers';
+import { initData } from '../../events';
 import { chooseRandom } from '../../rng';
 import { updateCache, upsertOne } from '../../storage/db';
 import { cache } from '../../storage/cache';
@@ -73,4 +75,79 @@ export const punish = (msg:Discord.Message) => {
     }
     msg.channel.stopTyping();
     upsertOne('vikbot', 'users', { discordId: member.discordId }, member, err => err && log.WARN(err));
+}
+
+export const msgupdate = (msg:Discord.Message) => {
+    msg.channel.startTyping();
+    readFile('messageCount.json', 'utf8', (err, data) => {
+        if (err) {
+            log.WARN(err);
+            return;
+        }
+        let messageDataFile = JSON.parse(data);
+        let userData = cache["users"];
+        const membersRaw = new Array;
+        // remake the file into somewhat more normal format
+        for (let [keyServer, valueServer] of Object.entries(messageDataFile)) {
+            for (let [keyMember, valueMember] of Object.entries(messageDataFile[keyServer])) {
+                membersRaw.push({
+                    ...messageDataFile[keyServer][keyMember],
+                    serverId: keyServer,
+                    discordId: keyMember
+                })
+            }
+        };
+        // now map thru it and check if user already is in database
+        membersRaw.map((mTU, index) => {
+            log.INFO(`User ${index+1}/${membersRaw.length}`);
+            let membersData;
+            const userIsInDB = userData.find(uD => uD.discordId === mTU.discordId);
+            let joinDate;
+            try {
+                joinDate = cache["bot"].guilds
+                    .find(cachedGuild => cachedGuild.id == mTU.serverId).members
+                    .find(cachedMember => cachedMember.id == mTU.discordId).joinedAt
+                joinDate = new Date(joinDate).getTime();
+            }
+            catch (err) {
+                joinDate = mTU.firstMessage;
+            }
+            if (!joinDate) console.log(mTU.discordId);
+            if (userIsInDB) { // if user IS in database, just update his membership
+                membersData = { ...userIsInDB };
+                if (!membersData.membership) return; // probably bot
+                let serverDataIndex = membersData.membership.findIndex(mShip => mShip.serverId === mTU.serverId);
+                if (serverDataIndex !== -1) { // if this server of user is in database
+                    membersData.membership[serverDataIndex] = {
+                        serverId: mTU.serverId,
+                        messageCount: mTU.messageCount,
+                        firstMessage: mTU.firstMessage,
+                        joined: joinDate
+                    }
+                }
+                else { // if this server of user is not in database
+                    membersData.membership.push({
+                        serverId: mTU.serverId,
+                        messageCount: mTU.messageCount,
+                        firstMessage: mTU.firstMessage,
+                        joined: joinDate
+                    })
+                }
+            }   
+            else { // if user ISNT in database, init him and then add all his servers
+                const savedMemberData = initData(null, mTU.discordId);
+                membersData = {
+                    ...savedMemberData,
+                    membership: [{
+                        serverId: mTU.serverId,
+                        messageCount: mTU.messageCount,
+                        firstMessage: mTU.firstMessage,
+                        joined: joinDate
+                    }]
+                }
+            }
+            upsertOne('vikbot', 'users', { discordId: mTU.discordId }, membersData, err => err && log.WARN(err));
+        })
+        msg.channel.stopTyping();
+    })
 }
