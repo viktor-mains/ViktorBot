@@ -3,31 +3,32 @@ import axios from 'axios';
 import v4 from 'uuid/v4';
 import { orderBy } from 'lodash';
 import { log } from '../../log';
-import { initData } from '../../events';
+import { initData, descriptionChange } from '../../events';
 import { cache } from '../../storage/cache';
 import { upsertOne } from '../../storage/db';
-import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft } from '../../helpers';
+import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft, toDDHHMMSS } from '../../helpers';
 import { getSummonerId, getRealm } from './riot';
 import config from '../../../config.json';
 
 const timeout = 300000;
 
 const verifyCode = async (nickname:string, server:string, uuid:string, msg:Discord.Message ) => {
+    msg.channel.startTyping();
     const playerId = await getSummonerId(nickname, server);
     const realm = getRealm(server);
     const url = `https://${realm}.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
     
-    // const verificationCode:any = await axios(url)
-    //     .catch(err => {
-    //         log.WARN(err);
-    //         msg.channel.send(createEmbed(`❌ Cannot get verification code`, [{ title: '\_\_\_', content: `Getting 3rd party code failed.` }]));
-    //         msg.channel.stopTyping();
-    //     })
-    // if (uuid !== verificationCode.data) {
-    //     msg.channel.send(createEmbed(`❌ Incorrect verification code`, [{ title: '\_\_\_', content: `The verification code you've set is incorrect, try again.\nIf this happens consistently, reset the League client.` }]));
-    //     msg.channel.stopTyping();
-    //     return;
-    // }
+    const verificationCode:any = await axios(url)
+        .catch(err => {
+            log.WARN(err);
+            msg.channel.send(createEmbed(`❌ Cannot get verification code`, [{ title: '\_\_\_', content: `Getting 3rd party code failed.` }]));
+            msg.channel.stopTyping();
+        })
+    if (uuid !== verificationCode.data) {
+        msg.channel.send(createEmbed(`❌ Incorrect verification code`, [{ title: '\_\_\_', content: `The verification code you've set is incorrect, try again.\nIf this happens consistently, reset the League client.` }]));
+        msg.channel.stopTyping();
+        return;
+    }
     const { tier, rank } = await getTierAndDivision(msg, nickname, server);
     const mastery = await getMastery(msg, nickname, server);
     let userData = {};
@@ -87,9 +88,10 @@ const updateRankRoles = (msg:Discord.Message, userData) => {
 
     const rolesToRemove = msg.member.roles.filter(role => ranksWeighted.find(r => r.rank === role.name));
     const roleToAdd = msg.guild.roles.find(role => role.name.toLowerCase() === highestTier.toLowerCase());
-    msg.member.removeRoles(rolesToRemove)
-        .then(() => msg.member.addRole(roleToAdd))
-        .catch(err => log.WARN(err));
+    if (rolesToRemove.size > 0)
+        msg.member.removeRoles(rolesToRemove)
+            .then(() => msg.member.addRole(roleToAdd))
+            .catch(err => log.WARN(err));
 }
 
 const getTierAndDivision = async (msg:Discord.Message, nickname:string, server:string, _playerId?:any) => {
@@ -132,47 +134,43 @@ const getMastery = async (msg:Discord.Message, nickname:string, server:string, _
 }
 
 export const register = async (msg:Discord.Message) => {
-    msg.channel.startTyping();
-
     const { nickname, server } = extractNicknameAndServer(msg);
     const uuid = `VIKBOT-${v4()}`;
     
     if (!nickname || !server)
-        return msg.channel.stopTyping();
+        return;
 
-    // const embed = new Discord.RichEmbed()
-    //     .setColor('FDC000')
-    //     .setFooter(`Your code expires at ${(new Date(Date.now() + timeout)).toLocaleTimeString()}`)
-    //     .setTitle(`Your unique verification code!`)
-    //     .addField('\_\_\_', `\`\`${uuid}\`\`
-    //         \nCopy the above code, open League client, go into Settings -> Verification, paste the code in the text box and click "Send".
-    //         \nAfter it's done, react with the :white_check_mark:.
-    //         \nPicture: https://i.imgur.com/Oa4N6V5.png`);
-    // msg.channel.send(embed)
-    //     .then(sentEmbed => {
-    //         const reactions = [ '✅', '❌' ];
-    //         const filter = (reaction, user) => msg.author.id === user.id && (reaction.emoji.name === '❌' || reaction.emoji.name === '✅');
-    //         const iterateReactions = (index:number) => {
-    //             if (index >= reactions.length)
-    //                 return;
-    //             // @ts-ignore:next-line
-    //             sentEmbed.react(reactions[index]);
-    //             setTimeout(() => iterateReactions(index + 1), 500);
-    //         }
-    //         iterateReactions(0);
+    const embed = new Discord.RichEmbed()
+        .setColor('FDC000')
+        .setFooter(`Your code expires at ${(new Date(Date.now() + timeout)).toLocaleTimeString()}`)
+        .setTitle(`Your unique verification code!`)
+        .addField('\_\_\_', `\`\`${uuid}\`\`
+            \nCopy the above code, open League client, go into Settings -> Verification, paste the code in the text box and click "Send".
+            \nAfter it's done, react with the :white_check_mark:.
+            \nPicture: https://i.imgur.com/Oa4N6V5.png`);
+    msg.channel.send(embed)
+        .then(sentEmbed => {
+            const reactions = [ '✅', '❌' ];
+            const filter = (reaction, user) => msg.author.id === user.id && (reaction.emoji.name === '❌' || reaction.emoji.name === '✅');
+            const iterateReactions = (index:number) => {
+                if (index >= reactions.length)
+                    return;
+                // @ts-ignore:next-line
+                sentEmbed.react(reactions[index]);
+                setTimeout(() => iterateReactions(index + 1), 500);
+            }
+            iterateReactions(0);
             
-    //         // @ts-ignore:next-line
-    //         sentEmbed.awaitReactions(filter, {
-    //             time: timeout,
-    //             maxEmojis: 1
-    //         })
-    //         .then(collected => 
-                    verifyCode(nickname, server, uuid, msg)
-                    // )
-    //         .catch(e => console.log(e))
-    //     })
-    //     .catch(err => log.WARN(err));
-    // msg.channel.stopTyping();
+            // @ts-ignore:next-line
+            sentEmbed.awaitReactions(filter, {
+                time: timeout,
+                maxEmojis: 1
+            })
+            .then(collected => 
+                verifyCode(nickname, server, uuid, msg))
+            .catch(e => console.log(e))
+        })
+        .catch(err => log.WARN(err));
     return;
 }
 
@@ -240,7 +238,7 @@ export const profile = async (msg:Discord.Message) => {
     }
     const finalize = () => {
         embed.addField('Description', userData.description 
-            ? userData.description 
+            ? userData.description.replace('MEMBER_NICKNAME', user.username)
             : `This user has no description yet.`, false);
         if (userData.accounts.length > 0) {
             embed.addField('Viktor mastery', viktorMastery, true);
@@ -272,6 +270,10 @@ export const description = (msg:Discord.Message) => {
     let description = removeKeyword(msg).trim();
     let userData = cache["users"].find(user => user.discordId === msg.author.id);
 
+    if (userData.punished) {
+        msg.channel.send(createEmbed(`❌ You are banned from writing own descriptions`, [{ title: '\_\_\_', content: `Apparently in the past evil mods decided that you aren't responsible enough to write your own description. Shame on you.` }]));
+        return;
+    }
     if (description.length === 0) {
         description = 'This user is a dummy who cannot use simple bot commands, but what do I expect from League players.';
         msg.channel.send(createEmbed(`❌ You forgot description`, [{ title: '\_\_\_', content: `This command requires adding a description. Since you forgot to add it, I've wrote one for you. Have fun.` }]));
@@ -291,12 +293,26 @@ export const description = (msg:Discord.Message) => {
             msg.channel.send(createEmbed(`❌Something went wrong`, [{ title: '\_\_\_', content: `Something went wrong. Tell Arcyvilk to check logs.` }]));
         }
     })
+    descriptionChange(msg);
     msg.channel.send(createEmbed(`✅ Description updated succesfully`, [{ title: '\_\_\_', content: `To check your profile, you can use \`\`!profile\`\` command.`}]));
     msg.channel.stopTyping();
 }
 
 export const update = (msg:Discord.Message) => {
     const member = cache["users"].find(user => user.discordId === msg.author.id);
+    if (!member) {
+        msg.channel.send(createEmbed(`:information_source: You didn't register yet`, [{ title: '\_\_\_', content: `Use the \`\`!register <IGN> | <server>\`\` command to create your profile.` }]));
+        msg.channel.stopTyping();
+        return;
+    }
+    const lastUpdated = Date.now() - member.updated;
+    const timeout = 86400000;
+    if (lastUpdated < timeout) {
+        msg.channel.send(createEmbed(`:information_source: Profile recently updated`, [{ title: '\_\_\_', content: `Last profile update: ${new Date(member.updated).toLocaleString()}.
+        Wait ${new Date(timeout - lastUpdated).toLocaleTimeString()} before updating again.` }]));
+        msg.channel.stopTyping();
+        return;
+    }
     const updateAccounts = async (index:number) => {
         if (!member.accounts[index])
             return finalize();
