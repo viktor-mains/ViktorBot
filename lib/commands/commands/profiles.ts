@@ -166,8 +166,16 @@ export const register = async (msg:Discord.Message) => {
                 time: timeout,
                 maxEmojis: 1
             })
-            .then(collected => 
-                verifyCode(nickname, server, uuid, msg))
+            .then(collected => {
+                collected = collected.map(col => ({
+                    name: col.emoji.name,
+                    message: col.message
+                }))[0];
+                if (collected.name === '✅')
+                    verifyCode(nickname, server, uuid, msg)
+                else
+                    msg.channel.send(createEmbed(`:information_source: Profile registering aborted`, [{ title: '\_\_\_', content: `You can do it some other time.` }]));
+            })
             .catch(e => console.log(e))
         })
         .catch(err => log.WARN(err));
