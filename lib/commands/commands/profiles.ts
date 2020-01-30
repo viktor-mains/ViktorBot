@@ -143,13 +143,14 @@ export const profile = async (msg:Discord.Message) => {
     const mentions = [ ...msg.mentions.users.values() ];
     const user:Discord.User = mentions.length === 0 ? msg.author : msg.guild.members.find(member => member.id === mentions[0].id).user;
     const allUsers = orderBy(cache["users"]
-        .filter(user => user.membership && user.membership.find(member => member.serverId === msg.guild.id && msg.guild.members.find(m => m.id === user.discordId )))
+        .filter(user => user.membership && user.membership.find(member => member.serverId === msg.guild.id && msg.guild.members.find(m => m.id === user.discordId)))
         .map(user => {
             return {
                 id: user.discordId,
                 messageCount: user.membership.find(member => member.serverId === msg.guild.id).messageCount || 0
             }
-    }), ['msgCount'], ['desc']);
+        })
+    , ['messageCount'], ['desc']);
     const userData = cache["users"].find(u => u.discordId === user.id);
     if (!userData || userData["accounts"].length === 0) {
         if (user.id === msg.author.id) {
