@@ -309,7 +309,7 @@ const aggregateMasteryData = async (msg:Discord.Message, nickname:string|undefin
         const masteryIcon = masteryIcons.find(mI => mI.mastery === mastery.championLevel);
         let title = `${champion.name}, ${champion.title}`;
         if (masteryIcon)
-            title = `${masteryIcon.emote} ${title} ${mastery.chestGranted ? '<:pixelchest:672434420195655701>' : ''}`
+            title = `${masteryIcon.emote} ${title} ${mastery.chestGranted ? '<:chest_unlocked:672434420195655701>' : ''}`
         embed.addField(title, 
             `**Points**: ${mastery.championPoints}
             **Last game**: ${new Date(mastery.lastPlayTime).toLocaleDateString()}`, false)
