@@ -1,10 +1,11 @@
 import Discord from "discord.js";
 import axios from 'axios';
+import { orderBy } from 'lodash';
 import config from '../../../config.json';
 import { log } from '../../log';
 import { cache } from '../../storage/cache';
 import { upsertOne } from '../../storage/db';
-import { extractNicknameAndServer, createEmbed } from '../../helpers';
+import { extractNicknameAndServer, createEmbed, extractArguments } from '../../helpers';
 
 export const getRealm = (server:string|undefined) => {
     if (!server) {
@@ -26,15 +27,13 @@ export const getSummonerId = async (ign:string|undefined, server:string|undefine
     }
     try {
         const path = `https://${realm}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${ign}?api_key=${config.RIOT_API_TOKEN}`;
-        summoner = await axios(path);
+        summoner = await axios(path)
     }
     catch(err) {
-        log.WARN(err);
         return undefined;
     }
     return summoner.data.id;
 }
-
 export const getAccountId = async (ign:string|undefined, server:string|undefined) => {
     if (!ign || !server) {
         return undefined;
@@ -49,10 +48,31 @@ export const getAccountId = async (ign:string|undefined, server:string|undefined
         summoner = await axios(path);
     }
     catch(err) {
-        log.WARN(err);
         return undefined;
     }
     return summoner.data.accountId;
+}
+
+export const updatechampions = async (msg:Discord.Message) => {
+    const version = await axios(`https://ddragon.leagueoflegends.com/api/versions.json`);
+    const path = `https://ddragon.leagueoflegends.com/cdn/${version[0]}/data/en_US/championFull.json`
+    let championsRaw = await axios(path);
+    Object.values(championsRaw.data.data)
+        .map((champion:any) => {
+            const champ = {
+                id: champion.key,
+                name: champion.name,
+                title: champion.title,
+                img: `http://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champion.image.full}`
+            };
+            upsertOne('vikbot', 'champions', { id: champion.key }, champ, (err, result) => {
+                if (err) {
+                    msg.channel.send(createEmbed(`❌ Error updating champions`, [{ title: '\_\_\_', content: `${champion.name} couldn't get updated. :C` }]));
+                    return;
+                }
+            })
+        })
+    msg.channel.send(createEmbed('✅ Champions updated', [{ title: '\_\_\_', content: `Version; ${version[0]}` }]));
 }
 
 export const lastlane = async (msg:Discord.Message) => {
@@ -64,7 +84,12 @@ export const lastlane = async (msg:Discord.Message) => {
     const realm = getRealm(server);
 
     if (!nickname || !server)
-        return msg.channel.stopTyping();;
+        return msg.channel.stopTyping();
+    if (!playerId || !realm) {
+        msg.channel.send(createEmbed('❌ Incorrect nickname or server', [{ title: '\_\_\_', content: 'Check if the data you\'ve provided is correct.' }]));
+        msg.channel.stopTyping();
+        return;
+    }
     const pathRecentGames = `https://${realm}.api.riotgames.com/lol/match/v4/matchlists/by-account/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
     const recentGames:any = await axios(pathRecentGames).catch(err => {
         log.WARN(err);
@@ -206,37 +231,89 @@ export const lastlane = async (msg:Discord.Message) => {
     msg.channel.stopTyping();
     msg.channel.send(embed);
 }
-
-export const updatechampions = async (msg:Discord.Message) => {
-    const version = await axios(`https://ddragon.leagueoflegends.com/api/versions.json`);
-    const path = `https://ddragon.leagueoflegends.com/cdn/${version[0]}/data/en_US/championFull.json`
-    let championsRaw = await axios(path);
-    Object.values(championsRaw.data.data)
-        .map((champion:any) => {
-            const champ = {
-                id: champion.key,
-                name: champion.name,
-                title: champion.title,
-                img: `http://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champion.image.full}`
-            };
-            upsertOne('vikbot', 'champions', { id: champion.key }, champ, (err, result) => {
-                if (err) {
-                    msg.channel.send(createEmbed(`❌ Error updating champions`, [{ title: '\_\_\_', content: `${champion.name} couldn't get updated. :C` }]));
-                    return;
-                }
-            })
-        })
-    msg.channel.send(createEmbed('✅ Champions updated', [{ title: '\_\_\_', content: `Version; ${version[0]}` }]));
-}
-export const race = (msg:Discord.Message) => {
-    
-}
-export const lastgame = (msg:Discord.Message) => {
+export const lastgame = async (msg:Discord.Message) => {
     // https://eun1.api.riotgames.com/lol/match/v4/matches/2281378026?api_key=RGAPI-570a0582-2aef-470b-8b66-938c35b3cf31
 }
-export const ingame = (msg:Discord.Message) => {
+export const ingame = async (msg:Discord.Message) => {
     
 }
-export const mastery = (msg:Discord.Message) => {
+export const mastery = async (msg:Discord.Message) => {    
+    msg.channel.startTyping();    
+    const selfRequest = !!!(extractArguments(msg).length);
 
+    if (selfRequest) {
+        const user = cache["users"].find(user => user.discordId === msg.author.id);
+        if (user && user.accounts && user.accounts.length !== 0)
+            user.accounts.map(account => aggregateMasteryData(msg, undefined, account.server, account.id));
+        else
+            msg.channel.send(createEmbed(`:information_source: You don't have any accounts registered`, [{ title: '\_\_\_', content: 
+                `To use this commands without arguments you have to register your League account first: \`\`!register <IGN> | <server>\`\`.
+                Otherwise, this command can be used as follows: \`\`!mastery IGN|server\`\`.` }]));
+    }
+    else {
+        const { nickname, server } = extractNicknameAndServer(msg);
+        aggregateMasteryData(msg, nickname, server)
+    }
+}
+    
+const aggregateMasteryData = async (msg:Discord.Message, nickname:string|undefined, server:string|undefined, playerId?:string) => {    
+    const realm = getRealm(server);
+    if (!playerId)
+        playerId = await getSummonerId(nickname, server);
+    if (!nickname) {
+        const nicknameUrl = `https://${realm}.api.riotgames.com/lol/summoner/v4/summoners/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
+        const nicknameData = await axios(nicknameUrl);
+        nickname = nicknameData.data.name;
+    }
+    if (!nickname || !server ) {
+        msg.channel.stopTyping();
+        return;
+    }
+    if (!playerId || !realm) {
+        msg.channel.send(createEmbed('❌ Incorrect nickname or server', [{ title: '\_\_\_', content: 'Check if the data you\'ve provided is correct.' }]));
+        msg.channel.stopTyping();
+        return;
+    }
+    const champions = cache["champions"];
+    const topX = cache["options"].find(option => option.option === 'topMasteries')
+        ? cache["options"].find(option => option.option === 'topMasteries').value
+        : 3;
+    const masteryIcons = cache["options"].find(option => option.option === 'masteryIcons')
+        ? cache["options"].find(option => option.option === 'masteryIcons').value
+        : null
+    const url = `https://${realm}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
+    const masteryData = await axios(url);
+    const masteryList = orderBy(masteryData.data, ['championPoints'], ['desc'])
+        .slice(0,topX);
+    const mostMasteryIcon = champions.find(ch => ch.id == masteryList[0].championId).img;
+    const collectiveMasteryLevels = { level5: 0, level6: 0, level7: 0 }
+    let collectiveMastery = 0;
+    masteryData.data.map(d => {
+        collectiveMastery = collectiveMastery + d.championPoints;
+        [5,6,7].includes(d.championLevel)
+            ? collectiveMasteryLevels[`level${d.championLevel}`]++
+            : null
+    });
+    let collectiveMasteryLevelsString = '';
+    for (let level in collectiveMasteryLevels) 
+        collectiveMasteryLevelsString += `${masteryIcons.find(mI => level.indexOf(mI.mastery) !== -1).emote} x${collectiveMasteryLevels[level]} `;
+    const embed = new Discord.RichEmbed()
+        .setTitle(`Top ${topX} masteries - ${nickname.toUpperCase()} [${server.toUpperCase()}]`)
+        .setDescription(`${collectiveMasteryLevelsString}\n**Collective mastery**: ${collectiveMastery}`)
+        .setTimestamp(new Date())
+        .setThumbnail(mostMasteryIcon)
+        .setFooter(`${msg.author.username}`)
+        .setColor('0xFDC000')
+    masteryList.map(mastery => {
+        const champion = champions.find(ch => ch.id == mastery.championId);
+        const masteryIcon = masteryIcons.find(mI => mI.mastery === mastery.championLevel);
+        let title = `${champion.name}, ${champion.title}`;
+        if (masteryIcon)
+            title = `${masteryIcon.emote} ${title} ${mastery.chestGranted ? '<:pixelchest:672434420195655701>' : ''}`
+        embed.addField(title, 
+            `**Points**: ${mastery.championPoints}
+            **Last game**: ${new Date(mastery.lastPlayTime).toLocaleDateString()}`, false)
+    })
+    msg.channel.send(embed);
+    msg.channel.stopTyping();
 }

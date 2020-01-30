@@ -62,7 +62,7 @@ export const isLink = (supposedLink:string) => {
 
 export const extractNicknameAndServer = (msg:Discord.Message) => {
     if (!hasSeparator(msg)) {
-        msg.channel.send('This command requires the symbol **|** to separate region from nickname.');
+        msg.channel.send(createEmbed('❌ Incorrect syntax', [{ title: '\_\_\_', content: 'This command requires the symbol **|** to separate region from nickname.' }]));
         return {};
     }
     const nicknameAndServer = removeKeyword(msg).split('|');
