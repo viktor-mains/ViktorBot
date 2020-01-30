@@ -142,6 +142,17 @@ export const profile = async (msg:Discord.Message) => {
     let lastViktorGame = 0;
     const mentions = [ ...msg.mentions.users.values() ];
     const user:Discord.User = mentions.length === 0 ? msg.author : msg.guild.members.find(member => member.id === mentions[0].id).user;
+    const allUsers = orderBy(cache["users"].map(user => {
+        const msgCount = user.membership
+            ? user.membership.find(guild => msg.guild.id === guild.serverId)    
+                ? user.membership.find(guild => msg.guild.id === guild.serverId).messageCount
+                : 0
+            : 0;
+        return {
+            id: user.discordId,
+            msgCount
+        }
+    }), ['msgCount'], ['desc']);
     const userData = cache["users"].find(u => u.discordId === user.id);
     if (!userData || userData["accounts"].length === 0) {
         if (user.id === msg.author.id) {
@@ -214,11 +225,15 @@ export const profile = async (msg:Discord.Message) => {
             : null;
         if (memberData) {
             const messagesPerDay = (memberData.messageCount/((Date.now()-memberData.joined)/86400000)).toFixed(3);
+            const userIndex:number = allUsers.findIndex(u => u.id === user.id);
             embed.addField('Member since', memberData.joined < memberData.firstMessage 
                 ? new Date(memberData.joined).toUTCString() 
                 : new Date(memberData.firstMessage).toUTCString(), false);
             embed.addField('Messages written', memberData.messageCount, true);
             embed.addField('Messages per day', messagesPerDay, true);
+            embed.addField('# on server', userIndex !== -1 
+                ? `#${userIndex + 1}`
+                : '?', true);
         }
         msg.channel.send(embed);
         msg.channel.stopTyping();
@@ -304,9 +319,9 @@ export const update = (msg:Discord.Message) => {
 }
 
 export const topmembers = (msg:Discord.Message) => {
-    const count = cache["options"].find(option => option.option === 'topmembers')
-        ? cache["options"].find(option => option.option === 'topmembers').value
-        : 20;
+    const count = cache["options"].find(option => option.option === 'topMembers')
+        ? cache["options"].find(option => option.option === 'topMembers').value
+        : 10;
     let members = cache["users"]
         .filter(user => user.membership && user.membership.find(member => member.serverId === msg.guild.id && msg.guild.members.find(m => m.id === user.discordId )))
         .map(user => {
