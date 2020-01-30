@@ -5,7 +5,7 @@ import config from '../../../config.json';
 import { log } from '../../log';
 import { cache } from '../../storage/cache';
 import { upsertOne } from '../../storage/db';
-import { extractNicknameAndServer, createEmbed } from '../../helpers';
+import { extractNicknameAndServer, createEmbed, extractArguments } from '../../helpers';
 
 export const getRealm = (server:string|undefined) => {
     if (!server) {
@@ -238,24 +238,34 @@ export const ingame = async (msg:Discord.Message) => {
     
 }
 export const mastery = async (msg:Discord.Message) => {    
-    msg.channel.startTyping();
+    msg.channel.startTyping();    
+    const selfRequest = !!!(extractArguments(msg).length);
 
-    const champions = cache["champions"];
-    const masteryIcons = cache["options"].find(option => option.option === 'masteryIcons')
-        ? cache["options"].find(option => option.option === 'masteryIcons').value
-        : null
-    const { nickname, server } = extractNicknameAndServer(msg);
-    const playerId = await getSummonerId(nickname, server);
+    if (selfRequest) {
+        const user = cache["users"].find(user => user.discordId === msg.author.id);
+        if (user && user.accounts && user.accounts.length !== 0)
+            user.accounts.map(account => aggregateMasteryData(msg, undefined, account.server, account.id));
+        else
+            msg.channel.send(createEmbed(`:information_source: You don't have any accounts registered`, [{ title: '\_\_\_', content: 
+                `To use this commands without arguments you have to register your League account first: \`\`!register <IGN> | <server>\`\`.
+                Otherwise, this command can be used as follows: \`\`!mastery IGN|server\`\`.` }]));
+    }
+    else {
+        const { nickname, server } = extractNicknameAndServer(msg);
+        aggregateMasteryData(msg, nickname, server)
+    }
+}
+    
+const aggregateMasteryData = async (msg:Discord.Message, nickname:string|undefined, server:string|undefined, playerId?:string) => {    
     const realm = getRealm(server);
-    const topX = 5;
-
-    // check if nickname/server provided
-    // YES? continue
-    // NO? check if user registered
-    // YES? continue
-    // NO? send instructions on how to use it
-
-    if (!nickname || !server) {
+    if (!playerId)
+        playerId = await getSummonerId(nickname, server);
+    if (!nickname) {
+        const nicknameUrl = `https://${realm}.api.riotgames.com/lol/summoner/v4/summoners/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
+        const nicknameData = await axios(nicknameUrl);
+        nickname = nicknameData.data.name;
+    }
+    if (!nickname || !server ) {
         msg.channel.stopTyping();
         return;
     }
@@ -264,7 +274,11 @@ export const mastery = async (msg:Discord.Message) => {
         msg.channel.stopTyping();
         return;
     }
-    
+    const topX = 3;
+    const champions = cache["champions"];
+    const masteryIcons = cache["options"].find(option => option.option === 'masteryIcons')
+        ? cache["options"].find(option => option.option === 'masteryIcons').value
+        : null
     const url = `https://${realm}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
     const masteryData = await axios(url);
     const masteryList = orderBy(masteryData.data, ['championPoints'], ['desc'])
@@ -287,6 +301,7 @@ export const mastery = async (msg:Discord.Message) => {
         .setTimestamp(new Date())
         .setThumbnail(mostMasteryIcon)
         .setFooter(`${msg.author.username}`)
+        .setColor('0xFDC000')
     masteryList.map(mastery => {
         const champion = champions.find(ch => ch.id == mastery.championId);
         const masteryIcon = masteryIcons.find(mI => mI.mastery === mastery.championLevel);
@@ -297,7 +312,6 @@ export const mastery = async (msg:Discord.Message) => {
             `**Points**: ${mastery.championPoints}
             **Last game**: ${new Date(mastery.lastPlayTime).toLocaleDateString()}`, false)
     })
-
     msg.channel.send(embed);
     msg.channel.stopTyping();
 }
