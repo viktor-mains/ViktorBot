@@ -274,8 +274,10 @@ const aggregateMasteryData = async (msg:Discord.Message, nickname:string|undefin
         msg.channel.stopTyping();
         return;
     }
-    const topX = 3;
     const champions = cache["champions"];
+    const topX = cache["options"].find(option => option.option === 'topMasteries')
+        ? cache["options"].find(option => option.option === 'topMasteries').value
+        : 3;
     const masteryIcons = cache["options"].find(option => option.option === 'masteryIcons')
         ? cache["options"].find(option => option.option === 'masteryIcons').value
         : null

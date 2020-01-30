@@ -135,61 +135,6 @@ const getMastery = async (msg:Discord.Message, nickname:string, server:string, _
     return masteryData;
 }
 
-export const register = async (msg:Discord.Message) => {
-    const { nickname, server } = extractNicknameAndServer(msg);
-    const uuid = `VIKBOT-${v4()}`;
-    
-    if (!nickname || !server)
-        return;
-
-    const embed = new Discord.RichEmbed()
-        .setColor('FDC000')
-        .setFooter(`Your code expires at ${(new Date(Date.now() + timeout)).toLocaleTimeString()}`)
-        .setTitle(`Your unique verification code!`)
-        .addField('\_\_\_', `\`\`${uuid}\`\`
-            \nCopy the above code, login into your ${nickname} account on server ${server}, go into Settings -> Verification, paste the code in the text box and click "Send".
-            \nAfter it's done, react with the :white_check_mark:.
-            \n[Picture visualizing it step-by-step](https://i.imgur.com/4GsXTQC.png)`);
-    
-    msg.author.send(embed)
-        .then(sentEmbed => {
-            msg.react('📩')
-            const reactions = [ '✅', '❌' ];
-            const filter = (reaction, user) => msg.author.id === user.id && (reaction.emoji.name === '❌' || reaction.emoji.name === '✅');
-            const iterateReactions = (index:number) => {
-                if (index >= reactions.length)
-                    return;
-                // @ts-ignore:next-line
-                sentEmbed.react(reactions[index]);
-                setTimeout(() => iterateReactions(index + 1), 500);
-            }
-            iterateReactions(0);
-            
-            // @ts-ignore:next-line
-            sentEmbed.awaitReactions(filter, {
-                time: timeout,
-                maxEmojis: 1
-            })
-            .then(collected => {
-                collected = collected.map(col => ({
-                    name: col.emoji.name,
-                    message: col.message
-                }))[0];
-                if (collected.name === '✅')
-                    verifyCode(nickname, server, uuid, msg)
-                else
-                    msg.author.send(createEmbed(`:information_source: Profile registering aborted`, [{ title: '\_\_\_', content: `You can do it some other time.` }]));
-            })
-            .catch(e => console.log(e))
-        })
-        .catch(err =>
-            msg.channel.send(createEmbed(':warning: I am unable to reply to you', [{ title: '\_\_\_', content: `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
-            \nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command.` }]
-            ))
-        );
-    return;
-}
-
 export const profile = async (msg:Discord.Message) => {
     msg.channel.startTyping();
     
@@ -376,4 +321,106 @@ export const topmembers = (msg:Discord.Message) => {
         : {})
     const embed = createEmbed(`🏆 Top ${count} members`, [{ title: '\_\_\_', content }])
     msg.channel.send(embed);
+}
+
+export const register = async (msg:Discord.Message) => {
+    const { nickname, server } = extractNicknameAndServer(msg);
+    const oldData = cache["users"].find(user => user.discordId === msg.author.id);
+    const maxAccounts = cache["options"].find(option => option.option === 'maxAccounts')
+        ? cache["options"].find(option => option.option === 'maxAccounts').value
+        : 2;
+    const uuid = `VIKBOT-${v4()}`;
+    
+    if (!nickname || !server)
+        return;
+    if (oldData && oldData.accounts && oldData.accounts.length >= maxAccounts) {
+        msg.channel.send(createEmbed(`❌ You registered maximum amount of accounts`, [{ title: '\_\_\_', content: `The maximum number of accounts you can register is **${maxAccounts}**.` }]))
+        return;
+    }
+
+    const embed = new Discord.RichEmbed()
+        .setColor('FDC000')
+        .setFooter(`Your code expires at ${(new Date(Date.now() + timeout)).toLocaleTimeString()}`)
+        .setTitle(`Your unique verification code!`)
+        .addField('\_\_\_', `\`\`${uuid}\`\`
+            \nCopy the above code, login into your ${nickname} account on server ${server}, go into Settings -> Verification, paste the code in the text box and click "Send".
+            \nAfter it's done, react with the :white_check_mark:.
+            \n[Picture visualizing it step-by-step](https://i.imgur.com/4GsXTQC.png)`);
+    
+    msg.author.send(embed)
+        .then(sentEmbed => {
+            msg.react('📩')
+            const reactions = [ '✅', '❌' ];
+            const filter = (reaction, user) => msg.author.id === user.id && (reaction.emoji.name === '❌' || reaction.emoji.name === '✅');
+            const iterateReactions = (index:number) => {
+                if (index >= reactions.length)
+                    return;
+                // @ts-ignore:next-line
+                sentEmbed.react(reactions[index]);
+                setTimeout(() => iterateReactions(index + 1), 500);
+            }
+            iterateReactions(0);
+            
+            // @ts-ignore:next-line
+            sentEmbed.awaitReactions(filter, {
+                time: timeout,
+                maxEmojis: 1
+            })
+            .then(collected => {
+                collected = collected.map(col => ({
+                    name: col.emoji.name,
+                    message: col.message
+                }))[0];
+                if (collected.name === '✅')
+                    verifyCode(nickname, server, uuid, msg)
+                else
+                    msg.author.send(createEmbed(`:information_source: Profile registering aborted`, [{ title: '\_\_\_', content: `You can do it some other time.` }]));
+            })
+            .catch(e => console.log(e))
+        })
+        .catch(err =>
+            msg.channel.send(createEmbed(':warning: I am unable to reply to you', [{ title: '\_\_\_', content: `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
+            \nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command.` }]
+            ))
+        );
+    return;
+}
+
+export const unregister = async (msg:Discord.Message) => {
+    msg.channel.startTyping();
+    const { nickname, server } = extractNicknameAndServer(msg);
+    const realm = getRealm(server);
+    const playerId = await getSummonerId(nickname, server);
+    const oldData = cache["users"].find(user => user.discordId === msg.author.id)
+        ? cache["users"].find(user => user.discordId === msg.author.id)
+        : null;
+
+    if (!nickname || !server) {
+        msg.channel.stopTyping();
+        return;
+    }
+    if (!playerId || !realm) {
+        msg.channel.send(createEmbed('❌ Incorrect nickname or server', [{ title: '\_\_\_', content: 'Check if the data you\'ve provided is correct.' }]));
+        msg.channel.stopTyping();
+        return;
+    }
+    if (!oldData || !oldData.accounts) {
+        msg.channel.send(createEmbed(`:information_source: Provided account isn't registered`, [{ title: '\_\_\_', content: `This account was never registered in the first place.` }]));
+        msg.channel.stopTyping();
+        return;
+    }
+    const newData = { ...oldData };
+    newData.accounts = oldData.accounts.filter(account => account.id !== playerId);
+    if (oldData.accounts.length === newData.accounts.length) {
+        msg.channel.send(createEmbed(`:information_source: Provided account isn't registered`, [{ title: '\_\_\_', content: `This account was never registered in the first place.` }]));
+        msg.channel.stopTyping();
+        return;
+    }
+    upsertOne('vikbot', 'users', { discordId: msg.author.id }, newData, err => {
+        if (err)
+            log.WARN(err);
+        else
+            msg.channel.send(createEmbed(`✅ Account unregistered succesfully`, [{ title: '\_\_\_', content: `To check your profile, you can use \`\`!profile\`\` command.`}]));
+        msg.channel.stopTyping();
+    })
 }
