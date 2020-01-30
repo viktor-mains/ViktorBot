@@ -234,9 +234,6 @@ export const lastlane = async (msg:Discord.Message) => {
 export const lastgame = async (msg:Discord.Message) => {
     // https://eun1.api.riotgames.com/lol/match/v4/matches/2281378026?api_key=RGAPI-570a0582-2aef-470b-8b66-938c35b3cf31
 }
-export const ingame = async (msg:Discord.Message) => {
-    
-}
 export const mastery = async (msg:Discord.Message) => {    
     msg.channel.startTyping();    
     const selfRequest = !!!(extractArguments(msg).length);
@@ -255,7 +252,6 @@ export const mastery = async (msg:Discord.Message) => {
         aggregateMasteryData(msg, nickname, server)
     }
 }
-    
 const aggregateMasteryData = async (msg:Discord.Message, nickname:string|undefined, server:string|undefined, playerId?:string) => {    
     const realm = getRealm(server);
     if (!playerId)
@@ -316,4 +312,43 @@ const aggregateMasteryData = async (msg:Discord.Message, nickname:string|undefin
     })
     msg.channel.send(embed);
     msg.channel.stopTyping();
+}
+
+export const ingame = async (msg:Discord.Message) => {
+    msg.channel.startTyping();    
+    const selfRequest = !!!(extractArguments(msg).length);
+
+    if (selfRequest) {
+        const user = cache["users"].find(user => user.discordId === msg.author.id);
+        if (user && user.accounts && user.accounts.length !== 0)
+            user.accounts.map(account => aggregateMasteryData(msg, undefined, account.server, account.id));
+        else
+            msg.channel.send(createEmbed(`:information_source: You don't have any accounts registered`, [{ title: '\_\_\_', content: 
+                `To use this commands without arguments you have to register your League account first: \`\`!register <IGN> | <server>\`\`.
+                Otherwise, this command can be used as follows: \`\`!ingame IGN|server\`\`.` }]));
+    }
+    else {
+        const { nickname, server } = extractNicknameAndServer(msg);
+        aggregateInGameData(msg, nickname, server)
+    }
+}
+const aggregateInGameData = async (msg:Discord.Message, nickname:string|undefined, server:string|undefined, playerId?:string) => {
+    const realm = getRealm(server);
+    if (!playerId)
+        playerId = await getSummonerId(nickname, server);
+    if (!nickname) {
+        const nicknameUrl = `https://${realm}.api.riotgames.com/lol/summoner/v4/summoners/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
+        const nicknameData = await axios(nicknameUrl);
+        nickname = nicknameData.data.name;
+    }
+    if (!nickname || !server ) {
+        msg.channel.stopTyping();
+        return;
+    }
+    if (!playerId || !realm) {
+        msg.channel.send(createEmbed('❌ Incorrect nickname or server', [{ title: '\_\_\_', content: 'Check if the data you\'ve provided is correct.' }]));
+        msg.channel.stopTyping();
+        return;
+    }
+    const champions = cache["champions"];
 }
