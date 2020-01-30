@@ -12,7 +12,7 @@ import { register, profile, description, update, topmembers } from './commands/p
 import { } from './commands/faq';
 import { meow, woof, rito, choose } from './commands/fun';
 import { status, impersonate, refresh, punish, msgupdate } from './commands/mod';
-import { updatechampions, lastlane } from './commands/riot';
+import { updatechampions, lastlane, mastery } from './commands/riot';
 import { iam, iamnot, roles } from './commands/roles';
 
 export const Command: { [key:string]: (command:ICommand, msg:Discord.Message) => string | void} = {
@@ -39,6 +39,7 @@ export const Command: { [key:string]: (command:ICommand, msg:Discord.Message) =>
     
     updatechampions: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(updatechampions, msg),
     lastlane: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(lastlane, msg),
+    mastery: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(mastery, msg),
 
     iam: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(iam, msg),
     iamnot: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(iamnot, msg),

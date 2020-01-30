@@ -147,7 +147,7 @@ export const register = async (msg:Discord.Message) => {
         .setFooter(`Your code expires at ${(new Date(Date.now() + timeout)).toLocaleTimeString()}`)
         .setTitle(`Your unique verification code!`)
         .addField('\_\_\_', `\`\`${uuid}\`\`
-            \nCopy the above code, open League client, go into Settings -> Verification, paste the code in the text box and click "Send".
+            \nCopy the above code, login into your ${nickname} account on server ${server}, go into Settings -> Verification, paste the code in the text box and click "Send".
             \nAfter it's done, react with the :white_check_mark:.
             \n[Picture visualizing it step-by-step](https://i.imgur.com/4GsXTQC.png)`);
     
