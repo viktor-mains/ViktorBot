@@ -106,6 +106,7 @@ export const userLeave = (member:Discord.GuildMember) => {
 export const descriptionChange = (msg:Discord.Message) => {
     const log = createEmbed(`✍️ USER CHANGES DESCRIPTION`, [
         { title: `User`, content: `${msg.member.user.username}#${msg.member.user.discriminator}`, inline: false },
+        { title: `ID`, content: msg.member.id, inline: false },
         { title: `New description`, content: removeKeyword(msg), inline: false },
         { title: `Changed at`, content: moment(new Date().toISOString()).format("MMMM Do YYYY, HH:mm:ss a"), inline: false }
     ], '8442f5');
