@@ -153,3 +153,10 @@ export const msgupdate = (msg:Discord.Message) => {
         msg.channel.stopTyping();
     })
 }
+
+export const guilds = (msg:Discord.Message) => {
+    let content = '';
+    const guilds = [ ...cache["bot"].guilds.values() ].map(guild => content += `- \`\`[${guild.id}]\`\` ${guild.name}\n`)
+    const embed = createEmbed('Viktor Bot\'s guilds', [{ title: '\_\_\_', content }]);
+    msg.channel.send(embed);
+}
