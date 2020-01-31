@@ -307,8 +307,8 @@ const aggregateMasteryData = async (msg:Discord.Message, nickname:string|undefin
         if (masteryIcon)
             title = `${masteryIcon.emote} ${title} ${mastery.chestGranted ? '<:chest_unlocked:672434420195655701>' : ''}`
         embed.addField(title, 
-            `**Points**: ${mastery.championPoints}
-            **Last game**: ${new Date(mastery.lastPlayTime).toLocaleDateString()}`, false)
+            `**Points**: ${mastery.championPoints}\n`+
+            `**Last game**: ${new Date(mastery.lastPlayTime).toLocaleDateString()}`, false)
     })
     msg.channel.send(embed);
     msg.channel.stopTyping();

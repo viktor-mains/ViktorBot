@@ -152,14 +152,18 @@ export const profile = async (msg:Discord.Message) => {
         })
     , ['messageCount'], ['desc']);
     const userData = cache["users"].find(u => u.discordId === user.id);
-    if (!userData || userData["accounts"].length === 0) {
+    if (user.id !== cache["bot"].id && !userData || !userData["membership"] || !userData["membership"].find(s => s.serverId === msg.guild.id)) { // || userData["accounts"].length === 0) {
         if (user.id === msg.author.id) {
-            msg.channel.send(createEmbed(`:information_source: You didn't register yet`, [{ title: '\_\_\_', content: `Use the \`\`!register <IGN> | <server>\`\` command to create your profile.` }]));
+            // msg.channel.send(createEmbed(`:information_source: You didn't register yet`, [{ title: '\_\_\_', content: `Use the \`\`!register <IGN> | <server>\`\` command to create your profile.` }]));
+            msg.channel.send(createEmbed(`:information_source: Cannot find your data in database`, [{ title: '\_\_\_', content: `Wait a bit and try again later.` }]));
             msg.channel.stopTyping();
             return;
         }
         else {
-            msg.channel.send(createEmbed(`:information_source: This user didn't register yet`, [{ title: '\_\_\_', content: `You cannot see profile of this user as they didn't register yet.` }]));
+            // msg.channel.send(createEmbed(`:information_source: This user didn't register yet`, [{ title: '\_\_\_', content: `You cannot see profile of this user as they didn't register yet.` }]));
+            msg.channel.send(createEmbed(`:information_source: Cannot find ${user.username}'s data in database`, [{ title: '\_\_\_', content: 
+                `It's possible that they are inactive and Vikbot didn't pick them up yet. `+
+                `It also might be a bot account.` }]));
             msg.channel.stopTyping();
             return;
         }
