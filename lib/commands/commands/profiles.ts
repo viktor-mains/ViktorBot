@@ -276,7 +276,7 @@ export const description = (msg:Discord.Message) => {
     }
 
     if (!userData) 
-        userData = initData(msg.member);
+        userData = initData(null, msg.author.id, msg);
     userData.description = description;
 
     upsertOne('vikbot', 'users', { discordId: msg.author.id }, userData, err => {

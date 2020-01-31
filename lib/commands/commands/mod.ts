@@ -36,7 +36,7 @@ export const refresh = (msg:Discord.Message) => {
 export const punish = (msg:Discord.Message) => {
     msg.channel.startTyping();
     const mentions = [ ...msg.mentions.users.values() ];
-    let user:Discord.User;
+    let user:Discord.User|null;
     let member;
     
     if (mentions.length === 0) {
@@ -45,8 +45,18 @@ export const punish = (msg:Discord.Message) => {
         return;
     }
 
-    user = msg.guild.members.find(member => member.id === mentions[0].id).user;
-    member = cache["users"].find(u => u.discordId === user.id);
+    user = msg.guild.members.find(member => member.id === mentions[0].id)
+        ? msg.guild.members.find(member => member.id === mentions[0].id).user
+        : null;
+
+    if (!user) {
+        msg.channel.send(createEmbed(`❌ Something went wrong`, [{ title: '\_\_\_', content: 'Apparently, according to Discord this user doesn\'t exist. Reset the client or something.' }]));
+        msg.channel.stopTyping();
+        return;
+    }
+    else {
+        member = cache["users"].find(u => u.discordId === user.id);
+    }
     
     if (!member) {
         msg.channel.send(createEmbed(`❌ Something went wrong`, [{ title: '\_\_\_', content: 'Apparently, according to Discord this user doesn\'t exist. Reset the client or something.' }]));

@@ -87,7 +87,7 @@ const classifyMessage = async (msg:Discord.Message) => {
         return;
     }
 
-    handleUserNotInDatabase(msg.member);
+    handleUserNotInDatabase(msg.member, msg);
     handlePossibleMembershipRole(msg);
     
     if (isMessageDearViktor(msg)) {

@@ -125,14 +125,18 @@ export const botJoin = (guild:Discord.Guild) => {
     sendGlobalLog(botLog, guild);
 }
 
-export const initData = (member:Discord.GuildMember|null, id?:any) => {
-    // member = null means that they used to be part of Discord but aren't anymore
+export const initData = (member:Discord.GuildMember|null, id?:any, msg?:any) => {
+    // member = null means that they used to be part of Discord but aren't anymore, or Discord doesn't recognize them
     return {
         discordId: member ? member.id : id,
         updated: Date.now(),
         accounts: [],
         membership: [{
-            serverId: member ? member.guild.id : 0,
+            serverId: member 
+                ? member.guild.id 
+                : msg
+                    ? msg.guild.id
+                    : 0,
             messageCount: 0,
             firstMessage: 0,
             joined: member && member.joinedAt ? new Date(member.joinedAt).getTime() : Date.now()
@@ -140,34 +144,56 @@ export const initData = (member:Discord.GuildMember|null, id?:any) => {
     }
 }
 
-export const handleUserNotInDatabase = async (member:Discord.GuildMember) => {
-    if (!member)
+export const handleUserNotInDatabase = async (member:Discord.GuildMember, msg?:Discord.Message|null) => {
+    if (msg && !msg.member && msg.author.id === msg.channel.id) // DM
+        return;
+    const memberUserId = msg
+        ? msg.author.id
+        : member
+            ? member.id
+            : null;
+    const memberGuildId = msg
+        ? msg.guild.id
+        : member
+            ? member.guild.id
+            : null;
+    if (!memberUserId || !memberGuildId)
         return;
     const update = (memberInDataBase) => {
-        const memberIndex = memberInDataBase.membership.findIndex(m => m.serverId === member.guild.id);
+        const memberIndex = memberInDataBase.membership.findIndex(m => m.serverId === memberGuildId);
         if (memberIndex !== -1) { // user is in the database and in the server
             memberInDataBase.membership[memberIndex].messageCount = memberInDataBase.membership[memberIndex].messageCount + 1;
                 if (memberInDataBase.membership[memberIndex].joined === 0) 
                     memberInDataBase.membership[memberIndex].joined = Date.now();
                 if (memberInDataBase.membership[memberIndex].firstMessage === 0) 
                     memberInDataBase.membership[memberIndex].firstMessage = Date.now();
-                upsertOne('vikbot', 'users', { discordId: member.id }, memberInDataBase, err => err && log.WARN(err));
+                upsertOne('vikbot', 'users', { discordId: memberUserId }, memberInDataBase, err => err && log.WARN(err));
         }
         else { // user is in database but not in the server
             const serverData = {
-                serverId: member.guild.id,
+                serverId: memberGuildId,
                 messageCount: 1,
                 firstMessage: Date.now(),
-                joined: member.joinedAt ? new Date(member.joinedAt).getTime() : Date.now()
+                joined: msg 
+                    ? msg.member && msg.member.joinedAt 
+                        ? new Date(msg.member.joinedAt).getTime() 
+                        : Date.now()
+                    : 0
             }
             memberInDataBase.membership.push(serverData);
-            upsertOne('vikbot', 'users', { discordId: member.id }, memberInDataBase, err => err && log.WARN(err));
+            upsertOne('vikbot', 'users', { discordId: memberUserId }, memberInDataBase, err => err && log.WARN(err));
         }
     }
 
-    let memberInDataBase = cache["users"].find(user => user.discordId === member.id);
-    if (!memberInDataBase) // user not in database at all
-        update(initData(member));
+    let memberInDataBase = cache["users"].find(user => user.discordId === memberUserId);
+    if (!memberInDataBase) { // user not in database at all
+        if (member)
+            update(initData(member))
+        if (msg && msg.member)
+            update(initData(null, msg.member))
+        if (msg && !msg.member)
+            update(initData(null, msg.author.id, msg))
+    }
     else // user in database
         update(memberInDataBase);
 }
