@@ -43,9 +43,11 @@ export const msgEdit = (oldMsg:Discord.Message, newMsg:Discord.Message) => {
         return;
     const oldTimestamp = new Date(oldMsg.createdTimestamp);
     const newTimestamp = new Date();
+    const messageLink = `https://discordapp.com/channels/${newMsg.guild.id}/${newMsg.channel.id}/${newMsg.id}`;
     const log = createEmbed(`:clipboard: MESSAGE EDITED`, [
         { title: `Author`, content: `${oldMsg.author.username}#${oldMsg.author.discriminator}`, inline: true},
         { title: `Channel`, content: `<#${oldMsg.channel.id}>`, inline: true},
+        { title: `Msg link`, content: `[click](${messageLink})`, inline: true},
         { title: `Old message`, content: oldMsg.content, inline: false},
         { title: `New message`, content: newMsg.content, inline: false},
         { title: `Created at`, content: moment(oldTimestamp).format("MMMM Do YYYY, HH:mm:ss"), inline: true},
