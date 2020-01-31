@@ -19,14 +19,16 @@ const sendLog = (guild:any, embed:Discord.RichEmbed, room:string) => {
             .catch(err => log.WARN(`Something went wrong. ${ err }`))
     }
 }
-const sendGlobalLog = (embed:Discord.RichEmbed, guild:Discord.Guild) => {
+const sendGlobalLog = (embed:Discord.RichEmbed, guild?:Discord.Guild) => {
     const room = 'room_global';
     const room_log = cache["options"].find(option => option.option === room)
         ? cache["options"].find(option => option.option === room).value
         : null;
 
-    embed.addField('Guild name', guild.name, true)
-    embed.addField('Guild id', guild.id, true)
+    if (guild) {
+        embed.addField('Guild name', guild.name, true)
+        embed.addField('Guild id', guild.id, true)
+    }
 
     if (room_log) {
         const channel = cache["bot"].channels.get(room_log);
@@ -105,14 +107,14 @@ export const userLeave = (member:Discord.GuildMember) => {
 
 export const descriptionChange = (msg:Discord.Message) => {
     const log = createEmbed(`✍️ USER CHANGES DESCRIPTION`, [
-        { title: `User`, content: `${msg.member.user.username}#${msg.member.user.discriminator}`, inline: false },
-        { title: `ID`, content: msg.member.id, inline: false },
+        { title: `User`, content: `${msg.author.username}#${msg.author.discriminator}`, inline: false },
+        { title: `ID`, content: msg.author.id, inline: false },
         { title: `New description`, content: removeKeyword(msg), inline: false },
         { title: `Changed at`, content: moment(new Date().toISOString()).format("MMMM Do YYYY, HH:mm:ss a"), inline: false }
     ], '8442f5');
-    const guild = msg.member.guild.id;
+    const guild = msg.member ? msg.member.guild.id : msg.author.id;
     sendLog(guild, log, 'room_log_users');
-    sendGlobalLog(log, msg.member.guild);
+    sendGlobalLog(log, msg.member.guild ? msg.member.guild : undefined);
 }
 
 export const botJoin = (guild:Discord.Guild) => { 
@@ -139,6 +141,8 @@ export const initData = (member:Discord.GuildMember|null, id?:any) => {
 }
 
 export const handleUserNotInDatabase = async (member:Discord.GuildMember) => {
+    if (!member)
+        return;
     const update = (memberInDataBase) => {
         const memberIndex = memberInDataBase.membership.findIndex(m => m.serverId === member.guild.id);
         if (memberIndex !== -1) { // user is in the database and in the server
@@ -169,6 +173,8 @@ export const handleUserNotInDatabase = async (member:Discord.GuildMember) => {
 }
 
 export const handlePossibleMembershipRole = async (msg:Discord.Message) => {
+    if (!msg.member) // sent in DM
+        return;
     const memberData = cache["users"].find(user => user.discordId === msg.author.id)
         ? cache["users"].find(user => user.discordId === msg.author.id).membership
             ? cache["users"].find(user => user.discordId === msg.author.id).membership.find(guild => guild.serverId === msg.guild.id)

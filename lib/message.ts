@@ -82,20 +82,20 @@ const classifyMessage = async (msg:Discord.Message) => {
     if (isUserBot(msg)) {
         return;
     }
+    if (isChannelDM(msg) && !isUserArcy(msg)) {
+        answer(msg, 'Only my glorious creator can talk to me in private.');
+        return;
+    }
 
     handleUserNotInDatabase(msg.member);
     handlePossibleMembershipRole(msg);
-
+    
     if (isMessageDearViktor(msg)) {
         answerDearViktor(msg);
         return;
     }        
     if (isMessageDearVictor(msg)) {
         answerDearVictor(msg);
-        return;
-    }
-    if (isChannelDM(msg) && !isUserArcy(msg)) {
-        answer(msg, 'Only my glorious creator can talk to me in private.');
         return;
     }
     if (messageStartsWithCommandSymbol(msg)) {
