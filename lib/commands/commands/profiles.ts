@@ -392,8 +392,10 @@ export const register = async (msg:Discord.Message) => {
                 }))[0];
                 if (collected && collected.name === '✅')
                     verifyCode(nickname, server, uuid, msg)
-                else
+                else {
+                    log.INFO(`user ${msg.author.username} timeouted while registering ${nickname}, ${server}`);
                     msg.author.send(createEmbed(`:information_source: Profile registering aborted`, [{ title: '\_\_\_', content: `You can do it some other time.` }]));
+                }
             })
             .catch(e => console.log(e))
         })
