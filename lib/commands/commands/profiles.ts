@@ -10,7 +10,7 @@ import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, j
 import { getSummonerId, getRealm } from './riot';
 import config from '../../../config.json';
 
-const timeout = 300000;
+const timeout = 900000;
 
 const verifyCode = async (nickname:string, server:string, uuid:string, msg:Discord.Message ) => {
     msg.channel.startTyping();
@@ -20,9 +20,11 @@ const verifyCode = async (nickname:string, server:string, uuid:string, msg:Disco
     
     const verificationCode:any = await axios(url)
         .catch(err => {
+            log.INFO(`user ${msg.author.username} failed to register with account ${nickname}, ${server}`);
             log.WARN(err);
             msg.author.send(createEmbed(`❌ Cannot get verification code`, [{ title: '\_\_\_', content: `Getting 3rd party code failed.` }]));
             msg.channel.stopTyping();
+            return;
         })
     if (uuid !== verificationCode.data) {
         msg.author.send(createEmbed(`❌ Incorrect verification code`, [{ title: '\_\_\_', content: `The verification code you've set is incorrect, try again.\nIf this happens consistently, reset the League client.` }]));
