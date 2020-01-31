@@ -6,7 +6,7 @@ import { log } from '../../log';
 import { initData, descriptionChange } from '../../events';
 import { cache } from '../../storage/cache';
 import { upsertOne } from '../../storage/db';
-import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft, replaceAll, modifyInput } from '../../helpers';
+import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft, replaceAll, modifyInput, extractArguments } from '../../helpers';
 import { getSummonerId, getRealm } from './riot';
 import config from '../../../config.json';
 
@@ -143,6 +143,16 @@ export const profile = async (msg:Discord.Message) => {
     let viktorMastery = 0;
     let lastViktorGame = 0;
     const mentions = [ ...msg.mentions.users.values() ];
+    const args = extractArguments(msg);
+    if (mentions.length === 0 && args.length !== 0) {
+        msg.channel.send(createEmbed(`:information_source:  Unoptimal command use`, [{ title: '\_\_\_', content: 
+        `There are two ways to use this command and yours was none of them:\n\n`+
+        `- \`\`!profile\`\` - that way you see your own profile,\n`+
+        `- \`\`!profile @mention\`\` - that way you see profile of the mentioned person (use with caution as it pings them)`
+        }]));
+        msg.channel.stopTyping();
+        return;
+    }
     const user:Discord.User = mentions.length === 0 ? msg.author : msg.guild.members.find(member => member.id === mentions[0].id).user;
     const allUsers = orderBy(cache["users"]
         .filter(user => user.membership && user.membership.find(member => member.serverId === msg.guild.id && msg.guild.members.find(m => m.id === user.discordId)))
