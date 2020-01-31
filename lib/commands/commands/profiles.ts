@@ -393,17 +393,19 @@ export const register = async (msg:Discord.Message) => {
                 if (collected && collected.name === '✅')
                     verifyCode(nickname, server, uuid, msg)
                 else {
-                    log.INFO(`user ${msg.author.username} timeouted while registering ${nickname}, ${server}`);
+                    log.INFO(`user ${msg.author.username} timeouted while registering ${nickname}, server ${msg.guild.name}`);
                     msg.author.send(createEmbed(`:information_source: Profile registering aborted`, [{ title: '\_\_\_', content: `You can do it some other time.` }]));
+                    msg.channel.stopTyping();
                 }
             })
             .catch(e => console.log(e))
         })
-        .catch(err =>
+        .catch(err => {
             msg.channel.send(createEmbed(':warning: I am unable to reply to you', [{ title: '\_\_\_', content: `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
             \nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command.` }]
-            ))
-        );
+            ));
+            msg.channel.stopTyping();
+        });
     return;
 }
 
