@@ -390,7 +390,7 @@ export const register = async (msg:Discord.Message) => {
                     name: col.emoji.name,
                     message: col.message
                 }))[0];
-                if (collected.name === '✅')
+                if (collected && collected.name === '✅')
                     verifyCode(nickname, server, uuid, msg)
                 else
                     msg.author.send(createEmbed(`:information_source: Profile registering aborted`, [{ title: '\_\_\_', content: `You can do it some other time.` }]));
