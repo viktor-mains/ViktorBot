@@ -62,12 +62,20 @@ export const isLink = (supposedLink:string) => {
 
 export const extractNicknameAndServer = (msg:Discord.Message) => {
     if (!hasSeparator(msg)) {
-        msg.channel.send(createEmbed('❌ Incorrect syntax', [{ title: '\_\_\_', content: 'This command requires the symbol **|** to separate region from nickname.' }]));
+        msg.channel.send(createEmbed('❌ Incorrect syntax', [{ title: '\_\_\_', content: 'This command requires the symbol **|** to separate nickname from region.' }]));
         return {};
     }
     const nicknameAndServer = removeKeyword(msg).split('|');
-    const nickname = encodeURIComponent(nicknameAndServer[0].trim());
-    const server = nicknameAndServer[1].trim();
+    let nickname:string|undefined = encodeURIComponent(nicknameAndServer[0].trim());
+    let server:string|undefined = nicknameAndServer[1].trim();
+    if (server.toLowerCase() === 'server') {
+        msg.channel.send(createEmbed('❌ Incorrect syntax', [{ title: '\_\_\_', content: '\`\`server\`\` means server like EUW or NA or TR, not _literally_ the word "server". <:vikfacepalm:355727809236434945>.' }]));
+        server = undefined;
+    }
+    if (nickname.toLowerCase() === 'ign') {
+        msg.channel.send(createEmbed('❌ Incorrect syntax', [{ title: '\_\_\_', content: '\`\`IGN\`\` means **I**n **G**ame **N**ame. Not _literally_ the word "IGN". <:vikfacepalm:355727809236434945>.' }]));
+        nickname = undefined;
+    }
     return {
         nickname,
         server
