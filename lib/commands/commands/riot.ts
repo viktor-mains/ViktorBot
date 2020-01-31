@@ -26,7 +26,7 @@ export const getSummonerId = async (ign:string|undefined, server:string|undefine
         return undefined;
     }
     try {
-        const path = `https://${realm}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${ign}?api_key=${config.RIOT_API_TOKEN}`;
+        const path = `https://${realm}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${ign.replace(' ', '')}?api_key=${config.RIOT_API_TOKEN}`;
         summoner = await axios(path)
     }
     catch(err) {
@@ -44,7 +44,7 @@ export const getAccountId = async (ign:string|undefined, server:string|undefined
         return undefined;
     }
     try {
-        const path = `https://${realm}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${ign}?api_key=${config.RIOT_API_TOKEN}`;
+        const path = `https://${realm}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${ign.replace(' ', '')}?api_key=${config.RIOT_API_TOKEN}`;
         summoner = await axios(path);
     }
     catch(err) {
