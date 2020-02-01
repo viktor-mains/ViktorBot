@@ -188,7 +188,7 @@ export const profile = async (msg:Discord.Message) => {
         })
     , ['messageCount'], ['desc']);
     const userData = cache["users"].find(u => u.discordId === user.id);
-    if (user.id !== cache["bot"].id && !userData || !userData["membership"] || !userData["membership"].find(s => s.serverId === msg.guild.id)) { // || userData["accounts"].length === 0) {
+    if (user.id !== cache["bot"].user.id && !userData || !userData["membership"] || !userData["membership"].find(s => s.serverId === msg.guild.id)) {
         if (user.id === msg.author.id) {
             // msg.channel.send(createEmbed(`:information_source: You didn't register yet`, [{ title: '\_\_\_', content: `Use the \`\`!register <IGN> | <server>\`\` command to create your profile.` }]));
             msg.channel.send(createEmbed(`:information_source: Cannot find your data in database`, [{ title: '\_\_\_', content: `Wait a bit and try again later.` }]));
