@@ -91,6 +91,8 @@ export const iam = (msg:Discord.Message) => {
             : null
         : null
     
+    if (!requestWasSendInApropriateChannel(msg) && appropiateChannel)
+        return msg.channel.send(`You can be anything you want, I'm not giving you role outside the <#${appropiateChannel}> room.`);
     if (specialRoleRequested(roleName, msg))
         return;
     if (!roleName)
@@ -101,8 +103,6 @@ export const iam = (msg:Discord.Message) => {
         return msg.channel.send(`Role **[${roleName.toUpperCase()}]** cannot be self-assigned.`);
     if (userHasRole(roleName, member))
         return msg.channel.send(`You already have the **[${roleName.toUpperCase()}]** role.`);
-    if (!requestWasSendInApropriateChannel(msg) && appropiateChannel)
-        return msg.channel.send(`You can be anything you want, I'm not giving you role outside the <#${appropiateChannel}> room.`);
 
     msg.member.addRole(returnRoleID(roleName, member))
         .then(success => msg.channel.send(`Role **[${roleName.toUpperCase()}]** assigned to ${member.user.username} with utmost efficiency.`))
