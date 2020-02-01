@@ -25,6 +25,7 @@
     "@types/node": "^11.13.4",
     "axios": "^0.18.1",
     "discord.js": "^11.4.2",
+    "emoji-regex": "^8.0.0",
     "moment": "^2.24.0",
     "mongodb": "^3.3.2",
     "rimraf": "^2.6.3",

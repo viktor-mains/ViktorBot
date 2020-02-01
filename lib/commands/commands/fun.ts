@@ -1,5 +1,8 @@
 import Discord from 'discord.js';
 import axios from 'axios';
+import { uniq } from 'lodash';
+import emojiRegex from 'emoji-regex/es2015/index.js';
+import emojiRegexText from 'emoji-regex/es2015/text.js';
 import { removeKeyword, toDDHHMMSS, createEmbed } from '../../helpers';
 import { chooseRandom } from '../../rng';
 import { log } from '../../log';
@@ -68,24 +71,44 @@ export const degen = async (msg:Discord.Message) => {
     const words = cache["options"].find(option => option.option === 'degen_words')
         ? cache["options"].find(option => option.option === 'degen_words').value
         : [];
+    const degeneracyPercentageDefault = 70;
     const limit = 20;
-    const degeneracyPercentageDefault = 80;
+    const emojiMultiplier = 3;
+    const regex = emojiRegex();
+    const regexText = emojiRegexText();
     msg.channel.fetchMessages({ limit })
         .then(messages => {
             const allWords:Array<string> = []; 
             const degenMsgs = messages.filter(m => 
-                words.find(word => m.content.toLowerCase().includes(word.toLowerCase()))
-                || (m.content.startsWith('<:') && m.content.endsWith('>')
-                || (m.content.startsWith('<a:') && m.content.endsWith('>')) // probably emote
-            ));
-            messages.map(m => allWords.push(...m.content.split(' ')));
-            const percentage = (100*(degenMsgs.size)/limit)+(limit*degeneracyPercentageDefault/allWords.length);
+                words.find(word => m.content.toLowerCase().split(' ').includes(word.toLowerCase()))
+                || regex.exec(m.content)
+                || regexText.exec(m.content)
+                || (m.content.startsWith(':') && m.content.endsWith(':')) // probably emoji
+                || m.content === m.content.toUpperCase() // all caps
+                || regex.exec(m.content) // emoji spam
+                || regexText.exec(m.content) // emoji spam
+                || m.content.startsWith('!') // command spam
+            )   
+            messages.map(m => allWords.push(...m.content.toLowerCase().trim().split(' ')));
+            const emojiSpam = allWords.filter(word => regex.exec(word) || regexText.exec(word)).length;
+            const uniqMsgs = uniq(messages.map(m => m.content));
+            const percentageGeneralSpam = 100 - (100 * uniqMsgs.length/messages.size);
+            const percentageDegenWords = 100 * degenMsgs.size / limit;
+            const percentageEmojiSpam = emojiSpam * emojiMultiplier;
+            const percentageShortMessages = 0.5 * limit * degeneracyPercentageDefault/allWords.length;
+            const percentage = percentageDegenWords + percentageEmojiSpam + percentageShortMessages + percentageGeneralSpam;
             const embed = new Discord.RichEmbed()
                 .setTitle('☢️ Degeneracy of the chat')
                 .setFooter(`Powered by Glorious Evolution`, 'https://cdn.discordapp.com/emojis/288396957922361344.png')
                 .setTimestamp(new Date())
                 .setColor('0xFDC000')
-            embed.addField('\_\_\_', `My precise calculations and sophisticated algorithms led me to a conclusion that the degeneracy percentage of this chat has reached ${percentage.toFixed(4)}%.`)
+            embed.addField('\_\_\_', 
+                `My precise calculations and sophisticated algorithms led me to a conclusion that the degeneracy percentage of this chat has reached **${percentage.toFixed(4)}%**.\n\n`+
+                `- general spam - **${percentageGeneralSpam.toFixed(4)}%**\n`+
+                `- short message spam - **${percentageShortMessages.toFixed(4)}%**\n`+
+                `- emoji spam - **${percentageEmojiSpam.toFixed(4)}%**\n`+
+                `- overall degeneracy - **${percentageDegenWords.toFixed(4)}%**`
+            )
             msg.channel.send(embed);
             msg.channel.stopTyping();
         })
