@@ -17,65 +17,76 @@ const verifyCode = async (nickname:string, server:string, uuid:string, msg:Disco
     const playerId = await getSummonerId(nickname, server);
     const realm = getRealm(server);
     const url = `https://${realm}.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
-    
-    const verificationCode:any = await axios(url)
-        .catch(err => {
-            log.INFO(`user ${msg.author.username} failed to register with account ${nickname}, ${server}`);
-            log.WARN(err);
-            msg.author.send(createEmbed(`❌ Cannot get verification code`, [{ title: '\_\_\_', content: `Getting 3rd party code failed.` }]));
-            msg.channel.stopTyping();
-            return;
-        })
-    if (uuid !== verificationCode.data) {
-        msg.author.send(createEmbed(`❌ Incorrect verification code`, [{ title: '\_\_\_', content: `The verification code you've set is incorrect, try again.\nIf this happens consistently, reset the League client.` }]));
-        msg.channel.stopTyping();
-        return;
-    }
-    const { tier, rank } = await getTierAndDivision(msg, nickname, server);
-    const mastery = await getMastery(msg, nickname, server);
-    let userData = {};
-
-    const oldData = cache["users"].find(user => user.discordId === msg.author.id);
-    if (oldData) {
-        const isThisAccountRegistered = oldData["accounts"].find(account => account.id === playerId);
-        const account = {
-            server: server.toUpperCase(),
-            id: playerId,
-            tier,
-            rank,
-            mastery
-        };
-        if (isThisAccountRegistered) {
-            msg.author.send(createEmbed(`❌ This account is already registered`, [{ title: '\_\_\_', content: `This account is already registered.` }]));
+    const continueVerifying = async (verificationCode) => {
+        if (!verificationCode) {
+            log.INFO(`user ${msg.author.username} failed to register with account ${nickname}, ${server} - ${url} - no data returned`);
+            log.INFO(JSON.stringify(verificationCode));
+            msg.author.send(createEmbed(`❌ Verification failed`, [{ title: '\_\_\_', content: `That's probably a Riot's API error. Try again a bit later.` }]));
             msg.channel.stopTyping();
             return;
         }
-        userData = oldData;
-        userData["accounts"]
-            ? userData["accounts"].push(account)
-            : userData["accounts"] = [ account ]
-    }
-    else {
-        userData = {
-            discordId: msg.author.id,
-            updated: Date.now(),
-            accounts: [{
+        if (verificationCode && uuid !== verificationCode.data) {
+            log.INFO(`user ${msg.author.username} failed to register with account ${nickname}, ${server} - ${url} - incorrect code (${verificationCode.data})`);
+            msg.author.send(createEmbed(`❌ Incorrect verification code`, [{ title: '\_\_\_', content: `The verification code you've set is incorrect, try again.\nIf this happens consistently, reset the League client.` }]));
+            msg.channel.stopTyping();
+            return;
+        }
+        const { tier, rank } = await getTierAndDivision(msg, nickname, server);
+        const mastery = await getMastery(msg, nickname, server);
+        let userData = {};
+
+        const oldData = cache["users"].find(user => user.discordId === msg.author.id);
+        if (oldData) {
+            const isThisAccountRegistered = oldData["accounts"].find(account => account.id === playerId);
+            const account = {
                 server: server.toUpperCase(),
                 id: playerId,
                 tier,
                 rank,
                 mastery
-            }],
-            membership: {}
-        };
+            };
+            if (isThisAccountRegistered) {
+                msg.author.send(createEmbed(`❌ This account is already registered`, [{ title: '\_\_\_', content: `This account is already registered.` }]));
+                msg.channel.stopTyping();
+                return;
+            }
+            userData = oldData;
+            userData["accounts"]
+                ? userData["accounts"].push(account)
+                : userData["accounts"] = [ account ]
+        }
+        else {
+            userData = {
+                discordId: msg.author.id,
+                updated: Date.now(),
+                accounts: [{
+                    server: server.toUpperCase(),
+                    id: playerId,
+                    tier,
+                    rank,
+                    mastery
+                }],
+                membership: {}
+            };
+        }
+        updateRankRoles(msg, userData);    
+        upsertOne('vikbot', 'users', { discordId: msg.author.id }, userData, err => {
+            err
+                ? msg.author.send(createEmbed(`❌ Cannot verify user`, [{ title: '\_\_\_', content: `Getting user's data failed, probably due to problem with database. Try again later.` }]))
+                : msg.author.send(createEmbed(`✅ Profile verified succesfully`, [{ title: '\_\_\_', content: `To check your profile, you can use \`\`!profile\`\` command.`}]));
+        });
+        msg.channel.stopTyping();
     }
-    updateRankRoles(msg, userData);    
-    upsertOne('vikbot', 'users', { discordId: msg.author.id }, userData, err => {
-        err
-            ? msg.author.send(createEmbed(`❌ Cannot verify user`, [{ title: '\_\_\_', content: `Getting user's data failed, probably due to problem with database. Try again later.` }]))
-            : msg.author.send(createEmbed(`✅ Profile verified succesfully`, [{ title: '\_\_\_', content: `To check your profile, you can use \`\`!profile\`\` command.`}]));
-    });
-    msg.channel.stopTyping();
+
+    await axios(url)
+        .then(continueVerifying)
+        .catch(err => {
+            log.INFO(`user ${msg.author.username} failed to register with account ${nickname}, ${server} - ${url} - axios error`);
+            log.WARN(err);
+            msg.author.send(createEmbed(`❌ Cannot get verification code`, [{ title: '\_\_\_', content: `Getting 3rd party code failed.` }]));
+            msg.channel.stopTyping();
+            return;
+        })
 }
 
 const updateRankRoles = (msg:Discord.Message, userData) => {
@@ -104,11 +115,15 @@ const getTierAndDivision = async (msg:Discord.Message, nickname:string, server:s
     const url = `https://${realm}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
     const userLeagues:any = await axios(url)
         .catch(err => {
+            log.INFO(`failed to get user's ${msg.author.username} tier/division (${nickname}, ${server}) - ${url}`);
             log.WARN(err);
-            msg.channel.send(createEmbed(`❌Cannot get user's data`, [{ title: '\_\_\_', content: `Getting user's data failed. Try again later.` }]));
-            msg.channel.stopTyping();
             return;
         })
+    if (!userLeagues || !userLeagues.data) {
+        msg.channel.send(createEmbed(`❌Cannot get user's data`, [{ title: '\_\_\_', content: `Getting user's rank data failed. Try again later.` }]));
+        msg.channel.stopTyping();
+        return { tier: null, rank: null };
+    }
     const soloQ = userLeagues.data.find(queue => queue.queueType === 'RANKED_SOLO_5x5');
     const soloQRank = soloQ 
         ? { tier: soloQ.tier, rank: soloQ.rank }
@@ -122,18 +137,27 @@ const getMastery = async (msg:Discord.Message, nickname:string, server:string, _
     const url = `https://${realm}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${playerId}/by-champion/112?api_key=${config.RIOT_API_TOKEN}`;
     const userMastery:any = await axios(url)
         .catch(err => {
+            log.INFO(`failed to get user's ${msg.author.username} mastery (${nickname}, ${server}) - ${url}`);
             log.WARN(err);
-            msg.channel.send(createEmbed(`❌Cannot get user's mastery`, [{ title: '\_\_\_', content: `Getting user's mastery failed. Try again later.` }]));
-            msg.channel.stopTyping();
+            return null;
         })
-    const masteryData = userMastery.data 
+    if (!userMastery || !userMastery.data) {
+        msg.channel.send(createEmbed(`❌Cannot get user's data`, [{ title: '\_\_\_', content: `Getting user's mastery failed. Try again later.` }]));
+        msg.channel.stopTyping();
+    }
+    const masteryData = userMastery && userMastery.data 
         ? {
             points: userMastery.data.championPoints,
             chest: userMastery.data.chestGranted,
             level: userMastery.data.championLevel,
             lastPlayed: userMastery.data.lastPlayTime
         }
-        : {}
+        : {
+            points: null,
+            chest: null, 
+            level: null,
+            lastPlayed: null
+        }
     return masteryData;
 }
 
@@ -211,10 +235,10 @@ export const profile = async (msg:Discord.Message) => {
             ? account.opgg 
             : `https://${account.server}.op.gg/summoner/userName=${modifyInput(name)}`;
 
-        const content = `IGN: [**${name}**](${opgg})\nRank: **${account.tier} ${account.rank === 'UNRANKED' ? '' : account.rank }**`;
-        viktorMastery = typeof account.mastery.points === 'number' 
+        const content = `IGN: [**${name}**](${opgg})\nRank: **${account.tier ? account.tier : 'UNKNOWN'} ${!account.rank || account.rank === 'UNRANKED' ? '' : account.rank }**`;
+        viktorMastery = account.mastery.points
             ? viktorMastery + account.mastery.points 
-            : account.mastery.points; // for inifinity symbols
+            : viktorMastery
         lastViktorGame = lastViktorGame > account.mastery.lastPlayed 
             ? lastViktorGame 
             : account.mastery.lastPlayed;
@@ -229,10 +253,12 @@ export const profile = async (msg:Discord.Message) => {
                 .replace(replaceAll('<br>'), '\n')
             : `This user has no description yet.`, false);
         if (userData.accounts.length > 0) {
-            embed.addField('Viktor mastery', viktorMastery, true);
-            embed.addField('Last Viktor game', lastViktorGame === 0 
-                ? 'never >:C' 
-                : new Date(lastViktorGame).toLocaleDateString(), true);
+            embed.addField('Viktor mastery', viktorMastery ? viktorMastery : 'UNKNOWN', true);
+            embed.addField('Last Viktor game', lastViktorGame
+                ? lastViktorGame === 0 
+                    ? 'never >:C' 
+                    : new Date(lastViktorGame).toLocaleDateString()
+                : 'UNKNOWN', true)
         }
         const memberData = userData.membership 
             ? userData.membership.find(member => member.serverId === msg.guild.id) 
@@ -312,9 +338,9 @@ export const update = (msg:Discord.Message) => {
         const { tier, rank } = await getTierAndDivision(msg, '', account.server, account.id);
         const mastery = await getMastery(msg, '', account.server, account.id);
         const updatedAcc = { ...account };
-        updatedAcc.tier = tier;
-        updatedAcc.rank = rank;
-        updatedAcc.mastery = mastery;
+        updatedAcc.tier = tier ? tier : updatedAcc.tier;
+        updatedAcc.rank = rank ? rank : updatedAcc.rank;
+        updatedAcc.mastery = mastery.lastPlayed ? mastery : updatedAcc.mastery;
         member.accounts[index] = updatedAcc;
         updateAccounts(index + 1);
     }
@@ -408,7 +434,7 @@ export const register = async (msg:Discord.Message) => {
                     msg.channel.stopTyping();
                 }
             })
-            .catch(e => console.log(e))
+            .catch(e => log.WARN(e))
         })
         .catch(err => {
             msg.channel.send(createEmbed(':warning: I am unable to reply to you', [{ title: '\_\_\_', content: `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
@@ -449,6 +475,7 @@ export const unregister = async (msg:Discord.Message) => {
         msg.channel.stopTyping();
         return;
     }
+    updateRankRoles(msg, newData);
     upsertOne('vikbot', 'users', { discordId: msg.author.id }, newData, err => {
         if (err)
             log.WARN(err);

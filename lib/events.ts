@@ -154,9 +154,9 @@ export const handleUserNotInDatabase = async (member:Discord.GuildMember, msg?:D
         : member
             ? member.id
             : null;
-    const memberGuildId = msg
+    const memberGuildId = msg && msg.guild
         ? msg.guild.id
-        : member
+        : member && member.guild
             ? member.guild.id
             : null;
     if (!memberUserId || !memberGuildId)

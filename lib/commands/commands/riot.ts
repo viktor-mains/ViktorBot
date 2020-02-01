@@ -281,7 +281,7 @@ const aggregateMasteryData = async (msg:Discord.Message, nickname:string|undefin
     const masteryData = await axios(url);
     const masteryList = orderBy(masteryData.data, ['championPoints'], ['desc'])
         .slice(0,topX);
-    const mostMasteryIcon = champions.find(ch => ch.id == masteryList[0].championId).img;
+    const mostMasteryIcon = masteryList[0] ? champions.find(ch => ch.id == masteryList[0].championId).img : null;
     const collectiveMasteryLevels = { level5: 0, level6: 0, level7: 0 }
     let collectiveMastery = 0;
     masteryData.data.map(d => {
