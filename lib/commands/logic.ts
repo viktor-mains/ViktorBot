@@ -4,11 +4,11 @@ import {
     IExecuteText, 
     IExecuteCustom, 
     IExecuteEmbed, 
-    IEmbedField,
+    IEmbed,
 } from '../types/command';
 import { botRefuses } from '../rng';
 import { isUserAdmin } from '../message';
-import { createEmbed, replaceAll } from '../helpers';
+import { replaceAll } from '../helpers';
 
 class Command {
     public channel: Discord.TextChannel | Discord.DMChannel | Discord.GroupDMChannel;
@@ -58,13 +58,27 @@ export class TextCommand extends Command implements IExecuteText {
     }
 }
 export class EmbedCommand extends Command implements IExecuteEmbed {
-    public execute (title:string, fields:[ IEmbedField ], color?:string) {
-        const newFields = fields.map(field => ({
-            ...field,
-            content: field.content.replace(replaceAll('<br>'), '\n')
-        }));
-        const embed = createEmbed(title, newFields, color);
-        this.canBeExecuted && this.channel.send(embed);
+    public execute (embed:IEmbed, username:string) {
+        const title = embed.title;
+        const color = embed.color;
+        const thumbnail = embed.thumbnail;
+        const description = embed.description;
+        const newEmbed = new Discord.RichEmbed()
+            .setTitle(title)
+            .setColor(color ? color : '0xFDC000')
+            .setTimestamp(new Date())
+            .setFooter(username);
+        
+        if (thumbnail) 
+            newEmbed.setThumbnail(thumbnail);
+        if (description) 
+            newEmbed.setDescription(description);
+        embed.fields.map(field => newEmbed.addField(
+            field.title,
+            field.content.replace(replaceAll('<br>'), '\n'),
+            field.inline
+        ));
+        this.canBeExecuted && this.channel.send(newEmbed);
     }
 }
 export class CustomCommand extends Command implements IExecuteCustom {

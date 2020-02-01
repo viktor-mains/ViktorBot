@@ -46,7 +46,7 @@ const answerCommand = (msg:Discord.Message) => {
         return;
     }
     if (command && command.embed) {
-        new EmbedCommand(command, msg).execute(command.embed.title, command.embed.fields, command.embed.color);
+        new EmbedCommand(command, msg).execute(command.embed, msg.author.username);
         return;
     }
     if (command && Command[getKeyword(msg)]) {

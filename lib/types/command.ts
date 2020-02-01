@@ -16,11 +16,18 @@ export type IEmbedField = {
     content: string,
     inline?: boolean
 }
+export type IEmbed = {
+    title: string,
+    description?: string,
+    color?: string,
+    thumbnail?: string,
+    fields: Array<IEmbedField>
+}
 export type IExecuteText = {
     execute: (content:string) => string | void;
 }
 export type IExecuteEmbed = {
-    execute: (title:string, fields:Array<IEmbedField>, color?:string) => string | void;
+    execute: (embed:any, username:string) => string | void;
 }
 export type IExecuteCustom = {
     execute: (fn:Function, ...args:Array<any>) => any;
