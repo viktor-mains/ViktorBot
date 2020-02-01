@@ -87,10 +87,11 @@ export const degen = async (msg:Discord.Message) => {
                 .setColor('0xFDC000')
             embed.addField('\_\_\_', `My precise calculations and sophisticated algorithms led me to a conclusion that the degeneracy percentage of this chat has reached ${percentage.toFixed(4)}%.`)
             msg.channel.send(embed);
+            msg.channel.stopTyping();
         })
         .catch(err => {
             log.WARN(err);
-            msg.channel.send(createEmbed('❌ Incorrect nickname or server', [{ title: '\_\_\_', content: 'Check if the data you\'ve provided is correct.' }]));
+            msg.channel.send(createEmbed('❌ Cannot calculate chat\'s degeneracy', [{ title: '\_\_\_', content: 'Probably it\'s so high that it went over the limits.' }]));
             msg.channel.stopTyping();
             return;
         })
