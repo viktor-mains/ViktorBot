@@ -61,7 +61,7 @@ export class EmbedCommand extends Command implements IExecuteEmbed {
     public execute (title:string, fields:[ IEmbedField ], color?:string) {
         const newFields = fields.map(field => ({
             ...field,
-            content: field.content.replace(replaceAll('\\n'), '\n')
+            content: field.content.replace(replaceAll('<br>'), '\n')
         }));
         const embed = createEmbed(title, newFields, color);
         this.canBeExecuted && this.channel.send(embed);
