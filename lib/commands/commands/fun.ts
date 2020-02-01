@@ -91,7 +91,7 @@ export const degen = async (msg:Discord.Message) => {
         })
         .catch(err => {
             log.WARN(err);
-            msg.channel.send(createEmbed('❌ Cannot calculate chat\'s degeneracy', [{ title: '\_\_\_', content: 'Probably it\'s so high that it went over the limits.' }]));
+            msg.channel.send(createEmbed('❌ Cannot calculate chat\'s degeneracy', [{ title: '\_\_\_', content: 'Probably it went over the limits.' }]));
             msg.channel.stopTyping();
             return;
         })
