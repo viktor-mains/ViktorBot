@@ -83,6 +83,11 @@ const specialRoleRequested = (roleName, msg:Discord.Message) => {
 export const iam = (msg:Discord.Message) => {
     const roleName = removeKeyword(msg);
     const member = msg.member;
+    const appropiateChannel = cache["options"].find(option => option.option === 'room_roles')
+        ? cache["options"].find(option => option.option === 'room_roles').value
+            ? cache["options"].find(option => option.option === 'room_roles').value.find(server => server.guild === msg.guild.id).id
+            : null
+        : null
     
     if (specialRoleRequested(roleName, msg))
         return;
@@ -94,8 +99,8 @@ export const iam = (msg:Discord.Message) => {
         return msg.channel.send(`Role **[${roleName.toUpperCase()}]** cannot be self-assigned.`);
     if (userHasRole(roleName, member))
         return msg.channel.send(`You already have the **[${roleName.toUpperCase()}]** role.`);
-    if (!requestWasSendInApropriateChannel(msg))
-        return msg.channel.send(`You can be anything you want, I'm not giving you role outside the <#${cache["options"].find(option => option.option === 'room_roles').value}> room.`);
+    if (!requestWasSendInApropriateChannel(msg) && appropiateChannel)
+        return msg.channel.send(`You can be anything you want, I'm not giving you role outside the <#${appropiateChannel}> room.`);
 
     msg.member.addRole(returnRoleID(roleName, member))
         .then(success => msg.channel.send(`Role **[${roleName.toUpperCase()}]** assigned to ${member.user.username} with utmost efficiency.`))

@@ -16,6 +16,7 @@ import { iam, iamnot, roles } from './commands/roles';
 
 export const Command: { [key:string]: (command:ICommand, msg:Discord.Message) => string | void} = {
     help: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(help, msg),
+    h: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(help, msg),
     hmod: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(hmod, msg),
     opgg: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(opgg, msg),
     
