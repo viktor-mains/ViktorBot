@@ -26,8 +26,10 @@ const userHasRole = (roleName, member) => {
 const requestWasSendInApropriateChannel = (msg:Discord.Message) => {
     const room_roles = cache["options"].find(option => option.option === 'room_roles')
         ? cache["options"].find(option => option.option === 'room_roles').value
-        : null;
-    if (room_roles == msg.channel.id)
+            ? cache["options"].find(option => option.option === 'room_roles').value.find(server => server.guild === msg.guild.id).id
+            : null
+        : null
+    if (!room_roles || room_roles == msg.channel.id)
         return true;
     return false;
 };
