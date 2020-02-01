@@ -69,7 +69,7 @@ export const degen = async (msg:Discord.Message) => {
         ? cache["options"].find(option => option.option === 'degen_words').value
         : [];
     const limit = 20;
-    const degeneracyPercentageDefault = 70;
+    const degeneracyPercentageDefault = 80;
     msg.channel.fetchMessages({ limit })
         .then(messages => {
             const allWords:Array<string> = []; 
