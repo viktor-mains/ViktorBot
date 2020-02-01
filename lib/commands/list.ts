@@ -10,7 +10,7 @@ import {
 import { help, hmod, opgg } from './commands/basic';
 import { profile, description, update, topmembers, register, unregister } from './commands/profiles';
 import { meow, woof, rito, choose, gibeskin } from './commands/fun';
-import { status, impersonate, refresh, punish, msgupdate, guilds } from './commands/mod';
+import { status, impersonate, refresh, punish, msgupdate, guilds, ismember } from './commands/mod';
 import { updatechampions, lastlane, mastery, ingame } from './commands/riot';
 import { iam, iamnot, roles } from './commands/roles';
 
@@ -38,6 +38,7 @@ export const Command: { [key:string]: (command:ICommand, msg:Discord.Message) =>
     punish: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(punish, msg),
     msgupdate: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(msgupdate, msg),
     guilds: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(guilds, msg),
+    ismember: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(ismember, msg),
     
     updatechampions: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(updatechampions, msg),
     lastlane: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(lastlane, msg),

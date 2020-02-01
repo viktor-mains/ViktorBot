@@ -55,6 +55,7 @@ export const punish = (msg:Discord.Message) => {
         return;
     }
     else {
+        // @ts-ignore:next-line
         member = cache["users"].find(u => u.discordId === user.id);
     }
     
@@ -169,4 +170,10 @@ export const guilds = (msg:Discord.Message) => {
     const guilds = [ ...cache["bot"].guilds.values() ].map(guild => content += `- \`\`[${guild.id}]\`\` ${guild.name}\n`)
     const embed = createEmbed('Viktor Bot\'s guilds', [{ title: '\_\_\_', content }]);
     msg.channel.send(embed);
+}
+
+export const ismember = (msg:Discord.Message) => {
+    const userID = extractArguments(msg)[0];
+    const isMember = msg.guild.members.find(member => member.id == userID) ? true : false;
+    msg.channel.send(createEmbed(`Is user ${userID} in this guild?`, [{ title: '\_\_\_', content: isMember.toString() }]))
 }
