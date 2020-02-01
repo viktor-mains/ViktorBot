@@ -175,5 +175,5 @@ export const guilds = (msg:Discord.Message) => {
 export const ismember = (msg:Discord.Message) => {
     const userID = extractArguments(msg)[0];
     const isMember = msg.guild.members.find(member => member.id == userID) ? true : false;
-    msg.channel.send(createEmbed(`Is user ${userID} in this guild?`, [{ title: '\_\_\_', content: isMember.toString() }]))
+    msg.channel.send(createEmbed(`Is user ${userID} in this guild?`, [{ title: '\_\_\_', content: isMember ? 'Yes.' : 'No.' }]))
 }
