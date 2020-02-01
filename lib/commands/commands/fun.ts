@@ -1,7 +1,9 @@
 import Discord from 'discord.js';
 import axios from 'axios';
-import { removeKeyword, toDDHHMMSS } from '../../helpers';
+import { removeKeyword, toDDHHMMSS, createEmbed } from '../../helpers';
 import { chooseRandom } from '../../rng';
+import { log } from '../../log';
+import { cache } from '../../storage/cache';
 
 export const meow = async (msg:Discord.Message) => {
     msg.channel.startTyping();
@@ -60,4 +62,36 @@ export const gibeskin = (msg:Discord.Message) => {
     )
 
     msg.channel.send(embed);
+}
+export const degen = async (msg:Discord.Message) => {
+    msg.channel.startTyping();
+    const words = cache["options"].find(option => option.option === 'degen_words')
+        ? cache["options"].find(option => option.option === 'degen_words').value
+        : [];
+    const limit = 20;
+    const degeneracyPercentageDefault = 70;
+    msg.channel.fetchMessages({ limit })
+        .then(messages => {
+            const allWords:Array<string> = []; 
+            const degenMsgs = messages.filter(m => 
+                words.find(word => m.content.toLowerCase().includes(word.toLowerCase()))
+                || (m.content.startsWith('<:') && m.content.endsWith('>')
+                || (m.content.startsWith('<a:') && m.content.endsWith('>')) // probably emote
+            ));
+            messages.map(m => allWords.push(...m.content.split(' ')));
+            const percentage = (100*(degenMsgs.size)/limit)+(limit*degeneracyPercentageDefault/allWords.length);
+            const embed = new Discord.RichEmbed()
+                .setTitle('☢️ Degeneracy of the chat')
+                .setFooter(`Powered by Glorious Evolution`, 'https://cdn.discordapp.com/emojis/288396957922361344.png')
+                .setTimestamp(new Date())
+                .setColor('0xFDC000')
+            embed.addField('\_\_\_', `My precise calculations and sophisticated algorithms led me to a conclusion that the degeneracy percentage of this chat has reached ${percentage.toFixed(4)}%.`)
+            msg.channel.send(embed);
+        })
+        .catch(err => {
+            log.WARN(err);
+            msg.channel.send(createEmbed('❌ Incorrect nickname or server', [{ title: '\_\_\_', content: 'Check if the data you\'ve provided is correct.' }]));
+            msg.channel.stopTyping();
+            return;
+        })
 }
