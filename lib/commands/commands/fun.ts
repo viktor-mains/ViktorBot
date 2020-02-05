@@ -7,20 +7,33 @@ import { removeKeyword, toDDHHMMSS, createEmbed } from '../../helpers';
 import { chooseRandom } from '../../rng';
 import { log } from '../../log';
 import { cache } from '../../storage/cache';
+import BotGraph from '../../graphs';
 
 export const meow = async (msg:Discord.Message) => {
     msg.channel.startTyping();
     const cat:any = await axios('http://aws.random.cat/meow')
         .catch(() => msg.channel.send('Unable to get a cat.'));
+    const embed = new Discord.RichEmbed()
+        .setTitle('😺 Cat!')
+        .setTimestamp(new Date())
+        .setFooter(msg.author.username)
+        .setColor('0xFDC000')
+        .setImage(cat.data.file);
     msg.channel.stopTyping();
-    msg.channel.send(`😺 ${cat.data.file}`);
+    msg.channel.send(embed);
 }
 export const woof = async (msg:Discord.Message) => {
     msg.channel.startTyping();
     const dog:any = await axios('http://random.dog/woof')
         .catch(() => msg.channel.send('Unable to get a dog.'));;
+        const embed = new Discord.RichEmbed()
+        .setTitle('🐶 Dog!')
+        .setTimestamp(new Date())
+        .setFooter(msg.author.username)
+        .setColor('0xFDC000')
+        .setImage(`http://random.dog/${dog.data}`);
     msg.channel.stopTyping();
-    msg.channel.send(`🐶 http://random.dog/${dog.data}`);
+    msg.channel.send(embed);
 }
 
 export const choose = (msg:Discord.Message) => {
