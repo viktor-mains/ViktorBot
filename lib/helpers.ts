@@ -110,6 +110,13 @@ export const toDDHHMMSS = (joinedAt:Date) => {
     }`
 } 
 
+export const toMMSS = (miliseconds:number) => {
+    const duration = miliseconds / 1000;
+    const minutes = (duration / 60).toFixed(0);
+    const seconds = (duration % 60).toFixed(0);
+    return `${minutes} minutes ${seconds} seconds`
+} 
+
 export const justifyToRight = (input:string, desiredLength:number) => {
     let output = input; 
     while (output.length < desiredLength)

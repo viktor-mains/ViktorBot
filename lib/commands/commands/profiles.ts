@@ -6,7 +6,7 @@ import { log } from '../../log';
 import { initData, descriptionChange } from '../../events';
 import { cache } from '../../storage/cache';
 import { upsertOne } from '../../storage/db';
-import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft, replaceAll, modifyInput, extractArguments } from '../../helpers';
+import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft, replaceAll, modifyInput, extractArguments, toMMSS } from '../../helpers';
 import { getSummonerId, getRealm } from './riot';
 import config from '../../../config.json';
 
@@ -92,6 +92,7 @@ const verifyCode = async (nickname:string, server:string, uuid:string, msg:Disco
 const updateRankRoles = (msg:Discord.Message, userData) => {
     const ranksWeighted = cache["options"].find(option => option.option === 'rankRoles').value;
     let highestTier = 'UNRANKED';
+    
     userData["accounts"].map(account => {
         const rW = ranksWeighted.find(rankWeighted => rankWeighted.rank.toLowerCase() === account.tier.toLowerCase())
         const rHT = ranksWeighted.find(rankWeighted => rankWeighted.rank.toLowerCase() === highestTier.toLowerCase())
@@ -99,8 +100,9 @@ const updateRankRoles = (msg:Discord.Message, userData) => {
             highestTier = rW.rank;
     });
 
-    const rolesToRemove = msg.member.roles.filter(role => ranksWeighted.find(r => r.rank === role.name));
     const roleToAdd = msg.guild.roles.find(role => role.name.toLowerCase() === highestTier.toLowerCase());
+    const rolesToRemove = msg.member.roles.filter(role => ranksWeighted.find(r => r.rank === role.name && r.rank !== roleToAdd.name));
+    
     if (rolesToRemove.size > 0)
         msg.member.removeRoles(rolesToRemove)
             .catch(err => log.WARN(err));
@@ -326,10 +328,15 @@ export const update = (msg:Discord.Message) => {
         return;
     }
     const lastUpdated = Date.now() - member.updated;
-    const timeout = 86400000;
-    if (lastUpdated < timeout) {
-        msg.channel.send(createEmbed(`:information_source: Profile recently updated`, [{ title: '\_\_\_', content: `Last profile update: ${new Date(member.updated).toLocaleString()}.
-        Wait ${new Date(timeout - lastUpdated).toLocaleTimeString()} before updating again.` }]));
+    const timeoutUpdate = 3600000;
+    if (lastUpdated < timeoutUpdate) {
+        const embed = new Discord.RichEmbed()
+            .setFooter(`Last profile update`)
+            .setTimestamp(new Date(member.updated))
+            .setTitle(`:information_source: Profile recently updated`)
+            .setColor('0xFDC000');
+        embed.addField('\_\_\_', `Wait ${toMMSS(timeoutUpdate - lastUpdated)} before updating again.`, false)
+        msg.channel.send(embed);
         msg.channel.stopTyping();
         return;
     }
