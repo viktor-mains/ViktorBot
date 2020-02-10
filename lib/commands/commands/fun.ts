@@ -61,22 +61,39 @@ export const rito = (msg:Discord.Message) => {
     `;
     msg.channel.send(rito);
 }
-export const gibeskin = (msg:Discord.Message) => {
-    const creatorDate = 1380499200000;
-    const deathSwornDate = 1508889600000;
-
+export const gibeskin = async (msg:Discord.Message) => {
+    const skins = cache["options"].find(option => option.option === 'gibeskin')
+         ? cache["options"].find(option => option.option === 'gibeskin').value
+         : [{
+                key: "Creator",
+                value: 1380499200000,
+                viktor: true
+            },
+            {
+                key: "Death Sworn",
+                value: 1508889600000,
+                viktor: true
+            }
+        ]
+    const creatorDate = skins
+        .find(skin => skin.key === 'Creator').value;
+    const deathSwornDate = skins
+        .find(skin => skin.key === 'Death Sworn').value;
+    const graph = new BotGraph({ width: 500, height: 300 });
+    const graphAttachment = await graph.generate(skins);
     const embed = new Discord.RichEmbed()
         .setTitle('<:vikSalty:289489052212789250> Viktor skin')
         .setTimestamp(new Date())
         .setFooter('Powered by Glorious Evolution', 'https://cdn.discordapp.com/emojis/232941841815830536.png')
         .setColor('0xFDC000')
-        .addField(`**Today's date is ${new Date().toLocaleDateString()}, ${new Date().toLocaleTimeString()} and here are some facts about Viktor's skins**`, 
+        .attachFile(graphAttachment)
+        .setImage('attachment://graph.png')
+        .addField(`\_\_\_`, 
         `We have **4** skins, two of which (Prototype and Death Sworn) are legacy.\n\n`+
         `His last skin is Death Sworn, which was released at ${new Date(deathSwornDate).toLocaleDateString()}. That's **${toDDHHMMSS(new Date(deathSwornDate))}** ago.\n\n`+
         `Since some of us pretend that skin didn't happen, and also it's legacy for whatever reason, let's assume that his last skin was Creator. It was released at ${new Date(creatorDate).toLocaleDateString()}, what would make it exactly **${toDDHHMMSS(new Date(creatorDate))}** without a decent skin.\n\n`+
-        `After being presented with those facts, you can do \`\`!rito\`\` command now and weep with other Viktor Mains in a corner covered in dust and spiderwebs.`
+        `And now have a nice graph comparing that with some Riot's poster children:` 
     )
-
     msg.channel.send(embed);
 }
 export const degen = async (msg:Discord.Message) => {
