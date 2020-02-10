@@ -100,8 +100,11 @@ export const userJoin = (member:Discord.GuildMember) => {
 export const userLeave = (member:Discord.GuildMember) => { 
     const log = createEmbed(`:wave: USER LEAVES`, [
         { title: `User`, content: `${member.user.username}#${member.user.discriminator}`, inline: false },
-        { title: `Was a member for`, content: toDDHHMMSS(member.joinedAt), inline: true },
-        { title: `Leaves at`, content: moment(new Date().toISOString()).format("MMMM Do YYYY, HH:mm:ss a"), inline: true }
+        { title: `Was a member for`, content: toDDHHMMSS(member.joinedAt) ? toDDHHMMSS(member.joinedAt) : '?', inline: true },
+        { title: `Leaves at`, content: 
+            moment(new Date().toISOString()).format("MMMM Do YYYY, HH:mm:ss a")
+                ? moment(new Date().toISOString()).format("MMMM Do YYYY, HH:mm:ss a")
+                : '?', inline: true }
     ], 'C70000');
     const guild = member.guild.id;
     sendLog(guild, log, 'room_log_users');
