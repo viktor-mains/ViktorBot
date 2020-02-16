@@ -8,25 +8,34 @@ import { chooseRandom } from '../../rng';
 import { log } from '../../log';
 import { cache } from '../../storage/cache';
 import BotGraph from '../../graphs';
+import config from '../../../config.json';
 
 export const meow = async (msg:Discord.Message) => {
     msg.channel.startTyping();
-    const cat:any = await axios('http://aws.random.cat/meow')
-        .catch(() => msg.channel.send('Unable to get a cat.'));
+    const cat:any = await axios(`https://api.thecatapi.com/v1/images/search?api_key=${config.CAT_API_TOKEN}`)
+        .catch(() => {
+            msg.channel.send('Unable to get a cat.');
+            msg.channel.stopTyping();
+            return;
+        });
     const embed = new Discord.RichEmbed()
         .setTitle('😺 Cat!')
         .setTimestamp(new Date())
         .setFooter(msg.author.username)
         .setColor('0xFDC000')
-        .setImage(cat.data.file);
+        .setImage(cat.data[0].url);
     msg.channel.stopTyping();
     msg.channel.send(embed);
 }
 export const woof = async (msg:Discord.Message) => {
     msg.channel.startTyping();
     const dog:any = await axios('http://random.dog/woof')
-        .catch(() => msg.channel.send('Unable to get a dog.'));;
-        const embed = new Discord.RichEmbed()
+        .catch(() => {
+            msg.channel.send('Unable to get a dog.');
+            msg.channel.stopTyping();
+            return;
+        });
+    const embed = new Discord.RichEmbed()
         .setTitle('🐶 Dog!')
         .setTimestamp(new Date())
         .setFooter(msg.author.username)
