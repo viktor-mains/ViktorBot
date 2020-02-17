@@ -111,7 +111,7 @@ export const degen = async (msg:Discord.Message) => {
         ? cache["options"].find(option => option.option === 'degen_words').value
         : [];
     const degeneracyPercentageDefault = 70;
-    const limit = 20;
+    const limit = 30;
     const emojiMultiplier = 3;
     const regex = emojiRegex();
     const regexText = emojiRegexText();
@@ -133,7 +133,7 @@ export const degen = async (msg:Discord.Message) => {
             const uniqMsgs = uniq(messages.map(m => m.content));
             const percentageGeneralSpam = 100 - (100 * uniqMsgs.length/messages.size);
             const percentageDegenWords = 100 * degenMsgs.size / limit;
-            const percentageEmojiSpam = emojiSpam * emojiMultiplier;
+            const percentageEmojiSpam = 100*(emojiSpam * emojiMultiplier)/allWords.length;
             const percentageShortMessages = 0.5 * limit * degeneracyPercentageDefault/allWords.length;
             const percentage = percentageDegenWords + percentageEmojiSpam + percentageShortMessages + percentageGeneralSpam;
             const embed = new Discord.RichEmbed()
@@ -142,11 +142,11 @@ export const degen = async (msg:Discord.Message) => {
                 .setTimestamp(new Date())
                 .setColor('0xFDC000')
             embed.addField('\_\_\_', 
-                `My precise calculations and sophisticated algorithms led me to a conclusion that the degeneracy percentage of this chat has reached **${percentage.toFixed(4)}%**.\n\n`+
-                `- general spam - **${percentageGeneralSpam.toFixed(4)}%**\n`+
-                `- short message spam - **${percentageShortMessages.toFixed(4)}%**\n`+
-                `- emoji spam - **${percentageEmojiSpam.toFixed(4)}%**\n`+
-                `- overall degeneracy - **${percentageDegenWords.toFixed(4)}%**`
+                `My precise calculations and sophisticated algorithms led me to a conclusion that the degeneracy percentage of this chat has reached **${percentage.toFixed(2)}%**.\n\n`+
+                `- general spam - **${percentageGeneralSpam.toFixed(2)}%**\n`+
+                `- short message spam - **${percentageShortMessages.toFixed(2)}%**\n`+
+                `- emoji spam - **${percentageEmojiSpam.toFixed(2)}%**\n`+
+                `- overall degeneracy - **${percentageDegenWords.toFixed(2)}%**`
             )
             msg.channel.send(embed);
             msg.channel.stopTyping();
