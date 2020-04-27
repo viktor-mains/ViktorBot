@@ -1,5 +1,7 @@
 import Discord from 'discord.js';
 import { cache } from '../../storage/cache';
+import { isUserAdmin } from '../../message';
+import { chooseRandom } from '../../rng';
 import { extractNicknameAndServer, createEmbed, getCommandSymbol, splitArrayByObjectKey, } from '../../helpers';
 
 type TField = {
@@ -57,4 +59,23 @@ export const hmod = (msg:Discord.Message) => {
             \nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command.` }]
             ))
         );
+}
+
+export const shutup = (msg:Discord.Message) => {
+    let answer = '';
+    if (isUserAdmin(msg)) {
+        msg.channel.stopTyping();
+        const answers = cache["options"].find(option => option.option === 'shutUpMod')
+            ? cache["options"].find(option => option.option === 'shutUpMod').value
+            : [];
+        answer = chooseRandom(answers);
+    }
+    else {
+        const answers = cache["options"].find(option => option.option === 'shutUpUser')
+            ? cache["options"].find(option => option.option === 'shutUpUser').value
+            : [];
+        answer = chooseRandom(answers);
+    }
+    if(answer && answer !== '' && answer.length > 0)
+        msg.channel.send(answer);
 }
