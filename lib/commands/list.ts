@@ -7,7 +7,7 @@ import {
     CustomCommand,
 } from './logic';
 
-import { help, hmod, opgg } from './commands/basic';
+import { help, hmod, opgg, shutup } from './commands/basic';
 import { profile, description, update, topmembers, register, unregister } from './commands/profiles';
 import { meow, woof, rito, choose, gibeskin, degen } from './commands/fun';
 import { status, impersonate, refresh, punish, msgupdate, guilds, ismember } from './commands/mod';
@@ -19,6 +19,7 @@ export const Command: { [key:string]: (command:ICommand, msg:Discord.Message) =>
     h: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(help, msg),
     hmod: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(hmod, msg),
     opgg: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(opgg, msg),
+    shutup: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(shutup, msg),
     
     profile: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(profile, msg),
     description: (command:ICommand, msg:Discord.Message) => new CustomCommand(command, msg).execute(description, msg),
