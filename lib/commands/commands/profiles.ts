@@ -5,7 +5,7 @@ import { orderBy } from 'lodash';
 import { log } from '../../log';
 import { initData, descriptionChange } from '../../events';
 import { cache } from '../../storage/cache';
-import { upsertOne } from '../../storage/db';
+import { upsertUser } from '../../storage/db';
 import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft, replaceAll, modifyInput, extractArguments, toMMSS } from '../../helpers';
 import { getSummonerId, getRealm } from './riot';
 import config from '../../../config.json';
@@ -69,13 +69,29 @@ const verifyCode = async (nickname:string, server:string, uuid:string, msg:Disco
                 membership: {}
             };
         }
-        updateRankRoles(msg, userData);    
-        upsertOne('vikbot', 'users', { discordId: msg.author.id }, userData, err => {
-            err
-                ? msg.author.send(createEmbed(`❌ Cannot verify user`, [{ title: '\_\_\_', content: `Getting user's data failed, probably due to problem with database. Try again later.` }]))
-                : msg.author.send(createEmbed(`✅ Profile verified succesfully`, [{ title: '\_\_\_', content: `To check your profile, you can use \`\`!profile\`\` command.`}]));
-        });
-        msg.channel.stopTyping();
+        updateRankRoles(msg, userData);
+        try {
+          await upsertUser(msg.author, userData);
+          await msg.author.send(
+            createEmbed(`✅ Profile verified succesfully`, [
+              {
+                title: "___",
+                content: `To check your profile, you can use \`\`!profile\`\` command.`,
+              },
+            ])
+          );
+        } catch {
+          await msg.author.send(
+            createEmbed(`❌ Cannot verify user`, [
+              {
+                title: "___",
+                content: `Getting user's data failed, probably due to problem with database. Try again later.`,
+              },
+            ])
+          );
+        } finally {
+          msg.channel.stopTyping();
+        }
     }
 
     await axios(url)
@@ -286,7 +302,7 @@ export const profile = async (msg:Discord.Message) => {
     addAccountField(0);
 }
 
-export const description = (msg:Discord.Message) => {
+export const description = async (msg:Discord.Message) => {
     msg.channel.startTyping();
 
     let description = removeKeyword(msg).trim();
@@ -309,12 +325,20 @@ export const description = (msg:Discord.Message) => {
         userData = initData(null, msg.author.id, msg);
     userData.description = description;
 
-    upsertOne('vikbot', 'users', { discordId: msg.author.id }, userData, err => {
-        if (err) {
-            log.WARN(err);
-            msg.channel.send(createEmbed(`❌Something went wrong`, [{ title: '\_\_\_', content: `Something went wrong. Tell Arcyvilk to check logs.` }]));
-        }
-    })
+    try {
+      await upsertUser(msg.author, userData);
+    } catch (err) {
+      log.WARN(err);
+      msg.channel.send(
+        createEmbed(`❌Something went wrong`, [
+          {
+            title: "___",
+            content: `Something went wrong. Tell Arcyvilk to check logs.`,
+          },
+        ])
+      );
+    }
+
     descriptionChange(msg);
     msg.channel.send(createEmbed(`✅ Description updated succesfully`, [{ title: '\_\_\_', content: `To check your profile, you can use \`\`!profile\`\` command.`}]));
     msg.channel.stopTyping();
@@ -353,16 +377,34 @@ export const update = (msg:Discord.Message) => {
         member.accounts[index] = updatedAcc;
         updateAccounts(index + 1);
     }
-    const finalize = () => {
-        updateRankRoles(msg, member);
-        member.updated = Date.now();
-        upsertOne('vikbot', 'users', { discordId: msg.author.id }, member, err => {
-            err
-                ? msg.channel.send(createEmbed(`❌ Cannot update user`, [{ title: '\_\_\_', content: `Updating user's data failed. Try again later.` }]))
-                : msg.channel.send(createEmbed(`✅ Profile updated succesfully`, [{ title: '\_\_\_', content: `To check your profile, you can use \`\`!profile\`\` command.`}]));
-        });
+
+    const finalize = async () => {
+      updateRankRoles(msg, member);
+      member.updated = Date.now();
+      try {
+        await upsertUser(msg.author, member);
+
+        await msg.channel.send(
+          createEmbed(`✅ Profile updated succesfully`, [
+            {
+              title: "___",
+              content: `To check your profile, you can use \`\`!profile\`\` command.`,
+            },
+          ])
+        );
+      } catch {
+        await msg.channel.send(
+          createEmbed(`❌ Cannot update user`, [
+            {
+              title: "___",
+              content: `Updating user's data failed. Try again later.`,
+            },
+          ])
+        );
+      } finally {
         msg.channel.stopTyping();
-    }
+      }
+    };
 
     updateAccounts(0);
 }
@@ -485,11 +527,20 @@ export const unregister = async (msg:Discord.Message) => {
         return;
     }
     updateRankRoles(msg, newData);
-    upsertOne('vikbot', 'users', { discordId: msg.author.id }, newData, err => {
-        if (err)
-            log.WARN(err);
-        else
-            msg.channel.send(createEmbed(`✅ Account unregistered succesfully`, [{ title: '\_\_\_', content: `To check your profile, you can use \`\`!profile\`\` command.`}]));
-        msg.channel.stopTyping();
-    })
+
+    try {
+      await upsertUser(msg.author, newData);
+      await msg.channel.send(
+        createEmbed(`✅ Account unregistered succesfully`, [
+          {
+            title: "___",
+            content: `To check your profile, you can use \`\`!profile\`\` command.`,
+          },
+        ])
+      );
+    } catch (err) {
+      log.WARN(err);
+    } finally {
+      msg.channel.stopTyping();
+    }
 }

@@ -2,7 +2,7 @@ import Discord from "discord.js";
 import { orderBy } from 'lodash';
 import moment from 'moment';
 import { log } from './log';
-import { upsertOne } from './storage/db';
+import { upsertUser } from './storage/db';
 import { createEmbed, toDDHHMMSS, removeKeyword, replaceAll } from './helpers';
 import { cache } from './storage/cache';
 
@@ -78,7 +78,7 @@ export const msgDelete = (msg:Discord.Message) => {
     sendLog(guild, log, 'room_log_msgs');
 }
 
-export const userJoin = (member:Discord.GuildMember) => { 
+export const userJoin = async (member:Discord.GuildMember) => { 
     const log = createEmbed(`:man: USER JOINS`, [
         { title: `User`, content: `${member.user.username}#${member.user.discriminator}`, inline: false },
         { title: `Joined at`, content: moment(member.joinedAt.toISOString()).format("MMMM Do YYYY, HH:mm:ss"), inline: true }
@@ -89,12 +89,11 @@ export const userJoin = (member:Discord.GuildMember) => {
     if (member.user.bot)
         return;
     const returningMember = cache["users"].find(user => user.discordId === member.id);
-    if (!returningMember)
-        upsertOne('vikbot', 'users', { discordId: member.id }, initData(member), err => 
-            // @ts-ignore:next-line
-            err && log.WARN(err));
-    else 
+    if (!returningMember) {
+        await upsertUser(member, initData(member));
+    } else {
         handleUserNotInDatabase(member);
+    }
 }
 
 export const userLeave = (member:Discord.GuildMember) => { 
@@ -152,6 +151,7 @@ export const initData = (member:Discord.GuildMember|null, id?:any, msg?:any) => 
 export const handleUserNotInDatabase = async (member:Discord.GuildMember, msg?:Discord.Message|null) => {
     if (msg && !msg.member && msg.author.id === msg.channel.id) // DM
         return;
+    const user = msg?.author ?? member;
     const memberUserId = msg
         ? msg.author.id
         : member
@@ -164,7 +164,7 @@ export const handleUserNotInDatabase = async (member:Discord.GuildMember, msg?:D
             : null;
     if (!memberUserId || !memberGuildId)
         return;
-    const update = (memberInDataBase) => {
+    const update = async (member: Discord.GuildMember | Discord.User, memberInDataBase) => {
         const memberIndex = memberInDataBase.membership.findIndex(m => m.serverId === memberGuildId);
         if (memberIndex !== -1) { // user is in the database and in the server
             memberInDataBase.membership[memberIndex].messageCount = memberInDataBase.membership[memberIndex].messageCount + 1;
@@ -172,7 +172,7 @@ export const handleUserNotInDatabase = async (member:Discord.GuildMember, msg?:D
                     memberInDataBase.membership[memberIndex].joined = Date.now();
                 if (memberInDataBase.membership[memberIndex].firstMessage === 0) 
                     memberInDataBase.membership[memberIndex].firstMessage = Date.now();
-                upsertOne('vikbot', 'users', { discordId: memberUserId }, memberInDataBase, err => err && log.WARN(err));
+                await upsertUser(member, memberInDataBase);
         }
         else { // user is in database but not in the server
             const serverData = {
@@ -186,21 +186,21 @@ export const handleUserNotInDatabase = async (member:Discord.GuildMember, msg?:D
                     : 0
             }
             memberInDataBase.membership.push(serverData);
-            upsertOne('vikbot', 'users', { discordId: memberUserId }, memberInDataBase, err => err && log.WARN(err));
+            await upsertUser(member, memberInDataBase);
         }
     }
 
     let memberInDataBase = cache["users"].find(user => user.discordId === memberUserId);
     if (!memberInDataBase) { // user not in database at all
         if (member)
-            update(initData(member))
+            update(user, initData(member))
         if (msg && msg.member)
-            update(initData(null, msg.member))
+            update(user, initData(null, msg.member))
         if (msg && !msg.member)
-            update(initData(null, msg.author.id, msg))
+            update(user, initData(null, msg.author.id, msg))
     }
     else // user in database
-        update(memberInDataBase);
+        update(user, memberInDataBase);
 }
 
 export const handlePossibleMembershipRole = async (msg:Discord.Message) => {

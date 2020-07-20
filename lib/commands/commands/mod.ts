@@ -2,11 +2,9 @@ import Discord from 'discord.js';
 import { readFile } from 'fs';
 import { log } from '../../log';
 import { removeKeyword, extractArguments, createEmbed } from '../../helpers';
-import { initData } from '../../events';
 import { chooseRandom } from '../../rng';
-import { updateCache, upsertOne } from '../../storage/db';
+import { updateCache, upsertUser } from '../../storage/db';
 import { cache } from '../../storage/cache';
-import config from '../../../config.json';
 
 export const status = (msg:Discord.Message) => cache["bot"].user.setPresence({ game: { name: removeKeyword(msg), type: 0}})
 
@@ -29,11 +27,11 @@ export const impersonate = (msg:Discord.Message) => {
 }
 
 export const refresh = (msg:Discord.Message) => {
-    config.DATABASES.map(db => updateCache(db.symbol));
+    updateCache();
     return msg.react('✔️');
 }
 
-export const punish = (msg:Discord.Message) => {
+export const punish = async (msg:Discord.Message) => {
     msg.channel.startTyping();
     const mentions = [ ...msg.mentions.users.values() ];
     let user:Discord.User|null;
@@ -85,7 +83,7 @@ export const punish = (msg:Discord.Message) => {
         msg.channel.send(createEmbed(`:information_source: Member ${user.username} punished`, [{ title: '\_\_\_', content: 'No more nasty descriptions from that one.' }]));
     }
     msg.channel.stopTyping();
-    upsertOne('vikbot', 'users', { discordId: member.discordId }, member, err => err && log.WARN(err));
+    await upsertUser(member, member);
 }
 
 export const msgupdate = (msg:Discord.Message) => {
@@ -109,7 +107,7 @@ export const msgupdate = (msg:Discord.Message) => {
             }
         };
         // now map thru it and check if user already is in database
-        membersRaw.map((mTU, index) => {
+        membersRaw.map(async (mTU, index) => {
             log.INFO(`User ${index+1}/${membersRaw.length}`);
             let membersData;
             const userIsInDB = userData.find(uD => uD.discordId === mTU.discordId);
@@ -138,7 +136,6 @@ export const msgupdate = (msg:Discord.Message) => {
                     // }
                 }
                 else { // if this server of user is not in database
-                    console.log(mTU.discordId);
                     membersData.membership.push({
                         serverId: mTU.serverId,
                         messageCount: mTU.messageCount,
@@ -159,7 +156,7 @@ export const msgupdate = (msg:Discord.Message) => {
                 //     }]
                 // }
             }
-            upsertOne('vikbot', 'users', { discordId: mTU.discordId }, membersData, err => err && log.WARN(err));
+            await upsertUser(mTU.discordId, membersData);
         })
         msg.channel.stopTyping();
     })

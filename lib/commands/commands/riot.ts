@@ -53,27 +53,45 @@ export const getAccountId = async (ign:string|undefined, server:string|undefined
     return summoner.data.accountId;
 }
 
-export const updatechampions = async (msg:Discord.Message) => {
-    const version = await axios(`https://ddragon.leagueoflegends.com/api/versions.json`);
-    const path = `https://ddragon.leagueoflegends.com/cdn/${version[0]}/data/en_US/championFull.json`
-    let championsRaw = await axios(path);
-    Object.values(championsRaw.data.data)
-        .map((champion:any) => {
-            const champ = {
-                id: champion.key,
-                name: champion.name,
-                title: champion.title,
-                img: `http://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champion.image.full}`
-            };
-            upsertOne('vikbot', 'champions', { id: champion.key }, champ, (err, result) => {
-                if (err) {
-                    msg.channel.send(createEmbed(`❌ Error updating champions`, [{ title: '\_\_\_', content: `${champion.name} couldn't get updated. :C` }]));
-                    return;
-                }
-            })
-        })
-    msg.channel.send(createEmbed('✅ Champions updated', [{ title: '\_\_\_', content: `Version; ${version[0]}` }]));
-}
+export const updatechampions = async (msg: Discord.Message) => {
+  const version = await axios(
+    `https://ddragon.leagueoflegends.com/api/versions.json`
+  );
+  const path = `https://ddragon.leagueoflegends.com/cdn/${version[0]}/data/en_US/championFull.json`;
+  let championsRaw = await axios(path);
+  const tasks = Object.values(championsRaw.data.data).map(
+    async (champion: any) => {
+      try {
+        await upsertOne(
+          "champions",
+          { id: champion.key },
+          {
+            id: champion.key,
+            name: champion.name,
+            title: champion.title,
+            img: `http://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champion.image.full}`,
+          }
+        );
+      } catch {
+        await msg.channel.send(
+          createEmbed(`❌ Error updating champions`, [
+            {
+              title: "___",
+              content: `${champion.name} couldn't get updated. :C`,
+            },
+          ])
+        );
+      }
+    }
+  );
+
+  await Promise.all(tasks);
+  msg.channel.send(
+    createEmbed("✅ Champions updated", [
+      { title: "___", content: `Version; ${version[0]}` },
+    ])
+  );
+};
 
 export const lastlane = async (msg:Discord.Message) => {
     msg.channel.startTyping();
