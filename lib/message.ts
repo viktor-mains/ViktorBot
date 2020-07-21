@@ -9,6 +9,7 @@ import { Command } from './commands/list';
 import { IReactionDetails } from './types/reaction';
 
 import dearViktor from '../data/global/dearviktor.json';
+import { findCommandByKeyword } from './storage/db';
 
 // LOGIC
 
@@ -25,8 +26,6 @@ const isMessageRant = (msg:Discord.Message) => msg.content === msg.content.toUpp
 const isMessageDearViktor = (msg:Discord.Message) => msg.content.toLowerCase().startsWith('dear viktor');
 const isMessageDearVictor = (msg:Discord.Message) => msg.content.toLowerCase().startsWith('dear victor');
 
-const commandObject = (msg:Discord.Message) => cache["commands"].find(cmd => cmd.keyword === getKeyword(msg));
-
 const answer = (msg:Discord.Message, answer:string) => msg.channel.send(answer);
 const answerDearViktor = (msg:Discord.Message) => {
     if (msg.content.endsWith('?')) {
@@ -42,30 +41,37 @@ const answerDearViktor = (msg:Discord.Message) => {
     answer(msg, '_That_ doesn\'t look like question to me.')
 };
 const answerDearVictor = (msg:Discord.Message) => answer(msg, '...what have you just called me. <:SilentlyJudging:288396957922361344>');
-const answerCommand = (msg:Discord.Message) => {
-    const command = commandObject(msg);
-    if (command && command.text) {
+const answerCommand = async (msg:Discord.Message) => {
+    const command = await findCommandByKeyword(getKeyword(msg));
+    if (command === undefined) {
+        await msg.react(':questionmark:244535324737273857');
+       return
+    }
+
+    if (command.text !== undefined) {
         new TextCommand(command, msg).execute(command.text);
         return;
     }
-    if (command && command.embed) {
+
+    if (command.embed !== undefined) {
         new EmbedCommand(command, msg).execute(command.embed, msg.author.username);
         return;
     }
-    if (command && Command[getKeyword(msg)]) {
+    if (Command[getKeyword(msg)]) {
         Command[getKeyword(msg)](command, msg)
         return;
     }
-    msg.react(':questionmark:244535324737273857');    
+
+    await msg.react(':questionmark:244535324737273857');
 };
-const checkForReactionTriggers = (msg:Discord.Message) => { 
+const checkForReactionTriggers = (msg:Discord.Message) => {
     let appropiateReactions = new Array();
     let chosenTrigger;
     let chosenReaction;
 
-    if (isMessageRant(msg)) 
+    if (isMessageRant(msg))
         appropiateReactions.push(...cache["reactions"].filter((reaction:any) => reaction.id === 'rant'));
-    appropiateReactions.push(...cache["reactions"].filter((reaction:any) => 
+    appropiateReactions.push(...cache["reactions"].filter((reaction:any) =>
         reaction.keywords.filter((keyword:string) => msg.content.toLowerCase().includes(keyword)).length === reaction.keywords.length && reaction.keywords.length > 0));
 
     if (appropiateReactions.length === 0)
@@ -92,11 +98,11 @@ const classifyMessage = async (msg:Discord.Message) => {
 
     handleUserNotInDatabase(msg.member, msg);
     handlePossibleMembershipRole(msg);
-    
+
     if (isMessageDearViktor(msg)) {
         answerDearViktor(msg);
         return;
-    }        
+    }
     if (isMessageDearVictor(msg)) {
         answerDearVictor(msg);
         return;

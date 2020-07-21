@@ -1,7 +1,14 @@
 import { MongoClient, Db } from "mongodb";
 import { cache } from "./cache";
 import assert from "assert";
-import type { User as DiscordUser, GuildMember, Guild } from "discord.js";
+import type {
+  User as DiscordUser,
+  GuildMember,
+  Guild,
+  RichEmbed,
+} from "discord.js";
+import { TextCommand, EmbedCommand, CustomCommand } from "../commands/logic";
+import { IEmbed } from "../types/command";
 
 const DB_NAME = "vikbot";
 let db: Db;
@@ -151,4 +158,28 @@ export async function findOption<K extends keyof Options>(
   );
 
   return opt?.value;
+}
+
+export interface Command {
+  keyword: string;
+  isModOnly: boolean;
+  description?: string;
+  text?: string;
+  embed?: IEmbed;
+}
+
+export async function findModCommands(): Promise<Command[]> {
+  return cache["commands"].filter((cmd: Command) => cmd.isModOnly);
+}
+
+export async function findUserCommands(): Promise<Command[]> {
+  return cache["commands"].filter((cmd: Command) => !cmd.isModOnly);
+}
+
+export async function findCommandByKeyword(
+  keyword: string
+): Promise<Command | undefined> {
+  return cache["commands"].find(
+    (cmd: Command) => cmd.keyword.toLowerCase() === keyword.toLowerCase()
+  );
 }
