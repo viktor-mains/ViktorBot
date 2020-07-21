@@ -1,11 +1,6 @@
 {
-    "DISCORD_TOKEN": "example",
-    "RIOT_API_TOKEN": "example",
-    "CAT_API_TOKEN": "example",
-    "DATABASES": [
-        {
-            "symbol": "database_symbol",
-            "url": "mongodb://LOGIN:PASSWORD@HOST:PORT/COLLECTION_NAME?authSource=admin"
-        }
-    ]
+  "DISCORD_TOKEN": "example",
+  "RIOT_API_TOKEN": "example",
+  "CAT_API_TOKEN": "example",
+  "DATABASE_URL": "mongodb://LOGIN:PASSWORD@HOST:PORT/COLLECTION_NAME?authSource=admin"
 }
