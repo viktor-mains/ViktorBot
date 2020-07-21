@@ -198,7 +198,8 @@ export const profile = async (msg:Discord.Message) => {
         return;
     }
     const user:Discord.User = mentions.length === 0 ? msg.author : msg.guild.members.find(member => member.id === mentions[0].id).user;
-    const members = findAllGuildMembers(msg.guild).map(user => {
+    const members = await findAllGuildMembers(msg.guild);
+    const memberships = members.map(user => {
         const membership = user.membership.find(member => member.serverId === msg.guild.id)
         return {
             id: user.discordId,
@@ -206,8 +207,8 @@ export const profile = async (msg:Discord.Message) => {
         }
     });
 
-    const sorted = orderBy(members, ['messageCount'], ['desc']);
-    const userData = findUserByDiscordId(user.id);
+    const sorted = orderBy(memberships, ['messageCount'], ['desc']);
+    const userData = await findUserByDiscordId(user.id);
     if (user.id !== cache["bot"].user.id) {
         if (!userData || !userData["membership"] || !userData["membership"].find(s => s.serverId === msg.guild.id)) {
             if (user.id === msg.author.id) {
@@ -311,7 +312,7 @@ export const description = async (msg:Discord.Message) => {
     msg.channel.startTyping();
 
     let description = removeKeyword(msg).trim();
-    let userData = findUserByDiscordId(msg.author.id);
+    let userData = await findUserByDiscordId(msg.author.id);
 
     if (userData?.punished) {
         msg.channel.send(createEmbed(`❌ You are banned from writing own descriptions`, [{ title: '\_\_\_', content: `Apparently in the past evil mods decided that you aren't responsible enough to write your own description. Shame on you.` }]));
@@ -349,8 +350,8 @@ export const description = async (msg:Discord.Message) => {
     msg.channel.stopTyping();
 }
 
-export const update = (msg:Discord.Message) => {
-    const member = findUserByDiscordId(msg.author.id);
+export const update = async (msg:Discord.Message) => {
+    const member = await findUserByDiscordId(msg.author.id);
     if (!member) {
         msg.channel.send(createEmbed(`:information_source: You didn't register yet`, [{ title: '\_\_\_', content: `Use the \`\`!register <IGN> | <server>\`\` command to create your profile.` }]));
         msg.channel.stopTyping();
@@ -414,11 +415,11 @@ export const update = (msg:Discord.Message) => {
     updateAccounts(0);
 }
 
-export const topmembers = (msg:Discord.Message) => {
+export const topmembers = async (msg:Discord.Message) => {
     const count = cache["options"].find(option => option.option === 'topMembers')
         ? cache["options"].find(option => option.option === 'topMembers').value
         : 10;
-    const guildMembers = findAllGuildMembers(msg.guild);
+    const guildMembers = await findAllGuildMembers(msg.guild);
     const counts = guildMembers.map((user) => {
         const membership = user.membership.find(m => m.serverId === msg.guild.id);
         return {
@@ -438,7 +439,7 @@ export const topmembers = (msg:Discord.Message) => {
 
 export const register = async (msg:Discord.Message) => {
     const { nickname, server } = extractNicknameAndServer(msg);
-    const oldData = findUserByDiscordId(msg.author.id);
+    const oldData = await findUserByDiscordId(msg.author.id);
     const maxAccounts = cache["options"].find(option => option.option === 'maxAccounts')
         ? cache["options"].find(option => option.option === 'maxAccounts').value
         : 2;
@@ -508,7 +509,7 @@ export const unregister = async (msg:Discord.Message) => {
     const { nickname, server } = extractNicknameAndServer(msg);
     const realm = getRealm(server);
     const playerId = await getSummonerId(nickname, server);
-    const oldData = findUserByDiscordId(msg.author.id);
+    const oldData = await findUserByDiscordId(msg.author.id);
 
     if (!nickname || !server) {
         msg.channel.stopTyping();

@@ -54,6 +54,7 @@ export interface Account {
 }
 
 export interface User {
+  id: string;
   discordId: string;
   updated: number;
   punished: boolean;
@@ -71,15 +72,17 @@ export async function upsertUser(id: DiscordUser | GuildMember, user: User) {
   await upsertOne("users", { discordId: id }, user);
 }
 
-export function isKnownMember(member: GuildMember): boolean {
+export async function isKnownMember(member: GuildMember): Promise<boolean> {
   return findUserByDiscordId(member.id) !== undefined;
 }
 
-export function findUserByDiscordId(id: string): User | undefined {
+export async function findUserByDiscordId(
+  id: string
+): Promise<User | undefined> {
   return cache["users"].find((u) => u.discordId === id);
 }
 
-export function findAllGuildMembers(guild: Guild): User[] {
+export async function findAllGuildMembers(guild: Guild): Promise<User[]> {
   return cache["users"].filter((user: User) => {
     const membership = user.membership?.find(
       (member) => member.serverId === guild.id

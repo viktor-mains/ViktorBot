@@ -257,7 +257,7 @@ export const mastery = async (msg:Discord.Message) => {
     const selfRequest = !!!(extractArguments(msg).length);
 
     if (selfRequest) {
-        const user = findUserByDiscordId(msg.author.id);
+        const user = await findUserByDiscordId(msg.author.id);
         const accounts = user?.accounts ?? [];
         if (accounts.length !== 0)
             accounts.map(account => aggregateMasteryData(msg, undefined, account.server, account.id));
@@ -338,7 +338,7 @@ export const ingame = async (msg:Discord.Message) => {
     const selfRequest = !!!(extractArguments(msg).length);
 
     if (selfRequest) {
-        const user = findUserByDiscordId(msg.author.id);
+        const user = await findUserByDiscordId(msg.author.id);
         const accounts = user?.accounts ?? []
         if (accounts.length > 0)
             accounts.map(account => aggregateMasteryData(msg, undefined, account.server, account.id));

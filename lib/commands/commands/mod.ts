@@ -53,8 +53,7 @@ export const punish = async (msg:Discord.Message) => {
         return;
     }
     else {
-        // @ts-ignore:next-line
-        member = findUserByDiscordId(user.id);
+        member = await findUserByDiscordId(user.id);
     }
 
     if (!member) {
@@ -109,7 +108,7 @@ export const msgupdate = (msg:Discord.Message) => {
         membersRaw.map(async (mTU, index) => {
             log.INFO(`User ${index+1}/${membersRaw.length}`);
             let membersData
-            const user = findUserByDiscordId(mTU.discordId);
+            const user = await findUserByDiscordId(mTU.discordId);
             let joinDate;
             try {
                 joinDate = cache["bot"].guilds
