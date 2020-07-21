@@ -3,7 +3,7 @@ import { readFile } from 'fs';
 import { log } from '../../log';
 import { removeKeyword, extractArguments, createEmbed } from '../../helpers';
 import { chooseRandom } from '../../rng';
-import { updateCache, upsertUser } from '../../storage/db';
+import { updateCache, upsertUser, isKnownMember, findUserByDiscordId } from '../../storage/db';
 import { cache } from '../../storage/cache';
 
 export const status = (msg:Discord.Message) => cache["bot"].user.setPresence({ game: { name: removeKeyword(msg), type: 0}})
@@ -36,7 +36,7 @@ export const punish = async (msg:Discord.Message) => {
     const mentions = [ ...msg.mentions.users.values() ];
     let user:Discord.User|null;
     let member;
-    
+
     if (mentions.length === 0) {
         msg.channel.send(createEmbed(`❌ Incorrect syntax`, [{ title: '\_\_\_', content: 'You didn\'t mention the person you want to punish.' }]));
         msg.channel.stopTyping();
@@ -54,15 +54,15 @@ export const punish = async (msg:Discord.Message) => {
     }
     else {
         // @ts-ignore:next-line
-        member = cache["users"].find(u => u.discordId === user.id);
+        member = findUserByDiscordId(user.id);
     }
-    
+
     if (!member) {
         msg.channel.send(createEmbed(`❌ Something went wrong`, [{ title: '\_\_\_', content: 'Apparently, according to Discord this user doesn\'t exist. Reset the client or something.' }]));
         msg.channel.stopTyping();
         return;
     }
-    
+
     const punish = cache["options"].find(option => option.option === 'description_punish')
         ? chooseRandom(cache["options"].find(option => option.option === 'description_punish').value)
         : 'I wet myself at night. :pensive:';
@@ -94,7 +94,6 @@ export const msgupdate = (msg:Discord.Message) => {
             return;
         }
         let messageDataFile = JSON.parse(data);
-        let userData = cache["users"];
         const membersRaw = new Array;
         // remake the file into somewhat more normal format
         for (let [keyServer, valueServer] of Object.entries(messageDataFile)) {
@@ -109,8 +108,8 @@ export const msgupdate = (msg:Discord.Message) => {
         // now map thru it and check if user already is in database
         membersRaw.map(async (mTU, index) => {
             log.INFO(`User ${index+1}/${membersRaw.length}`);
-            let membersData;
-            const userIsInDB = userData.find(uD => uD.discordId === mTU.discordId);
+            let membersData
+            const user = findUserByDiscordId(mTU.discordId);
             let joinDate;
             try {
                 joinDate = cache["bot"].guilds
@@ -122,9 +121,9 @@ export const msgupdate = (msg:Discord.Message) => {
                 joinDate = mTU.firstMessage;
             }
             if (!joinDate) console.log(mTU.discordId);
-            if (userIsInDB) { // if user IS in database, just update his membership
-                membersData = { ...userIsInDB };
-                if (!membersData.membership) 
+            if (user) { // if user IS in database, just update his membership
+                membersData = { ...user };
+                if (!membersData.membership)
                     return; // probably bot
                 let serverDataIndex = membersData.membership.findIndex(mShip => mShip.serverId === mTU.serverId);
                 if (serverDataIndex !== -1) { // if this server of user is in database
@@ -143,7 +142,7 @@ export const msgupdate = (msg:Discord.Message) => {
                         joined: joinDate
                     })
                 }
-            }   
+            }
             else { // if user ISNT in database, init him and then add all his servers
                 // const savedMemberData = initData(null, mTU.discordId);
                 // membersData = {

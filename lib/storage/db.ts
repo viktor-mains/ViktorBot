@@ -1,7 +1,7 @@
 import { MongoClient, Db } from "mongodb";
 import { cache } from "./cache";
 import assert from "assert";
-import type { User as DiscordUser, GuildMember } from "discord.js";
+import type { User as DiscordUser, GuildMember, Guild } from "discord.js";
 
 const DB_NAME = "vikbot";
 let db: Db;
@@ -38,8 +38,51 @@ export async function upsertOne<T>(name: string, filter: object, object: T) {
   await updateCache();
 }
 
-interface User {}
+export interface User {
+  discordId: string;
+  updated: number;
+  punished: boolean;
+  description: string | undefined;
+  accounts: {
+    server: string;
+    id: string;
+    tier: string;
+    rank: string;
+    name: string
+    opgg: string
+    mastery: {
+      points: number;
+      chest: number;
+      level: number;
+      lastPlayed: number;
+    };
+  }[];
+  membership: {
+    serverId: string;
+    messageCount: number;
+    joined: number;
+    firstMessage: number;
+  }[];
+}
 
 export async function upsertUser(id: DiscordUser | GuildMember, user: User) {
   await upsertOne("users", { discordId: id }, user);
+}
+
+export function isKnownMember(member: GuildMember): boolean {
+  return findUserByDiscordId(member.id) !== undefined;
+}
+
+export function findUserByDiscordId(id: string): User | undefined {
+  return cache["users"].find((u) => u.discordId === id);
+}
+
+export function findAllGuildMembers(guild: Guild): User[] {
+  return cache["users"].filter((user: User) => {
+    const membership = user.membership?.find(
+      (member) => member.serverId === guild.id
+    );
+
+    return membership !== undefined;
+  });
 }

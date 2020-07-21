@@ -4,7 +4,7 @@ import { orderBy } from 'lodash';
 import config from '../../../config.json';
 import { log } from '../../log';
 import { cache } from '../../storage/cache';
-import { upsertOne } from '../../storage/db';
+import { upsertOne, findUserByDiscordId } from '../../storage/db';
 import { extractNicknameAndServer, createEmbed, extractArguments } from '../../helpers';
 
 export const getRealm = (server:string|undefined) => {
@@ -257,9 +257,10 @@ export const mastery = async (msg:Discord.Message) => {
     const selfRequest = !!!(extractArguments(msg).length);
 
     if (selfRequest) {
-        const user = cache["users"].find(user => user.discordId === msg.author.id);
-        if (user && user.accounts && user.accounts.length !== 0)
-            user.accounts.map(account => aggregateMasteryData(msg, undefined, account.server, account.id));
+        const user = findUserByDiscordId(msg.author.id);
+        const accounts = user?.accounts ?? [];
+        if (accounts.length !== 0)
+            accounts.map(account => aggregateMasteryData(msg, undefined, account.server, account.id));
         else
             msg.channel.send(createEmbed(`:information_source: You don't have any accounts registered`, [{ title: '\_\_\_', content: 
                 `To use this commands without arguments you have to register your League account first: \`\`!register <IGN> | <server>\`\`.
@@ -337,9 +338,10 @@ export const ingame = async (msg:Discord.Message) => {
     const selfRequest = !!!(extractArguments(msg).length);
 
     if (selfRequest) {
-        const user = cache["users"].find(user => user.discordId === msg.author.id);
-        if (user && user.accounts && user.accounts.length !== 0)
-            user.accounts.map(account => aggregateMasteryData(msg, undefined, account.server, account.id));
+        const user = findUserByDiscordId(msg.author.id);
+        const accounts = user?.accounts ?? []
+        if (accounts.length > 0)
+            accounts.map(account => aggregateMasteryData(msg, undefined, account.server, account.id));
         else
             msg.channel.send(createEmbed(`:information_source: You don't have any accounts registered`, [{ title: '\_\_\_', content: 
                 `To use this commands without arguments you have to register your League account first: \`\`!register <IGN> | <server>\`\`.

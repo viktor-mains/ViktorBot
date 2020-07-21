@@ -5,7 +5,7 @@ import { orderBy } from 'lodash';
 import { log } from '../../log';
 import { initData, descriptionChange } from '../../events';
 import { cache } from '../../storage/cache';
-import { upsertUser } from '../../storage/db';
+import { upsertUser, findUserByDiscordId, findAllGuildMembers, User } from '../../storage/db';
 import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft, replaceAll, modifyInput, extractArguments, toMMSS } from '../../helpers';
 import { getSummonerId, getRealm } from './riot';
 import config from '../../../config.json';
@@ -35,7 +35,8 @@ const verifyCode = async (nickname:string, server:string, uuid:string, msg:Disco
         const mastery = await getMastery(msg, nickname, server);
         let userData = {};
 
-        const oldData = cache["users"].find(user => user.discordId === msg.author.id);
+        const oldData = findUserByDiscordId(msg.author.id);
+        
         if (oldData) {
             const isThisAccountRegistered = oldData["accounts"].find(account => account.id === playerId);
             const account = {
@@ -71,7 +72,7 @@ const verifyCode = async (nickname:string, server:string, uuid:string, msg:Disco
         }
         updateRankRoles(msg, userData);
         try {
-          await upsertUser(msg.author, userData);
+          await upsertUser(msg.author, userData as any);
           await msg.author.send(
             createEmbed(`✅ Profile verified succesfully`, [
               {
@@ -196,16 +197,16 @@ export const profile = async (msg:Discord.Message) => {
         return;
     }
     const user:Discord.User = mentions.length === 0 ? msg.author : msg.guild.members.find(member => member.id === mentions[0].id).user;
-    const allUsers = orderBy(cache["users"]
-        .filter(user => user.membership && user.membership.find(member => member.serverId === msg.guild.id && msg.guild.members.find(m => m.id === user.discordId)))
-        .map(user => {
-            return {
-                id: user.discordId,
-                messageCount: user.membership.find(member => member.serverId === msg.guild.id).messageCount || 0
-            }
-        })
-    , ['messageCount'], ['desc']);
-    const userData = cache["users"].find(u => u.discordId === user.id);
+    const members = findAllGuildMembers(msg.guild).map(user => {
+        const membership = user.membership.find(member => member.serverId === msg.guild.id)
+        return {
+            id: user.discordId,
+            messageCount: membership?.messageCount ?? 0
+        }
+    });
+
+    const sorted = orderBy(members, ['messageCount'], ['desc']);
+    const userData = findUserByDiscordId(user.id);
     if (user.id !== cache["bot"].user.id) {
         if (!userData || !userData["membership"] || !userData["membership"].find(s => s.serverId === msg.guild.id)) {
             if (user.id === msg.author.id) {
@@ -233,10 +234,11 @@ export const profile = async (msg:Discord.Message) => {
         .setTimestamp(new Date(userData.updated).toLocaleString())
         .setTitle(`:information_source: ${user.username}'s profile`);
     const addAccountField = async (index:number) => {
-        if (!userData.accounts[index]) {
+        if (!userData?.accounts[index]) {
             finalize();
             return;
         }
+
         const account = userData.accounts[index];
         let url;
         let userAccountData;
@@ -267,12 +269,12 @@ export const profile = async (msg:Discord.Message) => {
         addAccountField(index+1);
     }
     const finalize = () => {
-        embed.addField('Description', userData.description 
+        embed.addField('Description', userData?.description 
             ? userData.description
                 .replace(replaceAll('MEMBER_NICKNAME'), user.username)
                 .replace(replaceAll('<br>'), '\n')
             : `This user has no description yet.`, false);
-        if (userData.accounts.length > 0) {
+        if (userData?.accounts.length ?? 0 > 0) {
             embed.addField('Viktor mastery', viktorMastery ? viktorMastery : 'UNKNOWN', true);
             embed.addField('Last Viktor game', lastViktorGame
                 ? lastViktorGame === 0 
@@ -280,12 +282,12 @@ export const profile = async (msg:Discord.Message) => {
                     : new Date(lastViktorGame).toLocaleDateString()
                 : 'UNKNOWN', true)
         }
-        const memberData = userData.membership 
+        const memberData = userData?.membership 
             ? userData.membership.find(member => member.serverId === msg.guild.id) 
             : null;
         if (memberData) {
             const messagesPerDay = (memberData.messageCount/((Date.now()-memberData.joined)/86400000)).toFixed(3);
-            const userIndex:number = allUsers.findIndex(u => u.id === user.id);
+            const userIndex: number = members.findIndex(u => u.id === user.id);
             embed.addField('Member since', memberData.joined < memberData.firstMessage 
                 ? new Date(memberData.joined).toUTCString() 
                 : new Date(memberData.firstMessage).toUTCString(), false);
@@ -306,9 +308,9 @@ export const description = async (msg:Discord.Message) => {
     msg.channel.startTyping();
 
     let description = removeKeyword(msg).trim();
-    let userData = cache["users"].find(user => user.discordId === msg.author.id);
+    let userData = findUserByDiscordId(msg.author.id);
 
-    if (userData.punished) {
+    if (userData?.punished) {
         msg.channel.send(createEmbed(`❌ You are banned from writing own descriptions`, [{ title: '\_\_\_', content: `Apparently in the past evil mods decided that you aren't responsible enough to write your own description. Shame on you.` }]));
         return;
     }
@@ -345,7 +347,7 @@ export const description = async (msg:Discord.Message) => {
 }
 
 export const update = (msg:Discord.Message) => {
-    const member = cache["users"].find(user => user.discordId === msg.author.id);
+    const member = findUserByDiscordId(msg.author.id);
     if (!member) {
         msg.channel.send(createEmbed(`:information_source: You didn't register yet`, [{ title: '\_\_\_', content: `Use the \`\`!register <IGN> | <server>\`\` command to create your profile.` }]));
         msg.channel.stopTyping();
@@ -413,16 +415,18 @@ export const topmembers = (msg:Discord.Message) => {
     const count = cache["options"].find(option => option.option === 'topMembers')
         ? cache["options"].find(option => option.option === 'topMembers').value
         : 10;
-    let members = cache["users"]
-        .filter(user => user.membership && user.membership.find(member => member.serverId === msg.guild.id && msg.guild.members.find(m => m.id === user.discordId )))
-        .map(user => {
-            return {
-                id: user.discordId,
-                messageCount: user.membership.find(member => member.serverId === msg.guild.id).messageCount || 0
-            }});
-    members = orderBy(members, ['messageCount'], ['desc']);
+    const guildMembers = findAllGuildMembers(msg.guild);
+    const counts = guildMembers.map((user) => {
+        const membership = user.membership.find(m => m.serverId === msg.guild.id);
+        return {
+            id: user.discordId,
+            messageCount: membership?.messageCount ?? 0
+        }
+    });
+
+    const sorted = orderBy(counts, ['messageCount'], ['desc']);
     let content = '';
-    members.map((member, index) => index < count 
+    sorted.map((member, index) => index < count 
         ? content += `\`\`#${justifyToLeft((index+1).toString(), 2)} - ${justifyToRight(member.messageCount.toString(), 6)} msg\`\` - ${msg.guild.members.find(m => m.id === member.id).user.username}\n` 
         : {})
     const embed = createEmbed(`🏆 Top ${count} members`, [{ title: '\_\_\_', content }])
@@ -431,7 +435,7 @@ export const topmembers = (msg:Discord.Message) => {
 
 export const register = async (msg:Discord.Message) => {
     const { nickname, server } = extractNicknameAndServer(msg);
-    const oldData = cache["users"].find(user => user.discordId === msg.author.id);
+    const oldData = findUserByDiscordId(msg.author.id);
     const maxAccounts = cache["options"].find(option => option.option === 'maxAccounts')
         ? cache["options"].find(option => option.option === 'maxAccounts').value
         : 2;
@@ -501,9 +505,7 @@ export const unregister = async (msg:Discord.Message) => {
     const { nickname, server } = extractNicknameAndServer(msg);
     const realm = getRealm(server);
     const playerId = await getSummonerId(nickname, server);
-    const oldData = cache["users"].find(user => user.discordId === msg.author.id)
-        ? cache["users"].find(user => user.discordId === msg.author.id)
-        : null;
+    const oldData = findUserByDiscordId(msg.author.id);
 
     if (!nickname || !server) {
         msg.channel.stopTyping();

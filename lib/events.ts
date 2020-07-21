@@ -2,7 +2,7 @@ import Discord from "discord.js";
 import { orderBy } from 'lodash';
 import moment from 'moment';
 import { log } from './log';
-import { upsertUser } from './storage/db';
+import { upsertUser, isKnownMember, findUserByDiscordId, User } from './storage/db';
 import { createEmbed, toDDHHMMSS, removeKeyword, replaceAll } from './helpers';
 import { cache } from './storage/cache';
 
@@ -88,8 +88,7 @@ export const userJoin = async (member:Discord.GuildMember) => {
 
     if (member.user.bot)
         return;
-    const returningMember = cache["users"].find(user => user.discordId === member.id);
-    if (!returningMember) {
+    if (!isKnownMember(member)) {
         await upsertUser(member, initData(member));
     } else {
         handleUserNotInDatabase(member);
@@ -129,12 +128,14 @@ export const botJoin = (guild:Discord.Guild) => {
     sendGlobalLog(botLog, guild);
 }
 
-export const initData = (member:Discord.GuildMember|null, id?:any, msg?:any) => {
+export const initData = (member:Discord.GuildMember|null, id?:any, msg?:any): User => {
     // member = null means that they used to be part of Discord but aren't anymore, or Discord doesn't recognize them
     return {
         discordId: member ? member.id : id,
         updated: Date.now(),
         accounts: [],
+        punished: false,
+        description: undefined,
         membership: [{
             serverId: member 
                 ? member.guild.id 
@@ -190,8 +191,8 @@ export const handleUserNotInDatabase = async (member:Discord.GuildMember, msg?:D
         }
     }
 
-    let memberInDataBase = cache["users"].find(user => user.discordId === memberUserId);
-    if (!memberInDataBase) { // user not in database at all
+    let memberInDataBase = findUserByDiscordId(member.id);
+    if (memberInDataBase === undefined) { // user not in database at all
         if (member)
             update(user, initData(member))
         if (msg && msg.member)
@@ -206,22 +207,19 @@ export const handleUserNotInDatabase = async (member:Discord.GuildMember, msg?:D
 export const handlePossibleMembershipRole = async (msg:Discord.Message) => {
     if (!msg.member) // sent in DM
         return;
-    const memberData = cache["users"].find(user => user.discordId === msg.author.id)
-        ? cache["users"].find(user => user.discordId === msg.author.id).membership
-            ? cache["users"].find(user => user.discordId === msg.author.id).membership.find(guild => guild.serverId === msg.guild.id)
-            : null
-        : null;
+    const user = findUserByDiscordId(msg.author.id);
+    const membership = user?.membership.find(guild => guild.serverId === msg.guild.id) ?? null;
     const membershipRoles = cache["options"].find(option => option.option === 'membershipRoles')
         ? cache["options"].find(option => option.option === 'membershipRoles').value
         : null;
 
-    if (!membershipRoles || !memberData)
+    if (membership === null || !membershipRoles || !user)
         return;
 
-    const memberMsgCount = memberData.messageCount;
-    const memberJoinDate = memberData.joined < memberData.firstMessage 
-        ? memberData.joined 
-        : memberData.firstMessage;
+    const memberMsgCount = membership.messageCount;
+    const memberJoinDate = membership.joined < membership.firstMessage 
+        ? membership.joined 
+        : membership.firstMessage;
     const neededRoles = orderBy(membershipRoles, ['weight'], ['desc'])
         .filter(role => 
             role.requirement.messages <= memberMsgCount 
