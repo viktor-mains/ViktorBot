@@ -38,25 +38,27 @@ export async function upsertOne<T>(name: string, filter: object, object: T) {
   await updateCache();
 }
 
+export interface Account {
+  server: string;
+  id: string;
+  tier: string;
+  rank: string;
+  name: string;
+  opgg: string;
+  mastery: {
+    points: number;
+    chest: number;
+    level: number;
+    lastPlayed: number;
+  };
+}
+
 export interface User {
   discordId: string;
   updated: number;
   punished: boolean;
   description: string | undefined;
-  accounts: {
-    server: string;
-    id: string;
-    tier: string;
-    rank: string;
-    name: string
-    opgg: string
-    mastery: {
-      points: number;
-      chest: number;
-      level: number;
-      lastPlayed: number;
-    };
-  }[];
+  accounts: Account[];
   membership: {
     serverId: string;
     messageCount: number;

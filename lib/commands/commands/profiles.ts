@@ -5,10 +5,11 @@ import { orderBy } from 'lodash';
 import { log } from '../../log';
 import { initData, descriptionChange } from '../../events';
 import { cache } from '../../storage/cache';
-import { upsertUser, findUserByDiscordId, findAllGuildMembers, User } from '../../storage/db';
+import { upsertUser, findUserByDiscordId, findAllGuildMembers } from '../../storage/db';
 import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft, replaceAll, modifyInput, extractArguments, toMMSS } from '../../helpers';
 import { getSummonerId, getRealm } from './riot';
 import config from '../../../config.json';
+import { format as sprintf } from 'util'
 
 const timeout = 900000;
 
@@ -233,75 +234,77 @@ export const profile = async (msg:Discord.Message) => {
         // @ts-ignore:next-line
         .setTimestamp(new Date(userData.updated).toLocaleString())
         .setTitle(`:information_source: ${user.username}'s profile`);
-    const addAccountField = async (index:number) => {
-        if (!userData?.accounts[index]) {
-            finalize();
-            return;
-        }
 
-        const account = userData.accounts[index];
-        let url;
-        let userAccountData;
-        let name;
-        let opgg;
-        if (account.id) {
-            url = `https://${getRealm(account.server)}.api.riotgames.com/lol/summoner/v4/summoners/${account.id}?api_key=${config.RIOT_API_TOKEN}`;
-            userAccountData = await axios(url).catch(err => log.WARN(err));
-        }
-        name = account.name
-            ? account.name
-            : userAccountData && userAccountData.data && userAccountData.data.name 
-                ? userAccountData.data.name 
-                : 'UNKNOWN NAME';
-        opgg = account.opgg 
-            ? account.opgg 
-            : `https://${account.server}.op.gg/summoner/userName=${modifyInput(name)}`;
-
-        const content = `IGN: [**${name}**](${opgg})\nRank: **${account.tier ? account.tier : 'UNKNOWN'} ${!account.rank || account.rank === 'UNRANKED' ? '' : account.rank }**`;
-        viktorMastery = account.mastery.points
-            ? viktorMastery + account.mastery.points 
-            : viktorMastery
-        lastViktorGame = lastViktorGame > account.mastery.lastPlayed 
-            ? lastViktorGame 
-            : account.mastery.lastPlayed;
-        embed.addField(account.server, content, true);
-        
-        addAccountField(index+1);
-    }
-    const finalize = () => {
-        embed.addField('Description', userData?.description 
-            ? userData.description
-                .replace(replaceAll('MEMBER_NICKNAME'), user.username)
-                .replace(replaceAll('<br>'), '\n')
-            : `This user has no description yet.`, false);
-        if (userData?.accounts.length ?? 0 > 0) {
-            embed.addField('Viktor mastery', viktorMastery ? viktorMastery : 'UNKNOWN', true);
-            embed.addField('Last Viktor game', lastViktorGame
-                ? lastViktorGame === 0 
-                    ? 'never >:C' 
-                    : new Date(lastViktorGame).toLocaleDateString()
-                : 'UNKNOWN', true)
-        }
-        const memberData = userData?.membership 
-            ? userData.membership.find(member => member.serverId === msg.guild.id) 
-            : null;
-        if (memberData) {
-            const messagesPerDay = (memberData.messageCount/((Date.now()-memberData.joined)/86400000)).toFixed(3);
-            const userIndex: number = members.findIndex(u => u.id === user.id);
-            embed.addField('Member since', memberData.joined < memberData.firstMessage 
-                ? new Date(memberData.joined).toUTCString() 
-                : new Date(memberData.firstMessage).toUTCString(), false);
-            embed.addField('Messages written', memberData.messageCount, true);
-            embed.addField('Messages per day', messagesPerDay, true);
-            embed.addField('# on server', userIndex !== -1 
-                ? `#${userIndex + 1}`
-                : '?', true);
-        }
-        msg.channel.send(embed);
-        msg.channel.stopTyping();
+    for (const account of sorted) {
+        const {
+            name,
+            server,
+            rank,
+            tier = "UNKNOWN",
+            opgg = `https://${server}.op.gg/summoner/userName=${modifyInput(name)}`,
+          } = account;
+          const content = sprintf("IGN: [%s](%s)\nRank: **%s** %s", name, opgg, tier, rank === "UNRANKED" ? "" : rank);
+          viktorMastery = account.mastery.points
+            ? viktorMastery + account.mastery.points
+            : viktorMastery;
+          lastViktorGame =
+            lastViktorGame > account.mastery.lastPlayed
+              ? lastViktorGame
+              : account.mastery.lastPlayed;
+          embed.addField(account.server, content, true);
     }
 
-    addAccountField(0);
+    embed.addField(
+      "Description",
+      userData?.description
+        ? userData.description
+            .replace(replaceAll("MEMBER_NICKNAME"), user.username)
+            .replace(replaceAll("<br>"), "\n")
+        : `This user has no description yet.`,
+      false
+    );
+    if (userData?.accounts.length ?? 0 > 0) {
+      embed.addField(
+        "Viktor mastery",
+        viktorMastery ? viktorMastery : "UNKNOWN",
+        true
+      );
+      embed.addField(
+        "Last Viktor game",
+        lastViktorGame
+          ? lastViktorGame === 0
+            ? "never >:C"
+            : new Date(lastViktorGame).toLocaleDateString()
+          : "UNKNOWN",
+        true
+      );
+    }
+    const memberData = userData?.membership
+      ? userData.membership.find((member) => member.serverId === msg.guild.id)
+      : null;
+    if (memberData) {
+      const messagesPerDay = (
+        memberData.messageCount /
+        ((Date.now() - memberData.joined) / 86400000)
+      ).toFixed(3);
+      const userIndex: number = members.findIndex((u) => u.id === user.id);
+      embed.addField(
+        "Member since",
+        memberData.joined < memberData.firstMessage
+          ? new Date(memberData.joined).toUTCString()
+          : new Date(memberData.firstMessage).toUTCString(),
+        false
+      );
+      embed.addField("Messages written", memberData.messageCount, true);
+      embed.addField("Messages per day", messagesPerDay, true);
+      embed.addField(
+        "# on server",
+        userIndex !== -1 ? `#${userIndex + 1}` : "?",
+        true
+      );
+    }
+    msg.channel.send(embed);
+    msg.channel.stopTyping();
 }
 
 export const description = async (msg:Discord.Message) => {
