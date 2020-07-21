@@ -6,7 +6,6 @@ import emojiRegexText from 'emoji-regex/es2015/text.js';
 import { removeKeyword, toDDHHMMSS, createEmbed } from '../../helpers';
 import { chooseRandom } from '../../rng';
 import { log } from '../../log';
-import { cache } from '../../storage/cache';
 import BotGraph from '../../graphs';
 import config from '../../../config.json';
 import { findOption } from '../../storage/db';

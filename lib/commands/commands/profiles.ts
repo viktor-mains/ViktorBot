@@ -16,7 +16,7 @@ const timeout = 900000;
 const verifyCode = async (nickname:string, server:string, uuid:string, msg:Discord.Message ) => {
     msg.channel.startTyping();
     const playerId = await getSummonerId(nickname, server);
-    const realm = getRealm(server);
+    const realm = await getRealm(server);
     const url = `https://${realm}.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
     const continueVerifying = async (verificationCode) => {
         if (!verificationCode) {
@@ -131,7 +131,7 @@ const updateRankRoles = async (msg:Discord.Message, userData) => {
 
 const getTierAndDivision = async (msg:Discord.Message, nickname:string, server:string, _playerId?:any) => {
     const playerId = _playerId ? _playerId : await getSummonerId(nickname, server);
-    const realm = getRealm(server);
+    const realm = await getRealm(server);
     const url = `https://${realm}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
     const userLeagues:any = await axios(url)
         .catch(err => {
@@ -153,7 +153,7 @@ const getTierAndDivision = async (msg:Discord.Message, nickname:string, server:s
 
 const getMastery = async (msg:Discord.Message, nickname:string, server:string, _playerId?:any) => {
     const playerId = _playerId ? _playerId : await getSummonerId(nickname, server);
-    const realm = getRealm(server);
+    const realm = await getRealm(server);
     const url = `https://${realm}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${playerId}/by-champion/112?api_key=${config.RIOT_API_TOKEN}`;
     const userMastery:any = await axios(url)
         .catch(err => {
@@ -533,7 +533,7 @@ export const register = async (msg: Discord.Message) => {
 export const unregister = async (msg:Discord.Message) => {
     msg.channel.startTyping();
     const { nickname, server } = extractNicknameAndServer(msg);
-    const realm = getRealm(server);
+    const realm = await getRealm(server);
     const playerId = await getSummonerId(nickname, server);
     const oldData = await findUserByDiscordId(msg.author.id);
 

@@ -1,6 +1,5 @@
 import Discord from 'discord.js';
 import { createEmbed, extractArguments, removeKeyword } from '../../helpers';
-import { cache } from '../../storage/cache';
 import { findOption } from '../../storage/db';
 
 const returnRoleID = (roleName, member) => {
