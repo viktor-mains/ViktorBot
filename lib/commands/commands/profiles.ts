@@ -1,11 +1,11 @@
-import Discord from 'discord.js';
+import Discord, { Message } from 'discord.js';
 import axios from 'axios';
 import v4 from 'uuid/v4';
 import { orderBy } from 'lodash';
 import { log } from '../../log';
 import { initData, descriptionChange } from '../../events';
 import { cache } from '../../storage/cache';
-import { upsertUser, findUserByDiscordId, findAllGuildMembers } from '../../storage/db';
+import { upsertUser, findUserByDiscordId, findAllGuildMembers, findOption } from '../../storage/db';
 import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft, replaceAll, modifyInput, extractArguments, toMMSS } from '../../helpers';
 import { getSummonerId, getRealm } from './riot';
 import config from '../../../config.json';
@@ -107,19 +107,19 @@ const verifyCode = async (nickname:string, server:string, uuid:string, msg:Disco
         })
 }
 
-const updateRankRoles = (msg:Discord.Message, userData) => {
-    const ranksWeighted = cache["options"].find(option => option.option === 'rankRoles').value;
+const updateRankRoles = async (msg:Discord.Message, userData) => {
+    const ranksWeighted = await findOption("rankRoles") ?? [];
     let highestTier = 'UNRANKED';
     
     userData["accounts"].map(account => {
-        const rW = ranksWeighted.find(rankWeighted => rankWeighted.rank.toLowerCase() === account.tier.toLowerCase())
-        const rHT = ranksWeighted.find(rankWeighted => rankWeighted.rank.toLowerCase() === highestTier.toLowerCase())
+        const rW = ranksWeighted.find(rankWeighted => rankWeighted.rank.toLowerCase() === account.tier.toLowerCase())!
+        const rHT = ranksWeighted.find(rankWeighted => rankWeighted.rank.toLowerCase() === highestTier.toLowerCase())!
         if (rW.weight < rHT.weight)
             highestTier = rW.rank;
     });
 
     const roleToAdd = msg.guild.roles.find(role => role.name.toLowerCase() === highestTier.toLowerCase());
-    const rolesToRemove = msg.member.roles.filter(role => ranksWeighted.find(r => r.rank === role.name && r.rank !== roleToAdd.name));
+    const rolesToRemove = msg.member.roles.filter(role => ranksWeighted.find(r => r.rank === role.name && r.rank !== roleToAdd.name) !== undefined);
     
     if (rolesToRemove.size > 0)
         msg.member.removeRoles(rolesToRemove)
@@ -416,9 +416,7 @@ export const update = async (msg:Discord.Message) => {
 }
 
 export const topmembers = async (msg:Discord.Message) => {
-    const count = cache["options"].find(option => option.option === 'topMembers')
-        ? cache["options"].find(option => option.option === 'topMembers').value
-        : 10;
+    const count = await findOption("topMembers") ?? 10;
     const guildMembers = await findAllGuildMembers(msg.guild);
     const counts = guildMembers.map((user) => {
         const membership = user.membership.find(m => m.serverId === msg.guild.id);
@@ -437,72 +435,100 @@ export const topmembers = async (msg:Discord.Message) => {
     msg.channel.send(embed);
 }
 
-export const register = async (msg:Discord.Message) => {
-    const { nickname, server } = extractNicknameAndServer(msg);
-    const oldData = await findUserByDiscordId(msg.author.id);
-    const maxAccounts = cache["options"].find(option => option.option === 'maxAccounts')
-        ? cache["options"].find(option => option.option === 'maxAccounts').value
-        : 2;
-    const uuid = `VIKBOT-${v4()}`;
-    
-    if (!nickname || !server)
-        return;
-    if (oldData && oldData.accounts && oldData.accounts.length >= maxAccounts) {
-        msg.channel.send(createEmbed(`❌ You registered maximum amount of accounts`, [{ title: '\_\_\_', content: `The maximum number of accounts you can register is **${maxAccounts}**.` }]))
-        return;
-    }
+export const register = async (msg: Discord.Message) => {
+  const { nickname, server } = extractNicknameAndServer(msg);
+  const oldData = await findUserByDiscordId(msg.author.id);
+  const maxAccounts = (await findOption("maxAccounts")) ?? 2;
+  const uuid = `VIKBOT-${v4()}`;
 
-    const embed = new Discord.RichEmbed()
-        .setColor('FDC000')
-        .setFooter(`Your code expires at ${(new Date(Date.now() + timeout)).toLocaleTimeString()}`)
-        .setTitle(`Your unique verification code!`)
-        .addField('\_\_\_', `\`\`${uuid}\`\`
+  if (!nickname || !server) return;
+  if (oldData && oldData.accounts && oldData.accounts.length >= maxAccounts) {
+    msg.channel.send(
+      createEmbed(`❌ You registered maximum amount of accounts`, [
+        {
+          title: "___",
+          content: `The maximum number of accounts you can register is **${maxAccounts}**.`,
+        },
+      ])
+    );
+    return;
+  }
+
+  const embed = new Discord.RichEmbed()
+    .setColor("FDC000")
+    .setFooter(
+      `Your code expires at ${new Date(
+        Date.now() + timeout
+      ).toLocaleTimeString()}`
+    )
+    .setTitle(`Your unique verification code!`)
+    .addField(
+      "___",
+      `\`\`${uuid}\`\`
             \nCopy the above code, login into your ${nickname} account on server ${server}, go into Settings -> Verification, paste the code in the text box and click "Send".
             \nAfter it's done, react with the :white_check_mark:.
-            \n[Picture visualizing it step-by-step](https://i.imgur.com/4GsXTQC.png)`);
-    
-    msg.author.send(embed)
-        .then(sentEmbed => {
-            msg.react('📩')
-            const reactions = [ '✅', '❌' ];
-            const filter = (reaction, user) => msg.author.id === user.id && (reaction.emoji.name === '❌' || reaction.emoji.name === '✅');
-            const iterateReactions = (index:number) => {
-                if (index >= reactions.length)
-                    return;
-                // @ts-ignore:next-line
-                sentEmbed.react(reactions[index]);
-                setTimeout(() => iterateReactions(index + 1), 500);
-            }
-            iterateReactions(0);
-            
-            // @ts-ignore:next-line
-            sentEmbed.awaitReactions(filter, {
-                time: timeout,
-                maxEmojis: 1
-            })
-            .then(collected => {
-                collected = collected.map(col => ({
-                    name: col.emoji.name,
-                    message: col.message
-                }))[0];
-                if (collected && collected.name === '✅')
-                    verifyCode(nickname, server, uuid, msg)
-                else {
-                    log.INFO(`user ${msg.author.username} timeouted while registering ${nickname} [${server}]`);
-                    msg.author.send(createEmbed(`:information_source: Profile registering aborted`, [{ title: '\_\_\_', content: `You can do it some other time.` }]));
-                    msg.channel.stopTyping();
-                }
-            })
-            .catch(e => log.WARN(e))
+            \n[Picture visualizing it step-by-step](https://i.imgur.com/4GsXTQC.png)`
+    );
+
+  msg.author
+    .send(embed)
+    .then((sentEmbed) => {
+      // Bad cast
+      sentEmbed = sentEmbed as Message
+      msg.react("📩");
+      const reactions = ["✅", "❌"];
+      const filter = (reaction, user) =>
+        msg.author.id === user.id &&
+        (reaction.emoji.name === "❌" || reaction.emoji.name === "✅");
+      const iterateReactions = (index: number) => {
+        if (index >= reactions.length) return;
+        // @ts-ignore:next-line
+        sentEmbed.react(reactions[index]);
+        setTimeout(() => iterateReactions(index + 1), 500);
+      };
+      iterateReactions(0);
+
+      // @ts-ignore:next-line
+      sentEmbed
+        .awaitReactions(filter, {
+          time: timeout,
+          maxEmojis: 1,
         })
-        .catch(err => {
-            msg.channel.send(createEmbed(':warning: I am unable to reply to you', [{ title: '\_\_\_', content: `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
-            \nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command.` }]
-            ));
+        .then((collected) => {
+          const c = collected.map((col) => ({
+            name: col.emoji.name,
+            message: col.message,
+          }))[0];
+          if (c && c.name === "✅")
+            verifyCode(nickname, server, uuid, msg);
+          else {
+            log.INFO(
+              `user ${msg.author.username} timeouted while registering ${nickname} [${server}]`
+            );
+            msg.author.send(
+              createEmbed(`:information_source: Profile registering aborted`, [
+                { title: "___", content: `You can do it some other time.` },
+              ])
+            );
             msg.channel.stopTyping();
-        });
-    return;
-}
+          }
+        })
+        .catch((e) => log.WARN(e));
+    })
+    .catch((err) => {
+      msg.channel.send(
+        createEmbed(":warning: I am unable to reply to you", [
+          {
+            title: "___",
+            content: `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
+            \nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command.`,
+          },
+        ])
+      );
+      msg.channel.stopTyping();
+    });
+  return;
+};
 
 export const unregister = async (msg:Discord.Message) => {
     msg.channel.startTyping();

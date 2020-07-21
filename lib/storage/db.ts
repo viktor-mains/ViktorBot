@@ -91,3 +91,64 @@ export async function findAllGuildMembers(guild: Guild): Promise<User[]> {
     return membership !== undefined;
   });
 }
+
+interface Option<T> {
+  value: T;
+}
+
+interface Options {
+  description_punish: string[];
+  topMasteries: number;
+  masteryIcons: {
+    mastery: number;
+    emote: string;
+  }[];
+  assignableRoles: string[];
+  room_roles: {
+    id: string;
+    guild: string;
+  }[];
+  shutUpMod: string[];
+  shutUpUser: string[];
+
+  rankRoles: {
+    name: string;
+    rank: string;
+    weight: number;
+  }[];
+
+  modRoles: string[];
+  membershipRoles: {
+    name: string;
+  }[];
+
+  jokeRoles: string[];
+  topMembers: number;
+  gibeskin: {
+    key: string;
+    value: number;
+    viktor: boolean;
+  }[];
+  degen_words: string[];
+  maxAccounts: number;
+  room_log_msgs: {
+    guild: string;
+    id: string;
+  }[];
+  room_log_users: {
+    guild: string;
+    id: string;
+  }[];
+  room_global: string;
+  commandSymbol: string;
+}
+
+export async function findOption<K extends keyof Options>(
+  name: K
+): Promise<Options[K] | undefined> {
+  const opt: Option<Options[K]> | undefined = cache["options"].find(
+    (option) => option.option === name
+  );
+
+  return opt?.value;
+}

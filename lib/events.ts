@@ -1,42 +1,44 @@
-import Discord from "discord.js";
+import Discord, { Guild } from "discord.js";
 import { orderBy } from 'lodash';
 import moment from 'moment';
 import { log } from './log';
-import { upsertUser, isKnownMember, findUserByDiscordId, User } from './storage/db';
+import { upsertUser, isKnownMember, findUserByDiscordId, User, findOption } from './storage/db';
 import { createEmbed, toDDHHMMSS, removeKeyword, replaceAll } from './helpers';
 import { cache } from './storage/cache';
 
-const sendLog = (guild:any, embed:Discord.RichEmbed, room:string) => {
-    const room_log = cache["options"].find(option => option.option === room)
-        ? cache["options"].find(option => option.option === room).value.find(g => g.guild === guild)
-            ? cache["options"].find(option => option.option === room).value.find(g => g.guild === guild).id
-            : null
-        : null;
-    if (room_log) {
-        const channel = cache["bot"].channels.get(room_log);
-        if (channel)
-        channel.send(embed)
-            .catch(err => log.WARN(`Something went wrong. ${ err }`))
-    }
-}
-const sendGlobalLog = (embed:Discord.RichEmbed, guild?:Discord.Guild) => {
-    const room = 'room_global';
-    const room_log = cache["options"].find(option => option.option === room)
-        ? cache["options"].find(option => option.option === room).value
-        : null;
+type LogRoom = "room_log_msgs" | "room_log_users";
 
-    if (guild) {
-        embed.addField('Guild name', guild.name, true)
-        embed.addField('Guild id', guild.id, true)
-    }
+const sendLog = async (
+  guild: Guild,
+  embed: Discord.RichEmbed,
+  name: LogRoom
+) => {
+  const option = (await findOption(name)) ?? [];
+  const room = option.find((r) => r.guild === guild.id);
+  const channel = cache["bot"].channels.get(room);
+  if (channel === undefined) {
+    return;
+  }
 
-    if (room_log) {
-        const channel = cache["bot"].channels.get(room_log);
-        if (channel)
-        channel.send(embed)
-            .catch(err => log.WARN(`Something went wrong. ${ err }`))
-    }
-}
+  await channel.send(embed);
+};
+
+const sendGlobalLog = async (
+  embed: Discord.RichEmbed,
+  guild: Discord.Guild
+) => {
+  const room = await findOption("room_global");
+  const channel = cache["bot"].channels.get(room);
+
+  if (channel === undefined) {
+    return;
+  }
+
+  embed.addField("Guild name", guild.name, true);
+  embed.addField("Guild id", guild.id, true);
+
+  await channel.send(embed);
+};
 
 export const msgEdit = (oldMsg:Discord.Message, newMsg:Discord.Message) => { 
     if (oldMsg.channel.type === 'dm' || oldMsg.author.bot || oldMsg.content === newMsg.content || !oldMsg.content)
@@ -53,8 +55,7 @@ export const msgEdit = (oldMsg:Discord.Message, newMsg:Discord.Message) => {
         { title: `Created at`, content: moment(oldTimestamp).format("MMMM Do YYYY, HH:mm:ss"), inline: true},
         { title: `Edited at`, content: moment(newTimestamp).format("MMMM Do YYYY, HH:mm:ss"), inline: true}
     ], '83C4F2');
-    const guild = oldMsg.guild.id;
-    sendLog(guild, log, 'room_log_msgs');
+    sendLog(oldMsg.guild, log, 'room_log_msgs');
 }
 
 export const msgDelete = (msg:Discord.Message) => { 
@@ -74,8 +75,7 @@ export const msgDelete = (msg:Discord.Message) => {
         { title: `Created at`, content: moment(oldTimestamp).format("MMMM Do YYYY, HH:mm:ss"), inline: true },
         { title: `Deleted at`, content: moment(newTimestamp).format("MMMM Do YYYY, HH:mm:ss"), inline: true}
     ], 'C70000');
-    const guild = msg.guild.id;
-    sendLog(guild, log, 'room_log_msgs');
+    sendLog(msg.guild, log, 'room_log_msgs');
 }
 
 export const userJoin = async (member:Discord.GuildMember) => { 
@@ -83,8 +83,7 @@ export const userJoin = async (member:Discord.GuildMember) => {
         { title: `User`, content: `${member.user.username}#${member.user.discriminator}`, inline: false },
         { title: `Joined at`, content: moment(member.joinedAt.toISOString()).format("MMMM Do YYYY, HH:mm:ss"), inline: true }
     ], '51E61C');
-    const guild = member.guild.id;
-    sendLog(guild, log, 'room_log_users');
+    sendLog(member.guild, log, 'room_log_users');
 
     if (member.user.bot)
         return;
@@ -104,8 +103,7 @@ export const userLeave = (member:Discord.GuildMember) => {
                 ? moment(new Date().toISOString()).format("MMMM Do YYYY, HH:mm:ss a")
                 : '?', inline: true }
     ], 'C70000');
-    const guild = member.guild.id;
-    sendLog(guild, log, 'room_log_users');
+    sendLog(member.guild, log, 'room_log_users');
 }
 
 export const descriptionChange = (msg:Discord.Message) => {
@@ -116,8 +114,8 @@ export const descriptionChange = (msg:Discord.Message) => {
         { title: `Changed at`, content: moment(new Date().toISOString()).format("MMMM Do YYYY, HH:mm:ss a"), inline: false }
     ], '8442f5');
     const guild = msg.member ? msg.member.guild.id : msg.author.id;
-    sendLog(guild, log, 'room_log_users');
-    sendGlobalLog(log, msg.member.guild ? msg.member.guild : undefined);
+    sendLog(msg.guild, log, 'room_log_users');
+    sendGlobalLog(log, msg.member.guild);
 }
 
 export const botJoin = (guild:Discord.Guild) => { 
@@ -210,9 +208,7 @@ export const handlePossibleMembershipRole = async (msg:Discord.Message) => {
         return;
     const user = await findUserByDiscordId(msg.author.id);
     const membership = user?.membership.find(guild => guild.serverId === msg.guild.id) ?? null;
-    const membershipRoles = cache["options"].find(option => option.option === 'membershipRoles')
-        ? cache["options"].find(option => option.option === 'membershipRoles').value
-        : null;
+    const membershipRoles = await findOption("membershipRoles") ?? null;
 
     if (membership === null || !membershipRoles || !user)
         return;

@@ -6,8 +6,7 @@ import { getKeyword, getCommandSymbol } from './helpers';
 import { handleUserNotInDatabase, handlePossibleMembershipRole } from './events';
 import { chooseRandom, happensWithAChanceOf } from './rng';
 import { Command } from './commands/list';
-import { IReaction, IReactionDetails } from './types/reaction';
-import { IDVKeywords } from './types/dearviktor';
+import { IReactionDetails } from './types/reaction';
 
 import dearViktor from '../data/global/dearviktor.json';
 
@@ -17,7 +16,11 @@ const isUserAdmin = (msg:Discord.Message) => msg.member.hasPermission('ADMINISTR
 const isChannelDM = (msg:Discord.Message) => msg.author.id === msg.channel.id;
 const isUserBot = (msg:Discord.Message) => msg.author.bot;
 const isUserArcy = (msg:Discord.Message) => msg.author.id === '165962236009906176';
-const messageStartsWithCommandSymbol = (msg:Discord.Message) => msg.content.startsWith(getCommandSymbol());
+const messageStartsWithCommandSymbol = async (msg:Discord.Message) => {
+    const sym = await getCommandSymbol();
+    return sym !== undefined && msg.content.startsWith(sym);
+}
+
 const isMessageRant = (msg:Discord.Message) => msg.content === msg.content.toUpperCase() && msg.content.length > 20;
 const isMessageDearViktor = (msg:Discord.Message) => msg.content.toLowerCase().startsWith('dear viktor');
 const isMessageDearVictor = (msg:Discord.Message) => msg.content.toLowerCase().startsWith('dear victor');

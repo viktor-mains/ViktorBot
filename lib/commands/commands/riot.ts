@@ -4,7 +4,7 @@ import { orderBy } from 'lodash';
 import config from '../../../config.json';
 import { log } from '../../log';
 import { cache } from '../../storage/cache';
-import { upsertOne, findUserByDiscordId } from '../../storage/db';
+import { upsertOne, findUserByDiscordId, findOption } from '../../storage/db';
 import { extractNicknameAndServer, createEmbed, extractArguments } from '../../helpers';
 
 export const getRealm = (server:string|undefined) => {
@@ -128,7 +128,7 @@ export const lastlane = async (msg:Discord.Message) => {
         msg.channel.send(createEmbed(`❌Cannot get match data`, [{ title: '\_\_\_', content: `Fetching game ${matchId} data failed.` }]));
         msg.channel.stopTyping();
         return;
-    })    
+    })
     let lastGameTimeline:any = await axios(pathLastGameTimeline).catch(err =>{
         log.WARN(err);
         msg.channel.send(createEmbed(`❌Cannot get match data`, [{ title: '\_\_\_', content: `Fetching timeline of game ${matchId} data failed.` }]));
@@ -186,11 +186,11 @@ export const lastlane = async (msg:Discord.Message) => {
         const gameFrames:any = { };
 
         embed
-            .setTitle(`${ourPlayer.champion 
-                ? ourPlayer.champion.name.toUpperCase() 
+            .setTitle(`${ourPlayer.champion
+                ? ourPlayer.champion.name.toUpperCase()
                 : '???'
             } vs${enemies.map((enemy:any) => enemy.champion ? ` ${enemy.champion.name.toUpperCase()}` : '???')}`)
-            .setDescription(`**${ourPlayer.name}'s** ${ourPlayer.champion ? ourPlayer.champion.name : '???' 
+            .setDescription(`**${ourPlayer.name}'s** ${ourPlayer.champion ? ourPlayer.champion.name : '???'
             } ${ourPlayer.win ? 'wins' : 'loses'
             } vs ${enemies.map((enemy:any) => ` **${enemy.name}'s** ${enemy.champion ? enemy.champion.name : '???'} `)
             } in ${ Math.round(parseInt(lastGameData.data.gameDuration)/60) } minutes.`);
@@ -252,8 +252,8 @@ export const lastlane = async (msg:Discord.Message) => {
 export const lastgame = async (msg:Discord.Message) => {
     // https://eun1.api.riotgames.com/lol/match/v4/matches/2281378026?api_key=RGAPI-570a0582-2aef-470b-8b66-938c35b3cf31
 }
-export const mastery = async (msg:Discord.Message) => {    
-    msg.channel.startTyping();    
+export const mastery = async (msg:Discord.Message) => {
+    msg.channel.startTyping();
     const selfRequest = !!!(extractArguments(msg).length);
 
     if (selfRequest) {
@@ -262,7 +262,7 @@ export const mastery = async (msg:Discord.Message) => {
         if (accounts.length !== 0)
             accounts.map(account => aggregateMasteryData(msg, undefined, account.server, account.id));
         else
-            msg.channel.send(createEmbed(`:information_source: You don't have any accounts registered`, [{ title: '\_\_\_', content: 
+            msg.channel.send(createEmbed(`:information_source: You don't have any accounts registered`, [{ title: '\_\_\_', content:
                 `To use this commands without arguments you have to register your League account first: \`\`!register <IGN> | <server>\`\`.
                 Otherwise, this command can be used as follows: \`\`!mastery IGN|server\`\`.` }]));
     }
@@ -271,7 +271,7 @@ export const mastery = async (msg:Discord.Message) => {
         aggregateMasteryData(msg, nickname, server)
     }
 }
-const aggregateMasteryData = async (msg:Discord.Message, nickname:string|undefined, server:string|undefined, playerId?:string) => {    
+const aggregateMasteryData = async (msg:Discord.Message, nickname:string|undefined, server:string|undefined, playerId?:string) => {
     const realm = getRealm(server);
     if (!playerId)
         playerId = await getSummonerId(nickname, server);
@@ -290,12 +290,8 @@ const aggregateMasteryData = async (msg:Discord.Message, nickname:string|undefin
         return;
     }
     const champions = cache["champions"];
-    const topX = cache["options"].find(option => option.option === 'topMasteries')
-        ? cache["options"].find(option => option.option === 'topMasteries').value
-        : 3;
-    const masteryIcons = cache["options"].find(option => option.option === 'masteryIcons')
-        ? cache["options"].find(option => option.option === 'masteryIcons').value
-        : null
+    const topX = await findOption("topMasteries") ?? 3;
+    const masteryIcons = await findOption("masteryIcons") ?? [];
     const url = `https://${realm}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
     const masteryData = await axios(url);
     const masteryList = orderBy(masteryData.data, ['championPoints'], ['desc'])
@@ -310,8 +306,11 @@ const aggregateMasteryData = async (msg:Discord.Message, nickname:string|undefin
             : null
     });
     let collectiveMasteryLevelsString = '';
-    for (let level in collectiveMasteryLevels) 
-        collectiveMasteryLevelsString += `${masteryIcons.find(mI => level.indexOf(mI.mastery) !== -1).emote} x${collectiveMasteryLevels[level]} `;
+    for (const level of Object.keys(collectiveMasteryLevels)) {
+        const icon = masteryIcons.find(mI => level.indexOf(mI.mastery.toString()) !== -1)
+        collectiveMasteryLevelsString += `${icon?.emote} x${collectiveMasteryLevels[level]} `;
+    }
+
     const embed = new Discord.RichEmbed()
         .setTitle(`Top ${topX} masteries - ${nickname.toUpperCase()} [${server.toUpperCase()}]`)
         .setDescription(`${collectiveMasteryLevelsString}\n**Collective mastery**: ${collectiveMastery}`)
@@ -319,13 +318,14 @@ const aggregateMasteryData = async (msg:Discord.Message, nickname:string|undefin
         .setThumbnail(mostMasteryIcon)
         .setFooter(`${msg.author.username}`)
         .setColor('0xFDC000')
+
     masteryList.map(mastery => {
         const champion = champions.find(ch => ch.id == mastery.championId);
         const masteryIcon = masteryIcons.find(mI => mI.mastery === mastery.championLevel);
         let title = `${champion.name}, ${champion.title}`;
         if (masteryIcon)
             title = `${masteryIcon.emote} ${title} ${mastery.chestGranted ? '<:chest_unlocked:672434420195655701>' : ''}`
-        embed.addField(title, 
+        embed.addField(title,
             `**Points**: ${mastery.championPoints}\n`+
             `**Last game**: ${new Date(mastery.lastPlayTime).toLocaleDateString()}`, false)
     })
@@ -334,7 +334,7 @@ const aggregateMasteryData = async (msg:Discord.Message, nickname:string|undefin
 }
 
 export const ingame = async (msg:Discord.Message) => {
-    msg.channel.startTyping();    
+    msg.channel.startTyping();
     const selfRequest = !!!(extractArguments(msg).length);
 
     if (selfRequest) {
@@ -343,7 +343,7 @@ export const ingame = async (msg:Discord.Message) => {
         if (accounts.length > 0)
             accounts.map(account => aggregateMasteryData(msg, undefined, account.server, account.id));
         else
-            msg.channel.send(createEmbed(`:information_source: You don't have any accounts registered`, [{ title: '\_\_\_', content: 
+            msg.channel.send(createEmbed(`:information_source: You don't have any accounts registered`, [{ title: '\_\_\_', content:
                 `To use this commands without arguments you have to register your League account first: \`\`!register <IGN> | <server>\`\`.
                 Otherwise, this command can be used as follows: \`\`!ingame IGN|server\`\`.` }]));
     }

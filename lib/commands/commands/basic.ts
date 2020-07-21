@@ -3,6 +3,7 @@ import { cache } from '../../storage/cache';
 import { isUserAdmin } from '../../message';
 import { chooseRandom } from '../../rng';
 import { extractNicknameAndServer, createEmbed, getCommandSymbol, splitArrayByObjectKey, } from '../../helpers';
+import { findOption } from '../../storage/db';
 
 type TField = {
     title: string,
@@ -15,16 +16,17 @@ export const opgg = (msg:Discord.Message) => {
         msg.channel.send(`https://${ server }.op.gg/summoner/userName=${ nickname }`)
 }
 
-export const help = (msg:Discord.Message) => {
+export const help = async (msg:Discord.Message) => {
     let fields = new Array<TField>();
     let commands = cache["commands"]
         .filter(command => command.isModOnly === false && command.description);
     commands = splitArrayByObjectKey(commands, 'category');
 
+    const sym = await getCommandSymbol()!;
     for (let category in commands) {
         const title = `Category ${category.toUpperCase()}`;
         let content = '';
-        commands[category].map(command => content += `- **${getCommandSymbol()}${command.keyword}** - ${command.description}\n`);
+        commands[category].map(command => content += `- **${sym}${command.keyword}** - ${command.description}\n`);
         fields.push({ title, content })
     }
         
@@ -38,16 +40,17 @@ export const help = (msg:Discord.Message) => {
         );
 }
 
-export const hmod = (msg:Discord.Message) => {
+export const hmod = async (msg:Discord.Message) => {
     let fields = new Array<TField>();
     let commands = cache["commands"]
         .filter(command => command.isModOnly === true && command.description);
     commands = splitArrayByObjectKey(commands, 'category');
 
+    const sym = await getCommandSymbol()!;
     for (let category in commands) {
         const title = `Category ${category.toUpperCase()}`;
         let content = '';
-        commands[category].map(command => content += `\`\`-\`\`**${getCommandSymbol()}${command.keyword}** - ${command.description}\n`);
+        commands[category].map(command => content += `\`\`-\`\`**${sym}${command.keyword}** - ${command.description}\n`);
         fields.push({ title, content })
     }
         
@@ -61,21 +64,12 @@ export const hmod = (msg:Discord.Message) => {
         );
 }
 
-export const shutup = (msg:Discord.Message) => {
-    let answer = '';
-    if (isUserAdmin(msg)) {
-        msg.channel.stopTyping();
-        const answers = cache["options"].find(option => option.option === 'shutUpMod')
-            ? cache["options"].find(option => option.option === 'shutUpMod').value
-            : [];
-        answer = chooseRandom(answers);
-    }
-    else {
-        const answers = cache["options"].find(option => option.option === 'shutUpUser')
-            ? cache["options"].find(option => option.option === 'shutUpUser').value
-            : [];
-        answer = chooseRandom(answers);
-    }
-    if(answer && answer !== '' && answer.length > 0)
-        msg.channel.send(answer);
-}
+export const shutup = async (msg: Discord.Message) => {
+  let answer = "";
+  const option = isUserAdmin(msg) ? "shutUpMod" : "shutUpUser";
+  const answers = (await findOption(option)) ?? [];
+  answer = chooseRandom(answers);
+  if (answer && answer !== "" && answer.length > 0) {
+    msg.channel.send(answer);
+  }
+};

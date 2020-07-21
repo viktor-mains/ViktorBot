@@ -3,7 +3,7 @@ import { readFile } from 'fs';
 import { log } from '../../log';
 import { removeKeyword, extractArguments, createEmbed } from '../../helpers';
 import { chooseRandom } from '../../rng';
-import { updateCache, upsertUser, isKnownMember, findUserByDiscordId } from '../../storage/db';
+import { updateCache, upsertUser, isKnownMember, findUserByDiscordId, findOption } from '../../storage/db';
 import { cache } from '../../storage/cache';
 
 export const status = (msg:Discord.Message) => cache["bot"].user.setPresence({ game: { name: removeKeyword(msg), type: 0}})
@@ -62,9 +62,8 @@ export const punish = async (msg:Discord.Message) => {
         return;
     }
 
-    const punish = cache["options"].find(option => option.option === 'description_punish')
-        ? chooseRandom(cache["options"].find(option => option.option === 'description_punish').value)
-        : 'I wet myself at night. :pensive:';
+    const opt = await findOption("description_punish");
+    const punish = opt ? chooseRandom(opt) : "I wet myself at night. :pensive:";
     if (member.punished === true) {
         member = {
             ...member,
