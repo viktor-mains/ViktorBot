@@ -3,10 +3,13 @@ import { readFile } from 'fs';
 import { log } from '../../log';
 import { removeKeyword, extractArguments, createEmbed } from '../../helpers';
 import { chooseRandom } from '../../rng';
-import { updateCache, upsertUser, isKnownMember, findUserByDiscordId, findOption } from '../../storage/db';
+import { updateCache, upsertUser, findUserByDiscordId, findOption } from '../../storage/db';
 import { cache } from '../../storage/cache';
+import { setBotPresence, findTextChannel,  enumerateGuilds, findMemberJoinDate } from '../../bot';
 
-export const status = (msg:Discord.Message) => cache["bot"].user.setPresence({ game: { name: removeKeyword(msg), type: 0}})
+export const status = async (msg:Discord.Message) => {
+    await setBotPresence(removeKeyword(msg))
+}
 
 export const impersonate = (msg:Discord.Message) => {
     const messageAndGuild = extractArguments(msg);
@@ -14,7 +17,7 @@ export const impersonate = (msg:Discord.Message) => {
         msg.channel.send(createEmbed(`❌ Wrong syntax`, [{ title: '\_\_\_', content: 'This command requires exactly two arguments: ``message|channel_id``.' }]));
         return;
     }
-    const channel = cache["bot"].channels.get(messageAndGuild[1]);
+    const channel = findTextChannel(messageAndGuild[1]);
     if (!channel) {
         msg.channel.send(createEmbed(`❌ Error`, [{ title: '\_\_\_', content: `I don't have access to this channel, you dummy.` }]));
         return;
@@ -108,16 +111,8 @@ export const msgupdate = (msg:Discord.Message) => {
             log.INFO(`User ${index+1}/${membersRaw.length}`);
             let membersData
             const user = await findUserByDiscordId(mTU.discordId);
-            let joinDate;
-            try {
-                joinDate = cache["bot"].guilds
-                    .find(cachedGuild => cachedGuild.id == mTU.serverId).members
-                    .find(cachedMember => cachedMember.id == mTU.discordId).joinedAt
-                joinDate = new Date(joinDate).getTime();
-            }
-            catch (err) {
-                joinDate = mTU.firstMessage;
-            }
+            const date = findMemberJoinDate(mTU.serverId, mTU.discordId)?.getTime();
+            const joinDate = date ?? mTU.firstMessage;
             if (!joinDate) console.log(mTU.discordId);
             if (user) { // if user IS in database, just update his membership
                 membersData = { ...user };
@@ -161,7 +156,10 @@ export const msgupdate = (msg:Discord.Message) => {
 
 export const guilds = (msg:Discord.Message) => {
     let content = '';
-    const guilds = [ ...cache["bot"].guilds.values() ].map(guild => content += `- \`\`[${guild.id}]\`\` ${guild.name}\n`)
+    for (const guild of enumerateGuilds()) {
+        content += `- \`\`[${guild.id}]\`\` ${guild.name}\n`
+    }
+
     const embed = createEmbed('Viktor Bot\'s guilds', [{ title: '\_\_\_', content }]);
     msg.channel.send(embed);
 }

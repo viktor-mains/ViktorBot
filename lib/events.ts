@@ -4,7 +4,7 @@ import moment from 'moment';
 import { log } from './log';
 import { upsertUser, isKnownMember, findUserByDiscordId, User, findOption } from './storage/db';
 import { createEmbed, toDDHHMMSS, removeKeyword, replaceAll } from './helpers';
-import { cache } from './storage/cache';
+import { findTextChannel } from "./bot";
 
 type LogRoom = "room_log_msgs" | "room_log_users";
 
@@ -15,7 +15,7 @@ const sendLog = async (
 ) => {
   const option = (await findOption(name)) ?? [];
   const room = option.find((r) => r.guild === guild.id);
-  const channel = cache["bot"].channels.get(room);
+  const channel = findTextChannel(room?.id);
   if (channel === undefined) {
     return;
   }
@@ -28,7 +28,7 @@ const sendGlobalLog = async (
   guild: Discord.Guild
 ) => {
   const room = await findOption("room_global");
-  const channel = cache["bot"].channels.get(room);
+  const channel = findTextChannel(room);
 
   if (channel === undefined) {
     return;

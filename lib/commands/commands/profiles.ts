@@ -4,12 +4,12 @@ import v4 from 'uuid/v4';
 import { orderBy } from 'lodash';
 import { log } from '../../log';
 import { initData, descriptionChange } from '../../events';
-import { cache } from '../../storage/cache';
 import { upsertUser, findUserByDiscordId, findAllGuildMembers, findOption } from '../../storage/db';
 import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft, replaceAll, modifyInput, extractArguments, toMMSS } from '../../helpers';
 import { getSummonerId, getRealm } from './riot';
 import config from '../../../config.json';
 import { format as sprintf } from 'util'
+import { isBotUser } from '../../bot';
 
 const timeout = 900000;
 
@@ -209,7 +209,7 @@ export const profile = async (msg:Discord.Message) => {
 
     const sorted = orderBy(memberships, ['messageCount'], ['desc']);
     const userData = await findUserByDiscordId(user.id);
-    if (user.id !== cache["bot"].user.id) {
+    if (!isBotUser(user)) {
         if (!userData || !userData["membership"] || !userData["membership"].find(s => s.serverId === msg.guild.id)) {
             if (user.id === msg.author.id) {
                 // msg.channel.send(createEmbed(`:information_source: You didn't register yet`, [{ title: '\_\_\_', content: `Use the \`\`!register <IGN> | <server>\`\` command to create your profile.` }]));
