@@ -3,12 +3,7 @@ import { readFile } from "fs";
 import { log } from "../../log";
 import { removeKeyword, extractArguments, createEmbed } from "../../helpers";
 import { chooseRandom } from "../../rng";
-import {
-  updateCache,
-  upsertUser,
-  findUserByDiscordId,
-  findOption,
-} from "../../storage/db";
+import { upsertUser, findUserByDiscordId, findOption } from "../../storage/db";
 import {
   setBotPresence,
   findTextChannel,
@@ -55,7 +50,6 @@ export const impersonate = (msg: Discord.Message) => {
 };
 
 export const refresh = (msg: Discord.Message) => {
-  updateCache();
   return msg.react("✔️");
 };
 

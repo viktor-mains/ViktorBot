@@ -1,5 +1,4 @@
 import { MongoClient, Db } from "mongodb";
-import { cache } from "./cache";
 import assert from "assert";
 import type { User as DiscordUser, GuildMember, Guild } from "discord.js";
 import { IEmbed } from "../types/command";
@@ -10,20 +9,6 @@ let db: Db;
 export const connectToDb = async (url: string) => {
   const client = await MongoClient.connect(url);
   db = client.db(DB_NAME);
-
-  await updateCache();
-};
-
-export const updateCache = async () => {
-  assert.ok(
-    db !== undefined,
-    "have not connected to the database - make sure connectToDb() is called at least once"
-  );
-
-  for (const collection of await db.collections()) {
-    const data = await collection.find({}).toArray();
-    cache[collection.collectionName] = data;
-  }
 };
 
 export async function upsertOne<T>(name: string, filter: object, object: T) {
@@ -35,8 +20,6 @@ export async function upsertOne<T>(name: string, filter: object, object: T) {
   await db
     .collection<T>(name)
     .updateOne(filter, { $set: object }, { upsert: true });
-
-  await updateCache();
 }
 
 export interface Account {
@@ -80,17 +63,19 @@ export async function isKnownMember(member: GuildMember): Promise<boolean> {
 export async function findUserByDiscordId(
   id: string
 ): Promise<User | undefined> {
-  return cache["users"].find((u) => u.discordId === id);
+  return (await db.collection("users").findOne({ discordId: id })) ?? undefined;
 }
 
 export async function findAllGuildMembers(guild: Guild): Promise<User[]> {
-  return cache["users"].filter((user: User) => {
-    const membership = user.membership?.find(
-      (member) => member.serverId === guild.id
-    );
-
-    return membership !== undefined;
+  const results = db.collection("users").find({
+    membership: {
+      $elemMatch: {
+        serverId: guild.id,
+      },
+    },
   });
+
+  return await results.toArray();
 }
 
 interface Option<T> {
@@ -147,10 +132,8 @@ interface Options {
 export async function findOption<K extends keyof Options>(
   name: K
 ): Promise<Options[K] | undefined> {
-  const opt: Option<Options[K]> | undefined = cache["options"].find(
-    (option) => option.option === name
-  );
-
+  type T = Option<Options[K]>;
+  const opt = await db.collection("options").findOne<T>({ name });
   return opt?.value;
 }
 
@@ -163,19 +146,26 @@ export interface Command {
 }
 
 export async function findModCommands(): Promise<Command[]> {
-  return cache["commands"].filter((cmd: Command) => cmd.isModOnly);
+  const r = db.collection("commands").find({
+    isModOnly: true,
+  });
+
+  return await r.toArray();
 }
 
 export async function findUserCommands(): Promise<Command[]> {
-  return cache["commands"].filter((cmd: Command) => !cmd.isModOnly);
+  const r = db.collection("commands").find({
+    isModOnly: false,
+  });
+
+  return await r.toArray();
 }
 
 export async function findCommandByKeyword(
   keyword: string
 ): Promise<Command | undefined> {
-  return cache["commands"].find(
-    (cmd: Command) => cmd.keyword.toLowerCase() === keyword.toLowerCase()
-  );
+  const c = db.collection("commands");
+  return (await c.findOne({ keyword })) ?? undefined;
 }
 
 interface Lane {
@@ -184,7 +174,8 @@ interface Lane {
 }
 
 export async function findLane(lane: string): Promise<Lane | undefined> {
-  return cache["lanes"].find((l: Lane) => l.lane === lane);
+  const c = db.collection("lanes");
+  return (await c.findOne({ lane })) ?? undefined;
 }
 
 interface Queue {
@@ -193,7 +184,8 @@ interface Queue {
 }
 
 export async function findQueue(queue: string): Promise<Queue | undefined> {
-  return cache["queues"].find((q: Queue) => q.queue === queue);
+  const c = db.collection("queues");
+  return (await c.findOne({ queue })) ?? undefined;
 }
 
 interface Champion {
@@ -204,7 +196,8 @@ interface Champion {
 }
 
 export async function findChampion(id: string): Promise<Champion | undefined> {
-  return cache["champions"].find((c: Champion) => c.id === id);
+  const c = db.collection("champions");
+  return (await c.findOne({ id })) ?? undefined;
 }
 
 interface Server {
@@ -215,11 +208,8 @@ interface Server {
 export async function findServerByName(
   name: string
 ): Promise<string | undefined> {
-  const s = cache["servers"].find(
-    (s: Server) => s.region.toUpperCase() === name.toUpperCase()
-  );
-
-  return s?.name;
+  const c = db.collection("servers");
+  return (await c.findOne({ region: name.toUpperCase() })) ?? undefined;
 }
 
 export interface Reaction {
@@ -228,13 +218,14 @@ export interface Reaction {
 }
 
 export async function findReactionsById(id: string): Promise<Reaction[]> {
-  return cache["reactions"].filter((r: Reaction) => r.id === id);
+  return await db.collection("reactions").find({ id }).toArray();
 }
 
 export async function findReactionsInMessage(msg: string): Promise<Reaction[]> {
   const content = msg.toLowerCase();
   // This could probably be much quicker with a lookup table - it will slow down quite a bit as more reactions get added
-  return cache["reactions"].filter((r: Reaction) => {
+  const reactions = await db.collection("reactions").find({}).toArray();
+  return reactions.filter((r: Reaction) => {
     const words = r.keywords.filter((keyword) => content.includes(keyword));
     return words.length > 0;
   });
