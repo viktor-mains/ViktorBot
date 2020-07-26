@@ -30,6 +30,7 @@
     "jsdom": "^16.1.0",
     "moment": "^2.24.0",
     "mongodb": "^3.3.2",
+    "node-fetch": "^2.6.0",
     "rimraf": "^2.6.3",
     "saslprep": "^1.0.3",
     "sharp": "^0.24.0",
@@ -45,6 +46,9 @@
     "@babel/polyfill": "^7.4.3",
     "@babel/preset-env": "^7.4.3",
     "@babel/preset-es2015": "^7.0.0-beta.53",
-    "@babel/preset-typescript": "^7.3.3"
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/mongodb": "^3.5.25",
+    "@types/node-fetch": "^2.5.7",
+    "typescript": "^3.9.7"
   }
 }
