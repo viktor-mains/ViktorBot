@@ -7,7 +7,7 @@ import { initData, descriptionChange } from '../../events';
 import { cache } from '../../storage/cache';
 import { upsertOne } from '../../storage/db';
 import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft, replaceAll, modifyInput, extractArguments, toMMSS } from '../../helpers';
-import { getSummonerId, getRealm } from './riot';
+import { getSummonerId, getPlatform } from './riot';
 import config from '../../../config.json';
 
 const timeout = 900000;
@@ -15,7 +15,7 @@ const timeout = 900000;
 const verifyCode = async (nickname:string, server:string, uuid:string, msg:Discord.Message ) => {
     msg.channel.startTyping();
     const playerId = await getSummonerId(nickname, server);
-    const realm = getRealm(server);
+    const realm = getPlatform(server);
     const url = `https://${realm}.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
     const continueVerifying = async (verificationCode) => {
         if (!verificationCode) {
@@ -113,7 +113,7 @@ const updateRankRoles = (msg:Discord.Message, userData) => {
 
 const getTierAndDivision = async (msg:Discord.Message, nickname:string, server:string, _playerId?:any) => {
     const playerId = _playerId ? _playerId : await getSummonerId(nickname, server);
-    const realm = getRealm(server);
+    const realm = getPlatform(server);
     const url = `https://${realm}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
     const userLeagues:any = await axios(url)
         .catch(err => {
@@ -135,7 +135,7 @@ const getTierAndDivision = async (msg:Discord.Message, nickname:string, server:s
 
 const getMastery = async (msg:Discord.Message, nickname:string, server:string, _playerId?:any) => {
     const playerId = _playerId ? _playerId : await getSummonerId(nickname, server);
-    const realm = getRealm(server);
+    const realm = getPlatform(server);
     const url = `https://${realm}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${playerId}/by-champion/112?api_key=${config.RIOT_API_TOKEN}`;
     const userMastery:any = await axios(url)
         .catch(err => {
@@ -227,7 +227,7 @@ export const profile = async (msg:Discord.Message) => {
         let name;
         let opgg;
         if (account.id) {
-            url = `https://${getRealm(account.server)}.api.riotgames.com/lol/summoner/v4/summoners/${account.id}?api_key=${config.RIOT_API_TOKEN}`;
+            url = `https://${getPlatform(account.server)}.api.riotgames.com/lol/summoner/v4/summoners/${account.id}?api_key=${config.RIOT_API_TOKEN}`;
             userAccountData = await axios(url).catch(err => log.WARN(err));
         }
         name = account.name
@@ -457,7 +457,7 @@ export const register = async (msg:Discord.Message) => {
 export const unregister = async (msg:Discord.Message) => {
     msg.channel.startTyping();
     const { nickname, server } = extractNicknameAndServer(msg);
-    const realm = getRealm(server);
+    const realm = getPlatform(server);
     const playerId = await getSummonerId(nickname, server);
     const oldData = cache["users"].find(user => user.discordId === msg.author.id)
         ? cache["users"].find(user => user.discordId === msg.author.id)
