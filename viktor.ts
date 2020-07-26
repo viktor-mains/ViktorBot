@@ -1,4 +1,3 @@
-import '@babel/polyfill';
 import Discord from 'discord.js';
 import config from './config.json';
 import { log } from './lib/log';
@@ -10,7 +9,7 @@ import { cache } from './lib/storage/cache';
 const bot = new Discord.Client();
 
 const ready = bot => {
-    cache.bot = bot;
+    cache["bot"] = bot;
     config.DATABASES.map(db => connectToDb(db));
     init(bot);
 }

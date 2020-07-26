@@ -5,10 +5,10 @@
   "main": "viktor.js",
   "scripts": {
     "test": "test",
-    "build": "rimraf dist/ && babel ./ --out-dir dist/ --extensions \".js,.ts\" --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
+    "build": "rimraf dist/ && tsc -p ./ --outDir dist/",
     "start": "node dist/viktor.js",
     "viktor": "npm run build && npm run start",
-    "start-dev": "node viktor",
+    "start-dev": "tsc --watch -p ./",
     "check-types": "tsc"
   },
   "repository": {
@@ -38,15 +38,6 @@
     "uuid": "^3.4.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.4.3",
-    "@babel/core": "^7.4.3",
-    "@babel/plugin-proposal-class-properties": "^7.4.0",
-    "@babel/plugin-proposal-object-rest-spread": "^7.4.3",
-    "@babel/plugin-transform-async-to-generator": "^7.4.0",
-    "@babel/polyfill": "^7.4.3",
-    "@babel/preset-env": "^7.4.3",
-    "@babel/preset-es2015": "^7.0.0-beta.53",
-    "@babel/preset-typescript": "^7.3.3",
     "@types/mongodb": "^3.5.25",
     "@types/node-fetch": "^2.5.7",
     "typescript": "^3.9.7"
