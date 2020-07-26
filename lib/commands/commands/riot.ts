@@ -13,11 +13,9 @@ import {
   fetchChampions,
   fetchVersions,
   fetchRecentGames,
-  parsePlatform,
   fetchMatchInfo,
   fetchMatchTimeline,
   getSummonerByName,
-  Platform,
   Summoner,
   fetchSummonerMasteries,
   getSummonerByAccountId,
@@ -25,7 +23,7 @@ import {
 
 const client = new RiotClient(config.RIOT_API_TOKEN);
 
-export const getRealm = (server: string | undefined) => {
+export const getPlatform = (server: string | undefined) => {
   if (!server) {
     return undefined;
   }
@@ -44,7 +42,7 @@ export const getSummonerId = async (
   }
 
   try {
-    const platform = parsePlatform(server);
+    const platform = getPlatform(server);
     const summoner = await getSummonerByName(client, platform, ign);
     return summoner.data.id;
   } catch (err) {
@@ -61,7 +59,7 @@ const getAccountId = async (
   }
 
   try {
-    const platform = parsePlatform(server);
+    const platform = getPlatform(server);
     const summoner = await getSummonerByName(client, platform, ign);
     return summoner.data.accountId;
   } catch (err) {
@@ -109,11 +107,10 @@ export const lastlane = async (msg: Discord.Message) => {
   const champions = cache["champions"];
   const { nickname, server } = extractNicknameAndServer(msg);
   const playerId = await getAccountId(nickname, server);
-  const realm = getRealm(server);
-  const platform = parsePlatform(realm);
+  const platform = getPlatform(server);
 
   if (!nickname || !server) return msg.channel.stopTyping();
-  if (!playerId || !realm) {
+  if (!playerId || !platform) {
     msg.channel.send(
       createEmbed("❌ Incorrect nickname or server", [
         {
@@ -332,7 +329,7 @@ export const mastery = async (msg: Discord.Message) => {
     );
     if (user && user.accounts && user.accounts.length !== 0) {
       for (const account of user.accounts) {
-        const platform = parsePlatform(account.server);
+        const platform = getPlatform(account.server);
         const { data: summoner } = await getSummonerByAccountId(
           client,
           platform,
@@ -366,7 +363,7 @@ export const mastery = async (msg: Discord.Message) => {
       return;
     }
 
-    const platform = parsePlatform(server);
+    const platform = getPlatform(server);
     const { data: summoner } = await getSummonerByName(
       client,
       platform,
@@ -380,7 +377,7 @@ const aggregateMasteryData = async (
   msg: Discord.Message,
   nickname: string,
   server: string,
-  platform: Platform,
+  platform: string,
   summoner: Summoner
 ) => {
   const champions = cache["champions"];

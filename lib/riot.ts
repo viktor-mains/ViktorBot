@@ -1,54 +1,6 @@
 import { format as sprintf } from "util";
 import { Request, default as fetch } from "node-fetch";
 
-export enum Platform {
-  EuropeWest = "euw1.api.riotgames.com",
-  NorthAmerica = "na1.api.riotgames.com",
-  EuropeNordicEast = "eun1.api.riotgames.com",
-  Brazil = "br1.api.riotgames.com",
-  Japan = "jp1.api.riotgames.com",
-  Korea = "kr1.api.riotgames.com",
-  LatinAmericaNorth = "la1.api.riotgames.com",
-  LatinAmericaSouth = "la2.api.riotgames.com",
-  Oceania = "oce1.api.riotgames.com",
-  Turkey = "tr1.api.riotgames.com",
-  Russia = "ru1.api.riotgames.com",
-  DataDragon = "ddragon.leagueoflegends.com",
-}
-
-export function parsePlatform(region: string | undefined): Platform | never {
-  if (region === undefined) {
-    throw new Error("undefined region?");
-  }
-
-  switch (region.toUpperCase()) {
-    case "EUW":
-      return Platform.EuropeWest;
-    case "EUNE":
-      return Platform.EuropeNordicEast;
-    case "NA":
-      return Platform.NorthAmerica;
-    case "BR":
-      return Platform.Brazil;
-    case "JP":
-      return Platform.Japan;
-    case "KR":
-      return Platform.Korea;
-    case "TR":
-      return Platform.Turkey;
-    case "LAN":
-      return Platform.LatinAmericaNorth;
-    case "LAS":
-      return Platform.LatinAmericaSouth;
-    case "OCE":
-      return Platform.Oceania;
-    case "RU":
-      return Platform.Russia;
-  }
-
-  throw new Error(`unknown platform ${region}`);
-}
-
 export class RiotClient {
   #token: string;
 
@@ -57,7 +9,7 @@ export class RiotClient {
   }
 
   async fetch<T = unknown>(
-    platform: Platform,
+    platform: string,
     path: string,
     ...params: any[]
   ): Promise<Response<T>> {
@@ -91,7 +43,7 @@ interface Response<T> {
 }
 
 export async function fetchVersions(client: RiotClient) {
-  return client.fetch<string[]>(Platform.DataDragon, "/api/versions.json");
+  return client.fetch<string[]>("ddragon.leagueoflegends.com", "/api/versions.json");
 }
 
 interface ChampionList {
@@ -108,7 +60,7 @@ interface ChampionList {
 }
 export async function fetchChampions(client: RiotClient, version: string) {
   return client.fetch<ChampionList>(
-    Platform.DataDragon,
+    "ddragon.leagueoflegends.com",
     "/cdn/%s/data/en_US/championFull.json",
     version
   );
@@ -125,7 +77,7 @@ interface MatchReference {
 
 export async function fetchRecentGames(
   client: RiotClient,
-  platform: Platform,
+  platform: string,
   playerID: string
 ) {
   return client.fetch<MatchList>(
@@ -168,7 +120,7 @@ interface Match {
 
 export async function fetchMatchInfo(
   client: RiotClient,
-  platform: Platform,
+  platform: string,
   matchID: string
 ) {
   return client.fetch<Match>(platform, "/lol/match/v4/matches/%s", matchID);
@@ -190,7 +142,7 @@ interface Timeline {
 
 export async function fetchMatchTimeline(
   client: RiotClient,
-  platform: Platform,
+  platform: string,
   matchID: string
 ) {
   return client.fetch<Timeline>(
@@ -210,7 +162,7 @@ interface MasteryLevel {
 
 export function fetchSummonerMasteries(
   client: RiotClient,
-  platform: Platform,
+  platform: string,
   summoner: Summoner
 ) {
   return client.fetch<MasteryLevel[]>(
@@ -228,7 +180,7 @@ export interface Summoner {
 
 export function getSummonerByName(
   client: RiotClient,
-  platform: Platform,
+  platform: string,
   name: string
 ) {
   return client.fetch<Summoner>(
@@ -240,7 +192,7 @@ export function getSummonerByName(
 
 export function getSummonerByAccountId(
   client: RiotClient,
-  platform: Platform,
+  platform: string,
   accountId: string
 ) {
   return client.fetch<Summoner>(
