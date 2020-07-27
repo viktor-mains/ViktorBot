@@ -1,9 +1,9 @@
 import Discord from 'discord.js';
 import moment from 'moment';
 import { IEmbedField } from './types/command';
-import { cache } from './storage/cache';
+import { findOption } from './storage/db';
 
-export const getCommandSymbol = () => cache["options"].find(option => option.option === 'commandSymbol').value;
+export const getCommandSymbol = () => findOption("commandSymbol");
 
 export const getKeyword = (msg:Discord.Message) => {
     const argumentsPresent = msg.content.includes(' ');

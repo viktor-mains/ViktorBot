@@ -1,15 +1,14 @@
 import Discord from 'discord.js';
 import { TextCommand, EmbedCommand } from './commands/logic';
 import { Reaction } from './commands/reactions'
-import { cache } from './storage/cache';
 import { getKeyword, getCommandSymbol } from './helpers';
 import { handleUserNotInDatabase, handlePossibleMembershipRole } from './events';
 import { chooseRandom, happensWithAChanceOf } from './rng';
 import { Command } from './commands/list';
-import { IReaction, IReactionDetails } from './types/reaction';
-import { IDVKeywords } from './types/dearviktor';
+import { IReactionDetails } from './types/reaction';
 
 import dearViktor from '../data/global/dearviktor.json';
+import { findCommandByKeyword, findReactionsById, findReactionsInMessage } from './storage/db';
 
 // LOGIC
 
@@ -17,12 +16,14 @@ const isUserAdmin = (msg:Discord.Message) => msg.member.hasPermission('ADMINISTR
 const isChannelDM = (msg:Discord.Message) => msg.author.id === msg.channel.id;
 const isUserBot = (msg:Discord.Message) => msg.author.bot;
 const isUserArcy = (msg:Discord.Message) => msg.author.id === '165962236009906176';
-const messageStartsWithCommandSymbol = (msg:Discord.Message) => msg.content.startsWith(getCommandSymbol());
+const messageStartsWithCommandSymbol = async (msg:Discord.Message) => {
+    const sym = await getCommandSymbol();
+    return sym !== undefined && msg.content.startsWith(sym);
+}
+
 const isMessageRant = (msg:Discord.Message) => msg.content === msg.content.toUpperCase() && msg.content.length > 20;
 const isMessageDearViktor = (msg:Discord.Message) => msg.content.toLowerCase().startsWith('dear viktor');
 const isMessageDearVictor = (msg:Discord.Message) => msg.content.toLowerCase().startsWith('dear victor');
-
-const commandObject = (msg:Discord.Message) => cache["commands"].find(cmd => cmd.keyword === getKeyword(msg));
 
 const answer = (msg:Discord.Message, answer:string) => msg.channel.send(answer);
 const answerDearViktor = (msg:Discord.Message) => {
@@ -39,36 +40,41 @@ const answerDearViktor = (msg:Discord.Message) => {
     answer(msg, '_That_ doesn\'t look like question to me.')
 };
 const answerDearVictor = (msg:Discord.Message) => answer(msg, '...what have you just called me. <:SilentlyJudging:288396957922361344>');
-const answerCommand = (msg:Discord.Message) => {
-    const command = commandObject(msg);
-    if (command && command.text) {
+const answerCommand = async (msg:Discord.Message) => {
+    const command = await findCommandByKeyword(getKeyword(msg));
+    if (command === undefined) {
+        await msg.react(':questionmark:244535324737273857');
+       return
+    }
+
+    if (command.text !== undefined) {
         new TextCommand(command, msg).execute(command.text);
         return;
     }
-    if (command && command.embed) {
+
+    if (command.embed !== undefined) {
         new EmbedCommand(command, msg).execute(command.embed, msg.author.username);
         return;
     }
-    if (command && Command[getKeyword(msg)]) {
+    if (Command[getKeyword(msg)]) {
         Command[getKeyword(msg)](command, msg)
         return;
     }
-    msg.react(':questionmark:244535324737273857');    
+
+    await msg.react(':questionmark:244535324737273857');
 };
-const checkForReactionTriggers = (msg:Discord.Message) => { 
-    let appropiateReactions = new Array();
-    let chosenTrigger;
-    let chosenReaction;
 
-    if (isMessageRant(msg)) 
-        appropiateReactions.push(...cache["reactions"].filter((reaction:any) => reaction.id === 'rant'));
-    appropiateReactions.push(...cache["reactions"].filter((reaction:any) => 
-        reaction.keywords.filter((keyword:string) => msg.content.toLowerCase().includes(keyword)).length === reaction.keywords.length && reaction.keywords.length > 0));
-
-    if (appropiateReactions.length === 0)
+const checkForReactionTriggers = async (msg:Discord.Message) => {
+    const reactions = isMessageRant(msg)
+      ? await findReactionsById("rant")
+      : await findReactionsInMessage(msg.content);
+  
+    if (reactions.length === 0) {
         return;
-    chosenTrigger = chooseRandom(appropiateReactions);
-    chosenReaction = chosenTrigger.reaction_list.find((reaction:IReactionDetails) => happensWithAChanceOf(reaction.chance));
+    }
+
+    const chosenTrigger = chooseRandom(reactions);
+    const chosenReaction = chosenTrigger.reaction_list.find((reaction:IReactionDetails) => happensWithAChanceOf(reaction.chance));
     if (chosenReaction) {
         chosenReaction.emoji && msg.react(chosenReaction.emoji);
         chosenReaction.response && msg.channel.send(chosenReaction.response);
@@ -89,11 +95,11 @@ const classifyMessage = async (msg:Discord.Message) => {
 
     handleUserNotInDatabase(msg.member, msg);
     handlePossibleMembershipRole(msg);
-    
+
     if (isMessageDearViktor(msg)) {
         answerDearViktor(msg);
         return;
-    }        
+    }
     if (isMessageDearVictor(msg)) {
         answerDearVictor(msg);
         return;
@@ -102,7 +108,7 @@ const classifyMessage = async (msg:Discord.Message) => {
         answerCommand(msg);
         return;
     }
-    checkForReactionTriggers(msg);
+    await checkForReactionTriggers(msg);
 }
 
 export { classifyMessage, isUserAdmin };
