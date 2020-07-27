@@ -35,7 +35,7 @@
     "saslprep": "^1.0.3",
     "sharp": "^0.24.0",
     "tinyurl": "^1.1.5",
-    "uuid": "^3.4.0"
+    "uuid": "^8.2.0"
   },
   "devDependencies": {
     "@types/mongodb": "^3.5.25",
