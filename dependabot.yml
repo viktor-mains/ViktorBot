@@ -1,0 +1,16 @@
+# dependabot.yml file with
+# customized npm configuration
+
+version: 1
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    reviewers:
+      - "Arcyvilk"
+    assignees:
+      - "Arcyvilk"
+    labels:
+      - "auto-update"
+      - "auto-merge"
