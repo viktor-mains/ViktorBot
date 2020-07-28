@@ -1,8 +1,15 @@
 import Discord from "discord.js";
 import { orderBy } from "lodash";
 import config from "../../../config.json";
-import { cache } from "../../storage/cache";
-import { upsertOne } from "../../storage/db";
+import {
+  upsertOne,
+  findUserByDiscordId,
+  findOption,
+  findChampion,
+  findServerByName,
+  findLane,
+  findQueue,
+} from "../../storage/db";
 import {
   extractNicknameAndServer,
   createEmbed,
@@ -20,17 +27,16 @@ import {
   fetchSummonerMasteries,
   getSummonerByAccountId,
 } from "../../riot";
+import { format as sprintf } from "util";
 
 const client = new RiotClient(config.RIOT_API_TOKEN);
 
-export const getPlatform = (server: string | undefined) => {
+export const getRealm = async (server: string | undefined) => {
   if (!server) {
     return undefined;
   }
-  const platform = cache["servers"].find(
-    (s) => s.region.toUpperCase() === server.toUpperCase()
-  );
-  return platform ? platform.platform.toLowerCase() : undefined;
+  const platform = await findServerByName(server);
+  return platform?.toUpperCase();
 };
 
 export const getSummonerId = async (
@@ -42,7 +48,11 @@ export const getSummonerId = async (
   }
 
   try {
-    const platform = getPlatform(server);
+    const platform = await getRealm(server);
+    if (platform === undefined) {
+      return undefined;
+    }
+
     const summoner = await getSummonerByName(client, platform, ign);
     return summoner.data.id;
   } catch (err) {
@@ -59,7 +69,11 @@ const getAccountId = async (
   }
 
   try {
-    const platform = getPlatform(server);
+    const platform = await getRealm(server);
+    if (platform === undefined) {
+      return undefined;
+    }
+
     const summoner = await getSummonerByName(client, platform, ign);
     return summoner.data.accountId;
   } catch (err) {
@@ -72,18 +86,20 @@ export const updatechampions = async (msg: Discord.Message) => {
   const version = versions[0];
   const { data: champions } = await fetchChampions(client, version);
 
-  for (const champion of Object.values(champions.data)) {
-    const champ = {
-      id: champion.key,
-      name: champion.name,
-      title: champion.title,
-      img: `http://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champion.image.full}`,
-    };
-
+  const tasks = Object.values(champions.data).map(async (champion) => {
     try {
-      await upsertOne("vikbot", "champions", { id: champion.key }, champ);
+      await upsertOne(
+        "champions",
+        { id: champion.key },
+        {
+          id: champion.key,
+          name: champion.name,
+          title: champion.title,
+          img: `http://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champion.image.full}`,
+        }
+      );
     } catch {
-      msg.channel.send(
+      await msg.channel.send(
         createEmbed(`❌ Error updating champions`, [
           {
             title: "___",
@@ -92,9 +108,11 @@ export const updatechampions = async (msg: Discord.Message) => {
         ])
       );
     }
-  }
+  });
 
-  msg.channel.send(
+  await Promise.all(tasks);
+
+  await msg.channel.send(
     createEmbed("✅ Champions updated", [
       { title: "___", content: `Version; ${version[0]}` },
     ])
@@ -103,15 +121,12 @@ export const updatechampions = async (msg: Discord.Message) => {
 
 export const lastlane = async (msg: Discord.Message) => {
   msg.channel.startTyping();
-
-  const champions = cache["champions"];
   const { nickname, server } = extractNicknameAndServer(msg);
   const playerId = await getAccountId(nickname, server);
-  const platform = getPlatform(server);
-
+  const platform = await getRealm(server);
   if (!nickname || !server) return msg.channel.stopTyping();
   if (!playerId || !platform) {
-    msg.channel.send(
+    await msg.channel.send(
       createEmbed("❌ Incorrect nickname or server", [
         {
           title: "___",
@@ -158,16 +173,14 @@ export const lastlane = async (msg: Discord.Message) => {
       name: participant.player.summonerName,
     });
   });
-  lastGameData.data.participants.map((participant: any) => {
+  lastGameData.data.participants.map(async (participant) => {
     const i = players.findIndex(
-      (player: any) => player.gameId === participant.participantId
+      (player) => player.gameId === participant.participantId
     );
     players[i].win = participant.teamId === winningTeam;
     players[i].teamId = participant.teamId;
     players[i].championId = participant.championId;
-    players[i].champion = champions.find(
-      (champ) => champ.id == participant.championId
-    );
+    players[i].champion = await findChampion(participant.championId);
     players[i].summ1 = participant.spell1Id;
     players[i].summ2 = participant.spell2Id;
     players[i].fbkill = participant.stats.firstBloodKill;
@@ -175,15 +188,13 @@ export const lastlane = async (msg: Discord.Message) => {
     players[i].role = participant.timeline.role;
     players[i].lane = participant.timeline.lane;
   });
-  const ourPlayer = players.find((player: any) => player.id === playerId);
+  const ourPlayer = players.find((player) => player.id === playerId);
   const enemies = players.filter(
-    (player: any) =>
+    (player) =>
       player.lane === ourPlayer.lane && player.teamId !== ourPlayer.teamId
   );
-  const lane = cache["lanes"].find((lane: any) => lane.lane == ourPlayer.lane);
-  const queue = cache["queues"].find(
-    (queue: any) => queue.id == lastGameData.data.queueId
-  );
+  const lane = (await findLane(ourPlayer.lane))!;
+  const queue = (await findQueue(ourPlayer.queue))!;
 
   const embed = new Discord.RichEmbed()
     .setColor("FDC000")
@@ -217,23 +228,28 @@ export const lastlane = async (msg: Discord.Message) => {
 
     embed
       .setTitle(
-        `${
-          ourPlayer.champion ? ourPlayer.champion.name.toUpperCase() : "???"
-        } vs${enemies.map((enemy: any) =>
-          enemy.champion ? ` ${enemy.champion.name.toUpperCase()}` : "???"
-        )}`
+        sprintf(
+          "%s vs %s",
+          ourPlayer.champion?.name.toUpperCase() ?? "???",
+          enemies.map((e) => e.champion?.name.toUpperCase() ?? "???").join(" ")
+        )
       )
       .setDescription(
-        `**${ourPlayer.name}'s** ${
-          ourPlayer.champion ? ourPlayer.champion.name : "???"
-        } ${ourPlayer.win ? "wins" : "loses"} vs ${enemies.map(
-          (enemy: any) =>
-            ` **${enemy.name}'s** ${
-              enemy.champion ? enemy.champion.name : "???"
-            } `
-        )} in ${Math.round(
-          parseInt(lastGameData.data.gameDuration) / 60
-        )} minutes.`
+        sprintf(
+          "**%s's** %s %s vs %s in %d minutes",
+          ourPlayer.name,
+          ourPlayer.champion?.name.toUpperCase() ?? "???",
+          ourPlayer.win ? "wins" : "loses",
+          enemies
+            .map((e) => {
+              return sprintf(
+                "**%s's** %s",
+                e.champion?.name.toUpperCase() ?? "???"
+              );
+            })
+            .join(" "),
+          Math.round(parseInt(lastGameData.data.gameDuration) / 60)
+        )
       );
 
     relevantMinutes.map((minute: number) => {
@@ -314,7 +330,6 @@ export const lastlane = async (msg: Discord.Message) => {
       }
     });
   }
-
   msg.channel.stopTyping();
   msg.channel.send(embed);
 };
@@ -324,12 +339,14 @@ export const mastery = async (msg: Discord.Message) => {
   const selfRequest = !!!extractArguments(msg).length;
 
   if (selfRequest) {
-    const user = cache["users"].find(
-      (user) => user.discordId === msg.author.id
-    );
-    if (user && user.accounts && user.accounts.length !== 0) {
-      for (const account of user.accounts) {
-        const platform = getPlatform(account.server);
+    const user = await findUserByDiscordId(msg.author.id);
+    const accounts = user?.accounts ?? [];
+    if (accounts.length !== 0) {
+      for (const account of accounts) {
+        const platform = await getRealm(account.server);
+        if (platform === undefined) {
+          continue;
+        }
         const { data: summoner } = await getSummonerByAccountId(
           client,
           platform,
@@ -344,7 +361,9 @@ export const mastery = async (msg: Discord.Message) => {
           summoner
         );
       }
-    } else
+
+      return;
+    } else {
       msg.channel.send(
         createEmbed(
           `:information_source: You don't have any accounts registered`,
@@ -352,18 +371,23 @@ export const mastery = async (msg: Discord.Message) => {
             {
               title: "___",
               content: `To use this commands without arguments you have to register your League account first: \`\`!register <IGN> | <server>\`\`.
-                Otherwise, this command can be used as follows: \`\`!mastery IGN|server\`\`.`,
+                        Otherwise, this command can be used as follows: \`\`!mastery IGN|server\`\`.`,
             },
           ]
         )
       );
+    }
   } else {
     const { nickname, server } = extractNicknameAndServer(msg);
     if (nickname === undefined || server === undefined) {
       return;
     }
 
-    const platform = getPlatform(server);
+    const platform = await getRealm(server);
+    if (platform === undefined) {
+      return;
+    }
+
     const { data: summoner } = await getSummonerByName(
       client,
       platform,
@@ -373,6 +397,7 @@ export const mastery = async (msg: Discord.Message) => {
     aggregateMasteryData(msg, nickname, server, platform, summoner);
   }
 };
+
 const aggregateMasteryData = async (
   msg: Discord.Message,
   nickname: string,
@@ -380,26 +405,18 @@ const aggregateMasteryData = async (
   platform: string,
   summoner: Summoner
 ) => {
-  const champions = cache["champions"];
-  const topX = cache["options"].find(
-    (option) => option.option === "topMasteries"
-  )
-    ? cache["options"].find((option) => option.option === "topMasteries").value
-    : 3;
-  const masteryIcons = cache["options"].find(
-    (option) => option.option === "masteryIcons"
-  )
-    ? cache["options"].find((option) => option.option === "masteryIcons").value
-    : null;
+  const topX = (await findOption("topMasteries")) ?? 3;
+  const masteryIcons = (await findOption("masteryIcons")) ?? [];
   const masteryData = await fetchSummonerMasteries(client, platform, summoner);
   const masteryList = orderBy(
     masteryData.data,
     ["championPoints"],
     ["desc"]
   ).slice(0, topX);
-  const mostMasteryIcon = masteryList[0]
-    ? champions.find((ch) => ch.id == masteryList[0].championId).img
+  const mostMasteryChampion = masteryList[0]
+    ? await findChampion(masteryList[0].championId)
     : null;
+  const mostMasteryIcon = mostMasteryChampion?.img;
   const collectiveMasteryLevels = { level5: 0, level6: 0, level7: 0 };
   let collectiveMastery = 0;
   masteryData.data.map((d) => {
@@ -409,10 +426,13 @@ const aggregateMasteryData = async (
       : null;
   });
   let collectiveMasteryLevelsString = "";
-  for (let level in collectiveMasteryLevels)
-    collectiveMasteryLevelsString += `${
-      masteryIcons.find((mI) => level.indexOf(mI.mastery) !== -1).emote
-    } x${collectiveMasteryLevels[level]} `;
+  for (const level of Object.keys(collectiveMasteryLevels)) {
+    const icon = masteryIcons.find(
+      (mI) => level.indexOf(mI.mastery.toString()) !== -1
+    );
+    collectiveMasteryLevelsString += `${icon?.emote} x${collectiveMasteryLevels[level]} `;
+  }
+
   const embed = new Discord.RichEmbed()
     .setTitle(
       `Top ${topX} masteries - ${nickname.toUpperCase()} [${server.toUpperCase()}]`
@@ -421,11 +441,18 @@ const aggregateMasteryData = async (
       `${collectiveMasteryLevelsString}\n**Collective mastery**: ${collectiveMastery}`
     )
     .setTimestamp(new Date())
-    .setThumbnail(mostMasteryIcon)
-    .setFooter(`${msg.author.username}`)
-    .setColor("0xFDC000");
-  masteryList.map((mastery) => {
-    const champion = champions.find((ch) => ch.id == mastery.championId);
+    .setFooter(msg.author.username)
+    .setColor(0xfdc000);
+
+  if (mostMasteryIcon !== undefined) {
+    embed.setThumbnail(mostMasteryIcon);
+  }
+  const tasks = masteryList.map(async (mastery) => {
+    const champion = await findChampion(mastery.championId);
+    if (champion === undefined) {
+      return;
+    }
+
     const masteryIcon = masteryIcons.find(
       (mI) => mI.mastery === mastery.championLevel
     );
@@ -441,6 +468,9 @@ const aggregateMasteryData = async (
       false
     );
   });
+
+  await Promise.all(tasks);
+
   msg.channel.send(embed);
   msg.channel.stopTyping();
 };

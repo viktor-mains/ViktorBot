@@ -6,9 +6,9 @@ import emojiRegexText from 'emoji-regex/es2015/text.js';
 import { removeKeyword, toDDHHMMSS, createEmbed } from '../../helpers';
 import { chooseRandom } from '../../rng';
 import { log } from '../../log';
-import { cache } from '../../storage/cache';
 import BotGraph from '../../graphs';
 import config from '../../../config.json';
+import { findOption } from '../../storage/db';
 
 export const meow = async (msg:Discord.Message) => {
     msg.channel.startTyping();
@@ -70,46 +70,57 @@ export const rito = (msg:Discord.Message) => {
     `;
     msg.channel.send(rito);
 }
-export const gibeskin = async (msg:Discord.Message) => {
-    const skins = cache["options"].find(option => option.option === 'gibeskin')
-         ? cache["options"].find(option => option.option === 'gibeskin').value
-         : [{
-                key: "Creator",
-                value: 1380499200000,
-                viktor: true
-            },
-            {
-                key: "Death Sworn",
-                value: 1508889600000,
-                viktor: true
-            }
-        ]
-    const creatorDate = skins
-        .find(skin => skin.key === 'Creator').value;
-    const deathSwornDate = skins
-        .find(skin => skin.key === 'Death Sworn').value;
-    const graph = new BotGraph({ width: 500, height: 300 });
-    const graphAttachment = await graph.generate(skins);
-    const embed = new Discord.RichEmbed()
-        .setTitle('<:vikSalty:289489052212789250> Viktor skin')
-        .setTimestamp(new Date())
-        .setFooter('Powered by Glorious Evolution', 'https://cdn.discordapp.com/emojis/232941841815830536.png')
-        .setColor('0xFDC000')
-        .attachFile(graphAttachment)
-        .setImage('attachment://graph.png')
-        .addField(`\_\_\_`, 
-        `We have **4** skins, two of which (Prototype and Death Sworn) are legacy.\n\n`+
-        `His last skin is Death Sworn, which was released at ${new Date(deathSwornDate).toLocaleDateString()}. That's **${toDDHHMMSS(new Date(deathSwornDate))}** ago.\n\n`+
-        `Since some of us pretend that skin didn't happen, and also it's legacy for whatever reason, let's assume that his last skin was Creator. It was released at ${new Date(creatorDate).toLocaleDateString()}, what would make it exactly **${toDDHHMMSS(new Date(creatorDate))}** without a decent skin.\n\n`+
-        `And now have a nice graph comparing that with some Riot's poster children:` 
+export const gibeskin = async (msg: Discord.Message) => {
+  const opt = await findOption("gibeskin");
+  const skins = opt ?? [
+    {
+      key: "Creator",
+      value: 1380499200000,
+      viktor: true,
+    },
+    {
+      key: "Death Sworn",
+      value: 1508889600000,
+      viktor: true,
+    },
+  ];
+
+  const creatorDate = skins.find((skin) => skin.key === "Creator")!.value;
+  const deathSwornDate = skins.find((skin) => skin.key === "Death Sworn")!
+    .value;
+  const graph = new BotGraph({ width: 500, height: 300 });
+  const graphAttachment = await graph.generate(skins);
+  const embed = new Discord.RichEmbed()
+    .setTitle("<:vikSalty:289489052212789250> Viktor skin")
+    .setTimestamp(new Date())
+    .setFooter(
+      "Powered by Glorious Evolution",
+      "https://cdn.discordapp.com/emojis/232941841815830536.png"
     )
-    msg.channel.send(embed);
-}
+    .setColor("0xFDC000")
+    .attachFile(graphAttachment)
+    .setImage("attachment://graph.png")
+    .addField(
+      `\_\_\_`,
+      `We have **4** skins, two of which (Prototype and Death Sworn) are legacy.\n\n` +
+        `His last skin is Death Sworn, which was released at ${new Date(
+          deathSwornDate
+        ).toLocaleDateString()}. That's **${toDDHHMMSS(
+          new Date(deathSwornDate)
+        )}** ago.\n\n` +
+        `Since some of us pretend that skin didn't happen, and also it's legacy for whatever reason, let's assume that his last skin was Creator. It was released at ${new Date(
+          creatorDate
+        ).toLocaleDateString()}, what would make it exactly **${toDDHHMMSS(
+          new Date(creatorDate)
+        )}** without a decent skin.\n\n` +
+        `And now have a nice graph comparing that with some Riot's poster children:`
+    );
+  msg.channel.send(embed);
+};
+
 export const degen = async (msg:Discord.Message) => {
     msg.channel.startTyping();
-    const words = cache["options"].find(option => option.option === 'degen_words')
-        ? cache["options"].find(option => option.option === 'degen_words').value
-        : [];
+    const words = await findOption("degen_words") ?? [];
     const degeneracyPercentageDefault = 70;
     const limit = 30;
     const emojiMultiplier = 3;

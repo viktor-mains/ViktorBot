@@ -1,256 +1,232 @@
-import { MongoClient, Collection } from "mongodb";
-import { log } from "../log";
-import { cache } from "./cache";
+import { MongoClient, Db } from "mongodb";
+import assert from "assert";
+import type { User as DiscordUser, GuildMember, Guild } from "discord.js";
+import { IEmbed } from "../types/command";
 
-export const connectToDb = (dbObject: any) => {
-  const callback = (err, client) => {
-    if (err) log.WARN(`Error while connecting to database: ${err}`);
-    log.INFO(
-      `Succesfully connected to the ${dbObject.symbol.toUpperCase()} database!`
-    );
+const DB_NAME = "vikbot";
+let db: Db;
 
-    cache["dbs"][dbObject.symbol] = client.db(dbObject.symbol);
-    updateCache(dbObject.symbol);
-  };
-
-  MongoClient.connect(dbObject.url, callback);
+export const connectToDb = async (url: string) => {
+  const client = await MongoClient.connect(url);
+  db = client.db(DB_NAME);
 };
 
-export const updateCache = (dbSymbol: string) => {
-  cache["dbs"][dbSymbol].listCollections().toArray((err, collections) => {
-    collections.map((collection) => {
-      findCollection(cache["dbs"][dbSymbol], collection.name, (err, data) => {
-        err ? log.WARN(err) : (cache[collection.name] = data);
-      });
-    });
-  });
-};
-
-export const insertData = (dbSymbol: string, col, key, value, cb) => {
-  cache["dbs"][dbSymbol]
-    .collection(col)
-    .insertOne({ [key]: value }, (err, result) => {
-      if (err) {
-        log.WARN(`Error during inserting ${key.toUpperCase()} data.`);
-        return cb(err);
-      }
-      updateCache(dbSymbol);
-      log.INFO(
-        `Succesfully added data to ${dbSymbol.toUpperCase()}.${col.toUpperCase()} collection.`
-      );
-      return cb(null);
-    });
-};
-
-export const insertMany = (
-  dbSymbol: string,
-  collection: string,
-  manyObjects: Array<object>,
-  cb
-) => {
-  cache["dbs"][dbSymbol]
-    .collection(collection)
-    .insertMany(manyObjects, (err, result) => {
-      if (err) {
-        log.WARN(`Error during inserting data.`);
-        return cb(err);
-      }
-      updateCache(dbSymbol);
-      log.INFO(
-        `Succesfully added data to ${dbSymbol.toUpperCase()}.${collection.toUpperCase()} collection.`
-      );
-      return cb(null);
-    });
-};
-
-export const updateOne = (
-  dbSymbol: string,
-  collection: string,
-  filter: Object,
-  set: Object,
-  cb
-) => {
-  cache["dbs"][dbSymbol].collection(collection).updateOne(
-    filter,
-    { $set: set },
-    // { $unset: unset },
-    (err, result) => {
-      if (err) {
-        log.WARN(`Error during updating data.`);
-        return cb(err);
-      }
-      updateCache(dbSymbol);
-      log.INFO(
-        `Succesfully updated data in ${dbSymbol.toUpperCase()}.${collection.toUpperCase()} collection.`
-      );
-      return cb(null);
-    }
+export async function upsertOne<T>(name: string, filter: object, object: T) {
+  assert.ok(
+    db !== undefined,
+    "have not connected to the database - make sure connectToDb() is called at least once"
   );
-};
 
-export const updateMany = (
-  dbSymbol: string,
-  collection: string,
-  filter: Object,
-  set: Array<object>,
-  cb
-) => {
-  cache["dbs"][dbSymbol].collection(collection).updateMany(
-    filter,
-    { $set: set },
-    // { $unset: unset },
-    (err, result) => {
-      if (err) {
-        log.WARN(`Error during updating data.`);
-        return cb(err);
-      }
-      updateCache(dbSymbol);
-      log.INFO(
-        `Succesfully updated data in ${dbSymbol.toUpperCase()}.${collection.toUpperCase()} collection.`
-      );
-      return cb(null);
-    }
-  );
-};
-
-export const replaceOne = (
-  dbSymbol: string,
-  collection: string,
-  filter: Object,
-  replacement: Object,
-  cb
-) => {
-  cache["dbs"][dbSymbol]
-    .collection(collection)
-    .replaceOne(filter, replacement, { upsert: true }, (err, result) => {
-      if (err) {
-        log.WARN(`Error during replacing data.`);
-        return cb(err);
-      }
-      updateCache(dbSymbol);
-      log.INFO(
-        `Succesfully replaced data in ${dbSymbol.toUpperCase()}.${collection.toUpperCase()} collection.`
-      );
-      return cb(null);
-    });
-};
-
-export const replaceMany = (
-  dbSymbol: string,
-  collection: string,
-  filter: Object,
-  replacement: Array<object>,
-  cb
-) => {
-  cache["dbs"][dbSymbol]
-    .collection(collection)
-    .replaceMany(filter, replacement, { upsert: true }, (err, result) => {
-      if (err) {
-        log.WARN(`Error during replacing data.`);
-        return cb(err);
-      }
-      updateCache(dbSymbol);
-      log.INFO(
-        `Succesfully replaced data in ${dbSymbol.toUpperCase()}.${collection.toUpperCase()} collection.`
-      );
-      return cb(null);
-    });
-};
-
-export async function upsertOne<T>(
-  dbSymbol: string,
-  collection: string,
-  filter: object,
-  object: T,
-  cb?: (error: Error | null) => void
-) {
-  const c: Collection<T> = cache["dbs"][dbSymbol].collection(collection);
-  if (cb === undefined) {
-    await c.updateOne(filter, { $set: object }, { upsert: true });
-    updateCache(dbSymbol);
-  } else {
-    c.updateOne(filter, { $set: object }, { upsert: true }, (err) => {
-      if (err) {
-        return cb(err);
-      }
-
-      updateCache(dbSymbol);
-      return cb(null);
-    });
-  }
+  await db
+    .collection<T>(name)
+    .updateOne(filter, { $set: object }, { upsert: true });
 }
 
-export const upsertMany = (
-  dbSymbol: string,
-  collection: string,
-  filter: Object,
-  manyObjects: Array<object>,
-  cb
-) => {
-  cache["dbs"][dbSymbol]
-    .collection(collection)
-    .updateMany(
-      filter,
-      { $set: manyObjects },
-      { upsert: true },
-      (err, result) => {
-        if (err) {
-          log.WARN(`Error during upserting data.`);
-          return cb(err);
-        }
-        updateCache(dbSymbol);
-        log.INFO(
-          `Succesfully upserted data to ${dbSymbol.toUpperCase()}.${collection.toUpperCase()} collection.`
-        );
-        return cb(null);
-      }
-    );
-};
+export interface Account {
+  server: string;
+  id: string;
+  tier: string;
+  rank: string;
+  name: string;
+  opgg: string;
+  mastery: {
+    points: number;
+    chest: number;
+    level: number;
+    lastPlayed: number;
+  };
+}
 
-export const deleteOne = (
-  dbSymbol: string,
-  collection: string,
-  filter: Object,
-  cb
-) => {
-  cache["dbs"][dbSymbol]
-    .collection(collection)
-    .deleteOne(filter, (err, result) => {
-      if (err) {
-        log.WARN(`Error during deleting data.`);
-        return cb(err);
-      }
-      updateCache(dbSymbol);
-      log.INFO(
-        `Succesfully deleted data from ${dbSymbol.toUpperCase()}.${collection.toUpperCase()} collection.`
-      );
-      return cb(null);
-    });
-};
+export interface User {
+  id: string;
+  discordId: string;
+  updated: number;
+  punished: boolean;
+  description: string | undefined;
+  accounts: Account[];
+  membership: {
+    serverId: string;
+    messageCount: number;
+    joined: number;
+    firstMessage: number;
+  }[];
+}
 
-export const deleteMany = (
-  dbSymbol: string,
-  collection: string,
-  filter: Object,
-  cb
-) => {
-  cache["dbs"][dbSymbol]
-    .collection(collection)
-    .deleteMany(filter, (err, result) => {
-      if (err) {
-        log.WARN(`Error during deleting data.`);
-        return cb(err);
-      }
-      updateCache(dbSymbol);
-      log.INFO(
-        `Succesfully deleted data from ${dbSymbol.toUpperCase()}.${collection.toUpperCase()} collection.`
-      );
-      return cb(null);
-    });
-};
+export async function upsertUser(id: DiscordUser | GuildMember, user: User) {
+  await upsertOne("users", { discordId: id }, user);
+}
 
-const findCollection = (database, collection, cb) =>
-  database
-    .collection(collection)
-    .find({})
-    .toArray((err, data) => cb(err, data));
+export async function isKnownMember(member: GuildMember): Promise<boolean> {
+  return findUserByDiscordId(member.id) !== undefined;
+}
+
+export async function findUserByDiscordId(
+  id: string
+): Promise<User | undefined> {
+  return (await db.collection("users").findOne({ discordId: id })) ?? undefined;
+}
+
+export async function findAllGuildMembers(guild: Guild): Promise<User[]> {
+  const results = db.collection("users").find({
+    membership: {
+      $elemMatch: {
+        serverId: guild.id,
+      },
+    },
+  });
+
+  return await results.toArray();
+}
+
+interface Option<T> {
+  value: T;
+}
+
+interface Options {
+  description_punish: string[];
+  topMasteries: number;
+  masteryIcons: {
+    mastery: number;
+    emote: string;
+  }[];
+  assignableRoles: string[];
+  room_roles: {
+    id: string;
+    guild: string;
+  }[];
+  shutUpMod: string[];
+  shutUpUser: string[];
+
+  rankRoles: {
+    name: string;
+    rank: string;
+    weight: number;
+  }[];
+
+  modRoles: string[];
+  membershipRoles: {
+    name: string;
+  }[];
+
+  jokeRoles: string[];
+  topMembers: number;
+  gibeskin: {
+    key: string;
+    value: number;
+    viktor: boolean;
+  }[];
+  degen_words: string[];
+  maxAccounts: number;
+  room_log_msgs: {
+    guild: string;
+    id: string;
+  }[];
+  room_log_users: {
+    guild: string;
+    id: string;
+  }[];
+  room_global: string;
+  commandSymbol: string;
+}
+
+export async function findOption<K extends keyof Options>(
+  name: K
+): Promise<Options[K] | undefined> {
+  type T = Option<Options[K]>;
+  const opt = await db.collection("options").findOne<T>({ name });
+  return opt?.value;
+}
+
+export interface Command {
+  keyword: string;
+  isModOnly: boolean;
+  description?: string;
+  text?: string;
+  embed?: IEmbed;
+}
+
+export async function findModCommands(): Promise<Command[]> {
+  const r = db.collection("commands").find({
+    isModOnly: true,
+  });
+
+  return await r.toArray();
+}
+
+export async function findUserCommands(): Promise<Command[]> {
+  const r = db.collection("commands").find({
+    isModOnly: false,
+  });
+
+  return await r.toArray();
+}
+
+export async function findCommandByKeyword(
+  keyword: string
+): Promise<Command | undefined> {
+  const c = db.collection("commands");
+  return (await c.findOne({ keyword })) ?? undefined;
+}
+
+interface Lane {
+  lane: string;
+  icon: string;
+}
+
+export async function findLane(lane: string): Promise<Lane | undefined> {
+  const c = db.collection("lanes");
+  return (await c.findOne({ lane })) ?? undefined;
+}
+
+interface Queue {
+  queue: string;
+  map: string;
+}
+
+export async function findQueue(queue: string): Promise<Queue | undefined> {
+  const c = db.collection("queues");
+  return (await c.findOne({ queue })) ?? undefined;
+}
+
+interface Champion {
+  id: string;
+  img: string;
+  name: string;
+  title: string;
+}
+
+export async function findChampion(id: number): Promise<Champion | undefined> {
+  const c = db.collection("champions");
+  return (await c.findOne({ id })) ?? undefined;
+}
+
+interface Server {
+  region: string;
+  name: string;
+}
+
+export async function findServerByName(
+  name: string
+): Promise<string | undefined> {
+  const c = db.collection("servers");
+  return (await c.findOne({ region: name.toUpperCase() })) ?? undefined;
+}
+
+export interface Reaction {
+  id: string;
+  keywords: string[];
+}
+
+export async function findReactionsById(id: string): Promise<Reaction[]> {
+  return await db.collection("reactions").find({ id }).toArray();
+}
+
+export async function findReactionsInMessage(msg: string): Promise<Reaction[]> {
+  const content = msg.toLowerCase();
+  // This could probably be much quicker with a lookup table - it will slow down quite a bit as more reactions get added
+  const reactions = await db.collection("reactions").find({}).toArray();
+  return reactions.filter((r: Reaction) => {
+    const words = r.keywords.filter((keyword) => content.includes(keyword));
+    return words.length > 0;
+  });
+}
