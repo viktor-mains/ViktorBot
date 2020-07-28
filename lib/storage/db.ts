@@ -232,6 +232,7 @@ export async function findAllReactionsInMessage(msg: string): Promise<Reaction[]
   const reactions = await db.collection("reactions").find({}).toArray();
   return reactions.filter((r: Reaction) => {
     const words = r.keywords.filter((keyword) => content.includes(keyword));
+    // all of the keywords must be present in the sentence at once
     return words.length === r.keywords.length;
   });
 }
