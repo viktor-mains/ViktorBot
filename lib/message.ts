@@ -8,7 +8,7 @@ import { Command } from './commands/list';
 import { IReactionDetails } from './types/reaction';
 
 import dearViktor from '../data/global/dearviktor.json';
-import { findCommandByKeyword, findReactionsById, findReactionsInMessage } from './storage/db';
+import { findCommandByKeyword, findReactionsById, findAllReactionsInMessage } from './storage/db';
 
 // LOGIC
 
@@ -67,18 +67,19 @@ const answerCommand = async (msg:Discord.Message) => {
 const checkForReactionTriggers = async (msg:Discord.Message) => {
     const reactions = isMessageRant(msg)
       ? await findReactionsById("rant")
-      : await findReactionsInMessage(msg.content);
+      : await findAllReactionsInMessage(msg.content);
     if (reactions.length === 0) {
         return;
     }
 
-    const chosenTrigger = chooseRandom(reactions);
-    const chosenReaction = chosenTrigger.reaction_list.find((reaction:IReactionDetails) => happensWithAChanceOf(reaction.chance));
-    if (chosenReaction) {
-        chosenReaction.emoji && msg.react(chosenReaction.emoji);
-        chosenReaction.response && msg.channel.send(chosenReaction.response);
-        chosenReaction.function && Reaction[chosenReaction.function] && Reaction[chosenReaction.function](msg);
-    }
+    reactions.map(reaction => {
+        const chosenReaction = reaction.reaction_list.find((reaction:IReactionDetails) => happensWithAChanceOf(reaction.chance));
+        if (chosenReaction) {
+            chosenReaction.emoji && msg.react(chosenReaction.emoji);
+            chosenReaction.response && msg.channel.send(chosenReaction.response);
+            chosenReaction.function && Reaction[chosenReaction.function] && Reaction[chosenReaction.function](msg);
+        }
+    });
 };
 
 // MAIN FUNCTION

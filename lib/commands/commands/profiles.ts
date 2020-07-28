@@ -429,7 +429,9 @@ export const update = async (msg:Discord.Message) => {
 export const topmembers = async (msg:Discord.Message) => {
     const count = await findOption("topMembers") ?? 10;
     const guildMembers = await findAllGuildMembers(msg.guild);
-    const counts = guildMembers.map((user) => {
+    const counts = guildMembers
+      .filter(user => msg.guild.members.find(m => m.id === user.discordId))
+      .map((user) => {
         const membership = user.membership.find(m => m.serverId === msg.guild.id);
         return {
             id: user.discordId,
@@ -439,9 +441,14 @@ export const topmembers = async (msg:Discord.Message) => {
 
     const sorted = orderBy(counts, ['messageCount'], ['desc']);
     let content = '';
-    sorted.map((member, index) => index < count
-        ? content += `\`\`#${justifyToLeft((index+1).toString(), 2)} - ${justifyToRight(member.messageCount.toString(), 6)} msg\`\` - ${msg.guild.members.find(m => m.id === member.id).user.username}\n`
-        : {})
+    sorted.map((member, index) => {
+      if (index < count && sorted[index]) {
+        const justifiedPosition = justifyToLeft((index+1).toString(), 2);
+        const justifiedMsgCount = justifyToRight(member.messageCount.toString(), 6);
+        const username = msg.guild.members.find(m => m.id === member.id).user.username;
+        content += `\`\`#${justifiedPosition} - ${justifiedMsgCount} msg\`\` - ${username}\n`;
+      }
+    })
     const embed = createEmbed(`🏆 Top ${count} members`, [{ title: '\_\_\_', content }])
     msg.channel.send(embed);
 }
@@ -514,7 +521,7 @@ export const register = async (msg: Discord.Message) => {
             verifyCode(nickname, server, uuid, msg);
           else {
             log.INFO(
-              `user ${msg.author.username} timeouted while registering ${nickname} [${server}]`
+              `user ${msg.author.username} aborted registering ${nickname} [${server}]`
             );
             msg.author.send(
               createEmbed(`:information_source: Profile registering aborted`, [

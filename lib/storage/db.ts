@@ -219,18 +219,19 @@ export async function findServerByName(
 export interface Reaction {
   id: string;
   keywords: string[];
+  reaction_list: any[];
 }
 
 export async function findReactionsById(id: string): Promise<Reaction[]> {
   return await db.collection("reactions").find({ id }).toArray();
 }
 
-export async function findReactionsInMessage(msg: string): Promise<Reaction[]> {
-  const content = msg.toLowerCase();
+export async function findAllReactionsInMessage(msg: string): Promise<Reaction[]> {
+  const content = msg.toLowerCase().split(" ");
   // This could probably be much quicker with a lookup table - it will slow down quite a bit as more reactions get added
   const reactions = await db.collection("reactions").find({}).toArray();
   return reactions.filter((r: Reaction) => {
     const words = r.keywords.filter((keyword) => content.includes(keyword));
-    return words.length > 0;
+    return words.length === r.keywords.length;
   });
 }

@@ -132,7 +132,7 @@ export const punish = async (msg: Discord.Message) => {
     );
   }
   msg.channel.stopTyping();
-  await upsertUser(member, member);
+  await upsertUser(msg.author.id, member);
 };
 
 export const msgupdate = (msg: Discord.Message) => {

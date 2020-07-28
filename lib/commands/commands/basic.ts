@@ -25,8 +25,10 @@ export const help = async (msg: Discord.Message) => {
     const title = `Category ${category.toUpperCase()}`;
     let content = "";
     commands[category].map(
-      (command: Command) =>
-        (content += `- **${sym}${command.keyword}** - ${command.description}\n`)
+      (command: Command) => {
+        if (command.description)
+          content += `- **${sym}${command.keyword}** - ${command.description}\n`;
+      }
     );
     fields.push({ title, content });
   }
