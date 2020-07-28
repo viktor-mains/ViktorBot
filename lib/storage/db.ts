@@ -16,7 +16,6 @@ export async function upsertOne<T>(name: string, filter: object, object: T) {
     db !== undefined,
     "have not connected to the database - make sure connectToDb() is called at least once"
   );
-
   await db
     .collection<T>(name)
     .updateOne(filter, { $set: object }, { upsert: true });
@@ -52,7 +51,8 @@ export interface User {
   }[];
 }
 
-export async function upsertUser(id: DiscordUser | GuildMember, user: User) {
+export async function upsertUser(id: string, user: User) {
+  // TODO this throws cyclic dependency error - FIX IT!
   await upsertOne("users", { discordId: id }, user);
 }
 
@@ -63,7 +63,8 @@ export async function isKnownMember(member: GuildMember): Promise<boolean> {
 export async function findUserByDiscordId(
   id: string
 ): Promise<User | undefined> {
-  return (await db.collection("users").findOne({ discordId: id })) ?? undefined;
+  const user = await db.collection("users").findOne({ discordId: id });
+  return user;
 }
 
 export async function findAllGuildMembers(guild: Guild): Promise<User[]> {
@@ -133,7 +134,7 @@ export async function findOption<K extends keyof Options>(
   name: K
 ): Promise<Options[K] | undefined> {
   type T = Option<Options[K]>;
-  const opt = await db.collection("options").findOne<T>({ name });
+  const opt = await db.collection("options").findOne<T>({ option: name });
   return opt?.value;
 }
 
@@ -206,10 +207,13 @@ interface Server {
 }
 
 export async function findServerByName(
-  name: string
-): Promise<string | undefined> {
+  name?: string
+): Promise<{ region: string, platform: string, host: string }> {
   const c = db.collection("servers");
-  return (await c.findOne({ region: name.toUpperCase() })) ?? undefined;
+  const def = { host: undefined, platform: undefined, region: undefined };
+  const region = await c.findOne({ region: name?.toUpperCase() }) 
+    ?? def;
+  return region;
 }
 
 export interface Reaction {

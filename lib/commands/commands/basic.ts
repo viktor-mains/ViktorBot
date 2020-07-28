@@ -17,11 +17,11 @@ export const opgg = (msg:Discord.Message) => {
 
 export const help = async (msg: Discord.Message) => {
   let fields = new Array<TField>();
-  const commands = await findUserCommands();
-  const split = splitArrayByObjectKey(commands, "category");
+  const commandsAll = await findUserCommands();
+  const commands = splitArrayByObjectKey(commandsAll, "category");
 
   const sym = await getCommandSymbol()!;
-  for (let category in split) {
+  for (let category in commands) {
     const title = `Category ${category.toUpperCase()}`;
     let content = "";
     commands[category].map(
@@ -50,11 +50,11 @@ export const help = async (msg: Discord.Message) => {
 
 export const hmod = async (msg: Discord.Message) => {
   let fields = new Array<TField>();
-  const commands = await findModCommands();
-  const split = splitArrayByObjectKey(commands, "category");
+  const commandsAll = await findModCommands();
+  const commands = splitArrayByObjectKey(commandsAll, "category");
 
   const sym = await getCommandSymbol()!;
-  for (let category in split) {
+  for (let category in commands) {
     const title = `Category ${category.toUpperCase()}`;
     let content = "";
     commands[category].map(

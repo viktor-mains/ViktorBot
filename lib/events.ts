@@ -88,7 +88,7 @@ export const userJoin = async (member:Discord.GuildMember) => {
     if (member.user.bot)
         return;
     if (!isKnownMember(member)) {
-        await upsertUser(member, initData(member));
+        await upsertUser(member.id, initData(member));
     } else {
         handleUserNotInDatabase(member);
     }
@@ -172,7 +172,7 @@ export const handleUserNotInDatabase = async (member:Discord.GuildMember, msg?:D
                     memberInDataBase.membership[memberIndex].joined = Date.now();
                 if (memberInDataBase.membership[memberIndex].firstMessage === 0) 
                     memberInDataBase.membership[memberIndex].firstMessage = Date.now();
-                await upsertUser(member, memberInDataBase);
+                await upsertUser(member.id, memberInDataBase);
         }
         else { // user is in database but not in the server
             const serverData = {
@@ -186,7 +186,7 @@ export const handleUserNotInDatabase = async (member:Discord.GuildMember, msg?:D
                     : 0
             }
             memberInDataBase.membership.push(serverData);
-            await upsertUser(member, memberInDataBase);
+            await upsertUser(member.id, memberInDataBase);
         }
     }
 
@@ -221,7 +221,7 @@ export const handlePossibleMembershipRole = async (msg:Discord.Message) => {
         .filter(role => 
             role.requirement.messages <= memberMsgCount 
             && role.requirement.time <= Date.now() - memberJoinDate)
-        .filter((role, index) => role.persistent || index === 0) //only persistent roles and one with highest weight
+        .filter((role, index) => role.persistent || index === 0) // only persistent roles and one with highest weight
     membershipRoles.map(mR => {
         if (neededRoles.find(nR => nR.name === mR.name) 
             && !msg.member.roles.some(r => r.name === mR.name)

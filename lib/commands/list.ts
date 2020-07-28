@@ -16,7 +16,6 @@ import { meow, woof, rito, choose, gibeskin, degen } from "./commands/fun";
 import {
   status,
   impersonate,
-  refresh,
   punish,
   msgupdate,
   guilds,
@@ -69,8 +68,6 @@ export const Command: {
     new CustomCommand(command, msg).execute(status, msg),
   impersonate: (command: ICommand, msg: Discord.Message) =>
     new CustomCommand(command, msg).execute(impersonate, msg),
-  refresh: (command: ICommand, msg: Discord.Message) =>
-    new CustomCommand(command, msg).execute(refresh, msg),
   punish: (command: ICommand, msg: Discord.Message) =>
     new CustomCommand(command, msg).execute(punish, msg),
   msgupdate: (command: ICommand, msg: Discord.Message) =>

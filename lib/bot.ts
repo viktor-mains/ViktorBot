@@ -1,6 +1,7 @@
 import { Client, TextChannel, User } from "discord.js";
 import { msgEdit, msgDelete, userJoin, userLeave, botJoin } from "./events";
 import { classifyMessage } from "./message";
+import { log } from './log';
 
 // Mutable module state sucks, but this is the easiest way to migrate what we already have
 let bot: Client;
@@ -14,16 +15,16 @@ export async function initialize(token: string) {
   bot.on("guildMemberAdd", userJoin);
   bot.on("guildMemberRemove", userLeave);
   await bot.login(token);
+  log.INFO('Viktor Bot starts working.')
 }
 
 export function findTextChannel(
   id: string | undefined
 ): TextChannel | undefined {
-  const ch = id ? bot?.channels.get(id) : undefined;
+  const ch = id ? bot?.channels.get(id) : undefined; // TODO this is always undefined
   if (ch === undefined || ch instanceof TextChannel === false) {
     return undefined;
   }
-
   return ch as TextChannel;
 }
 

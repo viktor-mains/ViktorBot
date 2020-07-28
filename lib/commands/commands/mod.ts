@@ -49,10 +49,6 @@ export const impersonate = (msg: Discord.Message) => {
   });
 };
 
-export const refresh = (msg: Discord.Message) => {
-  return msg.react("✔️");
-};
-
 export const punish = async (msg: Discord.Message) => {
   msg.channel.startTyping();
   const mentions = [...msg.mentions.users.values()];

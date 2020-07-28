@@ -1,6 +1,5 @@
 import Discord from "discord.js";
 import { orderBy } from "lodash";
-import config from "../../../config.json";
 import {
   upsertOne,
   findUserByDiscordId,
@@ -16,7 +15,7 @@ import {
   extractArguments,
 } from "../../helpers";
 import {
-  RiotClient,
+  client,
   fetchChampions,
   fetchVersions,
   fetchRecentGames,
@@ -29,14 +28,14 @@ import {
 } from "../../riot";
 import { format as sprintf } from "util";
 
-const client = new RiotClient(config.RIOT_API_TOKEN);
+export const getPlatform = async (server?: string) => {
+  const { platform } = await findServerByName(server);
+  return platform;
+};
 
-export const getRealm = async (server: string | undefined) => {
-  if (!server) {
-    return undefined;
-  }
-  const platform = await findServerByName(server);
-  return platform?.toUpperCase();
+export const getHost = async (server?: string) => {
+  const { host } = await findServerByName(server);
+  return `https://${host}`;
 };
 
 export const getSummonerId = async (
@@ -48,12 +47,12 @@ export const getSummonerId = async (
   }
 
   try {
-    const platform = await getRealm(server);
-    if (platform === undefined) {
+    const host = await getHost(server);
+    if (host === undefined) {
       return undefined;
     }
 
-    const summoner = await getSummonerByName(client, platform, ign);
+    const summoner = await getSummonerByName(client, host, ign);
     return summoner.data.id;
   } catch (err) {
     return undefined;
@@ -69,12 +68,12 @@ const getAccountId = async (
   }
 
   try {
-    const platform = await getRealm(server);
-    if (platform === undefined) {
+    const host = await getHost(server);
+    if (host === undefined) {
       return undefined;
     }
 
-    const summoner = await getSummonerByName(client, platform, ign);
+    const summoner = await getSummonerByName(client, host, ign);
     return summoner.data.accountId;
   } catch (err) {
     return undefined;
@@ -114,7 +113,7 @@ export const updatechampions = async (msg: Discord.Message) => {
 
   await msg.channel.send(
     createEmbed("✅ Champions updated", [
-      { title: "___", content: `Version; ${version[0]}` },
+      { title: "___", content: `Version: ${version}` },
     ])
   );
 };
@@ -123,9 +122,9 @@ export const lastlane = async (msg: Discord.Message) => {
   msg.channel.startTyping();
   const { nickname, server } = extractNicknameAndServer(msg);
   const playerId = await getAccountId(nickname, server);
-  const platform = await getRealm(server);
+  const host = await getHost(server);
   if (!nickname || !server) return msg.channel.stopTyping();
-  if (!playerId || !platform) {
+  if (!playerId || !host) {
     await msg.channel.send(
       createEmbed("❌ Incorrect nickname or server", [
         {
@@ -138,7 +137,7 @@ export const lastlane = async (msg: Discord.Message) => {
     return;
   }
 
-  const recentGames = await fetchRecentGames(client, platform, playerId);
+  const recentGames = await fetchRecentGames(client, host, playerId);
   if (recentGames.data.matches.length === 0) {
     // No known recent games?
     msg.channel.send(
@@ -156,8 +155,8 @@ export const lastlane = async (msg: Discord.Message) => {
   const matchBaseData = recentGames.data.matches[0];
   const matchId = matchBaseData.gameId;
   const [lastGameData, lastGameTimeline] = await Promise.all([
-    fetchMatchInfo(client, platform, matchId),
-    fetchMatchTimeline(client, platform, matchId),
+    fetchMatchInfo(client, host, matchId),
+    fetchMatchTimeline(client, host, matchId),
   ]);
 
   let players: any = [];
@@ -343,13 +342,14 @@ export const mastery = async (msg: Discord.Message) => {
     const accounts = user?.accounts ?? [];
     if (accounts.length !== 0) {
       for (const account of accounts) {
-        const platform = await getRealm(account.server);
-        if (platform === undefined) {
+        const platform = await getPlatform(account.server);
+        const host = await getHost(account.server);
+        if (!platform || !!host) {
           continue;
         }
         const { data: summoner } = await getSummonerByAccountId(
           client,
-          platform,
+          host,
           account.id
         );
 
@@ -383,18 +383,18 @@ export const mastery = async (msg: Discord.Message) => {
       return;
     }
 
-    const platform = await getRealm(server);
-    if (platform === undefined) {
+    const host = await getHost(server);
+    if (host === undefined) {
       return;
     }
 
     const { data: summoner } = await getSummonerByName(
       client,
-      platform,
+      host,
       nickname
     );
 
-    aggregateMasteryData(msg, nickname, server, platform, summoner);
+    aggregateMasteryData(msg, nickname, server, host, summoner);
   }
 };
 
@@ -402,12 +402,12 @@ const aggregateMasteryData = async (
   msg: Discord.Message,
   nickname: string,
   server: string,
-  platform: string,
+  host: string,
   summoner: Summoner
 ) => {
   const topX = (await findOption("topMasteries")) ?? 3;
   const masteryIcons = (await findOption("masteryIcons")) ?? [];
-  const masteryData = await fetchSummonerMasteries(client, platform, summoner);
+  const masteryData = await fetchSummonerMasteries(client, host, summoner);
   const masteryList = orderBy(
     masteryData.data,
     ["championPoints"],

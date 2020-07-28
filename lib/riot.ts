@@ -1,5 +1,6 @@
 import { format as sprintf } from "util";
 import { Request, default as fetch } from "node-fetch";
+import config from "../config.json";
 
 export class RiotClient {
   #token: string;
@@ -8,17 +9,17 @@ export class RiotClient {
     this.#token = token;
   }
 
-  async fetch<T = unknown>(
-    platform: string,
-    path: string,
-    ...params: any[]
-  ): Promise<Response<T>> {
-    const pathWithParams = sprintf(path, params.map(encodeURIComponent));
-    const uri = new URL(pathWithParams, platform);
+    async fetch<T = unknown>(
+      host: string,
+      path: string,
+      ...params: any[]
+    ): Promise<Response<T>> {
+    const pathWithParams = sprintf(path, ...params.map(encodeURIComponent));
+    const uri = new URL(pathWithParams, host);
     const request = new Request(uri.href, {
       method: "GET",
       headers: [
-        ["X-Riot-API-Token", this.#token],
+        ["X-Riot-Token", this.#token],
         ["Accept", "application/json"],
       ],
     });
@@ -27,7 +28,7 @@ export class RiotClient {
 
     if (!response.ok) {
       // TODO: we need better error handling than this
-      throw new Error("unknown API error");
+      throw new Error(`API error: ${response.status} - ${uri.href}`);
     }
 
     return {
@@ -37,13 +38,15 @@ export class RiotClient {
   }
 }
 
+export const client = new RiotClient(config.RIOT_API_TOKEN);
+
 interface Response<T> {
   data: T;
   etag: string | null;
 }
 
 export async function fetchVersions(client: RiotClient) {
-  return client.fetch<string[]>("ddragon.leagueoflegends.com", "/api/versions.json");
+  return client.fetch<string[]>("http://ddragon.leagueoflegends.com", "/api/versions.json");
 }
 
 interface ChampionList {
@@ -60,7 +63,7 @@ interface ChampionList {
 }
 export async function fetchChampions(client: RiotClient, version: string) {
   return client.fetch<ChampionList>(
-    "ddragon.leagueoflegends.com",
+    "http://ddragon.leagueoflegends.com",
     "/cdn/%s/data/en_US/championFull.json",
     version
   );
@@ -77,11 +80,11 @@ interface MatchReference {
 
 export async function fetchRecentGames(
   client: RiotClient,
-  platform: string,
+  host: string,
   playerID: string
 ) {
   return client.fetch<MatchList>(
-    platform,
+    host,
     "/lol/match/v4/matchlists/by-account/%s",
     playerID
   );
@@ -120,10 +123,10 @@ interface Match {
 
 export async function fetchMatchInfo(
   client: RiotClient,
-  platform: string,
+  host: string,
   matchID: string
 ) {
-  return client.fetch<Match>(platform, "/lol/match/v4/matches/%s", matchID);
+  return client.fetch<Match>(host, "/lol/match/v4/matches/%s", matchID);
 }
 
 interface Timeline {
@@ -142,11 +145,11 @@ interface Timeline {
 
 export async function fetchMatchTimeline(
   client: RiotClient,
-  platform: string,
+  host: string,
   matchID: string
 ) {
   return client.fetch<Timeline>(
-    platform,
+    host,
     "/lol/match/v4/timelines/by-match/%s",
     matchID
   );
@@ -162,11 +165,11 @@ interface MasteryLevel {
 
 export function fetchSummonerMasteries(
   client: RiotClient,
-  platform: string,
+  host: string,
   summoner: Summoner
 ) {
   return client.fetch<MasteryLevel[]>(
-    platform,
+    host,
     "/lol/champion-mastery/v4/champion-masteries/by-summoner/%s",
     summoner.id
   );
@@ -180,11 +183,11 @@ export interface Summoner {
 
 export function getSummonerByName(
   client: RiotClient,
-  platform: string,
+  host: string,
   name: string
 ) {
   return client.fetch<Summoner>(
-    platform,
+    host,
     "/lol/summoner/v4/summoners/by-name/%s",
     name
   );
@@ -192,12 +195,25 @@ export function getSummonerByName(
 
 export function getSummonerByAccountId(
   client: RiotClient,
-  platform: string,
+  host: string,
   accountId: string
 ) {
+  console.log(accountId);
   return client.fetch<Summoner>(
-    platform,
+    host,
     "/lol/summoner/v4/summoners/by-account/%s",
     accountId
+  );
+}
+
+export function getSummonerBySummonerId(
+  client: RiotClient,
+  host: string,
+  name: string
+) {
+  return client.fetch<Summoner>(
+    host,
+    "/lol/summoner/v4/summoners/%s",
+    name
   );
 }
