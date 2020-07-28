@@ -21,7 +21,7 @@ export async function initialize(token: string) {
 export function findTextChannel(
   id: string | undefined
 ): TextChannel | undefined {
-  const ch = id ? bot?.channels.get(id) : undefined; // TODO this is always undefined
+  const ch = id ? bot?.channels.get(id) : undefined;
   if (ch === undefined || ch instanceof TextChannel === false) {
     return undefined;
   }
