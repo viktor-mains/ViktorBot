@@ -49,10 +49,6 @@ export const impersonate = (msg: Discord.Message) => {
   });
 };
 
-export const refresh = (msg: Discord.Message) => {
-  return msg.react("✔️");
-};
-
 export const punish = async (msg: Discord.Message) => {
   msg.channel.startTyping();
   const mentions = [...msg.mentions.users.values()];
@@ -136,7 +132,7 @@ export const punish = async (msg: Discord.Message) => {
     );
   }
   msg.channel.stopTyping();
-  await upsertUser(member, member);
+  await upsertUser(msg.author.id, member);
 };
 
 export const msgupdate = (msg: Discord.Message) => {

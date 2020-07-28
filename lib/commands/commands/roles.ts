@@ -115,8 +115,7 @@ export const iam = async (msg:Discord.Message) => {
     msg.member.addRole(returnRoleID(roleName, member))
         .then(success => msg.channel.send(`Role **[${roleName.toUpperCase()}]** assigned to ${member.user.username} with utmost efficiency.`))
         .catch(error => {
-            msg.channel.send(`Failed to assign the **[${roleName.toUpperCase()}]** role.`);
-            console.log(error);
+            msg.channel.send(`Failed to assign the **[${roleName.toUpperCase()}]** role. \nReason: ${error.message}`);
         });
     return;
 }

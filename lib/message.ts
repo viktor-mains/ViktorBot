@@ -8,7 +8,7 @@ import { Command } from './commands/list';
 import { IReactionDetails } from './types/reaction';
 
 import dearViktor from '../data/global/dearviktor.json';
-import { findCommandByKeyword, findReactionsById, findReactionsInMessage } from './storage/db';
+import { findCommandByKeyword, findReactionsById, findAllReactionsInMessage } from './storage/db';
 
 // LOGIC
 
@@ -18,7 +18,7 @@ const isUserBot = (msg:Discord.Message) => msg.author.bot;
 const isUserArcy = (msg:Discord.Message) => msg.author.id === '165962236009906176';
 const messageStartsWithCommandSymbol = async (msg:Discord.Message) => {
     const sym = await getCommandSymbol();
-    return sym !== undefined && msg.content.startsWith(sym);
+    return sym !== undefined && msg.content.startsWith(sym);;
 }
 
 const isMessageRant = (msg:Discord.Message) => msg.content === msg.content.toUpperCase() && msg.content.length > 20;
@@ -44,7 +44,7 @@ const answerCommand = async (msg:Discord.Message) => {
     const command = await findCommandByKeyword(getKeyword(msg));
     if (command === undefined) {
         await msg.react(':questionmark:244535324737273857');
-       return
+        return;
     }
 
     if (command.text !== undefined) {
@@ -67,19 +67,19 @@ const answerCommand = async (msg:Discord.Message) => {
 const checkForReactionTriggers = async (msg:Discord.Message) => {
     const reactions = isMessageRant(msg)
       ? await findReactionsById("rant")
-      : await findReactionsInMessage(msg.content);
-  
+      : await findAllReactionsInMessage(msg.content);
     if (reactions.length === 0) {
         return;
     }
 
-    const chosenTrigger = chooseRandom(reactions);
-    const chosenReaction = chosenTrigger.reaction_list.find((reaction:IReactionDetails) => happensWithAChanceOf(reaction.chance));
-    if (chosenReaction) {
-        chosenReaction.emoji && msg.react(chosenReaction.emoji);
-        chosenReaction.response && msg.channel.send(chosenReaction.response);
-        chosenReaction.function && Reaction[chosenReaction.function] && Reaction[chosenReaction.function](msg);
-    }
+    reactions.map(reaction => {
+        const chosenReaction = reaction.reaction_list.find((reaction:IReactionDetails) => happensWithAChanceOf(reaction.chance));
+        if (chosenReaction) {
+            chosenReaction.emoji && msg.react(chosenReaction.emoji);
+            chosenReaction.response && msg.channel.send(chosenReaction.response);
+            chosenReaction.function && Reaction[chosenReaction.function] && Reaction[chosenReaction.function](msg);
+        }
+    });
 };
 
 // MAIN FUNCTION
@@ -93,9 +93,9 @@ const classifyMessage = async (msg:Discord.Message) => {
         return;
     }
 
-    handleUserNotInDatabase(msg.member, msg);
-    handlePossibleMembershipRole(msg);
-
+    await handleUserNotInDatabase(msg.member, msg);
+    await handlePossibleMembershipRole(msg);
+    
     if (isMessageDearViktor(msg)) {
         answerDearViktor(msg);
         return;
@@ -104,7 +104,7 @@ const classifyMessage = async (msg:Discord.Message) => {
         answerDearVictor(msg);
         return;
     }
-    if (messageStartsWithCommandSymbol(msg)) {
+    if (await messageStartsWithCommandSymbol(msg)) {
         answerCommand(msg);
         return;
     }

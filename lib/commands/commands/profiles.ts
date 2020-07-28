@@ -6,7 +6,8 @@ import { log } from '../../log';
 import { initData, descriptionChange } from '../../events';
 import { upsertUser, findUserByDiscordId, findAllGuildMembers, findOption } from '../../storage/db';
 import { extractNicknameAndServer, createEmbed, removeKeyword, justifyToRight, justifyToLeft, replaceAll, modifyInput, extractArguments, toMMSS } from '../../helpers';
-import { getSummonerId, getRealm } from './riot';
+import { getSummonerId, getPlatform, getHost } from './riot';
+import { client, getSummonerBySummonerId } from '../../riot';
 import config from '../../../config.json';
 import { format as sprintf } from 'util'
 import { isBotUser } from '../../bot';
@@ -16,7 +17,7 @@ const timeout = 900000;
 const verifyCode = async (nickname:string, server:string, uuid:string, msg:Discord.Message ) => {
     msg.channel.startTyping();
     const playerId = await getSummonerId(nickname, server);
-    const realm = await getRealm(server);
+    const realm = await getPlatform(server);
     const url = `https://${realm}.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
     const continueVerifying = async (verificationCode) => {
         if (!verificationCode) {
@@ -73,7 +74,7 @@ const verifyCode = async (nickname:string, server:string, uuid:string, msg:Disco
         }
         updateRankRoles(msg, userData);
         try {
-          await upsertUser(msg.author, userData as any);
+          await upsertUser(msg.author.id, userData as any);
           await msg.author.send(
             createEmbed(`✅ Profile verified succesfully`, [
               {
@@ -112,6 +113,7 @@ const updateRankRoles = async (msg:Discord.Message, userData) => {
     let highestTier = 'UNRANKED';
 
     userData["accounts"].map(account => {
+      console.log(account)
         const rW = ranksWeighted.find(rankWeighted => rankWeighted.rank.toLowerCase() === account.tier.toLowerCase())!
         const rHT = ranksWeighted.find(rankWeighted => rankWeighted.rank.toLowerCase() === highestTier.toLowerCase())!
         if (rW.weight < rHT.weight)
@@ -131,7 +133,7 @@ const updateRankRoles = async (msg:Discord.Message, userData) => {
 
 const getTierAndDivision = async (msg:Discord.Message, nickname:string, server:string, _playerId?:any) => {
     const playerId = _playerId ? _playerId : await getSummonerId(nickname, server);
-    const realm = await getRealm(server);
+    const realm = await getPlatform(server);
     const url = `https://${realm}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
     const userLeagues:any = await axios(url)
         .catch(err => {
@@ -153,7 +155,7 @@ const getTierAndDivision = async (msg:Discord.Message, nickname:string, server:s
 
 const getMastery = async (msg:Discord.Message, nickname:string, server:string, _playerId?:any) => {
     const playerId = _playerId ? _playerId : await getSummonerId(nickname, server);
-    const realm = await getRealm(server);
+    const realm = await getPlatform(server);
     const url = `https://${realm}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${playerId}/by-champion/112?api_key=${config.RIOT_API_TOKEN}`;
     const userMastery:any = await axios(url)
         .catch(err => {
@@ -236,23 +238,31 @@ export const profile = async (msg:Discord.Message) => {
         .setTimestamp(new Date(userData.updated).toLocaleString())
         .setTitle(`:information_source: ${user.username}'s profile`);
 
-    for (const account of sorted) {
-      const {
-        name,
-        server,
-        rank, 
-        tier = "UNKNOWN",
-        opgg = `https://${server}.op.gg/summoner/userName=${modifyInput(name)}`,
-      } = account;
-      const content = sprintf("IGN: [%s](%s)\nRank: **%s** %s", name, opgg, tier, rank === "UNRANKED" ? "" : rank);
-      viktorMastery = account.mastery.points
-        ? viktorMastery + account.mastery.points
-        : viktorMastery;
-      lastViktorGame =
-        lastViktorGame > account.mastery.lastPlayed
-          ? lastViktorGame
-          : account.mastery.lastPlayed;
-      embed.addField(account.server, content, true);
+    if (userData && userData.accounts) {
+      for (const account of userData?.accounts) {
+        const {
+          id,
+          server,
+          rank, 
+          tier = "UNKNOWN",
+        } = account;
+        const host = await getHost(server);
+        const { data: summoner } = await getSummonerBySummonerId(
+          client,
+          host || '', // TODO fix this ugly hack
+          id
+        );
+        const opgg = `https://${server}.op.gg/summoner/userName=${modifyInput(summoner.name)}`;        
+        const content = sprintf("IGN: [%s](%s)\nRank: **%s %s**", summoner.name, opgg, tier, rank === "UNRANKED" ? "" : rank);
+        viktorMastery = account.mastery.points
+          ? viktorMastery + account.mastery.points
+          : viktorMastery;
+        lastViktorGame =
+          lastViktorGame > account.mastery.lastPlayed
+            ? lastViktorGame
+            : account.mastery.lastPlayed;
+        embed.addField(account.server, content, true);
+      }
     }
 
     embed.addField(
@@ -332,7 +342,7 @@ export const description = async (msg:Discord.Message) => {
     userData.description = description;
 
     try {
-      await upsertUser(msg.author, userData);
+      await upsertUser(msg.author.id, userData);
     } catch (err) {
       log.WARN(err);
       msg.channel.send(
@@ -388,7 +398,7 @@ export const update = async (msg:Discord.Message) => {
       updateRankRoles(msg, member);
       member.updated = Date.now();
       try {
-        await upsertUser(msg.author, member);
+        await upsertUser(msg.author.id, member);
 
         await msg.channel.send(
           createEmbed(`✅ Profile updated succesfully`, [
@@ -398,7 +408,8 @@ export const update = async (msg:Discord.Message) => {
             },
           ])
         );
-      } catch {
+      } catch (error) {
+        log.WARN(error);
         await msg.channel.send(
           createEmbed(`❌ Cannot update user`, [
             {
@@ -418,7 +429,9 @@ export const update = async (msg:Discord.Message) => {
 export const topmembers = async (msg:Discord.Message) => {
     const count = await findOption("topMembers") ?? 10;
     const guildMembers = await findAllGuildMembers(msg.guild);
-    const counts = guildMembers.map((user) => {
+    const counts = guildMembers
+      .filter(user => msg.guild.members.find(m => m.id === user.discordId))
+      .map((user) => {
         const membership = user.membership.find(m => m.serverId === msg.guild.id);
         return {
             id: user.discordId,
@@ -428,9 +441,14 @@ export const topmembers = async (msg:Discord.Message) => {
 
     const sorted = orderBy(counts, ['messageCount'], ['desc']);
     let content = '';
-    sorted.map((member, index) => index < count
-        ? content += `\`\`#${justifyToLeft((index+1).toString(), 2)} - ${justifyToRight(member.messageCount.toString(), 6)} msg\`\` - ${msg.guild.members.find(m => m.id === member.id).user.username}\n`
-        : {})
+    sorted.map((member, index) => {
+      if (index < count && sorted[index]) {
+        const justifiedPosition = justifyToLeft((index+1).toString(), 2);
+        const justifiedMsgCount = justifyToRight(member.messageCount.toString(), 6);
+        const username = msg.guild.members.find(m => m.id === member.id).user.username;
+        content += `\`\`#${justifiedPosition} - ${justifiedMsgCount} msg\`\` - ${username}\n`;
+      }
+    })
     const embed = createEmbed(`🏆 Top ${count} members`, [{ title: '\_\_\_', content }])
     msg.channel.send(embed);
 }
@@ -503,7 +521,7 @@ export const register = async (msg: Discord.Message) => {
             verifyCode(nickname, server, uuid, msg);
           else {
             log.INFO(
-              `user ${msg.author.username} timeouted while registering ${nickname} [${server}]`
+              `user ${msg.author.username} aborted registering ${nickname} [${server}]`
             );
             msg.author.send(
               createEmbed(`:information_source: Profile registering aborted`, [
@@ -533,7 +551,7 @@ export const register = async (msg: Discord.Message) => {
 export const unregister = async (msg:Discord.Message) => {
     msg.channel.startTyping();
     const { nickname, server } = extractNicknameAndServer(msg);
-    const realm = await getRealm(server);
+    const realm = await getPlatform(server);
     const playerId = await getSummonerId(nickname, server);
     const oldData = await findUserByDiscordId(msg.author.id);
 
@@ -561,7 +579,7 @@ export const unregister = async (msg:Discord.Message) => {
     updateRankRoles(msg, newData);
 
     try {
-      await upsertUser(msg.author, newData);
+      await upsertUser(msg.author.id, newData);
       await msg.channel.send(
         createEmbed(`✅ Account unregistered succesfully`, [
           {
