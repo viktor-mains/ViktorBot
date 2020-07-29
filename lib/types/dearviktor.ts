@@ -1,18 +1,18 @@
 export type IDVKeywords = {
-    id: string,
-    list: [ string ]
-}
+	id: string;
+	list: [string];
+};
 
 export type IAnswers = {
-    noun : [ string ],
-    verb: [ string ],
-    yesno: [ string ],
-    arcyanswers: [ string ],
-    jayce: [ string ],
-    evolution: [ string ]
-}
+	noun: [string];
+	verb: [string];
+	yesno: [string];
+	arcyanswers: [string];
+	jayce: [string];
+	evolution: [string];
+};
 
 export type IDearViktor = {
-    keywords: [ IDVKeywords ],
-    answers: IAnswers 
-}
+	keywords: [IDVKeywords];
+	answers: IAnswers;
+};
