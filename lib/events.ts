@@ -18,7 +18,7 @@ const sendLog = async (
 	guild: Guild,
 	embed: Discord.RichEmbed,
 	name: LogRoom,
-) => {
+): Promise<void> => {
 	const option = (await findOption(name)) ?? [];
 	const room = option.find(r => r.guild === guild.id);
 	const channel = findTextChannel(room?.id);
@@ -32,7 +32,7 @@ const sendLog = async (
 const sendGlobalLog = async (
 	embed: Discord.RichEmbed,
 	guild: Discord.Guild,
-) => {
+): Promise<void> => {
 	const room = await findOption('room_global');
 	const channel = findTextChannel(room);
 
@@ -46,7 +46,10 @@ const sendGlobalLog = async (
 	await channel.send(embed);
 };
 
-export const msgEdit = (oldMsg: Discord.Message, newMsg: Discord.Message) => {
+export const msgEdit = (
+	oldMsg: Discord.Message,
+	newMsg: Discord.Message,
+): void => {
 	if (
 		oldMsg.channel.type === 'dm' ||
 		oldMsg.author.bot ||
@@ -105,7 +108,7 @@ export const msgEdit = (oldMsg: Discord.Message, newMsg: Discord.Message) => {
 	sendLog(oldMsg.guild, log, 'room_log_msgs');
 };
 
-export const msgDelete = (msg: Discord.Message) => {
+export const msgDelete = (msg: Discord.Message): void => {
 	if (msg.channel.type === 'dm' || msg.author.bot) return;
 	const oldTimestamp = new Date(msg.createdTimestamp);
 	const newTimestamp = new Date();
@@ -157,7 +160,8 @@ export const msgDelete = (msg: Discord.Message) => {
 	sendLog(msg.guild, log, 'room_log_msgs');
 };
 
-export const userJoin = async (member: Discord.GuildMember) => {
+export const userJoin = async (member: Discord.GuildMember): Promise<void> => {
+	if (member.user.bot) return;
 	const log = createEmbed(
 		`:man: USER JOINS`,
 		[
@@ -176,17 +180,17 @@ export const userJoin = async (member: Discord.GuildMember) => {
 		],
 		'51E61C',
 	);
-	sendLog(member.guild, log, 'room_log_users');
 
-	if (member.user.bot) return;
 	if (!isKnownMember(member)) {
-		await upsertUser(member.id, initData(member));
+		const initUser = initData(member);
+		if (initUser) await upsertUser(member.id, initUser);
 	} else {
 		handleUserNotInDatabase(member);
 	}
+	sendLog(member.guild, log, 'room_log_users');
 };
 
-export const userLeave = (member: Discord.GuildMember) => {
+export const userLeave = (member: Discord.GuildMember): void => {
 	const log = createEmbed(
 		`:wave: USER LEAVES`,
 		[
@@ -219,7 +223,7 @@ export const userLeave = (member: Discord.GuildMember) => {
 	sendLog(member.guild, log, 'room_log_users');
 };
 
-export const descriptionChange = (msg: Discord.Message) => {
+export const descriptionChange = (msg: Discord.Message): void => {
 	const log = createEmbed(
 		`✍️ USER CHANGES DESCRIPTION`,
 		[
@@ -244,12 +248,11 @@ export const descriptionChange = (msg: Discord.Message) => {
 		],
 		'8442f5',
 	);
-	const guild = msg.member ? msg.member.guild.id : msg.author.id;
 	sendLog(msg.guild, log, 'room_log_users');
 	sendGlobalLog(log, msg.member.guild);
 };
 
-export const botJoin = (guild: Discord.Guild) => {
+export const botJoin = (guild: Discord.Guild): void => {
 	const botLog = createEmbed(
 		`:man: BOT JOINS GUILD`,
 		[
@@ -269,10 +272,11 @@ export const botJoin = (guild: Discord.Guild) => {
 
 export const initData = (
 	member: Discord.GuildMember | null,
-	id?: any,
-	msg?: any,
-): User => {
+	id?: string,
+	msg?: Discord.Message,
+): User | void => {
 	// member = null means that they used to be part of Discord but aren't anymore, or Discord doesn't recognize them
+	if (!id || !msg) return;
 	return {
 		id,
 		discordId: member ? member.id : id,
@@ -286,7 +290,7 @@ export const initData = (
 					? member.guild.id
 					: msg
 					? msg.guild.id
-					: 0,
+					: '0',
 				messageCount: 0,
 				firstMessage: 0,
 				joined:
@@ -303,7 +307,7 @@ export const initData = (
 export const handleUserNotInDatabase = async (
 	member: Discord.GuildMember,
 	msg?: Discord.Message | null,
-) => {
+): Promise<void> => {
 	if (msg && !msg.member && msg.author.id === msg.channel.id)
 		// DM
 		return;
@@ -362,18 +366,21 @@ export const handleUserNotInDatabase = async (
 		}
 	};
 
-	let memberInDataBase = await findUserByDiscordId(member.id);
+	const memberInDataBase = await findUserByDiscordId(member.id);
 	if (memberInDataBase === undefined) {
 		// user not in database at all
 		if (member) update(user, initData(member));
-		if (msg && msg.member) update(user, initData(null, msg.member));
+		if (msg && msg.member)
+			update(user, initData(null, msg.member.id));
 		if (msg && !msg.member)
 			update(user, initData(null, msg.author.id, msg));
 	} // user in database
 	else update(user, memberInDataBase);
 };
 
-export const handlePossibleMembershipRole = async (msg: Discord.Message) => {
+export const handlePossibleMembershipRole = async (
+	msg: Discord.Message,
+): Promise<void> => {
 	if (!msg.member)
 		// sent in DM
 		return;

@@ -3,9 +3,10 @@ import moment from 'moment';
 import { IEmbedField } from './types/command';
 import { findOption } from './storage/db';
 
-export const getCommandSymbol = () => findOption('commandSymbol');
+export const getCommandSymbol = async (): Promise<string | undefined> =>
+	await findOption('commandSymbol');
 
-export const getKeyword = (msg: Discord.Message) => {
+export const getKeyword = (msg: Discord.Message): string => {
 	const argumentsPresent = msg.content.includes(' ');
 	const keyword = argumentsPresent
 		? msg.content.substring(1, msg.content.indexOf(' '))
@@ -13,27 +14,31 @@ export const getKeyword = (msg: Discord.Message) => {
 	return keyword.toLowerCase();
 };
 
-export const removeKeyword = (msg: Discord.Message) => {
+export const removeKeyword = (msg: Discord.Message): string => {
 	if (msg.content.indexOf(' ') !== -1)
 		return msg.content.substring(msg.content.indexOf(' ')).trim();
 	return '';
 };
 
-export const hasSeparator = (msg: Discord.Message) =>
+export const hasSeparator = (msg: Discord.Message): boolean =>
 	removeKeyword(msg).includes('|');
 
-export const extractArguments = (msg: Discord.Message) => {
+export const extractArguments = (msg: Discord.Message): unknown[] => {
 	const args = removeKeyword(msg).trim().split('|');
 	if (args.length === 1 && args[0] === '') return [];
 	return args;
 };
 
-export const splitByFirstSymbol = (msg: Discord.Message, symbol: string) => {
+export const splitByFirstSymbol = (
+	msg: Discord.Message,
+	symbol: string,
+): unknown[] => {
 	const msgContent = removeKeyword(msg);
-	const args = new Array();
 	if (msgContent.indexOf(symbol) === -1) return [msgContent];
-	args[0] = msgContent.substring(0, msgContent.indexOf(symbol)).trim();
-	args[1] = msgContent.substring(msgContent.indexOf(symbol)).trim();
+	const args = [
+		msgContent.substring(0, msgContent.indexOf(symbol)).trim(),
+		msgContent.substring(msgContent.indexOf(symbol)).trim(),
+	];
 	return args;
 };
 
@@ -43,7 +48,7 @@ export const createEmbed = (
 	color?: string,
 	thumbnail?: string,
 	footer?: string,
-) => {
+): Discord.RichEmbed => {
 	const embed = thumbnail
 		? new Discord.RichEmbed()
 				.setTitle(title)
@@ -64,12 +69,14 @@ export const createEmbed = (
 	return embed;
 };
 
-export const isLink = (supposedLink: string) => {
+export const isLink = (supposedLink: string): boolean => {
 	if (supposedLink.startsWith('http')) return true;
 	return false;
 };
 
-export const extractNicknameAndServer = (msg: Discord.Message) => {
+export const extractNicknameAndServer = (
+	msg: Discord.Message,
+): { nickname?: string; server?: string } => {
 	if (!hasSeparator(msg)) {
 		msg.channel.send(
 			createEmbed('❌ Incorrect syntax', [
@@ -117,14 +124,17 @@ export const extractNicknameAndServer = (msg: Discord.Message) => {
 	};
 };
 
-export const splitArrayByObjectKey = (array: Array<Object>, sortBy: string) =>
-	array.reduce((reducer, obj) => {
-		let key = obj[sortBy];
+export const splitArrayByObjectKey = (
+	array: Array<unknown>,
+	sortBy: string,
+): unknown =>
+	array.reduce((reducer: Array<any>, obj: any) => {
+		const key = obj[sortBy];
 		if (reducer[key] || (reducer[key] = [])) reducer[key].push(obj);
 		return reducer;
 	}, {});
 
-export const toDDHHMMSS = (joinedAt: Date) => {
+export const toDDHHMMSS = (joinedAt: Date): string => {
 	const start = moment(joinedAt);
 	const end = moment();
 	const diff = moment.duration(end.diff(start));
@@ -156,27 +166,30 @@ export const toDDHHMMSS = (joinedAt: Date) => {
 	}`;
 };
 
-export const toMMSS = (miliseconds: number) => {
+export const toMMSS = (miliseconds: number): string => {
 	const duration = miliseconds / 1000;
 	const minutes = (duration / 60).toFixed(0);
 	const seconds = (duration % 60).toFixed(0);
 	return `${minutes} minutes ${seconds} seconds`;
 };
 
-export const justifyToRight = (input: string, desiredLength: number) => {
+export const justifyToRight = (
+	input: string,
+	desiredLength: number,
+): string => {
 	let output = input;
 	while (output.length < desiredLength) output = ` ${output}`;
 	return output;
 };
 
-export const justifyToLeft = (input: string, desiredLength: number) => {
+export const justifyToLeft = (input: string, desiredLength: number): string => {
 	let output = input;
 	while (output.length < desiredLength) output += ` `;
 	return output;
 };
 
-export const replaceAll = (stringToReplace: string) =>
+export const replaceAll = (stringToReplace: string): RegExp =>
 	new RegExp(stringToReplace, 'gi');
 
-export const modifyInput = (input: string) =>
+export const modifyInput = (input: string): string =>
 	encodeURIComponent(input.replace(replaceAll(' '), ''));

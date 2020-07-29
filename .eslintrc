@@ -9,8 +9,11 @@
 	],
 	"rules": {
 		"no-console": 2,
-		"no-unused-vars": 1,
-		"no-mixed-spaces-and-tabs": 2,
-		"prefer-const": 2
+		"no-mixed-spaces-and-tabs": ["warn", "smart-tabs"],
+		"prefer-const": 2,
+		"no-unused-vars": "off",
+		"no-useless-escape": "off",
+		"@typescript-eslint/no-unused-vars": "error",
+		"@typescript-eslint/no-non-null-assertion": "off"
 	}
 }

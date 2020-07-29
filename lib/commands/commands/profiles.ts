@@ -172,12 +172,14 @@ const verifyCode = async (
 		});
 };
 
-const updateRankRoles = async (msg: Discord.Message, userData) => {
+const updateRankRoles = async (
+	msg: Discord.Message,
+	userData,
+): Promise<void> => {
 	const ranksWeighted = (await findOption('rankRoles')) ?? [];
 	let highestTier = 'UNRANKED';
 
 	userData['accounts'].map(account => {
-		console.log(account);
 		const rW = ranksWeighted.find(
 			rankWeighted =>
 				rankWeighted.rank.toLowerCase() ===
@@ -215,7 +217,7 @@ const getTierAndDivision = async (
 	msg: Discord.Message,
 	nickname: string,
 	server: string,
-	_playerId?: any,
+	_playerId?: string,
 ) => {
 	const playerId = _playerId
 		? _playerId
@@ -254,7 +256,7 @@ const getMastery = async (
 	msg: Discord.Message,
 	nickname: string,
 	server: string,
-	_playerId?: any,
+	_playerId?: string,
 ) => {
 	const playerId = _playerId
 		? _playerId
@@ -297,7 +299,7 @@ const getMastery = async (
 	return masteryData;
 };
 
-export const profile = async (msg: Discord.Message) => {
+export const profile = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
 
 	let viktorMastery = 0;
@@ -350,7 +352,6 @@ export const profile = async (msg: Discord.Message) => {
 			)
 		) {
 			if (user.id === msg.author.id) {
-				// msg.channel.send(createEmbed(`:information_source: You didn't register yet`, [{ title: '\_\_\_', content: `Use the \`\`!register <IGN> | <server>\`\` command to create your profile.` }]));
 				msg.channel.send(
 					createEmbed(
 						`:information_source: Cannot find your data in database`,
@@ -365,7 +366,6 @@ export const profile = async (msg: Discord.Message) => {
 				msg.channel.stopTyping();
 				return;
 			} else {
-				// msg.channel.send(createEmbed(`:information_source: This user didn't register yet`, [{ title: '\_\_\_', content: `You cannot see profile of this user as they didn't register yet.` }]));
 				msg.channel.send(
 					createEmbed(
 						`:information_source: Cannot find ${user.username}'s data in database`,
@@ -384,13 +384,14 @@ export const profile = async (msg: Discord.Message) => {
 			}
 		}
 	}
-
+	const userPosition = sorted.findIndex(u => u.id == user.id);
 	const embed = new Discord.RichEmbed()
 		.setColor('FDC000')
 		.setThumbnail(user.avatarURL)
 		.setFooter(`Last profile's update`)
-		// @ts-ignore:next-line
-		.setTimestamp(new Date(userData.updated).toLocaleString())
+		/* eslint-disable-next-line */
+		/* @ts-ignore */
+		.setTimestamp(new Date(userData?.updated).toLocaleString()) // TODO why doesn't it work?
 		.setTitle(`:information_source: ${user.username}'s profile`);
 
 	if (userData && userData.accounts) {
@@ -465,9 +466,6 @@ export const profile = async (msg: Discord.Message) => {
 			memberData.messageCount /
 			((Date.now() - memberData.joined) / 86400000)
 		).toFixed(3);
-		const userIndex: number = members.findIndex(
-			u => u.id === user.id,
-		);
 		embed.addField(
 			'Member since',
 			memberData.joined < memberData.firstMessage
@@ -485,7 +483,7 @@ export const profile = async (msg: Discord.Message) => {
 		embed.addField('Messages per day', messagesPerDay, true);
 		embed.addField(
 			'# on server',
-			userIndex !== -1 ? `#${userIndex + 1}` : '?',
+			userPosition !== -1 ? `#${userPosition + 1}` : '?',
 			true,
 		);
 	}
@@ -493,7 +491,7 @@ export const profile = async (msg: Discord.Message) => {
 	msg.channel.stopTyping();
 };
 
-export const description = async (msg: Discord.Message) => {
+export const description = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
 
 	let description = removeKeyword(msg).trim();
@@ -540,7 +538,11 @@ export const description = async (msg: Discord.Message) => {
 		);
 	}
 
-	if (!userData) userData = initData(null, msg.author.id, msg);
+	if (!userData) {
+		const initUser = initData(null, msg.author.id, msg);
+		if (!initUser) return;
+		userData = initUser;
+	}
 	userData.description = description;
 
 	try {
@@ -569,7 +571,7 @@ export const description = async (msg: Discord.Message) => {
 	msg.channel.stopTyping();
 };
 
-export const update = async (msg: Discord.Message) => {
+export const update = async (msg: Discord.Message): Promise<void> => {
 	const member = await findUserByDiscordId(msg.author.id);
 	if (!member) {
 		msg.channel.send(
@@ -664,7 +666,7 @@ export const update = async (msg: Discord.Message) => {
 	updateAccounts(0);
 };
 
-export const topmembers = async (msg: Discord.Message) => {
+export const topmembers = async (msg: Discord.Message): Promise<void> => {
 	const count = (await findOption('topMembers')) ?? 10;
 	const guildMembers = await findAllGuildMembers(msg.guild);
 	const counts = guildMembers
@@ -705,7 +707,7 @@ export const topmembers = async (msg: Discord.Message) => {
 	msg.channel.send(embed);
 };
 
-export const register = async (msg: Discord.Message) => {
+export const register = async (msg: Discord.Message): Promise<void> => {
 	const { nickname, server } = extractNicknameAndServer(msg);
 	const oldData = await findUserByDiscordId(msg.author.id);
 	const maxAccounts = (await findOption('maxAccounts')) ?? 2;
@@ -760,7 +762,6 @@ export const register = async (msg: Discord.Message) => {
 					reaction.emoji.name === '✅');
 			const iterateReactions = (index: number) => {
 				if (index >= reactions.length) return;
-				// @ts-ignore:next-line
 				sentEmbed.react(reactions[index]);
 				setTimeout(
 					() => iterateReactions(index + 1),
@@ -769,7 +770,6 @@ export const register = async (msg: Discord.Message) => {
 			};
 			iterateReactions(0);
 
-			// @ts-ignore:next-line
 			sentEmbed
 				.awaitReactions(filter, {
 					time: timeout,
@@ -808,7 +808,7 @@ export const register = async (msg: Discord.Message) => {
 				})
 				.catch(e => log.WARN(e));
 		})
-		.catch(err => {
+		.catch(() => {
 			msg.channel.send(
 				createEmbed(
 					':warning: I am unable to reply to you',
@@ -826,7 +826,7 @@ export const register = async (msg: Discord.Message) => {
 	return;
 };
 
-export const unregister = async (msg: Discord.Message) => {
+export const unregister = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
 	const { nickname, server } = extractNicknameAndServer(msg);
 	const realm = await getPlatform(server);

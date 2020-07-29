@@ -28,12 +28,12 @@ import {
 } from '../../riot';
 import { format as sprintf } from 'util';
 
-export const getPlatform = async (server?: string) => {
+export const getPlatform = async (server?: string): Promise<string> => {
 	const { platform } = await findServerByName(server);
 	return platform;
 };
 
-export const getHost = async (server?: string) => {
+export const getHost = async (server?: string): Promise<string> => {
 	const { host } = await findServerByName(server);
 	return `https://${host}`;
 };
@@ -41,7 +41,7 @@ export const getHost = async (server?: string) => {
 export const getSummonerId = async (
 	ign: string | undefined,
 	server: string | undefined,
-) => {
+): Promise<string | undefined> => {
 	if (!ign || !server) {
 		return undefined;
 	}
@@ -80,34 +80,39 @@ const getAccountId = async (
 	}
 };
 
-export const updatechampions = async (msg: Discord.Message) => {
+export const updatechampions = async (msg: Discord.Message): Promise<void> => {
 	const { data: versions } = await fetchVersions(client);
 	const version = versions[0];
 	const { data: champions } = await fetchChampions(client, version);
 
-	const tasks = Object.values(champions.data).map(async champion => {
-		try {
-			await upsertOne(
-				'champions',
-				{ id: champion.key },
-				{
-					id: champion.key,
-					name: champion.name,
-					title: champion.title,
-					img: `http://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champion.image.full}`,
-				},
-			);
-		} catch {
-			await msg.channel.send(
-				createEmbed(`❌ Error updating champions`, [
+	const tasks = Object.values(champions.data).map(
+		async (champion: any) => {
+			try {
+				await upsertOne(
+					'champions',
+					{ id: champion.key },
 					{
-						title: '___',
-						content: `${champion.name} couldn't get updated. :C`,
+						id: champion.key,
+						name: champion.name,
+						title: champion.title,
+						img: `http://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champion.image.full}`,
 					},
-				]),
-			);
-		}
-	});
+				);
+			} catch {
+				await msg.channel.send(
+					createEmbed(
+						`❌ Error updating champions`,
+						[
+							{
+								title: '___',
+								content: `${champion.name} couldn't get updated. :C`,
+							},
+						],
+					),
+				);
+			}
+		},
+	);
 
 	await Promise.all(tasks);
 
@@ -118,7 +123,7 @@ export const updatechampions = async (msg: Discord.Message) => {
 	);
 };
 
-export const lastlane = async (msg: Discord.Message) => {
+export const lastlane = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
 	const { nickname, server } = extractNicknameAndServer(msg);
 	const playerId = await getAccountId(nickname, server);
@@ -161,8 +166,8 @@ export const lastlane = async (msg: Discord.Message) => {
 		fetchMatchTimeline(client, host, matchId),
 	]);
 
-	let players: any = [];
-	let winningTeam: any = '';
+	const players: any = [];
+	let winningTeam = '';
 
 	lastGameData.data.teams.map((team: any) => {
 		if (team.win === 'Win') winningTeam = team.teamId;
@@ -393,9 +398,9 @@ export const lastlane = async (msg: Discord.Message) => {
 	msg.channel.send(embed);
 };
 
-export const mastery = async (msg: Discord.Message) => {
+export const mastery = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
-	const selfRequest = !!!extractArguments(msg).length;
+	const selfRequest = !extractArguments(msg).length;
 
 	if (selfRequest) {
 		const user = await findUserByDiscordId(msg.author.id);

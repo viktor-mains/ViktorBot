@@ -102,7 +102,7 @@ const specialRoleRequested = async (roleName: string, msg: Discord.Message) => {
 	return false;
 };
 
-export const iam = async (msg: Discord.Message) => {
+export const iam = async (msg: Discord.Message): Promise<void> => {
 	const roleName = removeKeyword(msg);
 	const member = msg.member;
 	const roomRoles = await findOption('room_roles');
@@ -112,28 +112,41 @@ export const iam = async (msg: Discord.Message) => {
 	if (
 		!(await requestWasSendInApropriateChannel(msg)) &&
 		appropiateChannel
-	)
-		return msg.channel.send(
+	) {
+		msg.channel.send(
 			`You can be anything you want, I'm not giving you role outside the <#${appropiateChannel}> room.`,
 		);
-	if (await specialRoleRequested(roleName, msg)) return;
-	if (!roleName) return msg.channel.send(`Excuse me, you are _what?_`);
-	if (!roleExists(roleName, member))
-		return msg.channel.send(
+		return;
+	}
+	if (await specialRoleRequested(roleName, msg)) {
+		return;
+	}
+	if (!roleName) {
+		msg.channel.send(`Excuse me, you are _what?_`);
+		return;
+	}
+	if (!roleExists(roleName, member)) {
+		msg.channel.send(
 			`Role **[${roleName.toUpperCase()}]** doesn't exist.`,
 		);
-	if (!(await roleisAssignable(roleName)))
-		return msg.channel.send(
+		return;
+	}
+	if (!(await roleisAssignable(roleName))) {
+		msg.channel.send(
 			`Role **[${roleName.toUpperCase()}]** cannot be self-assigned.`,
 		);
-	if (userHasRole(roleName, member))
-		return msg.channel.send(
+		return;
+	}
+	if (userHasRole(roleName, member)) {
+		msg.channel.send(
 			`You already have the **[${roleName.toUpperCase()}]** role.`,
 		);
+		return;
+	}
 
 	msg.member
 		.addRole(returnRoleID(roleName, member))
-		.then(success =>
+		.then(() =>
 			msg.channel.send(
 				`Role **[${roleName.toUpperCase()}]** assigned to ${
 					member.user.username
@@ -149,23 +162,33 @@ export const iam = async (msg: Discord.Message) => {
 		});
 	return;
 };
-export const iamnot = async (msg: Discord.Message) => {
+
+export const iamnot = async (msg: Discord.Message): Promise<void> => {
 	const roleName = extractArguments(msg)[0];
 	const member = msg.member;
 
-	if (!roleName) return msg.channel.send(`Excuse me, you aren't _what?_`);
-	if (!roleExists(roleName, member))
-		return msg.channel.send(
+	if (!roleName) {
+		msg.channel.send(`Excuse me, you aren't _what?_`);
+		return;
+	}
+	if (!roleExists(roleName, member)) {
+		msg.channel.send(
 			`Role **[${roleName.toUpperCase()}]** doesn't exist.`,
 		);
-	if (!(await roleisAssignable(roleName)))
-		return msg.channel.send(
+		return;
+	}
+	if (!(await roleisAssignable(roleName))) {
+		msg.channel.send(
 			`Role **[${roleName.toUpperCase()}]** cannot be self-unassigned.`,
 		);
-	if (!userHasRole(roleName, member))
-		return msg.channel.send(
+		return;
+	}
+	if (!userHasRole(roleName, member)) {
+		msg.channel.send(
 			`You don't have the **[${roleName.toUpperCase()}]** role.`,
 		);
+		return;
+	}
 	if (!(await requestWasSendInApropriateChannel(msg))) {
 		const roles = await findOption('room_roles');
 		const channel = roles?.find(g => g.guild === msg.guild.id);
@@ -174,14 +197,15 @@ export const iamnot = async (msg: Discord.Message) => {
 			return;
 		}
 
-		return msg.channel.send(
+		msg.channel.send(
 			`I'm not doing that outside the <#${channel}> room.`,
 		);
+		return;
 	}
 
 	msg.member
 		.removeRole(returnRoleID(roleName, member))
-		.then(success =>
+		.then(() =>
 			msg.channel.send(
 				`Role **[${roleName.toUpperCase()}]** removed from ${
 					member.user.username
@@ -190,13 +214,13 @@ export const iamnot = async (msg: Discord.Message) => {
 		)
 		.catch(error => {
 			msg.channel.send(
-				`Failed to remove the **[${roleName.toUpperCase()}]** role.`,
+				`Failed to remove the **[${roleName.toUpperCase()}]** role. Reason: ${error}`,
 			);
-			console.log(error);
 		});
 	return;
 };
-export const roles = async (msg: Discord.Message) => {
+
+export const roles = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
 	const existingRoles = msg.guild.roles.array().map(role => role.name);
 	const assignableRoles = (await findOption('assignableRoles')) ?? [];

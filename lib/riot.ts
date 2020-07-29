@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { format as sprintf } from 'util';
 import { Request, default as fetch } from 'node-fetch';
 import config from '../config.json';
@@ -12,7 +13,7 @@ export class RiotClient {
 	async fetch<T = unknown>(
 		host: string,
 		path: string,
-		...params: any[]
+		...params: string[]
 	): Promise<Response<T>> {
 		const pathWithParams = sprintf(
 			path,
@@ -50,7 +51,7 @@ interface Response<T> {
 	etag: string | null;
 }
 
-export async function fetchVersions(client: RiotClient) {
+export async function fetchVersions(client: RiotClient): Promise<any> {
 	return client.fetch<string[]>(
 		'http://ddragon.leagueoflegends.com',
 		'/api/versions.json',
@@ -69,7 +70,10 @@ interface ChampionList {
 		};
 	};
 }
-export async function fetchChampions(client: RiotClient, version: string) {
+export async function fetchChampions(
+	client: RiotClient,
+	version: string,
+): Promise<any> {
 	return client.fetch<ChampionList>(
 		'http://ddragon.leagueoflegends.com',
 		'/cdn/%s/data/en_US/championFull.json',
@@ -90,7 +94,7 @@ export async function fetchRecentGames(
 	client: RiotClient,
 	host: string,
 	playerID: string,
-) {
+): Promise<any> {
 	return client.fetch<MatchList>(
 		host,
 		'/lol/match/v4/matchlists/by-account/%s',
@@ -133,7 +137,7 @@ export async function fetchMatchInfo(
 	client: RiotClient,
 	host: string,
 	matchID: string,
-) {
+): Promise<any> {
 	return client.fetch<Match>(host, '/lol/match/v4/matches/%s', matchID);
 }
 
@@ -155,7 +159,7 @@ export async function fetchMatchTimeline(
 	client: RiotClient,
 	host: string,
 	matchID: string,
-) {
+): Promise<any> {
 	return client.fetch<Timeline>(
 		host,
 		'/lol/match/v4/timelines/by-match/%s',
@@ -175,7 +179,7 @@ export function fetchSummonerMasteries(
 	client: RiotClient,
 	host: string,
 	summoner: Summoner,
-) {
+): Promise<any> {
 	return client.fetch<MasteryLevel[]>(
 		host,
 		'/lol/champion-mastery/v4/champion-masteries/by-summoner/%s',
@@ -193,7 +197,7 @@ export function getSummonerByName(
 	client: RiotClient,
 	host: string,
 	name: string,
-) {
+): Promise<any> {
 	return client.fetch<Summoner>(
 		host,
 		'/lol/summoner/v4/summoners/by-name/%s',
@@ -205,8 +209,7 @@ export function getSummonerByAccountId(
 	client: RiotClient,
 	host: string,
 	accountId: string,
-) {
-	console.log(accountId);
+): Promise<any> {
 	return client.fetch<Summoner>(
 		host,
 		'/lol/summoner/v4/summoners/by-account/%s',
@@ -218,7 +221,7 @@ export function getSummonerBySummonerId(
 	client: RiotClient,
 	host: string,
 	name: string,
-) {
+): Promise<any> {
 	return client.fetch<Summoner>(
 		host,
 		'/lol/summoner/v4/summoners/%s',

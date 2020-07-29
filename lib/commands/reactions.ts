@@ -1,5 +1,5 @@
 import Discord from 'discord.js';
-import { TextReaction, CustomReaction } from './logic';
+// import { TextReaction, CustomReaction } from './logic';
 
 // import { fuck, mega } from './reactions/words';
 // import { meme } from '../commands/commands/meme';

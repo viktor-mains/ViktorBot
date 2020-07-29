@@ -1,14 +1,21 @@
+/* eslint-disable no-console */
 export const log = {
-	INFO: content =>
+	INFO: (content: string): unknown => {
 		console.log(
 			`${new Date().toLocaleString()} - [INFO] - ${content}`,
-		),
-	WARN: content =>
+		);
+		return;
+	},
+	WARN: (content: string): unknown => {
 		console.trace(
 			`${new Date().toLocaleString()} - [WARN] - ${content}`,
-		),
-	DEBUG: content =>
+		);
+		return;
+	},
+	DEBUG: (content: string): unknown => {
 		console.log(
 			`${new Date().toLocaleString()} - [DEBUG] - ${content}`,
-		),
+		);
+		return;
+	},
 };

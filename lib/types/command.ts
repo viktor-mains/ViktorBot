@@ -27,8 +27,11 @@ export type IExecuteText = {
 	execute: (content: string) => string | void;
 };
 export type IExecuteEmbed = {
-	execute: (embed: any, username: string) => string | void;
+	execute: (embed: unknown, username: string) => string | void;
 };
 export type IExecuteCustom = {
-	execute: (fn: Function, ...args: Array<any>) => any;
+	execute: (
+		fn: (...args: unknown[]) => unknown,
+		...args: Array<unknown>
+	) => unknown;
 };

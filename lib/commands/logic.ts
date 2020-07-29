@@ -59,12 +59,12 @@ class Reaction {
 }
 
 export class TextCommand extends Command implements IExecuteText {
-	public execute(content: string) {
+	public execute(content: string): void {
 		this.canBeExecuted && this.channel.send(content);
 	}
 }
 export class EmbedCommand extends Command implements IExecuteEmbed {
-	public execute(embed: IEmbed, username: string) {
+	public execute(embed: IEmbed, username: string): void {
 		const title = embed.title;
 		const color = embed.color;
 		const thumbnail = embed.thumbnail;
@@ -88,18 +88,24 @@ export class EmbedCommand extends Command implements IExecuteEmbed {
 	}
 }
 export class CustomCommand extends Command implements IExecuteCustom {
-	public execute(fn: Function, ...args: Array<any>) {
+	public execute(
+		fn: (...args: unknown[]) => unknown,
+		...args: Array<unknown>
+	): void {
 		this.canBeExecuted && fn(...args);
 	}
 }
 
 export class TextReaction extends Reaction implements IExecuteText {
-	public execute(content: string) {
+	public execute(content: string): void {
 		this.channel.send(content);
 	}
 }
 export class CustomReaction extends Reaction implements IExecuteCustom {
-	public execute(fn: Function, ...args: Array<any>) {
+	public execute(
+		fn: (...args: unknown[]) => unknown,
+		...args: Array<unknown>
+	): void {
 		fn(...args);
 	}
 }

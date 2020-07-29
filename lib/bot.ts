@@ -6,7 +6,7 @@ import { log } from './log';
 // Mutable module state sucks, but this is the easiest way to migrate what we already have
 let bot: Client;
 
-export async function initialize(token: string) {
+export async function initialize(token: string): Promise<void> {
 	bot = new Client();
 	bot.on('message', classifyMessage);
 	bot.on('messageUpdate', msgEdit);
@@ -28,11 +28,11 @@ export function findTextChannel(
 	return ch as TextChannel;
 }
 
-export function isBotUser(user: User) {
+export function isBotUser(user: User): boolean {
 	return bot?.user.id === user.id;
 }
 
-export async function setBotPresence(status: string) {
+export async function setBotPresence(status: string): Promise<void> {
 	bot?.user.setPresence({
 		game: {
 			name: status,
@@ -41,7 +41,8 @@ export async function setBotPresence(status: string) {
 	});
 }
 
-export function* enumerateGuilds() {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function* enumerateGuilds(): any {
 	yield* bot?.guilds.values();
 }
 

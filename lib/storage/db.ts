@@ -1,17 +1,21 @@
 import { MongoClient, Db } from 'mongodb';
 import assert from 'assert';
-import type { User as DiscordUser, GuildMember, Guild } from 'discord.js';
+import type { GuildMember, Guild } from 'discord.js';
 import { IEmbed } from '../types/command';
 
 const DB_NAME = 'vikbot';
 let db: Db;
 
-export const connectToDb = async (url: string) => {
+export const connectToDb = async (url: string): Promise<void> => {
 	const client = await MongoClient.connect(url);
 	db = client.db(DB_NAME);
 };
 
-export async function upsertOne<T>(name: string, filter: object, object: T) {
+export async function upsertOne<T>(
+	name: string,
+	filter: any,
+	object: T,
+): Promise<void> {
 	assert.ok(
 		db !== undefined,
 		'have not connected to the database - make sure connectToDb() is called at least once',
@@ -51,7 +55,7 @@ export interface User {
 	}[];
 }
 
-export async function upsertUser(id: string, user: User) {
+export async function upsertUser(id: string, user: User): Promise<void> {
 	// TODO this throws cyclic dependency error - FIX IT!
 	await upsertOne('users', { discordId: id }, user);
 }

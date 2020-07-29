@@ -19,7 +19,7 @@ type TField = {
 	content: string;
 };
 
-export const opgg = (msg: Discord.Message) => {
+export const opgg = (msg: Discord.Message): void => {
 	const { nickname, server } = extractNicknameAndServer(msg);
 	if (nickname && server)
 		msg.channel.send(
@@ -27,13 +27,13 @@ export const opgg = (msg: Discord.Message) => {
 		);
 };
 
-export const help = async (msg: Discord.Message) => {
-	let fields = new Array<TField>();
+export const help = async (msg: Discord.Message): Promise<void> => {
+	const fields = new Array<TField>();
 	const commandsAll = await findUserCommands();
 	const commands = splitArrayByObjectKey(commandsAll, 'category');
 
 	const sym = await getCommandSymbol()!;
-	for (let category in commands) {
+	for (const category in commands) {
 		const title = `Category ${category.toUpperCase()}`;
 		let content = '';
 		commands[category].map((command: Command) => {
@@ -47,7 +47,7 @@ export const help = async (msg: Discord.Message) => {
 	msg.author
 		.send({ embed })
 		.then(() => msg.react('📩'))
-		.catch(err =>
+		.catch(() =>
 			msg.channel.send(
 				createEmbed(
 					':warning: I am unable to reply to you',
@@ -63,13 +63,13 @@ export const help = async (msg: Discord.Message) => {
 		);
 };
 
-export const hmod = async (msg: Discord.Message) => {
-	let fields = new Array<TField>();
+export const hmod = async (msg: Discord.Message): Promise<void> => {
+	const fields = new Array<TField>();
 	const commandsAll = await findModCommands();
 	const commands = splitArrayByObjectKey(commandsAll, 'category');
 
 	const sym = await getCommandSymbol()!;
-	for (let category in commands) {
+	for (const category in commands) {
 		const title = `Category ${category.toUpperCase()}`;
 		let content = '';
 		commands[category].map(
@@ -83,7 +83,7 @@ export const hmod = async (msg: Discord.Message) => {
 	msg.author
 		.send({ embed })
 		.then(() => msg.react('📩'))
-		.catch(err =>
+		.catch(() =>
 			msg.channel.send(
 				createEmbed(
 					':warning: I am unable to reply to you',
@@ -99,7 +99,7 @@ export const hmod = async (msg: Discord.Message) => {
 		);
 };
 
-export const shutup = async (msg: Discord.Message) => {
+export const shutup = async (msg: Discord.Message): Promise<void> => {
 	let answer = '';
 	const option = isUserAdmin(msg) ? 'shutUpMod' : 'shutUpUser';
 	const answers = (await findOption(option)) ?? [];

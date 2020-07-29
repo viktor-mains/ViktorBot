@@ -1,7 +1,7 @@
 import Discord from 'discord.js';
 
 import { ICommand } from '../types/command';
-import { TextCommand, EmbedCommand, CustomCommand } from './logic';
+import { /* TextCommand, EmbedCommand, */ CustomCommand } from './logic';
 
 import { help, hmod, opgg, shutup } from './commands/basic';
 import {
