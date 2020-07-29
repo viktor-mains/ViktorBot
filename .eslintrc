@@ -1,0 +1,19 @@
+{
+	"root": true,
+	"parser": "@typescript-eslint/parser",
+	"plugins": ["@typescript-eslint"],
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"plugin:@typescript-eslint/recommended"
+	],
+	"rules": {
+		"no-console": 2,
+		"no-mixed-spaces-and-tabs": ["warn", "smart-tabs"],
+		"prefer-const": 2,
+		"no-unused-vars": "off",
+		"no-useless-escape": "off",
+		"@typescript-eslint/no-unused-vars": "error",
+		"@typescript-eslint/no-non-null-assertion": "off"
+	}
+}

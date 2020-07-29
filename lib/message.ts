@@ -19,7 +19,7 @@ import {
 
 // LOGIC
 
-const isUserAdmin = (msg: Discord.Message) =>
+const isUserAdmin = (msg: Discord.Message): boolean =>
 	msg.member.hasPermission('ADMINISTRATOR');
 const isChannelDM = (msg: Discord.Message) => msg.author.id === msg.channel.id;
 const isUserBot = (msg: Discord.Message) => msg.author.bot;
@@ -121,7 +121,7 @@ const checkForReactionTriggers = async (msg: Discord.Message) => {
 
 // MAIN FUNCTION
 
-const classifyMessage = async (msg: Discord.Message) => {
+const classifyMessage = async (msg: Discord.Message): Promise<void> => {
 	if (isUserBot(msg)) {
 		return;
 	}

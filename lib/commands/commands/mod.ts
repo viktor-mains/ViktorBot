@@ -1,5 +1,4 @@
 import Discord from 'discord.js';
-import { readFile } from 'fs';
 import { log } from '../../log';
 import { removeKeyword, extractArguments, createEmbed } from '../../helpers';
 import { chooseRandom } from '../../rng';
@@ -8,14 +7,14 @@ import {
 	setBotPresence,
 	findTextChannel,
 	enumerateGuilds,
-	findMemberJoinDate,
+	/* findMemberJoinDate, */
 } from '../../bot';
 
-export const status = async (msg: Discord.Message) => {
+export const status = async (msg: Discord.Message): Promise<void> => {
 	await setBotPresence(removeKeyword(msg));
 };
 
-export const impersonate = (msg: Discord.Message) => {
+export const impersonate = (msg: Discord.Message): void => {
 	const messageAndGuild = extractArguments(msg);
 	if (messageAndGuild.length !== 2) {
 		msg.channel.send(
@@ -51,10 +50,10 @@ export const impersonate = (msg: Discord.Message) => {
 	});
 };
 
-export const punish = async (msg: Discord.Message) => {
+export const punish = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
 	const mentions = [...msg.mentions.users.values()];
-	let user: Discord.User | null;
+	let user: Discord.User | null = null;
 	let member;
 
 	if (mentions.length === 0) {
@@ -151,87 +150,88 @@ export const punish = async (msg: Discord.Message) => {
 	await upsertUser(msg.author.id, member);
 };
 
-export const msgupdate = (msg: Discord.Message) => {
-	msg.channel.startTyping();
-	readFile('messageCount.json', 'utf8', (err, data) => {
-		if (err) {
-			log.WARN(err);
-			return;
-		}
-		let messageDataFile = JSON.parse(data);
-		const membersRaw = new Array();
-		// remake the file into somewhat more normal format
-		for (let [keyServer, valueServer] of Object.entries(
-			messageDataFile,
-		)) {
-			for (let [keyMember, valueMember] of Object.entries(
-				messageDataFile[keyServer],
-			)) {
-				membersRaw.push({
-					...messageDataFile[keyServer][
-						keyMember
-					],
-					serverId: keyServer,
-					discordId: keyMember,
-				});
-			}
-		}
-		// now map thru it and check if user already is in database
-		membersRaw.map(async (mTU, index) => {
-			log.INFO(`User ${index + 1}/${membersRaw.length}`);
-			let membersData;
-			const user = await findUserByDiscordId(mTU.discordId);
-			const date = findMemberJoinDate(
-				mTU.serverId,
-				mTU.discordId,
-			)?.getTime();
-			const joinDate = date ?? mTU.firstMessage;
-			if (!joinDate) console.log(mTU.discordId);
-			if (user) {
-				// if user IS in database, just update his membership
-				membersData = { ...user };
-				if (!membersData.membership) return; // probably bot
-				let serverDataIndex = membersData.membership.findIndex(
-					mShip =>
-						mShip.serverId === mTU.serverId,
-				);
-				if (serverDataIndex !== -1) {
-					// if this server of user is in database
-					// membersData.membership[serverDataIndex] = {
-					//     serverId: mTU.serverId,
-					//     messageCount: mTU.messageCount,
-					//     firstMessage: mTU.firstMessage,
-					//     joined: joinDate
-					// }
-				} else {
-					// if this server of user is not in database
-					membersData.membership.push({
-						serverId: mTU.serverId,
-						messageCount: mTU.messageCount,
-						firstMessage: mTU.firstMessage,
-						joined: joinDate,
-					});
-				}
-			} else {
-				// if user ISNT in database, init him and then add all his servers
-				// const savedMemberData = initData(null, mTU.discordId);
-				// membersData = {
-				//     ...savedMemberData,
-				//     membership: [{
-				//         serverId: mTU.serverId,
-				//         messageCount: mTU.messageCount,
-				//         firstMessage: mTU.firstMessage,
-				//         joined: joinDate
-				//     }]
-				// }
-			}
-			await upsertUser(mTU.discordId, membersData);
-		});
-		msg.channel.stopTyping();
-	});
+export const msgupdate = (/* msg: Discord.Message */): void => {
+	// TODO this entire function needs to be redone to include database
+	// msg.channel.startTyping();
+	// readFile('messageCount.json', 'utf8', (err, data) => {
+	// 	if (err) {
+	// 		log.WARN(err.message);
+	// 		return;
+	// 	}
+	// 	const messageDataFile = JSON.parse(data);
+	// 	const membersRaw = [];
+	// 	// remake the file into somewhat more normal format
+	// 	for (const [keyServer, valueServer] of Object.entries(
+	// 		messageDataFile,
+	// 	)) {
+	// 		for (const [keyMember, valueMember] of Object.entries(
+	// 			messageDataFile[keyServer],
+	// 		)) {
+	// 			membersRaw.push({
+	// 				...messageDataFile[keyServer][
+	// 					keyMember
+	// 				],
+	// 				serverId: keyServer,
+	// 				discordId: keyMember,
+	// 			});
+	// 		}
+	// 	}
+	// 	// now map thru it and check if user already is in database
+	// 	membersRaw.map(async (mTU, index) => {
+	// 		log.INFO(`User ${index + 1}/${membersRaw.length}`);
+	// 		let membersData;
+	// 		const user = await findUserByDiscordId(mTU.discordId);
+	// 		const date = findMemberJoinDate(
+	// 			mTU.serverId,
+	// 			mTU.discordId,
+	// 		)?.getTime();
+	// 		const joinDate = date ?? mTU.firstMessage;
+	// 		if (!joinDate) console.log(mTU.discordId);
+	// 		if (user) {
+	// 			// if user IS in database, just update his membership
+	// 			membersData = { ...user };
+	// 			if (!membersData.membership) return; // probably bot
+	// 			let serverDataIndex = membersData.membership.findIndex(
+	// 				mShip =>
+	// 					mShip.serverId === mTU.serverId,
+	// 			);
+	// 			if (serverDataIndex !== -1) {
+	// 				// if this server of user is in database
+	// 				// membersData.membership[serverDataIndex] = {
+	// 				//     serverId: mTU.serverId,
+	// 				//     messageCount: mTU.messageCount,
+	// 				//     firstMessage: mTU.firstMessage,
+	// 				//     joined: joinDate
+	// 				// }
+	// 			} else {
+	// 				// if this server of user is not in database
+	// 				membersData.membership.push({
+	// 					serverId: mTU.serverId,
+	// 					messageCount: mTU.messageCount,
+	// 					firstMessage: mTU.firstMessage,
+	// 					joined: joinDate,
+	// 				});
+	// 			}
+	// 		} else {
+	// 			// if user ISNT in database, init him and then add all his servers
+	// 			// const savedMemberData = initData(null, mTU.discordId);
+	// 			// membersData = {
+	// 			//     ...savedMemberData,
+	// 			//     membership: [{
+	// 			//         serverId: mTU.serverId,
+	// 			//         messageCount: mTU.messageCount,
+	// 			//         firstMessage: mTU.firstMessage,
+	// 			//         joined: joinDate
+	// 			//     }]
+	// 			// }
+	// 		}
+	// 		await upsertUser(mTU.discordId, membersData);
+	// 	});
+	// 	msg.channel.stopTyping();
+	// });
 };
 
-export const guilds = (msg: Discord.Message) => {
+export const guilds = (msg: Discord.Message): void => {
 	let content = '';
 	for (const guild of enumerateGuilds()) {
 		content += `- \`\`[${guild.id}]\`\` ${guild.name}\n`;
@@ -243,7 +243,7 @@ export const guilds = (msg: Discord.Message) => {
 	msg.channel.send(embed);
 };
 
-export const ismember = (msg: Discord.Message) => {
+export const ismember = (msg: Discord.Message): void => {
 	const userID = extractArguments(msg)[0];
 	const isMember = msg.guild.members.find(member => member.id == userID)
 		? true

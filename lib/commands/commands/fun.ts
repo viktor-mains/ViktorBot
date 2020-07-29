@@ -1,5 +1,5 @@
 import Discord from 'discord.js';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { uniq } from 'lodash';
 import emojiRegex from 'emoji-regex/es2015/index.js';
 import emojiRegexText from 'emoji-regex/es2015/text.js';
@@ -10,15 +10,19 @@ import BotGraph from '../../graphs';
 import config from '../../../config.json';
 import { findOption } from '../../storage/db';
 
-export const meow = async (msg: Discord.Message) => {
+export const meow = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
-	const cat: any = await axios(
+	const cat: void | AxiosResponse = await axios(
 		`https://api.thecatapi.com/v1/images/search?api_key=${config.CAT_API_TOKEN}`,
 	).catch(() => {
 		msg.channel.send('Unable to get a cat.');
 		msg.channel.stopTyping();
 		return;
 	});
+	if (!cat || !cat.data) {
+		msg.channel.send('Unable to get a cat.');
+		return;
+	}
 	const embed = new Discord.RichEmbed()
 		.setTitle('😺 Cat!')
 		.setTimestamp(new Date())
@@ -28,13 +32,20 @@ export const meow = async (msg: Discord.Message) => {
 	msg.channel.stopTyping();
 	msg.channel.send(embed);
 };
-export const woof = async (msg: Discord.Message) => {
+
+export const woof = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
-	const dog: any = await axios('http://random.dog/woof').catch(() => {
+	const dog: void | AxiosResponse = await axios(
+		'http://random.dog/woof',
+	).catch(() => {
 		msg.channel.send('Unable to get a dog.');
 		msg.channel.stopTyping();
 		return;
 	});
+	if (!dog || !dog.data) {
+		msg.channel.send('Unable to get a dog.');
+		return;
+	}
 	const embed = new Discord.RichEmbed()
 		.setTitle('🐶 Dog!')
 		.setTimestamp(new Date())
@@ -45,16 +56,17 @@ export const woof = async (msg: Discord.Message) => {
 	msg.channel.send(embed);
 };
 
-export const choose = (msg: Discord.Message) => {
+export const choose = (msg: Discord.Message): void => {
 	const args = removeKeyword(msg);
 	const argsArray = args.split('|');
 	const randomThing = chooseRandom(argsArray).trim();
 
-	return argsArray.length === 1
+	argsArray.length === 1
 		? msg.channel.send('...is that supposed to be a choice?')
 		: msg.channel.send(`You should ${randomThing}.`);
 };
-export const rito = (msg: Discord.Message) => {
+
+export const rito = (msg: Discord.Message): void => {
 	const rito = `
     :white_sun_small_cloud:
                   <:rito:323416307414335488>
@@ -70,7 +82,7 @@ export const rito = (msg: Discord.Message) => {
     `;
 	msg.channel.send(rito);
 };
-export const gibeskin = async (msg: Discord.Message) => {
+export const gibeskin = async (msg: Discord.Message): Promise<void> => {
 	const opt = await findOption('gibeskin');
 	const skins = opt ?? [
 		{
@@ -118,7 +130,7 @@ export const gibeskin = async (msg: Discord.Message) => {
 	msg.channel.send(embed);
 };
 
-export const degen = async (msg: Discord.Message) => {
+export const degen = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
 	const words = (await findOption('degen_words')) ?? [];
 	const degeneracyPercentageDefault = 70;
