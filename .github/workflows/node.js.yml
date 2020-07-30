@@ -27,3 +27,5 @@ jobs:
                           run: npm install
                         - name: Run EsLint
                           run: npm run lint
+                        - name: Check types
+                          run: npm run check-types
