@@ -15,6 +15,12 @@ type TGraphSize = {
 	};
 };
 
+type TGraphField = {
+	key: string;
+	value: number;
+	viktor?: boolean;
+};
+
 export default class BotGraph {
 	private size: TGraphSize;
 
@@ -22,10 +28,7 @@ export default class BotGraph {
 		this.size = size;
 	}
 
-	generate = (dataObject: {
-		value: string;
-		description: string;
-	}) => async (): Promise<unknown> => {
+	generate = async (dataObject: TGraphField[]): Promise<Attachment> => {
 		const { document } = new JSDOM(
 			`<html><body></body></html>`,
 		).window;

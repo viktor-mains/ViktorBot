@@ -1,15 +1,24 @@
 {
 	"compilerOptions": {
+		"baseUrl": "./",
 		"outDir": "./dist",
-		"allowJs": true,
 		"target": "es6",
+		"module": "commonJS",
+		"allowJs": true,
+		"checkJs": true,
+		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"noImplicitReturns": true,
 		"noImplicitThis": true,
 		"strictNullChecks": true,
-		"module": "commonJS",
 		"resolveJsonModule": true,
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		"allowUnreachableCode": false,
+		"allowUnusedLabels": true,
+		"pretty": true,
+		"paths": {
+			"config.json": ["config.example.json"] // This mapping is relative to "baseUrl"
+		}
 	},
 	"include": ["./**/*"],
 	"exclude": ["node_modules", "dist"]

@@ -164,8 +164,8 @@ export const iam = async (msg: Discord.Message): Promise<void> => {
 };
 
 export const iamnot = async (msg: Discord.Message): Promise<void> => {
-	const roleName = extractArguments(msg)[0];
-	const member = msg.member;
+	const roleName: string = extractArguments(msg)[0];
+	const member: Discord.GuildMember = msg.member;
 
 	if (!roleName) {
 		msg.channel.send(`Excuse me, you aren't _what?_`);

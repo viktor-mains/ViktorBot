@@ -23,7 +23,7 @@ export const removeKeyword = (msg: Discord.Message): string => {
 export const hasSeparator = (msg: Discord.Message): boolean =>
 	removeKeyword(msg).includes('|');
 
-export const extractArguments = (msg: Discord.Message): unknown[] => {
+export const extractArguments = (msg: Discord.Message): string[] => {
 	const args = removeKeyword(msg).trim().split('|');
 	if (args.length === 1 && args[0] === '') return [];
 	return args;
@@ -125,9 +125,9 @@ export const extractNicknameAndServer = (
 };
 
 export const splitArrayByObjectKey = (
-	array: Array<unknown>,
+	array: Array<any>,
 	sortBy: string,
-): unknown =>
+): Array<any> =>
 	array.reduce((reducer: Array<any>, obj: any) => {
 		const key = obj[sortBy];
 		if (reducer[key] || (reducer[key] = [])) reducer[key].push(obj);
