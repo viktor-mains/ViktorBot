@@ -195,7 +195,7 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 	const lane = (await findLane(ourPlayer.lane))!;
 	const queue = (await findQueue(ourPlayer.queue))!;
 
-	const embed = new Discord.RichEmbed()
+	const embed = new Discord.MessageEmbed()
 		.setColor('FDC000')
 		.setThumbnail(
 			lane
@@ -428,7 +428,7 @@ const aggregateMasteryData = async (
 		collectiveMasteryLevelsString += `${icon?.emote} x${collectiveMasteryLevels[level]} `;
 	}
 
-	const embed = new Discord.RichEmbed()
+	const embed = new Discord.MessageEmbed()
 		.setTitle(
 			`Top ${topX} masteries - ${nickname.toUpperCase()} [${server.toUpperCase()}]`,
 		)

@@ -24,7 +24,7 @@ export const meow = async (msg: Discord.Message): Promise<void> => {
 		msg.channel.send('Unable to get a cat.');
 		return;
 	}
-	const embed = new Discord.RichEmbed()
+	const embed = new Discord.MessageEmbed()
 		.setTitle('😺 Cat!')
 		.setTimestamp(new Date())
 		.setFooter(msg.author.username)
@@ -47,7 +47,7 @@ export const woof = async (msg: Discord.Message): Promise<void> => {
 		msg.channel.send('Unable to get a dog.');
 		return;
 	}
-	const embed = new Discord.RichEmbed()
+	const embed = new Discord.MessageEmbed()
 		.setTitle('🐶 Dog!')
 		.setTimestamp(new Date())
 		.setFooter(msg.author.username)
@@ -102,7 +102,7 @@ export const gibeskin = async (msg: Discord.Message): Promise<void> => {
 	const deathSwornDate = skins.find(skin => skin.key === 'Death Sworn')!.value;
 	const graph = new BotGraph({ width: 500, height: 300 });
 	const graphAttachment = await graph.generate(skins);
-	const embed = new Discord.RichEmbed()
+	const embed = new Discord.MessageEmbed()
 		.setTitle('<:vikSalty:289489052212789250> Viktor skin')
 		.setTimestamp(new Date())
 		.setFooter(
@@ -110,7 +110,7 @@ export const gibeskin = async (msg: Discord.Message): Promise<void> => {
 			'https://cdn.discordapp.com/emojis/232941841815830536.png',
 		)
 		.setColor('0xFDC000')
-		.attachFile(graphAttachment)
+		.attachFiles(graphAttachment)
 		.setImage('attachment://graph.png')
 		.addField(
 			`\_\_\_`,
@@ -181,7 +181,7 @@ export const degen = async (msg: Discord.Message): Promise<void> => {
 				percentageEmojiSpam +
 				percentageShortMessages +
 				percentageGeneralSpam;
-			const embed = new Discord.RichEmbed()
+			const embed = new Discord.MessageEmbed()
 				.setTitle('☢️ Degeneracy of the chat')
 				.setFooter(
 					`Powered by Glorious Evolution`,

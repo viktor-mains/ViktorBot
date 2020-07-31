@@ -363,7 +363,7 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 		}
 	}
 	const userPosition = sorted.findIndex(u => u.id == user.id);
-	const embed = new Discord.RichEmbed()
+	const embed = new Discord.MessageEmbed()
 		.setColor('FDC000')
 		.setThumbnail(user.avatarURL)
 		.setFooter(`Last profile's update`)
@@ -547,7 +547,7 @@ export const update = async (msg: Discord.Message): Promise<void> => {
 	const lastUpdated = Date.now() - member.updated;
 	const timeoutUpdate = 3600000;
 	if (lastUpdated < timeoutUpdate) {
-		const embed = new Discord.RichEmbed()
+		const embed = new Discord.MessageEmbed()
 			.setFooter(`Last profile update`)
 			.setTimestamp(new Date(member.updated))
 			.setTitle(`:information_source: Profile recently updated`)
@@ -662,7 +662,7 @@ export const register = async (msg: Discord.Message): Promise<void> => {
 		return;
 	}
 
-	const embed = new Discord.RichEmbed()
+	const embed = new Discord.MessageEmbed()
 		.setColor('FDC000')
 		.setFooter(
 			`Your code expires at ${new Date(

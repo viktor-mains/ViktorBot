@@ -66,7 +66,7 @@ export class TextCommand extends Command implements IExecuteText {
 export class EmbedCommand extends Command implements IExecuteEmbed {
 	public execute(embed: IEmbed, username: string): void {
 		const { title, color, thumbnail, description } = embed;
-		const newEmbed = new Discord.RichEmbed()
+		const newEmbed = new Discord.MessageEmbed()
 			.setTitle(title)
 			.setColor(color ? color : '0xFDC000')
 			.setTimestamp(new Date())

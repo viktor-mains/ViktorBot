@@ -17,7 +17,7 @@ type LogRoom = 'roomLogMsgs' | 'roomLogUsers';
 
 const sendLog = async (
 	guild: Guild,
-	embed: Discord.RichEmbed,
+	embed: Discord.MessageEmbed,
 	name: LogRoom,
 ): Promise<void> => {
 	const option = (await findOption(name)) ?? [];
@@ -31,7 +31,7 @@ const sendLog = async (
 };
 
 const sendGlobalLog = async (
-	embed: Discord.RichEmbed,
+	embed: Discord.MessageEmbed,
 	guild: Discord.Guild,
 ): Promise<void> => {
 	const room = await findOption('roomGlobal');
@@ -407,7 +407,7 @@ const informAboutPromotion = (msg: Discord.Message, role: any) => {
 		.replace(replaceAll('<br>'), '\n');
 	const embedColor: string = role.message.color;
 	const embedIcon: string = role.message.icon;
-	const embed = new Discord.RichEmbed()
+	const embed = new Discord.MessageEmbed()
 		.setTitle(`${embedIcon} ${embedTitle}`)
 		.setThumbnail(msg.author.avatarURL)
 		.setColor(embedColor)

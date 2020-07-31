@@ -49,14 +49,14 @@ export const createEmbed = (
 	color?: string,
 	thumbnail?: string,
 	footer?: string,
-): Discord.RichEmbed => {
+): Discord.MessageEmbed => {
 	const embed = thumbnail
-		? new Discord.RichEmbed()
+		? new Discord.MessageEmbed()
 				.setTitle(title)
 				.setColor(color ? `0x${color}` : `0x${COLORS.embed.main}`)
 				.setThumbnail(thumbnail)
 				.setFooter(footer ? footer : '')
-		: new Discord.RichEmbed()
+		: new Discord.MessageEmbed()
 				.setTitle(title)
 				.setColor(color ? `0x${color}` : `0x${COLORS.embed.main}`)
 				.setFooter(footer ? footer : '');
