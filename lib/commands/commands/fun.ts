@@ -8,6 +8,7 @@ import { chooseRandom } from '../../rng';
 import { log } from '../../log';
 import BotGraph from '../../graphs';
 import { findOption } from '../../storage/db';
+import { COLORS } from '@modules/colors';
 // @ts-ignore:next-line
 import { CAT_API_TOKEN } from '@config/config.json';
 
@@ -28,7 +29,7 @@ export const meow = async (msg: Discord.Message): Promise<void> => {
 		.setTitle('😺 Cat!')
 		.setTimestamp(new Date())
 		.setFooter(msg.author.username)
-		.setColor('0xFDC000')
+		.setColor(`0x${COLORS.embed.main}`)
 		.setImage(cat.data[0].url);
 	msg.channel.stopTyping();
 	msg.channel.send(embed);
@@ -51,7 +52,7 @@ export const woof = async (msg: Discord.Message): Promise<void> => {
 		.setTitle('🐶 Dog!')
 		.setTimestamp(new Date())
 		.setFooter(msg.author.username)
-		.setColor('0xFDC000')
+		.setColor(`0x${COLORS.embed.main}`)
 		.setImage(`http://random.dog/${dog.data}`);
 	msg.channel.stopTyping();
 	msg.channel.send(embed);
@@ -101,7 +102,9 @@ export const gibeskin = async (msg: Discord.Message): Promise<void> => {
 	const creatorDate = skins.find(skin => skin.key === 'Creator')!.value;
 	const deathSwornDate = skins.find(skin => skin.key === 'Death Sworn')!.value;
 	const graph = new BotGraph({ width: 500, height: 300 });
-	const graphAttachment = await graph.generate(skins);
+	const graphAttachment: Discord.MessageAttachment = await graph.generate(
+		skins,
+	);
 	const embed = new Discord.MessageEmbed()
 		.setTitle('<:vikSalty:289489052212789250> Viktor skin')
 		.setTimestamp(new Date())
@@ -109,8 +112,8 @@ export const gibeskin = async (msg: Discord.Message): Promise<void> => {
 			'Powered by Glorious Evolution',
 			'https://cdn.discordapp.com/emojis/232941841815830536.png',
 		)
-		.setColor('0xFDC000')
-		.attachFiles(graphAttachment)
+		.setColor(`0x${COLORS.embed.main}`)
+		.attachFiles([graphAttachment])
 		.setImage('attachment://graph.png')
 		.addField(
 			`\_\_\_`,
@@ -138,8 +141,8 @@ export const degen = async (msg: Discord.Message): Promise<void> => {
 	const emojiMultiplier = 3;
 	const regex = emojiRegex();
 	const regexText = emojiRegexText();
-	msg.channel
-		.fetchMessages({ limit })
+	msg.channel.messages
+		.fetch({ limit })
 		.then(messages => {
 			const allWords: Array<string> = [];
 			const degenMsgs = messages.filter(
@@ -188,7 +191,7 @@ export const degen = async (msg: Discord.Message): Promise<void> => {
 					'https://cdn.discordapp.com/emojis/288396957922361344.png',
 				)
 				.setTimestamp(new Date())
-				.setColor('0xFDC000');
+				.setColor(`0x${COLORS.embed.main}`);
 			embed.addField(
 				'___',
 				`My precise calculations and sophisticated algorithms led me to a conclusion that the degeneracy percentage of this chat has reached **${percentage.toFixed(

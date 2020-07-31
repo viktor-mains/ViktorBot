@@ -9,6 +9,7 @@ import {
 import { botRefuses } from '../rng';
 import { isUserAdmin } from '../message';
 import { replaceAll } from '../helpers';
+import { COLORS } from '@modules/colors';
 
 class Command {
 	public channel: Discord.TextChannel | Discord.DMChannel | Discord.NewsChannel;
@@ -62,7 +63,7 @@ export class EmbedCommand extends Command implements IExecuteEmbed {
 		const { title, color, thumbnail, description } = embed;
 		const newEmbed = new Discord.MessageEmbed()
 			.setTitle(title)
-			.setColor(color ? color : '0xFDC000')
+			.setColor(color ? color : `0x${COLORS.embed.main}`)
 			.setTimestamp(new Date())
 			.setFooter(username);
 

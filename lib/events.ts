@@ -264,6 +264,11 @@ export const initData = (
 ): User | void => {
 	// member = null means that they used to be part of Discord but aren't anymore, or Discord doesn't recognize them
 	if (!id || !msg) return;
+	const serverId = () => {
+		if (member && member.guild.id) return member.guild.id;
+		if (msg && msg.guild && msg.guild.id) return msg.guild.id;
+		return '0';
+	};
 	return {
 		id,
 		discordId: member ? member.id : id,
@@ -273,7 +278,7 @@ export const initData = (
 		description: undefined,
 		membership: [
 			{
-				serverId: member ? member.guild.id : msg ? msg.guild?.id : '0',
+				serverId: serverId(),
 				messageCount: 0,
 				firstMessage: 0,
 				joined:
@@ -286,7 +291,7 @@ export const initData = (
 };
 
 export const handleUserNotInDatabase = async (
-	member?: Discord.GuildMember,
+	member?: Discord.GuildMember | null,
 	msg?: Discord.Message | null,
 ): Promise<void> => {
 	if (!member) return;
@@ -383,6 +388,7 @@ export const handlePossibleMembershipRole = async (
 			const roleToAdd = msg.member?.guild.roles.cache.find(
 				role => role.name.toLowerCase() === mR.name.toLowerCase(),
 			);
+			if (!roleToAdd) return;
 			msg.member?.roles.add(roleToAdd);
 			informAboutPromotion(msg, mR);
 		} else if (
@@ -395,6 +401,7 @@ export const handlePossibleMembershipRole = async (
 			const roleToRemove = msg.member.guild.roles.cache.find(
 				role => role.name.toLowerCase() === mR.name.toLowerCase(),
 			);
+			if (!roleToRemove) return;
 			msg.member?.roles.remove(roleToRemove);
 		}
 	});
@@ -410,7 +417,9 @@ const informAboutPromotion = (msg: Discord.Message, role: any) => {
 		.replace(replaceAll('<br>'), '\n');
 	const embedColor: string = role.message.color;
 	const embedIcon: string = role.message.icon;
-	const authorAvatar: string = msg.author.avatarURL() ?? '';
+	const authorAvatar: string =
+		msg.author.avatarURL() ??
+		'https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc3/1bcc0f0aefe71b2c8ce66ffe8645d365.png';
 	const embed = new Discord.MessageEmbed()
 		.setTitle(`${embedIcon} ${embedTitle}`)
 		.setThumbnail(authorAvatar)

@@ -30,7 +30,8 @@ export function findTextChannel(
 	return ch as TextChannel;
 }
 
-export function isBotUser(user: User): boolean {
+export function isBotUser(user?: User): boolean | void {
+	if (!user || !bot.user) return;
 	return bot?.user?.id === user.id;
 }
 
@@ -53,10 +54,9 @@ export function findMemberJoinDate(
 	memberId: string,
 ): Date | undefined {
 	const guild = bot.guilds.cache.find(guild => guild.id == guildId);
-
 	const member = guild?.members.cache.find(
 		cachedMember => cachedMember.id == memberId,
 	);
-
-	return member ? new Date(member?.joinedAt) : undefined;
+	if (!member || !member.joinedAt) return;
+	return new Date(member?.joinedAt);
 }

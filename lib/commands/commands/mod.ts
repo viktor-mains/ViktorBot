@@ -51,7 +51,6 @@ export const impersonate = (msg: Discord.Message): void => {
 export const punish = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
 	const mentions = [...msg.mentions.users.values()];
-	let user: Discord.User | null = null;
 	let member;
 
 	if (mentions.length === 0) {
@@ -67,9 +66,11 @@ export const punish = async (msg: Discord.Message): Promise<void> => {
 		return;
 	}
 
-	user = msg.guild?.members.cache.find(member => member.id === mentions[0].id)
-		? msg.guild?.members.cache.find(member => member.id === mentions[0].id).user
-		: null;
+	const guildMember =
+		msg.guild &&
+		msg.guild.members.cache.find(member => member.id === mentions[0].id);
+	if (!guildMember) throw 'This member does not exist.';
+	const { user } = guildMember;
 
 	if (!user) {
 		msg.channel.send(

@@ -65,8 +65,9 @@ export async function isKnownMember(member: GuildMember): Promise<boolean> {
 }
 
 export async function findUserByDiscordId(
-	id: string,
+	id?: string,
 ): Promise<User | undefined> {
+	if (!id) return;
 	const user = await db.collection('users').findOne({ discordId: id });
 	return user;
 }

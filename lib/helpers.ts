@@ -135,7 +135,7 @@ export const splitArrayByObjectKey = (
 		return reducer;
 	}, {});
 
-export const toDDHHMMSS = (joinedAt?: Date): string => {
+export const toDDHHMMSS = (joinedAt: Date | null): string => {
 	if (!joinedAt) return 'unknown duration';
 	const start = moment(joinedAt);
 	const end = moment();

@@ -27,6 +27,7 @@ import {
 	getSummonerByAccountId,
 } from '../../riot';
 import { format as sprintf } from 'util';
+import { COLORS } from '@modules/colors';
 
 export const getPlatform = async (server?: string): Promise<string> => {
 	const { platform } = await findServerByName(server);
@@ -196,7 +197,7 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 	const queue = (await findQueue(ourPlayer.queue))!;
 
 	const embed = new Discord.MessageEmbed()
-		.setColor('FDC000')
+		.setColor(`0x${COLORS.embed.main}`)
 		.setThumbnail(
 			lane
 				? lane.icon
@@ -437,7 +438,7 @@ const aggregateMasteryData = async (
 		)
 		.setTimestamp(new Date())
 		.setFooter(msg.author.username)
-		.setColor(0xfdc000);
+		.setColor(`0x${COLORS.embed.main}`);
 
 	if (mostMasteryIcon !== undefined) {
 		embed.setThumbnail(mostMasteryIcon);
