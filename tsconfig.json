@@ -19,7 +19,7 @@
 		"pretty": true,
 		"paths": {
 			"@modules/*": ["lib/modules/*"],
-			"@config/*": ["lib/config/*"],
+			"@config/*": ["config/*"],
 			"config.json": ["./config.example.json"]
 		}
 	},
