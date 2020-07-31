@@ -88,14 +88,14 @@ interface Option<T> {
 }
 
 interface Options {
-	description_punish: string[];
+	descriptionPunish: string[];
 	topMasteries: number;
 	masteryIcons: {
 		mastery: number;
 		emote: string;
 	}[];
 	assignableRoles: string[];
-	room_roles: {
+	roomRoles: {
 		id: string;
 		guild: string;
 	}[];
@@ -120,17 +120,17 @@ interface Options {
 		value: number;
 		viktor: boolean;
 	}[];
-	degen_words: string[];
+	degenWords: string[];
 	maxAccounts: number;
-	room_log_msgs: {
+	roomLogMsgs: {
 		guild: string;
 		id: string;
 	}[];
-	room_log_users: {
+	roomLogUsers: {
 		guild: string;
 		id: string;
 	}[];
-	room_global: string;
+	roomGlobal: string;
 	commandSymbol: string;
 }
 
@@ -215,15 +215,14 @@ export async function findServerByName(
 ): Promise<{ region: string; platform: string; host: string }> {
 	const c = db.collection('servers');
 	const def = { host: undefined, platform: undefined, region: undefined };
-	const region =
-		(await c.findOne({ region: name?.toUpperCase() })) ?? def;
+	const region = (await c.findOne({ region: name?.toUpperCase() })) ?? def;
 	return region;
 }
 
 export interface Reaction {
 	id: string;
 	keywords: string[];
-	reaction_list: any[];
+	reactionList: any[];
 }
 
 export async function findReactionsById(id: string): Promise<Reaction[]> {
@@ -237,9 +236,7 @@ export async function findAllReactionsInMessage(
 	// This could probably be much quicker with a lookup table - it will slow down quite a bit as more reactions get added
 	const reactions = await db.collection('reactions').find({}).toArray();
 	return reactions.filter((r: Reaction) => {
-		const words = r.keywords.filter(keyword =>
-			content.includes(keyword),
-		);
+		const words = r.keywords.filter(keyword => content.includes(keyword));
 		// all of the keywords must be present in the sentence at once
 		return words.length === r.keywords.length;
 	});

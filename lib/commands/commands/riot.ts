@@ -82,37 +82,32 @@ const getAccountId = async (
 
 export const updatechampions = async (msg: Discord.Message): Promise<void> => {
 	const { data: versions } = await fetchVersions(client);
-	const version = versions[0];
+	const [version] = versions;
 	const { data: champions } = await fetchChampions(client, version);
 
-	const tasks = Object.values(champions.data).map(
-		async (champion: any) => {
-			try {
-				await upsertOne(
-					'champions',
-					{ id: champion.key },
+	const tasks = Object.values(champions.data).map(async (champion: any) => {
+		try {
+			await upsertOne(
+				'champions',
+				{ id: champion.key },
+				{
+					id: champion.key,
+					name: champion.name,
+					title: champion.title,
+					img: `http://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champion.image.full}`,
+				},
+			);
+		} catch {
+			await msg.channel.send(
+				createEmbed(`❌ Error updating champions`, [
 					{
-						id: champion.key,
-						name: champion.name,
-						title: champion.title,
-						img: `http://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champion.image.full}`,
+						title: '___',
+						content: `${champion.name} couldn't get updated. :C`,
 					},
-				);
-			} catch {
-				await msg.channel.send(
-					createEmbed(
-						`❌ Error updating champions`,
-						[
-							{
-								title: '___',
-								content: `${champion.name} couldn't get updated. :C`,
-							},
-						],
-					),
-				);
-			}
-		},
-	);
+				]),
+			);
+		}
+	});
 
 	await Promise.all(tasks);
 
@@ -134,8 +129,7 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 			createEmbed('❌ Incorrect nickname or server', [
 				{
 					title: '___',
-					content:
-						"Check if the data you've provided is correct.",
+					content: "Check if the data you've provided is correct.",
 				},
 			]),
 		);
@@ -150,8 +144,7 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 			createEmbed('❌ Incorrect nickname or server', [
 				{
 					title: '___',
-					content:
-						"Check if the data you've provided is correct.",
+					content: "Check if the data you've provided is correct.",
 				},
 			]),
 		);
@@ -159,7 +152,7 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 		return;
 	}
 
-	const matchBaseData = recentGames.data.matches[0];
+	const [matchBaseData] = recentGames.data.matches;
 	const matchId = matchBaseData.gameId;
 	const [lastGameData, lastGameTimeline] = await Promise.all([
 		fetchMatchInfo(client, host, matchId),
@@ -186,9 +179,7 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 		players[i].win = participant.teamId === winningTeam;
 		players[i].teamId = participant.teamId;
 		players[i].championId = participant.championId;
-		players[i].champion = await findChampion(
-			participant.championId,
-		);
+		players[i].champion = await findChampion(participant.championId);
 		players[i].summ1 = participant.spell1Id;
 		players[i].summ2 = participant.spell2Id;
 		players[i].fbkill = participant.stats.firstBloodKill;
@@ -199,8 +190,7 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 	const ourPlayer = players.find(player => player.id === playerId);
 	const enemies = players.filter(
 		player =>
-			player.lane === ourPlayer.lane &&
-			player.teamId !== ourPlayer.teamId,
+			player.lane === ourPlayer.lane && player.teamId !== ourPlayer.teamId,
 	);
 	const lane = (await findLane(ourPlayer.lane))!;
 	const queue = (await findQueue(ourPlayer.queue))!;
@@ -221,18 +211,13 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 	if (enemies.length === 0) {
 		const content =
 			'There was no lane opponent in this game.\nEither it was a bot game, one of the laners roamed a lot or one of the laners was AFK.';
-		embed.setTitle(
-			`${
-				ourPlayer.champion
-					? ourPlayer.champion.name.toUpperCase()
-					: '???'
-			}`,
-		)
+		embed
+			.setTitle(
+				`${ourPlayer.champion ? ourPlayer.champion.name.toUpperCase() : '???'}`,
+			)
 			.setDescription(
 				`**${ourPlayer.name}** (${
-					ourPlayer.champion
-						? ourPlayer.champion.name
-						: '???'
+					ourPlayer.champion ? ourPlayer.champion.name : '???'
 				})`,
 			)
 			.addField('Some info', content);
@@ -240,59 +225,42 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 		const relevantMinutes = [5, 10, 15];
 		const gameFrames: any = {};
 
-		embed.setTitle(
-			sprintf(
-				'%s vs %s',
-				ourPlayer.champion?.name.toUpperCase() ?? '???',
-				enemies
-					.map(
-						e =>
-							e.champion?.name.toUpperCase() ??
-							'???',
-					)
-					.join(' '),
-			),
-		).setDescription(
-			sprintf(
-				"**%s's** %s %s vs %s in %d minutes",
-				ourPlayer.name,
-				ourPlayer.champion?.name.toUpperCase() ?? '???',
-				ourPlayer.win ? 'wins' : 'loses',
-				enemies
-					.map(e => {
-						return sprintf(
-							"**%s's** %s",
-							e.champion?.name.toUpperCase() ??
-								'???',
-						);
-					})
-					.join(' '),
-				Math.round(
-					parseInt(
-						lastGameData.data.gameDuration,
-					) / 60,
+		embed
+			.setTitle(
+				sprintf(
+					'%s vs %s',
+					ourPlayer.champion?.name.toUpperCase() ?? '???',
+					enemies.map(e => e.champion?.name.toUpperCase() ?? '???').join(' '),
 				),
-			),
-		);
+			)
+			.setDescription(
+				sprintf(
+					"**%s's** %s %s vs %s in %d minutes",
+					ourPlayer.name,
+					ourPlayer.champion?.name.toUpperCase() ?? '???',
+					ourPlayer.win ? 'wins' : 'loses',
+					enemies
+						.map(e => {
+							return sprintf(
+								"**%s's** %s",
+								e.champion?.name.toUpperCase() ?? '???',
+							);
+						})
+						.join(' '),
+					Math.round(parseInt(lastGameData.data.gameDuration) / 60),
+				),
+			);
 
 		relevantMinutes.map((minute: number) => {
 			if (lastGameTimeline.data.frames[minute]) {
-				const timeline =
-					lastGameTimeline.data.frames[minute]
-						.participantFrames;
-				const player: any = Object.values(
-					timeline,
-				).find(
-					(player: any) =>
-						player.participantId ===
-						ourPlayer.gameId,
+				const timeline = lastGameTimeline.data.frames[minute].participantFrames;
+				const player: any = Object.values(timeline).find(
+					(player: any) => player.participantId === ourPlayer.gameId,
 				);
 
 				gameFrames[`min${minute}`] = {
 					player: {
-						cs:
-							player.minionsKilled +
-							player.jungleMinionsKilled,
+						cs: player.minionsKilled + player.jungleMinionsKilled,
 						gold: player.totalGold,
 						level: player.level,
 					},
@@ -302,51 +270,33 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 				};
 
 				enemies.map((enemy: any) => {
-					const player: any = Object.values(
-						timeline,
-					).find(
-						(player: any) =>
-							player.participantId ===
-							enemy.gameId,
+					const player: any = Object.values(timeline).find(
+						(player: any) => player.participantId === enemy.gameId,
 					);
-					gameFrames[`min${minute}`].enemies.push(
-						{
-							id: enemy.gameId,
-							cs:
-								player.minionsKilled +
-								player.jungleMinionsKilled,
-							gold: player.totalGold,
-							level: player.level,
-						},
-					);
+					gameFrames[`min${minute}`].enemies.push({
+						id: enemy.gameId,
+						cs: player.minionsKilled + player.jungleMinionsKilled,
+						gold: player.totalGold,
+						level: player.level,
+					});
 				});
 
 				Object.values(timeline).map((player: any) => {
 					const currentPlayer = players.find(
-						(p: any) =>
-							p.gameId ===
-							player.participantId,
+						(p: any) => p.gameId === player.participantId,
 					);
 					if (
 						currentPlayer &&
-						currentPlayer.teamId !==
-							ourPlayer.teamId &&
-						currentPlayer.lane !==
-							ourPlayer.lane
+						currentPlayer.teamId !== ourPlayer.teamId &&
+						currentPlayer.lane !== ourPlayer.lane
 					)
-						gameFrames[
-							`min${minute}`
-						].enemyTeam += player.totalGold;
+						gameFrames[`min${minute}`].enemyTeam += player.totalGold;
 					if (
 						currentPlayer &&
-						currentPlayer.teamId ===
-							ourPlayer.teamId &&
-						currentPlayer.lane !==
-							ourPlayer.lane
+						currentPlayer.teamId === ourPlayer.teamId &&
+						currentPlayer.lane !== ourPlayer.lane
 					)
-						gameFrames[
-							`min${minute}`
-						].allyTeam += player.totalGold;
+						gameFrames[`min${minute}`].allyTeam += player.totalGold;
 				});
 
 				const playerChampionName = ourPlayer.champion
@@ -355,16 +305,10 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 				const enemyChampionName = enemies[0].champion
 					? enemies[0].champion.name
 					: '[unknown enemy champion]';
-				const playerGold =
-					gameFrames[`min${minute}`].player.gold;
-				const playerCs =
-					gameFrames[`min${minute}`].player.cs;
-				const enemyCs =
-					gameFrames[`min${minute}`].enemies[0]
-						.cs;
-				const enemyGold =
-					gameFrames[`min${minute}`].enemies[0]
-						.gold;
+				const playerGold = gameFrames[`min${minute}`].player.gold;
+				const playerCs = gameFrames[`min${minute}`].player.cs;
+				const enemyCs = gameFrames[`min${minute}`].enemies[0].cs;
+				const enemyGold = gameFrames[`min${minute}`].enemies[0].gold;
 				const allyTeamGoldAdvantage =
 					gameFrames[`min${minute}`].allyTeam -
 					gameFrames[`min${minute}`].enemyTeam;
@@ -372,25 +316,16 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 					? `${playerChampionName} has **${Math.abs(
 							playerGold - enemyGold,
 					  )}** gold ${
-							playerGold - enemyGold >
-							0
-								? 'advantage'
-								: 'disadvantage'
+							playerGold - enemyGold > 0 ? 'advantage' : 'disadvantage'
 					  }.
                         Creep scores are ${playerChampionName}'s **${playerCs}** to ${enemyChampionName}'s **${enemyCs}**.
                         All other lanes ${
-				allyTeamGoldAdvantage >= 0 ? 'win' : 'lose'
-			} with **${Math.abs(allyTeamGoldAdvantage)}** gold ${
-							allyTeamGoldAdvantage >=
-							0
-								? 'advantage'
-								: 'disadvantage'
+													allyTeamGoldAdvantage >= 0 ? 'win' : 'lose'
+												} with **${Math.abs(allyTeamGoldAdvantage)}** gold ${
+							allyTeamGoldAdvantage >= 0 ? 'advantage' : 'disadvantage'
 					  }.`
 					: 'Game ended by now.';
-				embed.addField(
-					`Minute ${minute}`,
-					minuteSummary,
-				);
+				embed.addField(`Minute ${minute}`, minuteSummary);
 			}
 		});
 	}
@@ -407,16 +342,12 @@ export const mastery = async (msg: Discord.Message): Promise<void> => {
 		const accounts = user?.accounts ?? [];
 		if (accounts.length !== 0) {
 			for (const account of accounts) {
-				const platform = await getPlatform(
-					account.server,
-				);
+				const platform = await getPlatform(account.server);
 				const host = await getHost(account.server);
 				if (!platform || !!host) {
 					continue;
 				}
-				const {
-					data: summoner,
-				} = await getSummonerByAccountId(
+				const { data: summoner } = await getSummonerByAccountId(
 					client,
 					host,
 					account.id,
@@ -432,20 +363,19 @@ export const mastery = async (msg: Discord.Message): Promise<void> => {
 			}
 
 			return;
-		} else {
-			msg.channel.send(
-				createEmbed(
-					`:information_source: You don't have any accounts registered`,
-					[
-						{
-							title: '___',
-							content: `To use this commands without arguments you have to register your League account first: \`\`!register <IGN> | <server>\`\`.
-                        Otherwise, this command can be used as follows: \`\`!mastery IGN|server\`\`.`,
-						},
-					],
-				),
-			);
 		}
+		msg.channel.send(
+			createEmbed(
+				`:information_source: You don't have any accounts registered`,
+				[
+					{
+						title: '___',
+						content: `To use this commands without arguments you have to register your League account first: \`\`!register <IGN> | <server>\`\`.
+                        Otherwise, this command can be used as follows: \`\`!mastery IGN|server\`\`.`,
+					},
+				],
+			),
+		);
 	} else {
 		const { nickname, server } = extractNicknameAndServer(msg);
 		if (nickname === undefined || server === undefined) {
@@ -457,11 +387,7 @@ export const mastery = async (msg: Discord.Message): Promise<void> => {
 			return;
 		}
 
-		const { data: summoner } = await getSummonerByName(
-			client,
-			host,
-			nickname,
-		);
+		const { data: summoner } = await getSummonerByName(client, host, nickname);
 
 		aggregateMasteryData(msg, nickname, server, host, summoner);
 	}
@@ -476,11 +402,7 @@ const aggregateMasteryData = async (
 ) => {
 	const topX = (await findOption('topMasteries')) ?? 3;
 	const masteryIcons = (await findOption('masteryIcons')) ?? [];
-	const masteryData = await fetchSummonerMasteries(
-		client,
-		host,
-		summoner,
-	);
+	const masteryData = await fetchSummonerMasteries(client, host, summoner);
 	const masteryList = orderBy(
 		masteryData.data,
 		['championPoints'],
@@ -532,16 +454,12 @@ const aggregateMasteryData = async (
 		let title = `${champion.name}, ${champion.title}`;
 		if (masteryIcon)
 			title = `${masteryIcon.emote} ${title} ${
-				mastery.chestGranted
-					? '<:chest_unlocked:672434420195655701>'
-					: ''
+				mastery.chestGranted ? '<:chest_unlocked:672434420195655701>' : ''
 			}`;
 		embed.addField(
 			title,
 			`**Points**: ${mastery.championPoints}\n` +
-				`**Last game**: ${new Date(
-					mastery.lastPlayTime,
-				).toLocaleDateString()}`,
+				`**Last game**: ${new Date(mastery.lastPlayTime).toLocaleDateString()}`,
 			false,
 		);
 	});

@@ -11,8 +11,9 @@ import {
 } from './storage/db';
 import { createEmbed, toDDHHMMSS, removeKeyword, replaceAll } from './helpers';
 import { findTextChannel } from './bot';
+import { COLORS } from '@modules/colors';
 
-type LogRoom = 'room_log_msgs' | 'room_log_users';
+type LogRoom = 'roomLogMsgs' | 'roomLogUsers';
 
 const sendLog = async (
 	guild: Guild,
@@ -33,7 +34,7 @@ const sendGlobalLog = async (
 	embed: Discord.RichEmbed,
 	guild: Discord.Guild,
 ): Promise<void> => {
-	const room = await findOption('room_global');
+	const room = await findOption('roomGlobal');
 	const channel = findTextChannel(room);
 
 	if (channel === undefined) {
@@ -90,22 +91,18 @@ export const msgEdit = (
 			},
 			{
 				title: `Created at`,
-				content: moment(oldTimestamp).format(
-					'MMMM Do YYYY, HH:mm:ss',
-				),
+				content: moment(oldTimestamp).format('MMMM Do YYYY, HH:mm:ss'),
 				inline: true,
 			},
 			{
 				title: `Edited at`,
-				content: moment(newTimestamp).format(
-					'MMMM Do YYYY, HH:mm:ss',
-				),
+				content: moment(newTimestamp).format('MMMM Do YYYY, HH:mm:ss'),
 				inline: true,
 			},
 		],
-		'83C4F2',
+		COLORS.embed.edit,
 	);
-	sendLog(oldMsg.guild, log, 'room_log_msgs');
+	sendLog(oldMsg.guild, log, 'roomLogMsgs');
 };
 
 export const msgDelete = (msg: Discord.Message): void => {
@@ -114,13 +111,9 @@ export const msgDelete = (msg: Discord.Message): void => {
 	const newTimestamp = new Date();
 	const attachments =
 		[...msg.attachments.values()].length != 0
-			? [...msg.attachments.values()]
-					.map((att: any) => att.proxyURL)
-					.join(' ')
+			? [...msg.attachments.values()].map((att: any) => att.proxyURL).join(' ')
 			: 'none';
-	const content = msg.content
-		? msg.content
-		: '_empty message or picture_';
+	const content = msg.content ? msg.content : '_empty message or picture_';
 	const log = createEmbed(
 		`:no_mobile_phones: MESSAGE DELETED`,
 		[
@@ -142,22 +135,18 @@ export const msgDelete = (msg: Discord.Message): void => {
 			},
 			{
 				title: `Created at`,
-				content: moment(oldTimestamp).format(
-					'MMMM Do YYYY, HH:mm:ss',
-				),
+				content: moment(oldTimestamp).format('MMMM Do YYYY, HH:mm:ss'),
 				inline: true,
 			},
 			{
 				title: `Deleted at`,
-				content: moment(newTimestamp).format(
-					'MMMM Do YYYY, HH:mm:ss',
-				),
+				content: moment(newTimestamp).format('MMMM Do YYYY, HH:mm:ss'),
 				inline: true,
 			},
 		],
-		'C70000',
+		COLORS.embed.delete,
 	);
-	sendLog(msg.guild, log, 'room_log_msgs');
+	sendLog(msg.guild, log, 'roomLogMsgs');
 };
 
 export const userJoin = async (member: Discord.GuildMember): Promise<void> => {
@@ -172,13 +161,13 @@ export const userJoin = async (member: Discord.GuildMember): Promise<void> => {
 			},
 			{
 				title: `Joined at`,
-				content: moment(
-					member.joinedAt.toISOString(),
-				).format('MMMM Do YYYY, HH:mm:ss'),
+				content: moment(member.joinedAt.toISOString()).format(
+					'MMMM Do YYYY, HH:mm:ss',
+				),
 				inline: true,
 			},
 		],
-		'51E61C',
+		COLORS.embed.join,
 	);
 
 	if (!isKnownMember(member)) {
@@ -187,7 +176,7 @@ export const userJoin = async (member: Discord.GuildMember): Promise<void> => {
 	} else {
 		handleUserNotInDatabase(member);
 	}
-	sendLog(member.guild, log, 'room_log_users');
+	sendLog(member.guild, log, 'roomLogUsers');
 };
 
 export const userLeave = (member: Discord.GuildMember): void => {
@@ -208,19 +197,17 @@ export const userLeave = (member: Discord.GuildMember): void => {
 			},
 			{
 				title: `Leaves at`,
-				content: moment(
-					new Date().toISOString(),
-				).format('MMMM Do YYYY, HH:mm:ss a')
-					? moment(
-							new Date().toISOString(),
-					  ).format('MMMM Do YYYY, HH:mm:ss a')
+				content: moment(new Date().toISOString()).format(
+					'MMMM Do YYYY, HH:mm:ss a',
+				)
+					? moment(new Date().toISOString()).format('MMMM Do YYYY, HH:mm:ss a')
 					: '?',
 				inline: true,
 			},
 		],
-		'C70000',
+		COLORS.embed.leave,
 	);
-	sendLog(member.guild, log, 'room_log_users');
+	sendLog(member.guild, log, 'roomLogUsers');
 };
 
 export const descriptionChange = (msg: Discord.Message): void => {
@@ -240,15 +227,15 @@ export const descriptionChange = (msg: Discord.Message): void => {
 			},
 			{
 				title: `Changed at`,
-				content: moment(
-					new Date().toISOString(),
-				).format('MMMM Do YYYY, HH:mm:ss a'),
+				content: moment(new Date().toISOString()).format(
+					'MMMM Do YYYY, HH:mm:ss a',
+				),
 				inline: false,
 			},
 		],
-		'8442f5',
+		COLORS.embed.description,
 	);
-	sendLog(msg.guild, log, 'room_log_users');
+	sendLog(msg.guild, log, 'roomLogUsers');
 	sendGlobalLog(log, msg.member.guild);
 };
 
@@ -258,13 +245,11 @@ export const botJoin = (guild: Discord.Guild): void => {
 		[
 			{
 				title: `Joined at`,
-				content: moment(Date.now()).format(
-					'MMMM Do YYYY, HH:mm:ss',
-				),
+				content: moment(Date.now()).format('MMMM Do YYYY, HH:mm:ss'),
 				inline: true,
 			},
 		],
-		'51E61C',
+		COLORS.embed.join,
 	);
 	log.INFO(`Great Herald joined ${guild.id} guild!`);
 	sendGlobalLog(botLog, guild);
@@ -286,18 +271,12 @@ export const initData = (
 		description: undefined,
 		membership: [
 			{
-				serverId: member
-					? member.guild.id
-					: msg
-					? msg.guild.id
-					: '0',
+				serverId: member ? member.guild.id : msg ? msg.guild.id : '0',
 				messageCount: 0,
 				firstMessage: 0,
 				joined:
 					member && member.joinedAt
-						? new Date(
-								member.joinedAt,
-						  ).getTime()
+						? new Date(member.joinedAt).getTime()
 						: Date.now(),
 			},
 		],
@@ -330,22 +309,11 @@ export const handleUserNotInDatabase = async (
 		if (memberIndex !== -1) {
 			// user is in the database and in the server
 			memberInDataBase.membership[memberIndex].messageCount =
-				memberInDataBase.membership[memberIndex]
-					.messageCount + 1;
-			if (
-				memberInDataBase.membership[memberIndex]
-					.joined === 0
-			)
-				memberInDataBase.membership[
-					memberIndex
-				].joined = Date.now();
-			if (
-				memberInDataBase.membership[memberIndex]
-					.firstMessage === 0
-			)
-				memberInDataBase.membership[
-					memberIndex
-				].firstMessage = Date.now();
+				memberInDataBase.membership[memberIndex].messageCount + 1;
+			if (memberInDataBase.membership[memberIndex].joined === 0)
+				memberInDataBase.membership[memberIndex].joined = Date.now();
+			if (memberInDataBase.membership[memberIndex].firstMessage === 0)
+				memberInDataBase.membership[memberIndex].firstMessage = Date.now();
 			await upsertUser(member.id, memberInDataBase);
 		} else {
 			// user is in database but not in the server
@@ -355,9 +323,7 @@ export const handleUserNotInDatabase = async (
 				firstMessage: Date.now(),
 				joined: msg
 					? msg.member && msg.member.joinedAt
-						? new Date(
-								msg.member.joinedAt,
-						  ).getTime()
+						? new Date(msg.member.joinedAt).getTime()
 						: Date.now()
 					: 0,
 			};
@@ -370,11 +336,10 @@ export const handleUserNotInDatabase = async (
 	if (memberInDataBase === undefined) {
 		// user not in database at all
 		if (member) update(user, initData(member));
-		if (msg && msg.member)
-			update(user, initData(null, msg.member.id));
-		if (msg && !msg.member)
-			update(user, initData(null, msg.author.id, msg));
-	} // user in database
+		if (msg && msg.member) update(user, initData(null, msg.member.id));
+		if (msg && !msg.member) update(user, initData(null, msg.author.id, msg));
+	}
+	// user in database
 	else update(user, memberInDataBase);
 };
 
@@ -386,9 +351,7 @@ export const handlePossibleMembershipRole = async (
 		return;
 	const user = await findUserByDiscordId(msg.author.id);
 	const membership =
-		user?.membership.find(
-			guild => guild.serverId === msg.guild.id,
-		) ?? null;
+		user?.membership.find(guild => guild.serverId === msg.guild.id) ?? null;
 	const membershipRoles = (await findOption('membershipRoles')) ?? null;
 
 	if (membership === null || !membershipRoles || !user) return;
@@ -402,24 +365,20 @@ export const handlePossibleMembershipRole = async (
 		.filter(
 			role =>
 				role.requirement.messages <= memberMsgCount &&
-				role.requirement.time <=
-					Date.now() - memberJoinDate,
+				role.requirement.time <= Date.now() - memberJoinDate,
 		)
-		.filter((role, index) => role.persistent || index === 0); // only persistent roles and one with highest weight
+		// only persistent roles and one with highest weight
+		.filter((role, index) => role.persistent || index === 0);
 	membershipRoles.map(mR => {
 		if (
 			neededRoles.find(nR => nR.name === mR.name) &&
 			!msg.member.roles.some(r => r.name === mR.name) &&
 			msg.member.guild.roles.find(
-				role =>
-					role.name.toLowerCase() ===
-					mR.name.toLowerCase(),
+				role => role.name.toLowerCase() === mR.name.toLowerCase(),
 			)
 		) {
 			const roleToAdd = msg.member.guild.roles.find(
-				role =>
-					role.name.toLowerCase() ===
-					mR.name.toLowerCase(),
+				role => role.name.toLowerCase() === mR.name.toLowerCase(),
 			);
 			msg.member.addRole(roleToAdd);
 			informAboutPromotion(msg, mR);
@@ -427,15 +386,11 @@ export const handlePossibleMembershipRole = async (
 			!neededRoles.find(nR => nR.name === mR.name) &&
 			msg.member.roles.some(r => r.name === mR.name) &&
 			msg.member.guild.roles.find(
-				role =>
-					role.name.toLowerCase() ===
-					mR.name.toLowerCase(),
+				role => role.name.toLowerCase() === mR.name.toLowerCase(),
 			)
 		) {
 			const roleToRemove = msg.member.guild.roles.find(
-				role =>
-					role.name.toLowerCase() ===
-					mR.name.toLowerCase(),
+				role => role.name.toLowerCase() === mR.name.toLowerCase(),
 			);
 			msg.member.removeRole(roleToRemove);
 		}

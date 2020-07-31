@@ -16,9 +16,8 @@ const roleExists = (roleName, member) => {
 const roleisAssignable = async roleName => {
 	const roles = await findOption('assignableRoles');
 	return (
-		roles?.find(
-			role => role.toLowerCase() === roleName.toLowerCase(),
-		) !== undefined
+		roles?.find(role => role.toLowerCase() === roleName.toLowerCase()) !==
+		undefined
 	);
 };
 
@@ -28,19 +27,14 @@ const userHasRole = (roleName, member) => {
 };
 
 const requestWasSendInApropriateChannel = async (msg: Discord.Message) => {
-	const roomRoles = (await findOption('room_roles')) ?? [];
+	const roomRoles = (await findOption('roomRoles')) ?? [];
 	const guildRole = roomRoles.find(role => role.guild === msg.guild.id);
 	return guildRole?.id === msg.channel.id;
 };
 
 const specialRoleRequested = async (roleName: string, msg: Discord.Message) => {
 	const name = roleName.toLowerCase();
-	const [
-		jokeRoles,
-		rankRoles,
-		membershipRoles,
-		modRoles,
-	] = await Promise.all([
+	const [jokeRoles, rankRoles, membershipRoles, modRoles] = await Promise.all([
 		findOption('jokeRoles'),
 		findOption('rankRoles'),
 		findOption('membershipRoles'),
@@ -104,15 +98,11 @@ const specialRoleRequested = async (roleName: string, msg: Discord.Message) => {
 
 export const iam = async (msg: Discord.Message): Promise<void> => {
 	const roleName = removeKeyword(msg);
-	const member = msg.member;
-	const roomRoles = await findOption('room_roles');
-	const appropiateChannel = roomRoles?.find(s => s.guild === msg.guild.id)
-		?.id;
+	const { member } = msg;
+	const roomRoles = await findOption('roomRoles');
+	const appropiateChannel = roomRoles?.find(s => s.guild === msg.guild.id)?.id;
 
-	if (
-		!(await requestWasSendInApropriateChannel(msg)) &&
-		appropiateChannel
-	) {
+	if (!(await requestWasSendInApropriateChannel(msg)) && appropiateChannel) {
 		msg.channel.send(
 			`You can be anything you want, I'm not giving you role outside the <#${appropiateChannel}> room.`,
 		);
@@ -126,9 +116,7 @@ export const iam = async (msg: Discord.Message): Promise<void> => {
 		return;
 	}
 	if (!roleExists(roleName, member)) {
-		msg.channel.send(
-			`Role **[${roleName.toUpperCase()}]** doesn't exist.`,
-		);
+		msg.channel.send(`Role **[${roleName.toUpperCase()}]** doesn't exist.`);
 		return;
 	}
 	if (!(await roleisAssignable(roleName))) {
@@ -164,17 +152,15 @@ export const iam = async (msg: Discord.Message): Promise<void> => {
 };
 
 export const iamnot = async (msg: Discord.Message): Promise<void> => {
-	const roleName: string = extractArguments(msg)[0];
-	const member: Discord.GuildMember = msg.member;
+	const [roleName]: string[] = extractArguments(msg);
+	const { member } = msg;
 
 	if (!roleName) {
 		msg.channel.send(`Excuse me, you aren't _what?_`);
 		return;
 	}
 	if (!roleExists(roleName, member)) {
-		msg.channel.send(
-			`Role **[${roleName.toUpperCase()}]** doesn't exist.`,
-		);
+		msg.channel.send(`Role **[${roleName.toUpperCase()}]** doesn't exist.`);
 		return;
 	}
 	if (!(await roleisAssignable(roleName))) {
@@ -190,16 +176,14 @@ export const iamnot = async (msg: Discord.Message): Promise<void> => {
 		return;
 	}
 	if (!(await requestWasSendInApropriateChannel(msg))) {
-		const roles = await findOption('room_roles');
+		const roles = await findOption('roomRoles');
 		const channel = roles?.find(g => g.guild === msg.guild.id);
 		if (channel === undefined) {
 			// This should probably be logged
 			return;
 		}
 
-		msg.channel.send(
-			`I'm not doing that outside the <#${channel}> room.`,
-		);
+		msg.channel.send(`I'm not doing that outside the <#${channel}> room.`);
 		return;
 	}
 
@@ -233,8 +217,7 @@ export const roles = async (msg: Discord.Message): Promise<void> => {
 	assignableRoles.map((assignableRole: string) => {
 		existingRoles.find(
 			existingRole =>
-				existingRole.toLowerCase() ===
-				assignableRole.toLowerCase(),
+				existingRole.toLowerCase() === assignableRole.toLowerCase(),
 		) && availableRoles.push(`- ${assignableRole}`);
 	});
 

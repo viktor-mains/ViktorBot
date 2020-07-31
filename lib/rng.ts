@@ -1,5 +1,10 @@
-export const draw = (): number => Math.floor(Math.random() * 100 + 1);
-export const botRefuses = (): boolean => happensWithAChanceOf(1);
+const chanceToRefuse = 1;
+const bottomRange = 1;
+const hundred = 100;
+
+export const draw = (): number =>
+	Math.floor(Math.random() * hundred + bottomRange);
+export const botRefuses = (): boolean => happensWithAChanceOf(chanceToRefuse);
 export const happensWithAChanceOf = (percentageChance: number): boolean =>
 	draw() <= percentageChance ? true : false;
 /* eslint-disable-next-line */

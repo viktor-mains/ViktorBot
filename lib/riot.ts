@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { format as sprintf } from 'util';
 import { Request, default as fetch } from 'node-fetch';
-import config from '../config.json';
+// @ts-ignore:next-line
+import { RIOT_API_TOKEN } from '@config/config.json';
 
 export class RiotClient {
 	#token: string;
@@ -15,10 +16,7 @@ export class RiotClient {
 		path: string,
 		...params: string[]
 	): Promise<Response<T>> {
-		const pathWithParams = sprintf(
-			path,
-			...params.map(encodeURIComponent),
-		);
+		const pathWithParams = sprintf(path, ...params.map(encodeURIComponent));
 		const uri = new URL(pathWithParams, host);
 		const request = new Request(uri.href, {
 			method: 'GET',
@@ -32,9 +30,7 @@ export class RiotClient {
 
 		if (!response.ok) {
 			// TODO: we need better error handling than this
-			throw new Error(
-				`API error: ${response.status} - ${uri.href}`,
-			);
+			throw new Error(`API error: ${response.status} - ${uri.href}`);
 		}
 
 		return {
@@ -44,7 +40,7 @@ export class RiotClient {
 	}
 }
 
-export const client = new RiotClient(config.RIOT_API_TOKEN);
+export const client = new RiotClient(RIOT_API_TOKEN);
 
 interface Response<T> {
 	data: T;
@@ -222,9 +218,5 @@ export function getSummonerBySummonerId(
 	host: string,
 	name: string,
 ): Promise<any> {
-	return client.fetch<Summoner>(
-		host,
-		'/lol/summoner/v4/summoners/%s',
-		name,
-	);
+	return client.fetch<Summoner>(host, '/lol/summoner/v4/summoners/%s', name);
 }

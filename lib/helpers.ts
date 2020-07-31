@@ -2,6 +2,7 @@ import Discord from 'discord.js';
 import moment from 'moment';
 import { IEmbedField } from './types/command';
 import { findOption } from './storage/db';
+import { COLORS } from '@modules/colors';
 
 export const getCommandSymbol = async (): Promise<string | undefined> =>
 	await findOption('commandSymbol');
@@ -52,12 +53,12 @@ export const createEmbed = (
 	const embed = thumbnail
 		? new Discord.RichEmbed()
 				.setTitle(title)
-				.setColor(color ? `0x${color}` : '0xFDC000')
+				.setColor(color ? `0x${color}` : `0x${COLORS.embed.main}`)
 				.setThumbnail(thumbnail)
 				.setFooter(footer ? footer : '')
 		: new Discord.RichEmbed()
 				.setTitle(title)
-				.setColor(color ? `0x${color}` : '0xFDC000')
+				.setColor(color ? `0x${color}` : `0x${COLORS.embed.main}`)
 				.setFooter(footer ? footer : '');
 	fields.map(field =>
 		embed.addField(
@@ -140,21 +141,11 @@ export const toDDHHMMSS = (joinedAt: Date): string => {
 	const diff = moment.duration(end.diff(start));
 
 	return `${
-		moment.duration(diff).years()
-			? moment.duration(diff).years() + 'y '
-			: ''
+		moment.duration(diff).years() ? moment.duration(diff).years() + 'y ' : ''
 	}${
-		moment.duration(diff).months()
-			? moment.duration(diff).months() + 'm '
-			: ''
-	}${
-		moment.duration(diff).days()
-			? moment.duration(diff).days() + 'd '
-			: ''
-	}${
-		moment.duration(diff).hours()
-			? moment.duration(diff).hours() + 'h '
-			: ''
+		moment.duration(diff).months() ? moment.duration(diff).months() + 'm ' : ''
+	}${moment.duration(diff).days() ? moment.duration(diff).days() + 'd ' : ''}${
+		moment.duration(diff).hours() ? moment.duration(diff).hours() + 'h ' : ''
 	}${
 		moment.duration(diff).minutes()
 			? moment.duration(diff).minutes() + 'm '
@@ -167,7 +158,8 @@ export const toDDHHMMSS = (joinedAt: Date): string => {
 };
 
 export const toMMSS = (miliseconds: number): string => {
-	const duration = miliseconds / 1000;
+	const mili = 1000;
+	const duration = miliseconds / mili;
 	const minutes = (duration / 60).toFixed(0);
 	const seconds = (duration % 60).toFixed(0);
 	return `${minutes} minutes ${seconds} seconds`;

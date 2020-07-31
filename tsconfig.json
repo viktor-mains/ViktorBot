@@ -1,9 +1,10 @@
 {
 	"compilerOptions": {
 		"baseUrl": "./",
-		"outDir": "./dist",
-		"target": "es6",
+		"outDir": "dist",
+		"target": "es2017",
 		"module": "commonJS",
+		"moduleResolution": "node",
 		"allowJs": true,
 		"checkJs": true,
 		"skipLibCheck": true,
@@ -17,9 +18,11 @@
 		"allowUnusedLabels": true,
 		"pretty": true,
 		"paths": {
-			"config.json": ["config.example.json"] // This mapping is relative to "baseUrl"
+			"@modules/*": ["lib/modules/*"],
+			"@config/*": ["lib/config/*"],
+			"config.json": ["./config.example.json"]
 		}
 	},
 	"include": ["./**/*"],
-	"exclude": ["node_modules", "dist"]
+	"exclude": ["node_modules", "dist", "config.json"]
 }

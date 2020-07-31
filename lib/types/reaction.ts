@@ -8,5 +8,5 @@ export type IReactionDetails = {
 export type IReaction = {
 	id?: string;
 	keywords: [string] | [null];
-	reaction_list: [IReactionDetails];
+	reactionList: [IReactionDetails];
 };

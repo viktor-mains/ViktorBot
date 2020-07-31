@@ -17,6 +17,7 @@ import {
 	findAllReactionsInMessage,
 } from './storage/db';
 
+const minimumRantLength = 20;
 // LOGIC
 
 const isUserAdmin = (msg: Discord.Message): boolean =>
@@ -31,7 +32,8 @@ const messageStartsWithCommandSymbol = async (msg: Discord.Message) => {
 };
 
 const isMessageRant = (msg: Discord.Message) =>
-	msg.content === msg.content.toUpperCase() && msg.content.length > 20;
+	msg.content === msg.content.toUpperCase() &&
+	msg.content.length > minimumRantLength;
 const isMessageDearViktor = (msg: Discord.Message) =>
 	msg.content.toLowerCase().startsWith('dear viktor');
 const isMessageDearVictor = (msg: Discord.Message) =>
@@ -41,23 +43,13 @@ const answer = (msg: Discord.Message, answer: string) =>
 	msg.channel.send(answer);
 const answerDearViktor = (msg: Discord.Message) => {
 	if (msg.content.endsWith('?')) {
-		const keywordDetected = dearViktor.keywords.find(
-			(category: any) =>
-				category.list.find((keyword: string) =>
-					msg.content
-						.toLowerCase()
-						.includes(keyword),
-				),
+		const keywordDetected = dearViktor.keywords.find((category: any) =>
+			category.list.find((keyword: string) =>
+				msg.content.toLowerCase().includes(keyword),
+			),
 		);
 		keywordDetected
-			? answer(
-					msg,
-					chooseRandom(
-						dearViktor.answers[
-							keywordDetected.id
-						],
-					),
-			  )
+			? answer(msg, chooseRandom(dearViktor.answers[keywordDetected.id]))
 			: answer(msg, chooseRandom(dearViktor.answers.yesno));
 		return;
 	}
@@ -81,10 +73,7 @@ const answerCommand = async (msg: Discord.Message) => {
 	}
 
 	if (command.embed !== undefined) {
-		new EmbedCommand(command, msg).execute(
-			command.embed,
-			msg.author.username,
-		);
+		new EmbedCommand(command, msg).execute(command.embed, msg.author.username);
 		return;
 	}
 	if (Command[getKeyword(msg)]) {
@@ -104,14 +93,12 @@ const checkForReactionTriggers = async (msg: Discord.Message) => {
 	}
 
 	reactions.map(reaction => {
-		const chosenReaction = reaction.reaction_list.find(
-			(reaction: IReactionDetails) =>
-				happensWithAChanceOf(reaction.chance),
+		const chosenReaction = reaction.reactionList.find(
+			(reaction: IReactionDetails) => happensWithAChanceOf(reaction.chance),
 		);
 		if (chosenReaction) {
 			chosenReaction.emoji && msg.react(chosenReaction.emoji);
-			chosenReaction.response &&
-				msg.channel.send(chosenReaction.response);
+			chosenReaction.response && msg.channel.send(chosenReaction.response);
 			chosenReaction.function &&
 				Reaction[chosenReaction.function] &&
 				Reaction[chosenReaction.function](msg);
@@ -126,10 +113,7 @@ const classifyMessage = async (msg: Discord.Message): Promise<void> => {
 		return;
 	}
 	if (isChannelDM(msg) && !isUserArcy(msg)) {
-		answer(
-			msg,
-			'Only my glorious creator can talk to me in private.',
-		);
+		answer(msg, 'Only my glorious creator can talk to me in private.');
 		return;
 	}
 
