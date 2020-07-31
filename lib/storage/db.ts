@@ -71,7 +71,10 @@ export async function findUserByDiscordId(
 	return user;
 }
 
-export async function findAllGuildMembers(guild: Guild): Promise<User[]> {
+export async function findAllGuildMembers(
+	guild?: Guild | null,
+): Promise<User[] | void> {
+	if (!guild) return;
 	const results = db.collection('users').find({
 		membership: {
 			$elemMatch: {

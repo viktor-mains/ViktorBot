@@ -21,7 +21,7 @@ const minimumRantLength = 20;
 // LOGIC
 
 const isUserAdmin = (msg: Discord.Message): boolean =>
-	msg.member.hasPermission('ADMINISTRATOR');
+	msg.member?.hasPermission('ADMINISTRATOR') ?? false;
 const isChannelDM = (msg: Discord.Message) => msg.author.id === msg.channel.id;
 const isUserBot = (msg: Discord.Message) => msg.author.bot;
 const isUserArcy = (msg: Discord.Message) =>

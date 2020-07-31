@@ -67,8 +67,8 @@ export const punish = async (msg: Discord.Message): Promise<void> => {
 		return;
 	}
 
-	user = msg.guild.members.find(member => member.id === mentions[0].id)
-		? msg.guild.members.find(member => member.id === mentions[0].id).user
+	user = msg.guild?.members.cache.find(member => member.id === mentions[0].id)
+		? msg.guild?.members.cache.find(member => member.id === mentions[0].id).user
 		: null;
 
 	if (!user) {
@@ -229,7 +229,7 @@ export const guilds = (msg: Discord.Message): void => {
 
 export const ismember = (msg: Discord.Message): void => {
 	const [userID] = extractArguments(msg);
-	const isMember = msg.guild.members.find(member => member.id == userID)
+	const isMember = msg.guild?.members.cache.find(member => member.id == userID)
 		? true
 		: false;
 	msg.channel.send(

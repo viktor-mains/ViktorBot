@@ -185,19 +185,19 @@ const updateRankRoles = async (
 		if (rW.weight < rHT.weight) highestTier = rW.rank;
 	});
 
-	const roleToAdd = msg.guild.roles.find(
+	const roleToAdd = msg.guild?.roles.cache.find(
 		role => role.name.toLowerCase() === highestTier.toLowerCase(),
 	);
-	const rolesToRemove = msg.member.roles.filter(
+	const rolesToRemove = msg.member?.roles.cache.filter(
 		role =>
 			ranksWeighted.find(
-				r => r.rank === role.name && r.rank !== roleToAdd.name,
+				r => r.rank === role.name && r.rank !== roleToAdd?.name,
 			) !== undefined,
 	);
 
-	if (rolesToRemove.size > 0)
-		msg.member.removeRoles(rolesToRemove).catch(err => log.WARN(err));
-	if (roleToAdd) msg.member.addRole(roleToAdd).catch(err => log.WARN(err));
+	if (rolesToRemove && rolesToRemove.size > 0)
+		msg.member?.roles.remove(rolesToRemove).catch(err => log.WARN(err));
+	if (roleToAdd) msg.member?.roles.add(roleToAdd).catch(err => log.WARN(err));
 };
 
 const getTierAndDivision = async (
@@ -310,11 +310,12 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 	const user: Discord.User =
 		mentions.length === 0
 			? msg.author
-			: msg.guild.members.find(member => member.id === mentions[0].id).user;
+			: msg.guild?.members.cache.find(member => member.id === mentions[0].id)
+					.user;
 	const members = await findAllGuildMembers(msg.guild);
 	const memberships = members.map(user => {
 		const membership = user.membership.find(
-			member => member.serverId === msg.guild.id,
+			member => member.serverId === msg.guild?.id,
 		);
 		return {
 			id: user.discordId,
@@ -328,7 +329,7 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 		if (
 			!userData ||
 			!userData['membership'] ||
-			!userData['membership'].find(s => s.serverId === msg.guild.id)
+			!userData['membership'].find(s => s.serverId === msg.guild?.id)
 		) {
 			if (user.id === msg.author.id) {
 				msg.channel.send(
@@ -615,9 +616,11 @@ export const topmembers = async (msg: Discord.Message): Promise<void> => {
 	const count = (await findOption('topMembers')) ?? 10;
 	const guildMembers = await findAllGuildMembers(msg.guild);
 	const counts = guildMembers
-		.filter(user => msg.guild.members.find(m => m.id === user.discordId))
+		.filter(user => msg.guild?.members.cache.find(m => m.id === user.discordId))
 		.map(user => {
-			const membership = user.membership.find(m => m.serverId === msg.guild.id);
+			const membership = user.membership.find(
+				m => m.serverId === msg.guild?.id,
+			);
 			return {
 				id: user.discordId,
 				messageCount: membership?.messageCount ?? 0,

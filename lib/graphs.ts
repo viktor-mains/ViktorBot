@@ -2,7 +2,7 @@ import { JSDOM } from 'jsdom';
 import sharp from 'sharp';
 import * as d3 from 'd3';
 import _ from 'lodash';
-import { Attachment } from 'discord.js';
+import { MessageAttachment } from 'discord.js';
 import { COLORS } from '@modules/colors';
 
 type TGraphSize = {
@@ -29,7 +29,7 @@ export default class BotGraph {
 		this.size = size;
 	}
 
-	generate = async (dataObject: TGraphField[]): Promise<Attachment> => {
+	generate = async (dataObject: TGraphField[]): Promise<MessageAttachment> => {
 		const { document } = new JSDOM(`<html><body></body></html>`).window;
 		(<any>global).document = document;
 		const { width, height } = this.size;
@@ -105,7 +105,7 @@ export default class BotGraph {
 		})
 			.png({ compressionLevel: 9 })
 			.toBuffer();
-		const attachmentBuffer = new Attachment(pngBuffer, 'graph.png');
+		const attachmentBuffer = new MessageAttachment(pngBuffer, 'graph.png');
 		return attachmentBuffer;
 	};
 }

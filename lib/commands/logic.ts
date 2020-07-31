@@ -11,10 +11,7 @@ import { isUserAdmin } from '../message';
 import { replaceAll } from '../helpers';
 
 class Command {
-	public channel:
-		| Discord.TextChannel
-		| Discord.DMChannel
-		| Discord.GroupDMChannel;
+	public channel: Discord.TextChannel | Discord.DMChannel | Discord.NewsChannel;
 	public canBeExecuted: boolean;
 	private isDisabled: boolean;
 	private isModOnly: boolean;
@@ -48,10 +45,7 @@ class Command {
 }
 
 class Reaction {
-	public channel:
-		| Discord.TextChannel
-		| Discord.DMChannel
-		| Discord.GroupDMChannel;
+	public channel: Discord.TextChannel | Discord.DMChannel | Discord.NewsChannel;
 
 	constructor(msg: Discord.Message) {
 		this.channel = msg.channel;
