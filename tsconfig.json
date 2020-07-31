@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"baseUrl": "./",
 		"outDir": "./dist",
-		"target": "es6",
+		"target": "es2017",
 		"module": "commonJS",
 		"allowJs": true,
 		"checkJs": true,
@@ -21,5 +21,5 @@
 		}
 	},
 	"include": ["./**/*"],
-	"exclude": ["node_modules", "dist"]
+	"exclude": ["node_modules", "dist", "config.json"]
 }

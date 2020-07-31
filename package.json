@@ -10,7 +10,8 @@
 		"viktor": "npm run build && npm run start",
 		"build-watch": "tsc --watch -p ./",
 		"check-types": "tsc",
-		"lint": "eslint . --ext .ts"
+		"check-types-git": "tsc",
+		"check-lint": "eslint . --ext .ts"
 	},
 	"repository": {
 		"type": "git",
