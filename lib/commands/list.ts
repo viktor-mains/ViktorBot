@@ -21,7 +21,7 @@ import {
 	status,
 	impersonate,
 	punish,
-	msgupdate,
+	// msgupdate,
 	guilds,
 	ismember,
 } from './commands/mod';
@@ -74,8 +74,8 @@ export const Command: {
 		new CustomCommand(command, msg).execute(impersonate, msg),
 	punish: (command: ICommand, msg: Discord.Message) =>
 		new CustomCommand(command, msg).execute(punish, msg),
-	msgupdate: (command: ICommand, msg: Discord.Message) =>
-		new CustomCommand(command, msg).execute(msgupdate, msg),
+	// msgupdate: (command: ICommand, msg: Discord.Message) =>
+	// 	new CustomCommand(command, msg).execute(msgupdate, msg),
 	guilds: (command: ICommand, msg: Discord.Message) =>
 		new CustomCommand(command, msg).execute(guilds, msg),
 	ismember: (command: ICommand, msg: Discord.Message) =>
