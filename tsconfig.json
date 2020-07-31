@@ -1,9 +1,10 @@
 {
 	"compilerOptions": {
 		"baseUrl": "./",
-		"outDir": "./dist",
+		"outDir": "dist",
 		"target": "es2017",
 		"module": "commonJS",
+		"moduleResolution": "node",
 		"allowJs": true,
 		"checkJs": true,
 		"skipLibCheck": true,
@@ -17,7 +18,9 @@
 		"allowUnusedLabels": true,
 		"pretty": true,
 		"paths": {
-			"config.json": ["config.example.json"] // This mapping is relative to "baseUrl"
+			"@modules/*": ["lib/modules/*"],
+			"@config/*": ["lib/config/*"],
+			"config.json": ["./config.example.json"]
 		}
 	},
 	"include": ["./**/*"],
