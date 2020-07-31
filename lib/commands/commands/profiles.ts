@@ -23,7 +23,8 @@ import {
 } from '../../helpers';
 import { getSummonerId, getPlatform, getHost } from './riot';
 import { client, getSummonerBySummonerId } from '../../riot';
-import config from '../../../config.json';
+// @ts-ignore:next-line
+import { RIOT_API_TOKEN } from '@config/config.json';
 import { format as sprintf } from 'util';
 import { isBotUser } from '../../bot';
 
@@ -38,7 +39,7 @@ const verifyCode = async (
 	msg.channel.startTyping();
 	const playerId = await getSummonerId(nickname, server);
 	const realm = await getPlatform(server);
-	const url = `https://${realm}.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
+	const url = `https://${realm}.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/${playerId}?api_key=${RIOT_API_TOKEN}`;
 	const continueVerifying = async verificationCode => {
 		if (!verificationCode) {
 			log.INFO(
@@ -71,20 +72,16 @@ const verifyCode = async (
 			msg.channel.stopTyping();
 			return;
 		}
-		const { tier, rank } = await getTierAndDivision(
-			msg,
-			nickname,
-			server,
-		);
+		const { tier, rank } = await getTierAndDivision(msg, nickname, server);
 		const mastery = await getMastery(msg, nickname, server);
 		let userData = {};
 
 		const oldData = findUserByDiscordId(msg.author.id);
 
 		if (oldData) {
-			const isThisAccountRegistered = oldData[
-				'accounts'
-			].find(account => account.id === playerId);
+			const isThisAccountRegistered = oldData['accounts'].find(
+				account => account.id === playerId,
+			);
 			const account = {
 				server: server.toUpperCase(),
 				id: playerId,
@@ -94,15 +91,12 @@ const verifyCode = async (
 			};
 			if (isThisAccountRegistered) {
 				msg.author.send(
-					createEmbed(
-						`❌ This account is already registered`,
-						[
-							{
-								title: '___',
-								content: `This account is already registered.`,
-							},
-						],
-					),
+					createEmbed(`❌ This account is already registered`, [
+						{
+							title: '___',
+							content: `This account is already registered.`,
+						},
+					]),
 				);
 				msg.channel.stopTyping();
 				return;
@@ -182,13 +176,11 @@ const updateRankRoles = async (
 	userData['accounts'].map(account => {
 		const rW = ranksWeighted.find(
 			rankWeighted =>
-				rankWeighted.rank.toLowerCase() ===
-				account.tier.toLowerCase(),
+				rankWeighted.rank.toLowerCase() === account.tier.toLowerCase(),
 		)!;
 		const rHT = ranksWeighted.find(
 			rankWeighted =>
-				rankWeighted.rank.toLowerCase() ===
-				highestTier.toLowerCase(),
+				rankWeighted.rank.toLowerCase() === highestTier.toLowerCase(),
 		)!;
 		if (rW.weight < rHT.weight) highestTier = rW.rank;
 	});
@@ -199,18 +191,13 @@ const updateRankRoles = async (
 	const rolesToRemove = msg.member.roles.filter(
 		role =>
 			ranksWeighted.find(
-				r =>
-					r.rank === role.name &&
-					r.rank !== roleToAdd.name,
+				r => r.rank === role.name && r.rank !== roleToAdd.name,
 			) !== undefined,
 	);
 
 	if (rolesToRemove.size > 0)
-		msg.member
-			.removeRoles(rolesToRemove)
-			.catch(err => log.WARN(err));
-	if (roleToAdd)
-		msg.member.addRole(roleToAdd).catch(err => log.WARN(err));
+		msg.member.removeRoles(rolesToRemove).catch(err => log.WARN(err));
+	if (roleToAdd) msg.member.addRole(roleToAdd).catch(err => log.WARN(err));
 };
 
 const getTierAndDivision = async (
@@ -223,7 +210,7 @@ const getTierAndDivision = async (
 		? _playerId
 		: await getSummonerId(nickname, server);
 	const realm = await getPlatform(server);
-	const url = `https://${realm}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}?api_key=${config.RIOT_API_TOKEN}`;
+	const url = `https://${realm}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}?api_key=${RIOT_API_TOKEN}`;
 	const userLeagues: any = await axios(url).catch(err => {
 		log.INFO(
 			`failed to get user's ${msg.author.username} tier/division (${nickname}, ${server}) - ${url}`,
@@ -262,7 +249,7 @@ const getMastery = async (
 		? _playerId
 		: await getSummonerId(nickname, server);
 	const realm = await getPlatform(server);
-	const url = `https://${realm}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${playerId}/by-champion/112?api_key=${config.RIOT_API_TOKEN}`;
+	const url = `https://${realm}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${playerId}/by-champion/112?api_key=${RIOT_API_TOKEN}`;
 	const userMastery: any = await axios(url).catch(err => {
 		log.INFO(
 			`failed to get user's ${msg.author.username} mastery (${nickname}, ${server}) - ${url}`,
@@ -287,8 +274,7 @@ const getMastery = async (
 					points: userMastery.data.championPoints,
 					chest: userMastery.data.chestGranted,
 					level: userMastery.data.championLevel,
-					lastPlayed:
-						userMastery.data.lastPlayTime,
+					lastPlayed: userMastery.data.lastPlayTime,
 			  }
 			: {
 					points: null,
@@ -308,18 +294,15 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 	const args = extractArguments(msg);
 	if (mentions.length === 0 && args.length !== 0) {
 		msg.channel.send(
-			createEmbed(
-				`:information_source:  Unoptimal command use`,
-				[
-					{
-						title: '___',
-						content:
-							`There are two ways to use this command and yours was none of them:\n\n` +
-							`- \`\`!profile\`\` - that way you see your own profile,\n` +
-							`- \`\`!profile @mention\`\` - that way you see profile of the mentioned person (use with caution as it pings them)`,
-					},
-				],
-			),
+			createEmbed(`:information_source:  Unoptimal command use`, [
+				{
+					title: '___',
+					content:
+						`There are two ways to use this command and yours was none of them:\n\n` +
+						`- \`\`!profile\`\` - that way you see your own profile,\n` +
+						`- \`\`!profile @mention\`\` - that way you see profile of the mentioned person (use with caution as it pings them)`,
+				},
+			]),
 		);
 		msg.channel.stopTyping();
 		return;
@@ -327,9 +310,7 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 	const user: Discord.User =
 		mentions.length === 0
 			? msg.author
-			: msg.guild.members.find(
-					member => member.id === mentions[0].id,
-			  ).user;
+			: msg.guild.members.find(member => member.id === mentions[0].id).user;
 	const members = await findAllGuildMembers(msg.guild);
 	const memberships = members.map(user => {
 		const membership = user.membership.find(
@@ -347,9 +328,7 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 		if (
 			!userData ||
 			!userData['membership'] ||
-			!userData['membership'].find(
-				s => s.serverId === msg.guild.id,
-			)
+			!userData['membership'].find(s => s.serverId === msg.guild.id)
 		) {
 			if (user.id === msg.author.id) {
 				msg.channel.send(
@@ -365,23 +344,22 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 				);
 				msg.channel.stopTyping();
 				return;
-			} else {
-				msg.channel.send(
-					createEmbed(
-						`:information_source: Cannot find ${user.username}'s data in database`,
-						[
-							{
-								title: '___',
-								content:
-									`It's possible that they are inactive and Vikbot didn't pick them up yet. ` +
-									`It also might be a bot account.`,
-							},
-						],
-					),
-				);
-				msg.channel.stopTyping();
-				return;
 			}
+			msg.channel.send(
+				createEmbed(
+					`:information_source: Cannot find ${user.username}'s data in database`,
+					[
+						{
+							title: '___',
+							content:
+								`It's possible that they are inactive and Vikbot didn't pick them up yet. ` +
+								`It also might be a bot account.`,
+						},
+					],
+				),
+			);
+			msg.channel.stopTyping();
+			return;
 		}
 	}
 	const userPosition = sorted.findIndex(u => u.id == user.id);
@@ -389,20 +367,20 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 		.setColor('FDC000')
 		.setThumbnail(user.avatarURL)
 		.setFooter(`Last profile's update`)
+		// TODO why doesn't it work?
 		/* eslint-disable-next-line */
 		/* @ts-ignore */
-		.setTimestamp(new Date(userData?.updated).toLocaleString()) // TODO why doesn't it work?
+		.setTimestamp(new Date(userData?.updated).toLocaleString())
 		.setTitle(`:information_source: ${user.username}'s profile`);
 
 	if (userData && userData.accounts) {
 		for (const account of userData?.accounts) {
 			const { id, server, rank, tier = 'UNKNOWN' } = account;
 			const host = await getHost(server);
-			const {
-				data: summoner,
-			} = await getSummonerBySummonerId(
+			const { data: summoner } = await getSummonerBySummonerId(
 				client,
-				host || '', // TODO fix this ugly hack
+				// TODO fix this ugly hack
+				host || '',
 				id,
 			);
 			const opgg = `https://${server}.op.gg/summoner/userName=${modifyInput(
@@ -430,10 +408,7 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 		'Description',
 		userData?.description
 			? userData.description
-					.replace(
-						replaceAll('MEMBER_NICKNAME'),
-						user.username,
-					)
+					.replace(replaceAll('MEMBER_NICKNAME'), user.username)
 					.replace(replaceAll('<br>'), '\n')
 			: `This user has no description yet.`,
 		false,
@@ -449,17 +424,13 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 			lastViktorGame
 				? lastViktorGame === 0
 					? 'never >:C'
-					: new Date(
-							lastViktorGame,
-					  ).toLocaleDateString()
+					: new Date(lastViktorGame).toLocaleDateString()
 				: 'UNKNOWN',
 			true,
 		);
 	}
 	const memberData = userData?.membership
-		? userData.membership.find(
-				member => member.serverId === msg.guild.id,
-		  )
+		? userData.membership.find(member => member.serverId === msg.guild.id)
 		: null;
 	if (memberData) {
 		const messagesPerDay = (
@@ -470,16 +441,10 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 			'Member since',
 			memberData.joined < memberData.firstMessage
 				? new Date(memberData.joined).toUTCString()
-				: new Date(
-						memberData.firstMessage,
-				  ).toUTCString(),
+				: new Date(memberData.firstMessage).toUTCString(),
 			false,
 		);
-		embed.addField(
-			'Messages written',
-			memberData.messageCount,
-			true,
-		);
+		embed.addField('Messages written', memberData.messageCount, true);
 		embed.addField('Messages per day', messagesPerDay, true);
 		embed.addField(
 			'# on server',
@@ -499,15 +464,12 @@ export const description = async (msg: Discord.Message): Promise<void> => {
 
 	if (userData?.punished) {
 		msg.channel.send(
-			createEmbed(
-				`❌ You are banned from writing own descriptions`,
-				[
-					{
-						title: '___',
-						content: `Apparently in the past evil mods decided that you aren't responsible enough to write your own description. Shame on you.`,
-					},
-				],
-			),
+			createEmbed(`❌ You are banned from writing own descriptions`, [
+				{
+					title: '___',
+					content: `Apparently in the past evil mods decided that you aren't responsible enough to write your own description. Shame on you.`,
+				},
+			]),
 		);
 		return;
 	}
@@ -526,15 +488,12 @@ export const description = async (msg: Discord.Message): Promise<void> => {
 	if (description.length > 1024) {
 		description = `${description.substring(0, 1017)} (...)`;
 		msg.channel.send(
-			createEmbed(
-				`:information_source: Your description is too long`,
-				[
-					{
-						title: '___',
-						content: `Description must not exceed 1024 characters, so I've cut it down a bit.`,
-					},
-				],
-			),
+			createEmbed(`:information_source: Your description is too long`, [
+				{
+					title: '___',
+					content: `Description must not exceed 1024 characters, so I've cut it down a bit.`,
+				},
+			]),
 		);
 	}
 
@@ -575,15 +534,12 @@ export const update = async (msg: Discord.Message): Promise<void> => {
 	const member = await findUserByDiscordId(msg.author.id);
 	if (!member) {
 		msg.channel.send(
-			createEmbed(
-				`:information_source: You didn't register yet`,
-				[
-					{
-						title: '___',
-						content: `Use the \`\`!register <IGN> | <server>\`\` command to create your profile.`,
-					},
-				],
-			),
+			createEmbed(`:information_source: You didn't register yet`, [
+				{
+					title: '___',
+					content: `Use the \`\`!register <IGN> | <server>\`\` command to create your profile.`,
+				},
+			]),
 		);
 		msg.channel.stopTyping();
 		return;
@@ -594,15 +550,11 @@ export const update = async (msg: Discord.Message): Promise<void> => {
 		const embed = new Discord.RichEmbed()
 			.setFooter(`Last profile update`)
 			.setTimestamp(new Date(member.updated))
-			.setTitle(
-				`:information_source: Profile recently updated`,
-			)
+			.setTitle(`:information_source: Profile recently updated`)
 			.setColor('0xFDC000');
 		embed.addField(
 			'___',
-			`Wait ${toMMSS(
-				timeoutUpdate - lastUpdated,
-			)} before updating again.`,
+			`Wait ${toMMSS(timeoutUpdate - lastUpdated)} before updating again.`,
 			false,
 		);
 		msg.channel.send(embed);
@@ -618,18 +570,11 @@ export const update = async (msg: Discord.Message): Promise<void> => {
 			account.server,
 			account.id,
 		);
-		const mastery = await getMastery(
-			msg,
-			'',
-			account.server,
-			account.id,
-		);
+		const mastery = await getMastery(msg, '', account.server, account.id);
 		const updatedAcc = { ...account };
 		updatedAcc.tier = tier ? tier : updatedAcc.tier;
 		updatedAcc.rank = rank ? rank : updatedAcc.rank;
-		updatedAcc.mastery = mastery.lastPlayed
-			? mastery
-			: updatedAcc.mastery;
+		updatedAcc.mastery = mastery.lastPlayed ? mastery : updatedAcc.mastery;
 		member.accounts[index] = updatedAcc;
 		updateAccounts(index + 1);
 	};
@@ -670,13 +615,9 @@ export const topmembers = async (msg: Discord.Message): Promise<void> => {
 	const count = (await findOption('topMembers')) ?? 10;
 	const guildMembers = await findAllGuildMembers(msg.guild);
 	const counts = guildMembers
-		.filter(user =>
-			msg.guild.members.find(m => m.id === user.discordId),
-		)
+		.filter(user => msg.guild.members.find(m => m.id === user.discordId))
 		.map(user => {
-			const membership = user.membership.find(
-				m => m.serverId === msg.guild.id,
-			);
+			const membership = user.membership.find(m => m.serverId === msg.guild.id);
 			return {
 				id: user.discordId,
 				messageCount: membership?.messageCount ?? 0,
@@ -687,17 +628,12 @@ export const topmembers = async (msg: Discord.Message): Promise<void> => {
 	let content = '';
 	sorted.map((member, index) => {
 		if (index < count && sorted[index]) {
-			const justifiedPosition = justifyToLeft(
-				(index + 1).toString(),
-				2,
-			);
+			const justifiedPosition = justifyToLeft((index + 1).toString(), 2);
 			const justifiedMsgCount = justifyToRight(
 				member.messageCount.toString(),
 				6,
 			);
-			const username = msg.guild.members.find(
-				m => m.id === member.id,
-			).user.username;
+			const { username } = msg.guild.members.find(m => m.id === member.id).user;
 			content += `\`\`#${justifiedPosition} - ${justifiedMsgCount} msg\`\` - ${username}\n`;
 		}
 	});
@@ -714,21 +650,14 @@ export const register = async (msg: Discord.Message): Promise<void> => {
 	const uuid = `VIKBOT-${v4()}`;
 
 	if (!nickname || !server) return;
-	if (
-		oldData &&
-		oldData.accounts &&
-		oldData.accounts.length >= maxAccounts
-	) {
+	if (oldData && oldData.accounts && oldData.accounts.length >= maxAccounts) {
 		msg.channel.send(
-			createEmbed(
-				`❌ You registered maximum amount of accounts`,
-				[
-					{
-						title: '___',
-						content: `The maximum number of accounts you can register is **${maxAccounts}**.`,
-					},
-				],
-			),
+			createEmbed(`❌ You registered maximum amount of accounts`, [
+				{
+					title: '___',
+					content: `The maximum number of accounts you can register is **${maxAccounts}**.`,
+				},
+			]),
 		);
 		return;
 	}
@@ -758,15 +687,11 @@ export const register = async (msg: Discord.Message): Promise<void> => {
 			const reactions = ['✅', '❌'];
 			const filter = (reaction, user) =>
 				msg.author.id === user.id &&
-				(reaction.emoji.name === '❌' ||
-					reaction.emoji.name === '✅');
+				(reaction.emoji.name === '❌' || reaction.emoji.name === '✅');
 			const iterateReactions = (index: number) => {
 				if (index >= reactions.length) return;
 				sentEmbed.react(reactions[index]);
-				setTimeout(
-					() => iterateReactions(index + 1),
-					500,
-				);
+				setTimeout(() => iterateReactions(index + 1), 500);
 			};
 			iterateReactions(0);
 
@@ -776,32 +701,22 @@ export const register = async (msg: Discord.Message): Promise<void> => {
 					maxEmojis: 1,
 				})
 				.then(collected => {
-					const c = collected.map(col => ({
+					const [c] = collected.map(col => ({
 						name: col.emoji.name,
 						message: col.message,
-					}))[0];
-					if (c && c.name === '✅')
-						verifyCode(
-							nickname,
-							server,
-							uuid,
-							msg,
-						);
+					}));
+					if (c && c.name === '✅') verifyCode(nickname, server, uuid, msg);
 					else {
 						log.INFO(
 							`user ${msg.author.username} aborted registering ${nickname} [${server}]`,
 						);
 						msg.author.send(
-							createEmbed(
-								`:information_source: Profile registering aborted`,
-								[
-									{
-										title:
-											'___',
-										content: `You can do it some other time.`,
-									},
-								],
-							),
+							createEmbed(`:information_source: Profile registering aborted`, [
+								{
+									title: '___',
+									content: `You can do it some other time.`,
+								},
+							]),
 						);
 						msg.channel.stopTyping();
 					}
@@ -810,16 +725,13 @@ export const register = async (msg: Discord.Message): Promise<void> => {
 		})
 		.catch(() => {
 			msg.channel.send(
-				createEmbed(
-					':warning: I am unable to reply to you',
-					[
-						{
-							title: '___',
-							content: `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
+				createEmbed(':warning: I am unable to reply to you', [
+					{
+						title: '___',
+						content: `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
             \nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command.`,
-						},
-					],
-				),
+					},
+				]),
 			);
 			msg.channel.stopTyping();
 		});
@@ -842,8 +754,7 @@ export const unregister = async (msg: Discord.Message): Promise<void> => {
 			createEmbed('❌ Incorrect nickname or server', [
 				{
 					title: '___',
-					content:
-						"Check if the data you've provided is correct.",
+					content: "Check if the data you've provided is correct.",
 				},
 			]),
 		);
@@ -852,15 +763,12 @@ export const unregister = async (msg: Discord.Message): Promise<void> => {
 	}
 	if (!oldData || !oldData.accounts) {
 		msg.channel.send(
-			createEmbed(
-				`:information_source: Provided account isn't registered`,
-				[
-					{
-						title: '___',
-						content: `This account was never registered in the first place.`,
-					},
-				],
-			),
+			createEmbed(`:information_source: Provided account isn't registered`, [
+				{
+					title: '___',
+					content: `This account was never registered in the first place.`,
+				},
+			]),
 		);
 		msg.channel.stopTyping();
 		return;
@@ -871,15 +779,12 @@ export const unregister = async (msg: Discord.Message): Promise<void> => {
 	);
 	if (oldData.accounts.length === newData.accounts.length) {
 		msg.channel.send(
-			createEmbed(
-				`:information_source: Provided account isn't registered`,
-				[
-					{
-						title: '___',
-						content: `This account was never registered in the first place.`,
-					},
-				],
-			),
+			createEmbed(`:information_source: Provided account isn't registered`, [
+				{
+					title: '___',
+					content: `This account was never registered in the first place.`,
+				},
+			]),
 		);
 		msg.channel.stopTyping();
 		return;

@@ -3,6 +3,7 @@ import sharp from 'sharp';
 import * as d3 from 'd3';
 import _ from 'lodash';
 import { Attachment } from 'discord.js';
+import { COLORS } from '@modules/colors';
 
 type TGraphSize = {
 	width: number;
@@ -29,12 +30,9 @@ export default class BotGraph {
 	}
 
 	generate = async (dataObject: TGraphField[]): Promise<Attachment> => {
-		const { document } = new JSDOM(
-			`<html><body></body></html>`,
-		).window;
+		const { document } = new JSDOM(`<html><body></body></html>`).window;
 		(<any>global).document = document;
-		const width = this.size.width;
-		const height = this.size.height;
+		const { width, height } = this.size;
 		const day = 86400000;
 		const margin = 25;
 		const days = timestamp =>
@@ -59,54 +57,46 @@ export default class BotGraph {
 		const xAxis = g =>
 			g
 				.attr('transform', `translate(0,${margin})`)
-				.call(
-					d3
-						.axisTop(xScale)
-						.tickFormat(d => `${d}d`),
-				);
+				.call(d3.axisTop(xScale).tickFormat(d => `${d}d`));
 		const yAxis = g =>
 			g
 				.attr('transform', `translate(${margin},0)`)
-				.call(
-					d3
-						.axisRight(yScale)
-						.tickFormat(() => ''),
-				);
+				.call(d3.axisRight(yScale).tickFormat(() => ''));
 
 		const graph = d3
 			.select('body')
 			.append('svg')
 			.attr('width', width)
 			.attr('height', height);
-		graph.append('rect')
+		graph
+			.append('rect')
 			.attr('width', '100%')
 			.attr('height', '100%')
 			.attr('fill', 'rgba(47,49,54,0.8)');
 		const bar = graph.selectAll('.bar').data(data).enter();
 
-		bar.append('rect')
-			.attr('fill', d => (d.color ? d.color : '#434d66'))
+		bar
+			.append('rect')
+			.attr('fill', d => (d.color ? d.color : COLORS.graphs.secondary))
 			.attr('x', (_d, i: number) => xScale(i))
 			.attr('y', (_d, i: number) => yScale(i))
 			.attr('height', yScale.bandwidth())
 			.attr('width', d => xScale(d.value) - margin);
-		bar.append('text')
+		bar
+			.append('text')
 			.attr('x', (_d, i: number) => xScale(i) + margin)
-			.attr(
-				'y',
-				(_d, i: number) =>
-					yScale(i) + 0.65 * yScale.bandwidth(),
-			)
+			.attr('y', (_d, i: number) => yScale(i) + 0.65 * yScale.bandwidth())
 			.attr('font-size', '12')
 			.text(d => `${d.key.toUpperCase()}`);
 		graph.append('g').call(xAxis);
 		graph.append('g').call(yAxis);
-		graph.selectAll('text')
+		graph
+			.selectAll('text')
 			.attr('text-anchor', 'center')
 			.attr('fill', 'white')
 			.attr('font-family', 'Verdana');
-		graph.selectAll('line').attr('stroke', '#ddd');
-		graph.selectAll('path').attr('stroke', '#ddd');
+		graph.selectAll('line').attr('stroke', COLORS.graphs.stroke);
+		graph.selectAll('path').attr('stroke', COLORS.graphs.stroke);
 
 		const htmlData = d3.select('body').html();
 		const inputBuffer = Buffer.from(htmlData.trim());

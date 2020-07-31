@@ -7,13 +7,14 @@ import { removeKeyword, toDDHHMMSS, createEmbed } from '../../helpers';
 import { chooseRandom } from '../../rng';
 import { log } from '../../log';
 import BotGraph from '../../graphs';
-import config from '../../../config.json';
 import { findOption } from '../../storage/db';
+// @ts-ignore:next-line
+import { CAT_API_TOKEN } from '@config/config.json';
 
 export const meow = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
 	const cat: void | AxiosResponse = await axios(
-		`https://api.thecatapi.com/v1/images/search?api_key=${config.CAT_API_TOKEN}`,
+		`https://api.thecatapi.com/v1/images/search?api_key=${CAT_API_TOKEN}`,
 	).catch(() => {
 		msg.channel.send('Unable to get a cat.');
 		msg.channel.stopTyping();
@@ -35,13 +36,13 @@ export const meow = async (msg: Discord.Message): Promise<void> => {
 
 export const woof = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
-	const dog: void | AxiosResponse = await axios(
-		'http://random.dog/woof',
-	).catch(() => {
-		msg.channel.send('Unable to get a dog.');
-		msg.channel.stopTyping();
-		return;
-	});
+	const dog: void | AxiosResponse = await axios('http://random.dog/woof').catch(
+		() => {
+			msg.channel.send('Unable to get a dog.');
+			msg.channel.stopTyping();
+			return;
+		},
+	);
 	if (!dog || !dog.data) {
 		msg.channel.send('Unable to get a dog.');
 		return;
@@ -98,8 +99,7 @@ export const gibeskin = async (msg: Discord.Message): Promise<void> => {
 	];
 
 	const creatorDate = skins.find(skin => skin.key === 'Creator')!.value;
-	const deathSwornDate = skins.find(skin => skin.key === 'Death Sworn')!
-		.value;
+	const deathSwornDate = skins.find(skin => skin.key === 'Death Sworn')!.value;
 	const graph = new BotGraph({ width: 500, height: 300 });
 	const graphAttachment = await graph.generate(skins);
 	const embed = new Discord.RichEmbed()
@@ -132,7 +132,7 @@ export const gibeskin = async (msg: Discord.Message): Promise<void> => {
 
 export const degen = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
-	const words = (await findOption('degen_words')) ?? [];
+	const words = (await findOption('degenWords')) ?? [];
 	const degeneracyPercentageDefault = 70;
 	const limit = 30;
 	const emojiMultiplier = 3;
@@ -145,46 +145,37 @@ export const degen = async (msg: Discord.Message): Promise<void> => {
 			const degenMsgs = messages.filter(
 				m =>
 					words.find(word =>
-						m.content
-							.toLowerCase()
-							.split(' ')
-							.includes(
-								word.toLowerCase(),
-							),
+						m.content.toLowerCase().split(' ').includes(word.toLowerCase()),
 					) ||
 					regex.exec(m.content) ||
 					regexText.exec(m.content) ||
-					(m.content.startsWith(':') &&
-						m.content.endsWith(':')) || // probably emoji
-					m.content === m.content.toUpperCase() || // all caps
-					regex.exec(m.content) || // emoji spam
-					regexText.exec(m.content) || // emoji spam
-					m.content.startsWith('!'), // command spam
+					// probably emoji
+					(m.content.startsWith(':') && m.content.endsWith(':')) ||
+					// caps spam
+					m.content === m.content.toUpperCase() ||
+					// emoji spam
+					regex.exec(m.content) ||
+					// emoji spam
+					regexText.exec(m.content) ||
+					// command spam
+					m.content.startsWith('!'),
 			);
 			messages.map(m =>
-				allWords.push(
-					...m.content
-						.toLowerCase()
-						.trim()
-						.split(' '),
-				),
+				allWords.push(...m.content.toLowerCase().trim().split(' ')),
 			);
+			const oneHundred = 100;
+			const half = 0.5;
 			const emojiSpam = allWords.filter(
-				word =>
-					regex.exec(word) ||
-					regexText.exec(word),
+				word => regex.exec(word) || regexText.exec(word),
 			).length;
 			const uniqMsgs = uniq(messages.map(m => m.content));
 			const percentageGeneralSpam =
-				100 - (100 * uniqMsgs.length) / messages.size;
-			const percentageDegenWords =
-				(100 * degenMsgs.size) / limit;
+				oneHundred - (oneHundred * uniqMsgs.length) / messages.size;
+			const percentageDegenWords = (oneHundred * degenMsgs.size) / limit;
 			const percentageEmojiSpam =
-				(100 * (emojiSpam * emojiMultiplier)) /
-				allWords.length;
+				(oneHundred * (emojiSpam * emojiMultiplier)) / allWords.length;
 			const percentageShortMessages =
-				(0.5 * limit * degeneracyPercentageDefault) /
-				allWords.length;
+				(half * limit * degeneracyPercentageDefault) / allWords.length;
 			const percentage =
 				percentageDegenWords +
 				percentageEmojiSpam +
@@ -203,18 +194,12 @@ export const degen = async (msg: Discord.Message): Promise<void> => {
 				`My precise calculations and sophisticated algorithms led me to a conclusion that the degeneracy percentage of this chat has reached **${percentage.toFixed(
 					2,
 				)}%**.\n\n` +
-					`- general spam - **${percentageGeneralSpam.toFixed(
-						2,
-					)}%**\n` +
+					`- general spam - **${percentageGeneralSpam.toFixed(2)}%**\n` +
 					`- short message spam - **${percentageShortMessages.toFixed(
 						2,
 					)}%**\n` +
-					`- emoji spam - **${percentageEmojiSpam.toFixed(
-						2,
-					)}%**\n` +
-					`- overall degeneracy - **${percentageDegenWords.toFixed(
-						2,
-					)}%**`,
+					`- emoji spam - **${percentageEmojiSpam.toFixed(2)}%**\n` +
+					`- overall degeneracy - **${percentageDegenWords.toFixed(2)}%**`,
 			);
 			msg.channel.send(embed);
 			msg.channel.stopTyping();
@@ -222,16 +207,12 @@ export const degen = async (msg: Discord.Message): Promise<void> => {
 		.catch(err => {
 			log.WARN(err);
 			msg.channel.send(
-				createEmbed(
-					"❌ Cannot calculate chat's degeneracy",
-					[
-						{
-							title: '___',
-							content:
-								'Probably it went over the limits.',
-						},
-					],
-				),
+				createEmbed("❌ Cannot calculate chat's degeneracy", [
+					{
+						title: '___',
+						content: 'Probably it went over the limits.',
+					},
+				]),
 			);
 			msg.channel.stopTyping();
 			return;

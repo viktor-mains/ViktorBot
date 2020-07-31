@@ -1,7 +1,11 @@
 import Discord from 'discord.js';
 
 import { ICommand } from '../types/command';
-import { /* TextCommand, EmbedCommand, */ CustomCommand } from './logic';
+import {
+	// TextCommand,
+	// EmbedCommand,
+	CustomCommand,
+} from './logic';
 
 import { help, hmod, opgg, shutup } from './commands/basic';
 import {
@@ -25,10 +29,7 @@ import { updatechampions, lastlane, mastery } from './commands/riot';
 import { iam, iamnot, roles } from './commands/roles';
 
 export const Command: {
-	[key: string]: (
-		command: ICommand,
-		msg: Discord.Message,
-	) => string | void;
+	[key: string]: (command: ICommand, msg: Discord.Message) => string | void;
 } = {
 	help: (command: ICommand, msg: Discord.Message) =>
 		new CustomCommand(command, msg).execute(help, msg),
