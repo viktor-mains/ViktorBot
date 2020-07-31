@@ -16,10 +16,11 @@ import { COLORS } from '@modules/colors';
 type LogRoom = 'roomLogMsgs' | 'roomLogUsers';
 
 const sendLog = async (
-	guild: Guild,
-	embed: Discord.RichEmbed,
-	name: LogRoom,
+	guild?: Guild | null,
+	embed?: Discord.MessageEmbed,
+	name?: LogRoom,
 ): Promise<void> => {
+	if (!guild || !embed || !name) return;
 	const option = (await findOption(name)) ?? [];
 	const room = option.find(r => r.guild === guild.id);
 	const channel = findTextChannel(room?.id);
@@ -31,9 +32,10 @@ const sendLog = async (
 };
 
 const sendGlobalLog = async (
-	embed: Discord.RichEmbed,
-	guild: Discord.Guild,
+	embed?: Discord.MessageEmbed,
+	guild?: Discord.Guild | null,
 ): Promise<void> => {
+	if (!embed || !guild) return;
 	const room = await findOption('roomGlobal');
 	const channel = findTextChannel(room);
 
@@ -60,7 +62,7 @@ export const msgEdit = (
 		return;
 	const oldTimestamp = new Date(oldMsg.createdTimestamp);
 	const newTimestamp = new Date();
-	const messageLink = `https://discordapp.com/channels/${newMsg.guild.id}/${newMsg.channel.id}/${newMsg.id}`;
+	const messageLink = `https://discordapp.com/channels/${newMsg.guild?.id}/${newMsg.channel.id}/${newMsg.id}`;
 	const log = createEmbed(
 		`:clipboard: MESSAGE EDITED`,
 		[
@@ -161,7 +163,7 @@ export const userJoin = async (member: Discord.GuildMember): Promise<void> => {
 			},
 			{
 				title: `Joined at`,
-				content: moment(member.joinedAt.toISOString()).format(
+				content: moment(member.joinedAt?.toISOString()).format(
 					'MMMM Do YYYY, HH:mm:ss',
 				),
 				inline: true,
@@ -236,7 +238,7 @@ export const descriptionChange = (msg: Discord.Message): void => {
 		COLORS.embed.description,
 	);
 	sendLog(msg.guild, log, 'roomLogUsers');
-	sendGlobalLog(log, msg.member.guild);
+	sendGlobalLog(log, msg.member?.guild);
 };
 
 export const botJoin = (guild: Discord.Guild): void => {
@@ -262,6 +264,11 @@ export const initData = (
 ): User | void => {
 	// member = null means that they used to be part of Discord but aren't anymore, or Discord doesn't recognize them
 	if (!id || !msg) return;
+	const serverId = () => {
+		if (member && member.guild.id) return member.guild.id;
+		if (msg && msg.guild && msg.guild.id) return msg.guild.id;
+		return '0';
+	};
 	return {
 		id,
 		discordId: member ? member.id : id,
@@ -271,7 +278,7 @@ export const initData = (
 		description: undefined,
 		membership: [
 			{
-				serverId: member ? member.guild.id : msg ? msg.guild.id : '0',
+				serverId: serverId(),
 				messageCount: 0,
 				firstMessage: 0,
 				joined:
@@ -284,9 +291,10 @@ export const initData = (
 };
 
 export const handleUserNotInDatabase = async (
-	member: Discord.GuildMember,
+	member?: Discord.GuildMember | null,
 	msg?: Discord.Message | null,
 ): Promise<void> => {
+	if (!member) return;
 	if (msg && !msg.member && msg.author.id === msg.channel.id)
 		// DM
 		return;
@@ -351,7 +359,7 @@ export const handlePossibleMembershipRole = async (
 		return;
 	const user = await findUserByDiscordId(msg.author.id);
 	const membership =
-		user?.membership.find(guild => guild.serverId === msg.guild.id) ?? null;
+		user?.membership.find(guild => guild.serverId === msg.guild?.id) ?? null;
 	const membershipRoles = (await findOption('membershipRoles')) ?? null;
 
 	if (membership === null || !membershipRoles || !user) return;
@@ -372,27 +380,29 @@ export const handlePossibleMembershipRole = async (
 	membershipRoles.map(mR => {
 		if (
 			neededRoles.find(nR => nR.name === mR.name) &&
-			!msg.member.roles.some(r => r.name === mR.name) &&
-			msg.member.guild.roles.find(
+			!msg.member?.roles.cache.some(r => r.name === mR.name) &&
+			msg.member?.guild.roles.cache.find(
 				role => role.name.toLowerCase() === mR.name.toLowerCase(),
 			)
 		) {
-			const roleToAdd = msg.member.guild.roles.find(
+			const roleToAdd = msg.member?.guild.roles.cache.find(
 				role => role.name.toLowerCase() === mR.name.toLowerCase(),
 			);
-			msg.member.addRole(roleToAdd);
+			if (!roleToAdd) return;
+			msg.member?.roles.add(roleToAdd);
 			informAboutPromotion(msg, mR);
 		} else if (
 			!neededRoles.find(nR => nR.name === mR.name) &&
-			msg.member.roles.some(r => r.name === mR.name) &&
-			msg.member.guild.roles.find(
+			msg.member?.roles.cache.some(r => r.name === mR.name) &&
+			msg.member?.guild.roles.cache.find(
 				role => role.name.toLowerCase() === mR.name.toLowerCase(),
 			)
 		) {
-			const roleToRemove = msg.member.guild.roles.find(
+			const roleToRemove = msg.member.guild.roles.cache.find(
 				role => role.name.toLowerCase() === mR.name.toLowerCase(),
 			);
-			msg.member.removeRole(roleToRemove);
+			if (!roleToRemove) return;
+			msg.member?.roles.remove(roleToRemove);
 		}
 	});
 };
@@ -407,9 +417,12 @@ const informAboutPromotion = (msg: Discord.Message, role: any) => {
 		.replace(replaceAll('<br>'), '\n');
 	const embedColor: string = role.message.color;
 	const embedIcon: string = role.message.icon;
-	const embed = new Discord.RichEmbed()
+	const authorAvatar: string =
+		msg.author.avatarURL() ??
+		'https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc3/1bcc0f0aefe71b2c8ce66ffe8645d365.png';
+	const embed = new Discord.MessageEmbed()
 		.setTitle(`${embedIcon} ${embedTitle}`)
-		.setThumbnail(msg.author.avatarURL)
+		.setThumbnail(authorAvatar)
 		.setColor(embedColor)
 		.addField(`\_\_\_`, embedContent, false)
 		.setFooter(`Powered by Glorious Evolution`)

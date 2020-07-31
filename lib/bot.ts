@@ -21,40 +21,42 @@ export async function initialize(token: string): Promise<void> {
 export function findTextChannel(
 	id: string | undefined,
 ): TextChannel | undefined {
-	const ch = id ? bot?.channels.get(id) : undefined;
+	const ch = id
+		? bot?.channels.cache.find(channel => channel.id === id)
+		: undefined;
 	if (ch === undefined || ch instanceof TextChannel === false) {
 		return undefined;
 	}
 	return ch as TextChannel;
 }
 
-export function isBotUser(user: User): boolean {
-	return bot?.user.id === user.id;
+export function isBotUser(user?: User): boolean | void {
+	if (!user || !bot.user) return;
+	return bot?.user?.id === user.id;
 }
 
 export async function setBotPresence(status: string): Promise<void> {
-	bot?.user.setPresence({
-		game: {
+	bot?.user?.setPresence({
+		activity: {
 			name: status,
-			type: 'PLAYING',
+			type: 'CUSTOM_STATUS',
 		},
 	});
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function* enumerateGuilds(): any {
-	yield* bot?.guilds.values();
+	yield* bot?.guilds.cache.values();
 }
 
 export function findMemberJoinDate(
 	guildId: string,
 	memberId: string,
 ): Date | undefined {
-	const guild = bot.guilds.find(guild => guild.id == guildId);
-
-	const member = guild?.members.find(
+	const guild = bot.guilds.cache.find(guild => guild.id == guildId);
+	const member = guild?.members.cache.find(
 		cachedMember => cachedMember.id == memberId,
 	);
-
-	return member ? new Date(member?.joinedAt) : undefined;
+	if (!member || !member.joinedAt) return;
+	return new Date(member?.joinedAt);
 }

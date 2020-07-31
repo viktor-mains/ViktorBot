@@ -49,14 +49,14 @@ export const createEmbed = (
 	color?: string,
 	thumbnail?: string,
 	footer?: string,
-): Discord.RichEmbed => {
+): Discord.MessageEmbed => {
 	const embed = thumbnail
-		? new Discord.RichEmbed()
+		? new Discord.MessageEmbed()
 				.setTitle(title)
 				.setColor(color ? `0x${color}` : `0x${COLORS.embed.main}`)
 				.setThumbnail(thumbnail)
 				.setFooter(footer ? footer : '')
-		: new Discord.RichEmbed()
+		: new Discord.MessageEmbed()
 				.setTitle(title)
 				.setColor(color ? `0x${color}` : `0x${COLORS.embed.main}`)
 				.setFooter(footer ? footer : '');
@@ -135,7 +135,8 @@ export const splitArrayByObjectKey = (
 		return reducer;
 	}, {});
 
-export const toDDHHMMSS = (joinedAt: Date): string => {
+export const toDDHHMMSS = (joinedAt: Date | null): string => {
+	if (!joinedAt) return 'unknown duration';
 	const start = moment(joinedAt);
 	const end = moment();
 	const diff = moment.duration(end.diff(start));

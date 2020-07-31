@@ -28,7 +28,7 @@ const userHasRole = (roleName, member) => {
 
 const requestWasSendInApropriateChannel = async (msg: Discord.Message) => {
 	const roomRoles = (await findOption('roomRoles')) ?? [];
-	const guildRole = roomRoles.find(role => role.guild === msg.guild.id);
+	const guildRole = roomRoles.find(role => role.guild === msg.guild?.id);
 	return guildRole?.id === msg.channel.id;
 };
 
@@ -100,7 +100,7 @@ export const iam = async (msg: Discord.Message): Promise<void> => {
 	const roleName = removeKeyword(msg);
 	const { member } = msg;
 	const roomRoles = await findOption('roomRoles');
-	const appropiateChannel = roomRoles?.find(s => s.guild === msg.guild.id)?.id;
+	const appropiateChannel = roomRoles?.find(s => s.guild === msg.guild?.id)?.id;
 
 	if (!(await requestWasSendInApropriateChannel(msg)) && appropiateChannel) {
 		msg.channel.send(
@@ -132,12 +132,12 @@ export const iam = async (msg: Discord.Message): Promise<void> => {
 		return;
 	}
 
-	msg.member
-		.addRole(returnRoleID(roleName, member))
+	msg.member?.roles
+		.add(returnRoleID(roleName, member))
 		.then(() =>
 			msg.channel.send(
 				`Role **[${roleName.toUpperCase()}]** assigned to ${
-					member.user.username
+					member?.user.username
 				} with utmost efficiency.`,
 			),
 		)
@@ -177,7 +177,7 @@ export const iamnot = async (msg: Discord.Message): Promise<void> => {
 	}
 	if (!(await requestWasSendInApropriateChannel(msg))) {
 		const roles = await findOption('roomRoles');
-		const channel = roles?.find(g => g.guild === msg.guild.id);
+		const channel = roles?.find(g => g.guild === msg.guild?.id);
 		if (channel === undefined) {
 			// This should probably be logged
 			return;
@@ -187,12 +187,12 @@ export const iamnot = async (msg: Discord.Message): Promise<void> => {
 		return;
 	}
 
-	msg.member
-		.removeRole(returnRoleID(roleName, member))
+	msg.member?.roles
+		.remove(returnRoleID(roleName, member))
 		.then(() =>
 			msg.channel.send(
 				`Role **[${roleName.toUpperCase()}]** removed from ${
-					member.user.username
+					member?.user.username
 				} with utmost efficiency.`,
 			),
 		)
@@ -206,7 +206,8 @@ export const iamnot = async (msg: Discord.Message): Promise<void> => {
 
 export const roles = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
-	const existingRoles = msg.guild.roles.array().map(role => role.name);
+	// TODO array()
+	const existingRoles = msg.guild?.roles.cache.map(role => role.name);
 	const assignableRoles = (await findOption('assignableRoles')) ?? [];
 	const availableRoles: string[] = [];
 

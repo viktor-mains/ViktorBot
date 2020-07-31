@@ -65,13 +65,17 @@ export async function isKnownMember(member: GuildMember): Promise<boolean> {
 }
 
 export async function findUserByDiscordId(
-	id: string,
+	id?: string,
 ): Promise<User | undefined> {
+	if (!id) return;
 	const user = await db.collection('users').findOne({ discordId: id });
 	return user;
 }
 
-export async function findAllGuildMembers(guild: Guild): Promise<User[]> {
+export async function findAllGuildMembers(
+	guild?: Guild | null,
+): Promise<User[] | void> {
+	if (!guild) return;
 	const results = db.collection('users').find({
 		membership: {
 			$elemMatch: {

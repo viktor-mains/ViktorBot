@@ -1,6 +1,7 @@
 import Discord, { Message } from 'discord.js';
 import axios from 'axios';
 import v4 from 'uuid/v4';
+import { format as sprintf } from 'util';
 import { orderBy } from 'lodash';
 import { log } from '../../log';
 import { initData, descriptionChange } from '../../events';
@@ -23,10 +24,10 @@ import {
 } from '../../helpers';
 import { getSummonerId, getPlatform, getHost } from './riot';
 import { client, getSummonerBySummonerId } from '../../riot';
+import { isBotUser } from '../../bot';
+import { COLORS } from '@modules/colors';
 // @ts-ignore:next-line
 import { RIOT_API_TOKEN } from '@config/config.json';
-import { format as sprintf } from 'util';
-import { isBotUser } from '../../bot';
 
 const timeout = 900000;
 
@@ -185,19 +186,19 @@ const updateRankRoles = async (
 		if (rW.weight < rHT.weight) highestTier = rW.rank;
 	});
 
-	const roleToAdd = msg.guild.roles.find(
+	const roleToAdd = msg.guild?.roles.cache.find(
 		role => role.name.toLowerCase() === highestTier.toLowerCase(),
 	);
-	const rolesToRemove = msg.member.roles.filter(
+	const rolesToRemove = msg.member?.roles.cache.filter(
 		role =>
 			ranksWeighted.find(
-				r => r.rank === role.name && r.rank !== roleToAdd.name,
+				r => r.rank === role.name && r.rank !== roleToAdd?.name,
 			) !== undefined,
 	);
 
-	if (rolesToRemove.size > 0)
-		msg.member.removeRoles(rolesToRemove).catch(err => log.WARN(err));
-	if (roleToAdd) msg.member.addRole(roleToAdd).catch(err => log.WARN(err));
+	if (rolesToRemove && rolesToRemove.size > 0)
+		msg.member?.roles.remove(rolesToRemove).catch(err => log.WARN(err));
+	if (roleToAdd) msg.member?.roles.add(roleToAdd).catch(err => log.WARN(err));
 };
 
 const getTierAndDivision = async (
@@ -307,14 +308,16 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 		msg.channel.stopTyping();
 		return;
 	}
-	const user: Discord.User =
+	const user: Discord.GuildMember | Discord.User | undefined =
 		mentions.length === 0
 			? msg.author
-			: msg.guild.members.find(member => member.id === mentions[0].id).user;
+			: msg.guild?.members.cache.find(member => member.id === mentions[0].id)
+					?.user;
 	const members = await findAllGuildMembers(msg.guild);
+	if (!members) throw "Couldn't get guild members. Please try later.";
 	const memberships = members.map(user => {
 		const membership = user.membership.find(
-			member => member.serverId === msg.guild.id,
+			member => member.serverId === msg.guild?.id,
 		);
 		return {
 			id: user.discordId,
@@ -323,14 +326,14 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 	});
 
 	const sorted = orderBy(memberships, ['messageCount'], ['desc']);
-	const userData = await findUserByDiscordId(user.id);
+	const userData = await findUserByDiscordId(user?.id);
 	if (!isBotUser(user)) {
 		if (
 			!userData ||
 			!userData['membership'] ||
-			!userData['membership'].find(s => s.serverId === msg.guild.id)
+			!userData['membership'].find(s => s.serverId === msg.guild?.id)
 		) {
-			if (user.id === msg.author.id) {
+			if (user?.id === msg.author.id) {
 				msg.channel.send(
 					createEmbed(
 						`:information_source: Cannot find your data in database`,
@@ -347,7 +350,9 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 			}
 			msg.channel.send(
 				createEmbed(
-					`:information_source: Cannot find ${user.username}'s data in database`,
+					`:information_source: Cannot find ${
+						user?.username ?? '<USERNAME UNKNOWN>'
+					}'s data in database`,
 					[
 						{
 							title: '___',
@@ -362,16 +367,19 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 			return;
 		}
 	}
-	const userPosition = sorted.findIndex(u => u.id == user.id);
-	const embed = new Discord.RichEmbed()
-		.setColor('FDC000')
-		.setThumbnail(user.avatarURL)
+	const userPosition = sorted.findIndex(u => u.id == user?.id);
+	const userAvatar =
+		user?.avatar ??
+		'https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc3/1bcc0f0aefe71b2c8ce66ffe8645d365.png';
+	const embed = new Discord.MessageEmbed()
+		.setColor(`0x${COLORS.embed.main}`)
+		.setThumbnail(userAvatar)
 		.setFooter(`Last profile's update`)
 		// TODO why doesn't it work?
 		/* eslint-disable-next-line */
 		/* @ts-ignore */
 		.setTimestamp(new Date(userData?.updated).toLocaleString())
-		.setTitle(`:information_source: ${user.username}'s profile`);
+		.setTitle(`:information_source: ${user?.username}'s profile`);
 
 	if (userData && userData.accounts) {
 		for (const account of userData?.accounts) {
@@ -408,7 +416,10 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 		'Description',
 		userData?.description
 			? userData.description
-					.replace(replaceAll('MEMBER_NICKNAME'), user.username)
+					.replace(
+						replaceAll('MEMBER_NICKNAME'),
+						user?.username ?? '<USERNAME UNKNOWN>',
+					)
 					.replace(replaceAll('<br>'), '\n')
 			: `This user has no description yet.`,
 		false,
@@ -430,7 +441,7 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 		);
 	}
 	const memberData = userData?.membership
-		? userData.membership.find(member => member.serverId === msg.guild.id)
+		? userData.membership.find(member => member.serverId === msg.guild?.id)
 		: null;
 	if (memberData) {
 		const messagesPerDay = (
@@ -547,11 +558,11 @@ export const update = async (msg: Discord.Message): Promise<void> => {
 	const lastUpdated = Date.now() - member.updated;
 	const timeoutUpdate = 3600000;
 	if (lastUpdated < timeoutUpdate) {
-		const embed = new Discord.RichEmbed()
+		const embed = new Discord.MessageEmbed()
 			.setFooter(`Last profile update`)
 			.setTimestamp(new Date(member.updated))
 			.setTitle(`:information_source: Profile recently updated`)
-			.setColor('0xFDC000');
+			.setColor(`0x${COLORS.embed.main}`);
 		embed.addField(
 			'___',
 			`Wait ${toMMSS(timeoutUpdate - lastUpdated)} before updating again.`,
@@ -614,10 +625,15 @@ export const update = async (msg: Discord.Message): Promise<void> => {
 export const topmembers = async (msg: Discord.Message): Promise<void> => {
 	const count = (await findOption('topMembers')) ?? 10;
 	const guildMembers = await findAllGuildMembers(msg.guild);
+	if (!guildMembers) return;
+	const test = Date.now();
+	if (test % 2 === 0) throw 'dupa';
 	const counts = guildMembers
-		.filter(user => msg.guild.members.find(m => m.id === user.discordId))
+		.filter(user => msg.guild?.members.cache.find(m => m.id === user.discordId))
 		.map(user => {
-			const membership = user.membership.find(m => m.serverId === msg.guild.id);
+			const membership = user.membership.find(
+				m => m.serverId === msg.guild?.id,
+			);
 			return {
 				id: user.discordId,
 				messageCount: membership?.messageCount ?? 0,
@@ -633,7 +649,12 @@ export const topmembers = async (msg: Discord.Message): Promise<void> => {
 				member.messageCount.toString(),
 				6,
 			);
-			const { username } = msg.guild.members.find(m => m.id === member.id).user;
+			const guildMember = msg.guild?.members.cache.find(
+				m => m.id === member.id,
+			);
+			const { username } = guildMember?.user ?? {
+				username: 'USERNAME UNKNOWN',
+			};
 			content += `\`\`#${justifiedPosition} - ${justifiedMsgCount} msg\`\` - ${username}\n`;
 		}
 	});
@@ -662,8 +683,8 @@ export const register = async (msg: Discord.Message): Promise<void> => {
 		return;
 	}
 
-	const embed = new Discord.RichEmbed()
-		.setColor('FDC000')
+	const embed = new Discord.MessageEmbed()
+		.setColor(`0x${COLORS.embed.main}`)
 		.setFooter(
 			`Your code expires at ${new Date(
 				Date.now() + timeout,
