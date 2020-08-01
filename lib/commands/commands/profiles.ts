@@ -25,7 +25,7 @@ import {
 import { getSummonerId, getPlatform, getHost } from './riot';
 import { client, getSummonerBySummonerId } from '../../riot';
 import { isBotUser } from '../../bot';
-import { COLORS } from '@modules/colors';
+import { COLORS } from '../../modules/colors';
 import * as Config from '../../config';
 const RIOT_API_TOKEN = Config.get('RIOT_API_TOKEN');
 

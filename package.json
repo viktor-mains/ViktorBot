@@ -30,7 +30,6 @@
 		"discord.js": "^12.2.0",
 		"emoji-regex": "^8.0.0",
 		"jsdom": "^16.1.0",
-		"module-alias": "^2.2.2",
 		"moment": "^2.24.0",
 		"mongodb": "^3.5.9",
 		"node-fetch": "^2.6.0",
@@ -47,9 +46,5 @@
 		"@typescript-eslint/parser": "^3.7.1",
 		"eslint": "^7.5.0",
 		"typescript": "^3.9.7"
-	},
-	"_moduleAliases": {
-		"@modules": "dist/lib/modules",
-		"@config": "dist/config"
 	}
 }

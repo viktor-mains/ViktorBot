@@ -3,7 +3,7 @@ import sharp from 'sharp';
 import * as d3 from 'd3';
 import _ from 'lodash';
 import { MessageAttachment } from 'discord.js';
-import { COLORS } from '@modules/colors';
+import { COLORS } from './modules/colors';
 
 type TGraphSize = {
 	width: number;
