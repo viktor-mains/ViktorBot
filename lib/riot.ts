@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { format as sprintf } from 'util';
 import { Request, default as fetch } from 'node-fetch';
-// @ts-ignore:next-line
-import { RIOT_API_TOKEN } from '@config/config.json';
+import * as Config from './config';
 
 export class RiotClient {
 	#token: string;
@@ -40,7 +39,7 @@ export class RiotClient {
 	}
 }
 
-export const client = new RiotClient(RIOT_API_TOKEN);
+export const client = new RiotClient(Config.get('RIOT_API_TOKEN'));
 
 interface Response<T> {
 	data: T;

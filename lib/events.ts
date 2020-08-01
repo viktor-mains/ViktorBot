@@ -11,7 +11,7 @@ import {
 } from './storage/db';
 import { createEmbed, toDDHHMMSS, removeKeyword, replaceAll } from './helpers';
 import { findTextChannel } from './bot';
-import { COLORS } from '@modules/colors';
+import { COLORS } from './modules/colors';
 
 type LogRoom = 'roomLogMsgs' | 'roomLogUsers';
 

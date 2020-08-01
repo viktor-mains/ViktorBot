@@ -27,7 +27,7 @@ import {
 	getSummonerByAccountId,
 } from '../../riot';
 import { format as sprintf } from 'util';
-import { COLORS } from '@modules/colors';
+import { COLORS } from '../../modules/colors';
 
 export const getPlatform = async (server?: string): Promise<string> => {
 	const { platform } = await findServerByName(server);

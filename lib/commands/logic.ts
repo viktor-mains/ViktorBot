@@ -9,7 +9,7 @@ import {
 import { botRefuses } from '../rng';
 import { isUserAdmin } from '../message';
 import { replaceAll } from '../helpers';
-import { COLORS } from '@modules/colors';
+import { COLORS } from '../modules/colors';
 
 class Command {
 	public channel: Discord.TextChannel | Discord.DMChannel | Discord.NewsChannel;

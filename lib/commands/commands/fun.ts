@@ -8,14 +8,14 @@ import { chooseRandom } from '../../rng';
 import { log } from '../../log';
 import BotGraph from '../../graphs';
 import { findOption } from '../../storage/db';
-import { COLORS } from '@modules/colors';
-// @ts-ignore:next-line
-import { CAT_API_TOKEN } from '@config/config.json';
+import { COLORS } from '../../modules/colors';
+import * as Config from '../../config';
 
 export const meow = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
+	const token = Config.get('CAT_API_TOKEN');
 	const cat: void | AxiosResponse = await axios(
-		`https://api.thecatapi.com/v1/images/search?api_key=${CAT_API_TOKEN}`,
+		`https://api.thecatapi.com/v1/images/search?api_key=${token}`,
 	).catch(() => {
 		msg.channel.send('Unable to get a cat.');
 		msg.channel.stopTyping();
