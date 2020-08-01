@@ -16,12 +16,7 @@
 		"esModuleInterop": true,
 		"allowUnreachableCode": false,
 		"allowUnusedLabels": true,
-		"pretty": true,
-		"paths": {
-			"@modules/*": ["lib/modules/*"],
-			"@config/*": ["config/*"],
-			"config.json": ["./config.example.json"]
-		}
+		"pretty": true
 	},
 	"include": ["./**/*"],
 	"exclude": ["node_modules", "dist", "config.json"]

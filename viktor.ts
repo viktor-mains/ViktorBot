@@ -1,14 +1,13 @@
-require('module-alias/register');
 import { connectToDb } from './lib/storage/db';
 import { initialize } from './lib/bot';
 import { log } from './lib/log';
-
-// @ts-ignore:next-line
-import { DATABASE_URL, DISCORD_TOKEN } from '@config/config.json';
+import * as Config from './lib/config';
 
 async function main() {
-	await connectToDb(DATABASE_URL);
-	await initialize(DISCORD_TOKEN);
+	const dbUrl = Config.get('DATABASE_URL');
+	const discordToken = Config.get('DISCORD_TOKEN');
+	await connectToDb(dbUrl);
+	await initialize(discordToken);
 }
 
 main().catch(error => log.WARN(error));

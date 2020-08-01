@@ -26,8 +26,8 @@ import { getSummonerId, getPlatform, getHost } from './riot';
 import { client, getSummonerBySummonerId } from '../../riot';
 import { isBotUser } from '../../bot';
 import { COLORS } from '@modules/colors';
-// @ts-ignore:next-line
-import { RIOT_API_TOKEN } from '@config/config.json';
+import * as Config from '../../config';
+const RIOT_API_TOKEN = Config.get('RIOT_API_TOKEN');
 
 const timeout = 900000;
 
