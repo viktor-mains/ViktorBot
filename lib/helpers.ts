@@ -135,27 +135,34 @@ export const splitArrayByObjectKey = (
 		return reducer;
 	}, {});
 
-export const toDDHHMMSS = (joinedAt: Date | null): string => {
+export const toDDHHMMSS = (
+	joinedAt: Date | null,
+	now: Date = new Date(),
+): string => {
 	if (!joinedAt) return 'unknown duration';
 	const start = moment(joinedAt);
-	const end = moment();
+	const end = moment(now);
 	const diff = moment.duration(end.diff(start));
 
-	return `${
-		moment.duration(diff).years() ? moment.duration(diff).years() + 'y ' : ''
-	}${
-		moment.duration(diff).months() ? moment.duration(diff).months() + 'm ' : ''
-	}${moment.duration(diff).days() ? moment.duration(diff).days() + 'd ' : ''}${
-		moment.duration(diff).hours() ? moment.duration(diff).hours() + 'h ' : ''
-	}${
-		moment.duration(diff).minutes()
-			? moment.duration(diff).minutes() + 'm '
-			: ''
-	}${
-		moment.duration(diff).seconds()
-			? moment.duration(diff).seconds() + 's '
-			: ''
-	}`;
+	const times = {
+		y: diff.years(),
+		mo: diff.months(),
+		d: diff.days(),
+		h: diff.hours(),
+		m: diff.minutes(),
+		s: diff.seconds(),
+	};
+
+	const items = Object.keys(times).reduce((arr, key) => {
+		const val = times[key];
+		if (val === 0) {
+			return arr;
+		}
+
+		return [...arr, [val, key].join('')];
+	}, []);
+
+	return [...items, ''].join(' ');
 };
 
 export const toMMSS = (miliseconds: number): string => {
