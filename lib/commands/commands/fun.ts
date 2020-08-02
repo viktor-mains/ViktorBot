@@ -1,5 +1,4 @@
 import Discord from 'discord.js';
-import axios, { AxiosResponse } from 'axios';
 import { uniq } from 'lodash';
 import emojiRegex from 'emoji-regex/es2015/index.js';
 import emojiRegexText from 'emoji-regex/es2015/text.js';
@@ -10,52 +9,52 @@ import BotGraph from '../../graphs';
 import { findOption } from '../../storage/db';
 import { COLORS } from '../../modules/colors';
 import * as Config from '../../config';
+import fetch from 'node-fetch';
+
+async function get<T>(url: URL): Promise<T> {
+	const response = await fetch(url.href);
+	return await response.json();
+}
 
 export const meow = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
 	const token = Config.get('CAT_API_TOKEN');
-	const cat: void | AxiosResponse = await axios(
-		`https://api.thecatapi.com/v1/images/search?api_key=${token}`,
-	).catch(() => {
-		msg.channel.send('Unable to get a cat.');
+	const url = new URL('/v1/images/search', 'https://api.thecatapi.com');
+	url.searchParams.set('api_key', token);
+	try {
+		const data = await get<{ url: string }[]>(url);
+		const embed = new Discord.MessageEmbed()
+			.setTitle('😺 Cat!')
+			.setTimestamp(new Date())
+			.setFooter(msg.author.username)
+			.setColor(`0x${COLORS.embed.main}`)
+			.setImage(data[0].url);
+
+		msg.channel.send(embed);
+	} catch (e) {
+		await msg.channel.send('Unable to get a cat.');
+	} finally {
 		msg.channel.stopTyping();
-		return;
-	});
-	if (!cat || !cat.data) {
-		msg.channel.send('Unable to get a cat.');
-		return;
 	}
-	const embed = new Discord.MessageEmbed()
-		.setTitle('😺 Cat!')
-		.setTimestamp(new Date())
-		.setFooter(msg.author.username)
-		.setColor(`0x${COLORS.embed.main}`)
-		.setImage(cat.data[0].url);
-	msg.channel.stopTyping();
-	msg.channel.send(embed);
 };
 
 export const woof = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
-	const dog: void | AxiosResponse = await axios('http://random.dog/woof').catch(
-		() => {
-			msg.channel.send('Unable to get a dog.');
-			msg.channel.stopTyping();
-			return;
-		},
-	);
-	if (!dog || !dog.data) {
-		msg.channel.send('Unable to get a dog.');
-		return;
+	try {
+		const data = await get<string>(new URL('https://random.dog/woof'));
+		const dog = new URL(data, 'https://random.dog');
+		const embed = new Discord.MessageEmbed()
+			.setTitle('🐶 Dog!')
+			.setTimestamp(new Date())
+			.setFooter(msg.author.username)
+			.setColor(`0x${COLORS.embed.main}`)
+			.setImage(dog.href);
+		await msg.channel.send(embed);
+	} catch {
+		await msg.channel.send('Unable to get a dog.');
+	} finally {
+		msg.channel.stopTyping();
 	}
-	const embed = new Discord.MessageEmbed()
-		.setTitle('🐶 Dog!')
-		.setTimestamp(new Date())
-		.setFooter(msg.author.username)
-		.setColor(`0x${COLORS.embed.main}`)
-		.setImage(`http://random.dog/${dog.data}`);
-	msg.channel.stopTyping();
-	msg.channel.send(embed);
 };
 
 export const choose = (msg: Discord.Message): void => {
