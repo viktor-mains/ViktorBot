@@ -251,3 +251,25 @@ export function getLeagues(
 		playerId,
 	);
 }
+
+function fetchVerificationCode(
+	client: RiotClient,
+	host: string,
+	playerId: string,
+): Promise<Response<string>> {
+	return client.fetch<string>(
+		host,
+		'/lol/platform/v4/third-party-code/by-summoner/%s',
+		playerId,
+	);
+}
+
+export async function compareVerificationCode(
+	client: RiotClient,
+	host: string,
+	playerId: string,
+	desiredCode: string,
+): Promise<boolean> {
+	const { data } = await fetchVerificationCode(client, host, playerId);
+	return data === desiredCode;
+}
