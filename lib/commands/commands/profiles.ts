@@ -23,7 +23,12 @@ import {
 	toMMSS,
 } from '../../helpers';
 import { getSummonerId, getPlatform, getHost } from './riot';
-import { client, getSummonerBySummonerId } from '../../riot';
+import {
+	client,
+	getSummonerBySummonerId,
+	getLeagues,
+	fetchMasteryByChampion,
+} from '../../riot';
 import { isBotUser } from '../../bot';
 import { COLORS } from '../../modules/colors';
 import * as Config from '../../config';
@@ -211,14 +216,20 @@ const getTierAndDivision = async (
 		? _playerId
 		: await getSummonerId(nickname, server);
 	const realm = await getPlatform(server);
-	const url = `https://${realm}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}?api_key=${RIOT_API_TOKEN}`;
-	const userLeagues: any = await axios(url).catch(err => {
-		log.INFO(
-			`failed to get user's ${msg.author.username} tier/division (${nickname}, ${server}) - ${url}`,
+	if (playerId === undefined) {
+		msg.channel.send(
+			createEmbed(`❌Cannot get user's data`, [
+				{
+					title: '___',
+					content: `Getting user's rank data failed. Try again later.`,
+				},
+			]),
 		);
-		log.WARN(err);
-		return;
-	});
+		msg.channel.stopTyping();
+		return { tier: null, rank: null };
+	}
+
+	const userLeagues = await getLeagues(client, realm, playerId);
 	if (!userLeagues || !userLeagues.data) {
 		msg.channel.send(
 			createEmbed(`❌Cannot get user's data`, [
@@ -231,9 +242,11 @@ const getTierAndDivision = async (
 		msg.channel.stopTyping();
 		return { tier: null, rank: null };
 	}
+
 	const soloQ = userLeagues.data.find(
 		queue => queue.queueType === 'RANKED_SOLO_5x5',
 	);
+
 	const soloQRank = soloQ
 		? { tier: soloQ.tier, rank: soloQ.rank }
 		: { tier: 'UNRANKED', rank: 'UNRANKED' };
@@ -249,15 +262,27 @@ const getMastery = async (
 	const playerId = _playerId
 		? _playerId
 		: await getSummonerId(nickname, server);
-	const realm = await getPlatform(server);
-	const url = `https://${realm}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${playerId}/by-champion/112?api_key=${RIOT_API_TOKEN}`;
-	const userMastery: any = await axios(url).catch(err => {
-		log.INFO(
-			`failed to get user's ${msg.author.username} mastery (${nickname}, ${server}) - ${url}`,
+	if (playerId === undefined) {
+		msg.channel.send(
+			createEmbed(`❌Cannot get user's data`, [
+				{
+					title: '___',
+					content: `Getting user's mastery failed. Try again later.`,
+				},
+			]),
 		);
-		log.WARN(err);
-		return null;
-	});
+		msg.channel.stopTyping();
+		return;
+	}
+
+	const realm = await getPlatform(server);
+	const userMastery = await fetchMasteryByChampion(
+		client,
+		realm,
+		playerId,
+		112,
+	);
+
 	if (!userMastery || !userMastery.data) {
 		msg.channel.send(
 			createEmbed(`❌Cannot get user's data`, [
