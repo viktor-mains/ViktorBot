@@ -135,11 +135,19 @@ export const splitArrayByObjectKey = (
 		return reducer;
 	}, {});
 
-export const toDDHHMMSS = (
+// These overloads ensure that you have type safety. If you pass a Date to this, you will ALWAYS get a string back, but if you pass null, you will ONLY get a null back
+// Prevents situations like toDDHHMMSS(new Date()) having to be nullchecked.
+export function toDDHHMMSS(joinedAt: null): null;
+export function toDDHHMMSS(joinedAt: Date | null): string | null;
+export function toDDHHMMSS(joinedDat: Date, now?: Date): string;
+export function toDDHHMMSS(
 	joinedAt: Date | null,
 	now: Date = new Date(),
-): string => {
-	if (!joinedAt) return 'unknown duration';
+): string | null {
+	if (joinedAt === null) {
+		return null;
+	}
+
 	const start = moment(joinedAt);
 	const end = moment(now);
 	const diff = moment.duration(end.diff(start));
@@ -163,7 +171,7 @@ export const toDDHHMMSS = (
 	}, []);
 
 	return [...items, ''].join(' ');
-};
+}
 
 export const toMMSS = (miliseconds: number): string => {
 	const mili = 1000;

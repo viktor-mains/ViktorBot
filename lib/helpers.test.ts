@@ -2,7 +2,7 @@ import test from 'tape';
 import { toDDHHMMSS } from './helpers';
 
 test('toDDHHMMSS returns unknown duration if null', t => {
-	t.equal(toDDHHMMSS(null), 'unknown duration');
+	t.equal(toDDHHMMSS(null), null);
 	t.end();
 });
 

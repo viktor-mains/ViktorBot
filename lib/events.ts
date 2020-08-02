@@ -192,9 +192,7 @@ export const userLeave = (member: Discord.GuildMember): void => {
 			},
 			{
 				title: `Was a member for`,
-				content: toDDHHMMSS(member.joinedAt)
-					? toDDHHMMSS(member.joinedAt)
-					: '?',
+				content: toDDHHMMSS(member.joinedAt) ?? '?',
 				inline: true,
 			},
 			{
