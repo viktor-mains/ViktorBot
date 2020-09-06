@@ -25,7 +25,7 @@
 	"homepage": "https://github.com/Arcyvilk/GreatHerald#readme",
 	"dependencies": {
 		"@types/node": "^14.0.26",
-		"d3": "^5.15.0",
+		"d3": "^6.1.1",
 		"discord.js": "^12.2.0",
 		"emoji-regex": "^8.0.0",
 		"jsdom": "^16.1.0",
