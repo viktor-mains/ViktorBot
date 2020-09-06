@@ -34,7 +34,7 @@ export interface Account {
 	opgg: string;
 	mastery: {
 		points: number;
-		chest: number;
+		chest: boolean;
 		level: number;
 		lastPlayed: number;
 	};

@@ -174,11 +174,25 @@ export function fetchSummonerMasteries(
 	client: RiotClient,
 	host: string,
 	summoner: Summoner,
-): Promise<any> {
+): Promise<Response<MasteryLevel[]>> {
 	return client.fetch<MasteryLevel[]>(
 		host,
 		'/lol/champion-mastery/v4/champion-masteries/by-summoner/%s',
 		summoner.id,
+	);
+}
+
+export function fetchMasteryByChampion(
+	client: RiotClient,
+	host: string,
+	playerId: string,
+	id: number,
+): Promise<Response<MasteryLevel>> {
+	return client.fetch<MasteryLevel>(
+		host,
+		'/lol/champion-mastery/v4/champion-masteries/by-summoner/%s/by-champion/%s',
+		playerId,
+		id.toString(),
 	);
 }
 
@@ -192,7 +206,7 @@ export function getSummonerByName(
 	client: RiotClient,
 	host: string,
 	name: string,
-): Promise<any> {
+): Promise<Response<Summoner>> {
 	return client.fetch<Summoner>(
 		host,
 		'/lol/summoner/v4/summoners/by-name/%s',
@@ -204,7 +218,7 @@ export function getSummonerByAccountId(
 	client: RiotClient,
 	host: string,
 	accountId: string,
-): Promise<any> {
+): Promise<Response<Summoner>> {
 	return client.fetch<Summoner>(
 		host,
 		'/lol/summoner/v4/summoners/by-account/%s',
@@ -216,6 +230,46 @@ export function getSummonerBySummonerId(
 	client: RiotClient,
 	host: string,
 	name: string,
-): Promise<any> {
+): Promise<Response<Summoner>> {
 	return client.fetch<Summoner>(host, '/lol/summoner/v4/summoners/%s', name);
+}
+
+interface League {
+	queueType: string;
+	tier: string;
+	rank: string;
+}
+
+export function getLeagues(
+	client: RiotClient,
+	host: string,
+	playerId: string,
+): Promise<Response<League[]>> {
+	return client.fetch<League[]>(
+		host,
+		'/lol/league/v4/entries/by-summoner/%s',
+		playerId,
+	);
+}
+
+function fetchVerificationCode(
+	client: RiotClient,
+	host: string,
+	playerId: string,
+): Promise<Response<string>> {
+	return client.fetch<string>(
+		host,
+		'/lol/platform/v4/third-party-code/by-summoner/%s',
+		playerId,
+	);
+}
+
+export async function compareVerificationCode(
+	client: RiotClient,
+	host: string,
+	playerId: string,
+	desiredCode: string,
+): Promise<boolean> {
+	const { data } = await fetchVerificationCode(client, host, playerId);
+	return data === desiredCode;
 }

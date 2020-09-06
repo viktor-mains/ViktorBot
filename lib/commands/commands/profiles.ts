@@ -1,5 +1,4 @@
 import Discord, { Message } from 'discord.js';
-import axios from 'axios';
 import v4 from 'uuid/v4';
 import { format as sprintf } from 'util';
 import { orderBy } from 'lodash';
@@ -23,11 +22,15 @@ import {
 	toMMSS,
 } from '../../helpers';
 import { getSummonerId, getPlatform, getHost } from './riot';
-import { client, getSummonerBySummonerId } from '../../riot';
+import {
+	client,
+	getSummonerBySummonerId,
+	getLeagues,
+	fetchMasteryByChampion,
+	compareVerificationCode,
+} from '../../riot';
 import { isBotUser } from '../../bot';
 import { COLORS } from '../../modules/colors';
-import * as Config from '../../config';
-const RIOT_API_TOKEN = Config.get('RIOT_API_TOKEN');
 
 const timeout = 900000;
 
@@ -40,27 +43,11 @@ const verifyCode = async (
 	msg.channel.startTyping();
 	const playerId = await getSummonerId(nickname, server);
 	const realm = await getPlatform(server);
-	const url = `https://${realm}.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/${playerId}?api_key=${RIOT_API_TOKEN}`;
-	const continueVerifying = async verificationCode => {
-		if (!verificationCode) {
+
+	try {
+		if (await compareVerificationCode(client, realm, playerId!, uuid)) {
 			log.INFO(
-				`user ${msg.author.username} failed to register with account ${nickname}, ${server} - ${url} - no data returned`,
-			);
-			log.INFO(JSON.stringify(verificationCode));
-			msg.author.send(
-				createEmbed(`❌ Verification failed`, [
-					{
-						title: '___',
-						content: `That's probably a Riot's API error. Try again a bit later.`,
-					},
-				]),
-			);
-			msg.channel.stopTyping();
-			return;
-		}
-		if (verificationCode && uuid !== verificationCode.data) {
-			log.INFO(
-				`user ${msg.author.username} failed to register with account ${nickname}, ${server} - ${url} - incorrect code (${verificationCode.data})`,
+				`user ${msg.author.username} failed to register with account ${nickname}, ${server} - incorrect code`,
 			);
 			msg.author.send(
 				createEmbed(`❌ Incorrect verification code`, [
@@ -70,9 +57,9 @@ const verifyCode = async (
 					},
 				]),
 			);
-			msg.channel.stopTyping();
 			return;
 		}
+
 		const { tier, rank } = await getTierAndDivision(msg, nickname, server);
 		const mastery = await getMastery(msg, nickname, server);
 		let userData = {};
@@ -99,7 +86,6 @@ const verifyCode = async (
 						},
 					]),
 				);
-				msg.channel.stopTyping();
 				return;
 			}
 			userData = oldData;
@@ -122,7 +108,8 @@ const verifyCode = async (
 				membership: {},
 			};
 		}
-		updateRankRoles(msg, userData);
+
+		await updateRankRoles(msg, userData);
 		try {
 			await upsertUser(msg.author.id, userData as any);
 			await msg.author.send(
@@ -142,29 +129,23 @@ const verifyCode = async (
 					},
 				]),
 			);
-		} finally {
-			msg.channel.stopTyping();
 		}
-	};
-
-	await axios(url)
-		.then(continueVerifying)
-		.catch(err => {
-			log.INFO(
-				`user ${msg.author.username} failed to register with account ${nickname}, ${server} - ${url} - axios error`,
-			);
-			log.WARN(err);
-			msg.author.send(
-				createEmbed(`❌ Cannot get verification code`, [
-					{
-						title: '___',
-						content: `Getting 3rd party code failed.`,
-					},
-				]),
-			);
-			msg.channel.stopTyping();
-			return;
-		});
+	} catch (err) {
+		log.INFO(
+			`user ${msg.author.username} failed to register with account ${nickname}, ${server}`,
+		);
+		log.WARN(err);
+		msg.author.send(
+			createEmbed(`❌ Cannot get verification code`, [
+				{
+					title: '___',
+					content: `Getting 3rd party code failed.`,
+				},
+			]),
+		);
+	} finally {
+		msg.channel.stopTyping();
+	}
 };
 
 const updateRankRoles = async (
@@ -211,14 +192,20 @@ const getTierAndDivision = async (
 		? _playerId
 		: await getSummonerId(nickname, server);
 	const realm = await getPlatform(server);
-	const url = `https://${realm}.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerId}?api_key=${RIOT_API_TOKEN}`;
-	const userLeagues: any = await axios(url).catch(err => {
-		log.INFO(
-			`failed to get user's ${msg.author.username} tier/division (${nickname}, ${server}) - ${url}`,
+	if (playerId === undefined) {
+		msg.channel.send(
+			createEmbed(`❌Cannot get user's data`, [
+				{
+					title: '___',
+					content: `Getting user's rank data failed. Try again later.`,
+				},
+			]),
 		);
-		log.WARN(err);
-		return;
-	});
+		msg.channel.stopTyping();
+		return { tier: null, rank: null };
+	}
+
+	const userLeagues = await getLeagues(client, realm, playerId);
 	if (!userLeagues || !userLeagues.data) {
 		msg.channel.send(
 			createEmbed(`❌Cannot get user's data`, [
@@ -231,9 +218,11 @@ const getTierAndDivision = async (
 		msg.channel.stopTyping();
 		return { tier: null, rank: null };
 	}
+
 	const soloQ = userLeagues.data.find(
 		queue => queue.queueType === 'RANKED_SOLO_5x5',
 	);
+
 	const soloQRank = soloQ
 		? { tier: soloQ.tier, rank: soloQ.rank }
 		: { tier: 'UNRANKED', rank: 'UNRANKED' };
@@ -249,15 +238,27 @@ const getMastery = async (
 	const playerId = _playerId
 		? _playerId
 		: await getSummonerId(nickname, server);
-	const realm = await getPlatform(server);
-	const url = `https://${realm}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${playerId}/by-champion/112?api_key=${RIOT_API_TOKEN}`;
-	const userMastery: any = await axios(url).catch(err => {
-		log.INFO(
-			`failed to get user's ${msg.author.username} mastery (${nickname}, ${server}) - ${url}`,
+	if (playerId === undefined) {
+		msg.channel.send(
+			createEmbed(`❌Cannot get user's data`, [
+				{
+					title: '___',
+					content: `Getting user's mastery failed. Try again later.`,
+				},
+			]),
 		);
-		log.WARN(err);
-		return null;
-	});
+		msg.channel.stopTyping();
+		return;
+	}
+
+	const realm = await getPlatform(server);
+	const userMastery = await fetchMasteryByChampion(
+		client,
+		realm,
+		playerId,
+		112,
+	);
+
 	if (!userMastery || !userMastery.data) {
 		msg.channel.send(
 			createEmbed(`❌Cannot get user's data`, [
@@ -572,6 +573,7 @@ export const update = async (msg: Discord.Message): Promise<void> => {
 		msg.channel.stopTyping();
 		return;
 	}
+
 	const updateAccounts = async (index: number) => {
 		if (!member.accounts[index]) return finalize();
 		const account = member.accounts[index];
@@ -585,7 +587,7 @@ export const update = async (msg: Discord.Message): Promise<void> => {
 		const updatedAcc = { ...account };
 		updatedAcc.tier = tier ? tier : updatedAcc.tier;
 		updatedAcc.rank = rank ? rank : updatedAcc.rank;
-		updatedAcc.mastery = mastery.lastPlayed ? mastery : updatedAcc.mastery;
+		updatedAcc.mastery = mastery?.lastPlayed ? mastery : updatedAcc.mastery;
 		member.accounts[index] = updatedAcc;
 		updateAccounts(index + 1);
 	};
