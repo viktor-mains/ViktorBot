@@ -22,9 +22,7 @@ type TField = {
 export const opgg = (msg: Discord.Message): void => {
 	const { nickname, server } = extractNicknameAndServer(msg);
 	if (nickname && server)
-		msg.channel.send(
-			`https://${server}.op.gg/summoner/userName=${nickname}`,
-		);
+		msg.channel.send(`https://${server}.op.gg/summoner/userName=${nickname}`);
 };
 
 export const help = async (msg: Discord.Message): Promise<void> => {
@@ -40,25 +38,27 @@ export const help = async (msg: Discord.Message): Promise<void> => {
 			if (command.description)
 				content += `- **${sym}${command.keyword}** - ${command.description}\n`;
 		});
-		fields.push({ title, content });
+		if (content) fields.push({ title, content });
 	}
 
-	const embed = createEmbed('📜 List of commands', fields);
+	let embed;
+	if (fields.length > 0) embed = createEmbed('📜 List of commands', fields);
+	else
+		embed = createEmbed('📜 List of commands', [
+			{ title: '___', content: 'There is no commands!' },
+		]);
 	msg.author
 		.send({ embed })
 		.then(() => msg.react('📩'))
 		.catch(() =>
 			msg.channel.send(
-				createEmbed(
-					':warning: I am unable to reply to you',
-					[
-						{
-							title: '___',
-							content: `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
+				createEmbed(':warning: I am unable to reply to you', [
+					{
+						title: '___',
+						content: `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
             \nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command.`,
-						},
-					],
-				),
+					},
+				]),
 			),
 		);
 };
@@ -72,29 +72,33 @@ export const hmod = async (msg: Discord.Message): Promise<void> => {
 	for (const category in commands) {
 		const title = `Category ${category.toUpperCase()}`;
 		let content = '';
-		commands[category].map(
-			(command: Command) =>
-				(content += `\`\`-\`\`**${sym}${command.keyword}** - ${command.description}\n`),
-		);
-		fields.push({ title, content });
+		commands[category].map((command: Command) => {
+			if (command.description)
+				content += `\`\`-\`\`**${sym}${command.keyword}** - ${command.description}\n`;
+		});
+		if (content) fields.push({ title, content });
 	}
 
-	const embed = createEmbed('📜 List of moderator commands', fields);
+	let embed;
+	if (fields.length > 0)
+		embed = createEmbed('📜 List of moderator commands', fields);
+	else
+		embed = createEmbed('📜 List of commands', [
+			{ title: '___', content: 'There is no moderator commands!' },
+		]);
+
 	msg.author
 		.send({ embed })
 		.then(() => msg.react('📩'))
 		.catch(() =>
 			msg.channel.send(
-				createEmbed(
-					':warning: I am unable to reply to you',
-					[
-						{
-							title: '___',
-							content: `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
+				createEmbed(':warning: I am unable to reply to you', [
+					{
+						title: '___',
+						content: `This command sends the reply to your DM, and it seems you have DMs from members of this server disabled.
             \nTo be able to receive messages from me, go to \`\`User Settings => Privacy & Safety => Allow direct messages from server members\`\` and then resend the command.`,
-						},
-					],
-				),
+					},
+				]),
 			),
 		);
 };

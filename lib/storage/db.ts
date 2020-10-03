@@ -99,7 +99,7 @@ interface Options {
 		emote: string;
 	}[];
 	assignableRoles: string[];
-	roomRoles: {
+	room_roles: {
 		id: string;
 		guild: string;
 	}[];
@@ -126,11 +126,11 @@ interface Options {
 	}[];
 	degenWords: string[];
 	maxAccounts: number;
-	roomLogMsgs: {
+	room_log_msgs: {
 		guild: string;
 		id: string;
 	}[];
-	roomLogUsers: {
+	room_log_users: {
 		guild: string;
 		id: string;
 	}[];

@@ -13,7 +13,7 @@ import { createEmbed, toDDHHMMSS, removeKeyword, replaceAll } from './helpers';
 import { findTextChannel } from './bot';
 import { COLORS } from './modules/colors';
 
-type LogRoom = 'roomLogMsgs' | 'roomLogUsers';
+type LogRoom = 'room_log_msgs' | 'room_log_users';
 
 const sendLog = async (
 	guild?: Guild | null,
@@ -104,7 +104,7 @@ export const msgEdit = (
 		],
 		COLORS.embed.edit,
 	);
-	sendLog(oldMsg.guild, log, 'roomLogMsgs');
+	sendLog(oldMsg.guild, log, 'room_log_msgs');
 };
 
 export const msgDelete = (msg: Discord.Message): void => {
@@ -148,7 +148,7 @@ export const msgDelete = (msg: Discord.Message): void => {
 		],
 		COLORS.embed.delete,
 	);
-	sendLog(msg.guild, log, 'roomLogMsgs');
+	sendLog(msg.guild, log, 'room_log_msgs');
 };
 
 export const userJoin = async (member: Discord.GuildMember): Promise<void> => {
@@ -178,7 +178,7 @@ export const userJoin = async (member: Discord.GuildMember): Promise<void> => {
 	} else {
 		handleUserNotInDatabase(member);
 	}
-	sendLog(member.guild, log, 'roomLogUsers');
+	sendLog(member.guild, log, 'room_log_users');
 };
 
 export const userLeave = (member: Discord.GuildMember): void => {
@@ -209,7 +209,7 @@ export const userLeave = (member: Discord.GuildMember): void => {
 		],
 		COLORS.embed.leave,
 	);
-	sendLog(member.guild, log, 'roomLogUsers');
+	sendLog(member.guild, log, 'room_log_users');
 };
 
 export const descriptionChange = (msg: Discord.Message): void => {
@@ -237,7 +237,7 @@ export const descriptionChange = (msg: Discord.Message): void => {
 		],
 		COLORS.embed.description,
 	);
-	sendLog(msg.guild, log, 'roomLogUsers');
+	sendLog(msg.guild, log, 'room_log_users');
 	sendGlobalLog(log, msg.member?.guild);
 };
 

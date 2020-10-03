@@ -27,8 +27,8 @@ const userHasRole = (roleName, member) => {
 };
 
 const requestWasSendInApropriateChannel = async (msg: Discord.Message) => {
-	const roomRoles = (await findOption('roomRoles')) ?? [];
-	const guildRole = roomRoles.find(role => role.guild === msg.guild?.id);
+	const room_roles = (await findOption('room_roles')) ?? [];
+	const guildRole = room_roles.find(role => role.guild === msg.guild?.id);
 	return guildRole?.id === msg.channel.id;
 };
 
@@ -99,8 +99,9 @@ const specialRoleRequested = async (roleName: string, msg: Discord.Message) => {
 export const iam = async (msg: Discord.Message): Promise<void> => {
 	const roleName = removeKeyword(msg);
 	const { member } = msg;
-	const roomRoles = await findOption('roomRoles');
-	const appropiateChannel = roomRoles?.find(s => s.guild === msg.guild?.id)?.id;
+	const room_roles = await findOption('room_roles');
+	const appropiateChannel = room_roles?.find(s => s.guild === msg.guild?.id)
+		?.id;
 
 	if (!(await requestWasSendInApropriateChannel(msg)) && appropiateChannel) {
 		msg.channel.send(
@@ -176,7 +177,7 @@ export const iamnot = async (msg: Discord.Message): Promise<void> => {
 		return;
 	}
 	if (!(await requestWasSendInApropriateChannel(msg))) {
-		const roles = await findOption('roomRoles');
+		const roles = await findOption('room_roles');
 		const channel = roles?.find(g => g.guild === msg.guild?.id);
 		if (channel === undefined) {
 			// This should probably be logged
