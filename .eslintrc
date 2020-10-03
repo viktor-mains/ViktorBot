@@ -23,7 +23,7 @@
 		"no-magic-numbers": "warn",
 		"no-lone-blocks": "error",
 		"no-useless-catch": "warn",
-		"camelcase": "error",
+		"camelcase": "warn",
 		"comma-spacing": "error",
 		"no-inline-comments": "error",
 		"no-multiple-empty-lines": "error",
