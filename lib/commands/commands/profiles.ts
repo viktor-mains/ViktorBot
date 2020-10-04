@@ -628,8 +628,6 @@ export const topmembers = async (msg: Discord.Message): Promise<void> => {
 	const count = (await findOption('topMembers')) ?? 10;
 	const guildMembers = await findAllGuildMembers(msg.guild);
 	if (!guildMembers) return;
-	const test = Date.now();
-	if (test % 2 === 0) throw 'dupa';
 	const counts = guildMembers
 		.filter(user => msg.guild?.members.cache.find(m => m.id === user.discordId))
 		.map(user => {
