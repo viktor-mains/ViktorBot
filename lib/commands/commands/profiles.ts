@@ -370,7 +370,8 @@ export const profile = async (msg: Discord.Message): Promise<void> => {
 	}
 	const userPosition = sorted.findIndex(u => u.id == user?.id);
 	const userAvatar =
-		user?.avatar ??
+		user?.avatarURL() ??
+		user?.defaultAvatarURL ??
 		'https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc3/1bcc0f0aefe71b2c8ce66ffe8645d365.png';
 	const embed = new Discord.MessageEmbed()
 		.setColor(`0x${COLORS.embed.main}`)
