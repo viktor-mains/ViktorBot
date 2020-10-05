@@ -24,7 +24,7 @@ import {
 	getSummonerByName,
 	Summoner,
 	fetchSummonerMasteries,
-	getSummonerByAccountId,
+	getSummonerBySummonerId,
 } from '../../riot';
 import { format as sprintf } from 'util';
 import { COLORS } from '../../modules/colors';
@@ -90,9 +90,9 @@ export const updatechampions = async (msg: Discord.Message): Promise<void> => {
 		try {
 			await upsertOne(
 				'champions',
-				{ id: champion.key },
+				{ id: parseInt(champion.key) },
 				{
-					id: champion.key,
+					id: parseInt(champion.key),
 					name: champion.name,
 					title: champion.title,
 					img: `http://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champion.image.full}`,
@@ -343,12 +343,11 @@ export const mastery = async (msg: Discord.Message): Promise<void> => {
 		const accounts = user?.accounts ?? [];
 		if (accounts.length !== 0) {
 			for (const account of accounts) {
-				const platform = await getPlatform(account.server);
 				const host = await getHost(account.server);
-				if (!platform || !!host) {
+				if (!host) {
 					continue;
 				}
-				const { data: summoner } = await getSummonerByAccountId(
+				const { data: summoner } = await getSummonerBySummonerId(
 					client,
 					host,
 					account.id,
@@ -358,7 +357,7 @@ export const mastery = async (msg: Discord.Message): Promise<void> => {
 					msg,
 					summoner.name,
 					account.server,
-					platform,
+					host,
 					summoner,
 				);
 			}
@@ -443,9 +442,12 @@ const aggregateMasteryData = async (
 	if (mostMasteryIcon !== undefined) {
 		embed.setThumbnail(mostMasteryIcon);
 	}
-	const tasks = masteryList.map(async mastery => {
+
+	const iterateChampionMasteries = async (index: number) => {
+		const mastery = masteryList[index];
 		const champion = await findChampion(mastery.championId);
 		if (champion === undefined) {
+			console.log(':3');
 			return;
 		}
 
@@ -463,10 +465,12 @@ const aggregateMasteryData = async (
 				`**Last game**: ${new Date(mastery.lastPlayTime).toLocaleDateString()}`,
 			false,
 		);
-	});
-
-	await Promise.all(tasks);
-
-	msg.channel.send(embed);
-	msg.channel.stopTyping();
+		if (masteryList.length > index + 1) {
+			iterateChampionMasteries(index + 1);
+		} else {
+			msg.channel.send(embed);
+			msg.channel.stopTyping();
+		}
+	};
+	iterateChampionMasteries(0);
 };

@@ -205,8 +205,8 @@ interface Champion {
 }
 
 export async function findChampion(id: number): Promise<Champion | undefined> {
-	const c = db.collection('champions');
-	return (await c.findOne({ id })) ?? undefined;
+	const champion = await db.collection('champions').findOne({ id });
+	return champion;
 }
 
 interface Server {
