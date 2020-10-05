@@ -191,8 +191,8 @@ const getTierAndDivision = async (
 	const playerId = _playerId
 		? _playerId
 		: await getSummonerId(nickname, server);
-	const realm = await getPlatform(server);
-	if (playerId === undefined) {
+	const host = await getHost(server);
+	if (playerId === undefined || host === undefined) {
 		msg.channel.send(
 			createEmbed(`❌Cannot get user's data`, [
 				{
@@ -205,7 +205,7 @@ const getTierAndDivision = async (
 		return { tier: null, rank: null };
 	}
 
-	const userLeagues = await getLeagues(client, realm, playerId);
+	const userLeagues = await getLeagues(client, host, playerId);
 	if (!userLeagues || !userLeagues.data) {
 		msg.channel.send(
 			createEmbed(`❌Cannot get user's data`, [
@@ -251,13 +251,8 @@ const getMastery = async (
 		return;
 	}
 
-	const realm = await getPlatform(server);
-	const userMastery = await fetchMasteryByChampion(
-		client,
-		realm,
-		playerId,
-		112,
-	);
+	const host = await getHost(server);
+	const userMastery = await fetchMasteryByChampion(client, host, playerId, 112);
 
 	if (!userMastery || !userMastery.data) {
 		msg.channel.send(
