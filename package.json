@@ -8,7 +8,7 @@
 		"build": "rimraf dist/ && tsc -p ./ --outDir dist/",
 		"start": "node dist/viktor.js",
 		"viktor": "npm run build && npm run start",
-		"build-watch": "tsc --watch -p ./",
+		"build:watch": "tsc --watch -p ./",
 		"check-types": "tsc",
 		"check-types-git": "tsc",
 		"check-lint": "eslint . --ext .ts"
@@ -26,7 +26,7 @@
 	"dependencies": {
 		"@types/node": "^14.11.2",
 		"d3": "^6.2.0",
-		"discord.js": "^12.2.0",
+		"discord.js": "^12.5.1",
 		"emoji-regex": "^9.0.0",
 		"jsdom": "^16.4.0",
 		"moment": "^2.29.0",

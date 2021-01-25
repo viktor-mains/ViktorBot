@@ -41,14 +41,15 @@ export const meow = async (msg: Discord.Message): Promise<void> => {
 export const woof = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
 	try {
-		const data = await get<string>(new URL('https://random.dog/woof'));
-		const dog = new URL(data, 'https://random.dog');
+    const response = await fetch('https://random.dog/woof');
+    const dogToken = await response.text();
+    const dog = `https://random.dog/${dogToken}`;
 		const embed = new Discord.MessageEmbed()
 			.setTitle('🐶 Dog!')
 			.setTimestamp(new Date())
 			.setFooter(msg.author.username)
 			.setColor(`0x${COLORS.embed.main}`)
-			.setImage(dog.href);
+			.setImage(dog);
 		await msg.channel.send(embed);
 	} catch {
 		await msg.channel.send('Unable to get a dog.');

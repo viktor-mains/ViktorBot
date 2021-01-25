@@ -22,7 +22,7 @@ export function findTextChannel(
 	id: string | undefined,
 ): TextChannel | undefined {
 	const ch = id
-		? bot?.channels.cache.find(channel => channel.id === id)
+		? bot?.channels.cache.find(channel => channel.id.trim() === id.trim())
 		: undefined;
 	if (ch === undefined || ch instanceof TextChannel === false) {
 		return undefined;

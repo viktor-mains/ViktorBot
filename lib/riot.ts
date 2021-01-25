@@ -16,7 +16,7 @@ export class RiotClient {
 		...params: string[]
 	): Promise<Response<T>> {
 		const pathWithParams = sprintf(path, ...params.map(encodeURIComponent));
-		const uri = new URL(pathWithParams, host);
+    const uri = new URL(pathWithParams, host);
 		const request = new Request(uri.href, {
 			method: 'GET',
 			headers: [
@@ -25,7 +25,7 @@ export class RiotClient {
 			],
 		});
 
-		const response = await fetch(request);
+    const response = await fetch(request);
 
 		if (!response.ok) {
 			// TODO: we need better error handling than this
@@ -261,7 +261,7 @@ function fetchVerificationCode(
 		host,
 		'/lol/platform/v4/third-party-code/by-summoner/%s',
 		playerId,
-	);
+  );
 }
 
 export async function compareVerificationCode(
@@ -270,6 +270,8 @@ export async function compareVerificationCode(
 	playerId: string,
 	desiredCode: string,
 ): Promise<boolean> {
-	const { data } = await fetchVerificationCode(client, host, playerId);
+  const { data } = await fetchVerificationCode(client, host, playerId);
+  console.log(data);
+  console.log(desiredCode);
 	return data === desiredCode;
 }

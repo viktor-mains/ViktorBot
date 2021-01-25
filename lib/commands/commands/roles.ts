@@ -3,13 +3,13 @@ import { createEmbed, extractArguments, removeKeyword } from '../../helpers';
 import { findOption } from '../../storage/db';
 
 const returnRoleID = (roleName, member) => {
-	const role = member.guild.roles.find(
+	const role = member.guild.roles.cache.find(
 		role => role.name.toLowerCase() === roleName.toLowerCase(),
 	).id;
 	return role;
 };
 const roleExists = (roleName, member) => {
-	return member.guild.roles.some(
+	return member.guild.roles.cache.some(
 		role => role.name.toLowerCase() === roleName.toLowerCase(),
 	);
 };
@@ -22,7 +22,7 @@ const roleisAssignable = async roleName => {
 };
 
 const userHasRole = (roleName, member) => {
-	if (member.roles.has(returnRoleID(roleName, member))) return true;
+	if (member.roles.cache.has(returnRoleID(roleName, member))) return true;
 	return false;
 };
 

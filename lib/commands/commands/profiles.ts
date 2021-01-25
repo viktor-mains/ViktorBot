@@ -40,12 +40,13 @@ const verifyCode = async (
 	uuid: string,
 	msg: Discord.Message,
 ) => {
-	msg.channel.startTyping();
-	const playerId = await getSummonerId(nickname, server);
-	const realm = await getPlatform(server);
+  msg.channel.startTyping();
+  const playerId = await getSummonerId(nickname, server);
+  const host = await getHost(server);
 
 	try {
-		if (await compareVerificationCode(client, realm, playerId!, uuid)) {
+    const isVerificationCodeCorrect = await compareVerificationCode(client, host, playerId!, uuid);
+		if (!isVerificationCodeCorrect) {
 			log.INFO(
 				`user ${msg.author.username} failed to register with account ${nickname}, ${server} - incorrect code`,
 			);
@@ -60,15 +61,15 @@ const verifyCode = async (
 			return;
 		}
 
-		const { tier, rank } = await getTierAndDivision(msg, nickname, server);
-		const mastery = await getMastery(msg, nickname, server);
+    const { tier, rank } = await getTierAndDivision(msg, nickname, server);
+    const mastery = await getMastery(msg, nickname, server);
 		let userData = {};
 
-		const oldData = findUserByDiscordId(msg.author.id);
+    const oldData = await findUserByDiscordId(msg.author.id);
 
 		if (oldData) {
-			const isThisAccountRegistered = oldData['accounts'].find(
-				account => account.id === playerId,
+			const isThisAccountRegistered = oldData['accounts']?.find(
+				account => account?.id === playerId,
 			);
 			const account = {
 				server: server.toUpperCase(),
