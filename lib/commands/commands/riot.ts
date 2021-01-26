@@ -305,7 +305,7 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 					? ourPlayer.champion.name
 					: '[unknown ally champion]';
         const enemyChampion = enemies.find(enemy =>
-          enemy.role === ourPlayer.role && enemy.lane === ourPlayer.lane);
+          enemy.role === ourPlayer.role && enemy.lane === ourPlayer.lane) ?? enemies[0];
         const enemyChampionName = enemyChampion?.champion?.name ?? '[unknown enemy champion]';
 				const playerGold = gameFrames[`min${minute}`].player.gold;
 				const playerCs = gameFrames[`min${minute}`].player.cs;
