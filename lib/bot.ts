@@ -36,12 +36,7 @@ export function isBotUser(user?: User): boolean | void {
 }
 
 export async function setBotPresence(status: string): Promise<void> {
-	bot?.user?.setPresence({
-		activity: {
-			name: status,
-			type: 'CUSTOM_STATUS',
-		},
-	});
+  bot?.user?.setActivity(status, { type: 'PLAYING', name: status });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

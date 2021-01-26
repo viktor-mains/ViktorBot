@@ -271,7 +271,5 @@ export async function compareVerificationCode(
 	desiredCode: string,
 ): Promise<boolean> {
   const { data } = await fetchVerificationCode(client, host, playerId);
-  console.log(data);
-  console.log(desiredCode);
 	return data === desiredCode;
 }

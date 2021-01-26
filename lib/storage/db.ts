@@ -192,9 +192,10 @@ interface Queue {
 	map: string;
 }
 
-export async function findQueue(queue: string): Promise<Queue | undefined> {
-	const c = db.collection('queues');
-	return (await c.findOne({ queue })) ?? undefined;
+export async function findQueue(queue: any): Promise<Queue | undefined> {
+  const c = db.collection('queues');
+  const queueStr = typeof queue === 'string' ? queue : queue.toString();
+	return (await c.findOne({ id: queueStr })) ?? undefined;
 }
 
 interface Champion {
@@ -207,6 +208,11 @@ interface Champion {
 export async function findChampion(id: number): Promise<Champion | undefined> {
 	const champion = await db.collection('champions').findOne({ id });
 	return champion;
+}
+
+export async function getAllChampions(): Promise<Champion[]> {
+  const champions = await db.collection('champions').find({}).toArray();
+  return champions;
 }
 
 interface Server {

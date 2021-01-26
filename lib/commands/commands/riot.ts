@@ -4,10 +4,11 @@ import {
 	upsertOne,
 	findUserByDiscordId,
 	findOption,
-	findChampion,
 	findServerByName,
 	findLane,
-	findQueue,
+  findQueue,
+  findChampion,
+  getAllChampions,
 } from '../../storage/db';
 import {
 	extractNicknameAndServer,
@@ -122,7 +123,8 @@ export const updatechampions = async (msg: Discord.Message): Promise<void> => {
 export const lastlane = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
 	const { nickname, server } = extractNicknameAndServer(msg);
-	const playerId = await getAccountId(nickname, server);
+  const playerId = await getAccountId(nickname, server);
+  const champions = await getAllChampions();
 	const host = await getHost(server);
 	if (!nickname || !server) return msg.channel.stopTyping();
 	if (!playerId || !host) {
@@ -158,43 +160,41 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 	const [lastGameData, lastGameTimeline] = await Promise.all([
 		fetchMatchInfo(client, host, matchId),
 		fetchMatchTimeline(client, host, matchId),
-	]);
+  ]);
 
-	const players: any = [];
-	let winningTeam = '';
+  const players: any = lastGameData.data.participantIdentities
+    .map((participant: any) => {
+      const participant2 = lastGameData.data.participants
+        .find(p => p.participantId === participant.participantId);
+      return {
+        gameId: lastGameData.data.gameId,
+        participantId: participant.participantId,
+        id: participant.player.accountId,
+        name: participant.player.summonerName,
+        win: participant2.stats.win,
+        teamId: participant2.teamId,
+        championId: participant2.championId,
+        kills: participant2.stats.kills,
+        deaths: participant2.stats.deaths,
+        assists: participant2.stats.assists,
+        summ1: participant2.spell1Id,
+        summ2: participant2.spell2Id,
+        fbkill: participant2.stats.firstBloodKill,
+        fbassist: participant2.stats.firstBloodAssist,
+        role: participant2.timeline.role,
+        lane: participant2.timeline.lane,
+        queue: lastGameData.data.queueId,
+        champion: champions.find(champion => Number(champion.id) === Number(participant2.championId)),
+      }}
+  );
 
-	lastGameData.data.teams.map((team: any) => {
-		if (team.win === 'Win') winningTeam = team.teamId;
-	});
-	lastGameData.data.participantIdentities.map((participant: any) => {
-		players.push({
-			gameId: participant.participantId,
-			id: participant.player.accountId,
-			name: participant.player.summonerName,
-		});
-	});
-	lastGameData.data.participants.map(async participant => {
-		const i = players.findIndex(
-			player => player.gameId === participant.participantId,
-		);
-		players[i].win = participant.teamId === winningTeam;
-		players[i].teamId = participant.teamId;
-		players[i].championId = participant.championId;
-		players[i].champion = await findChampion(participant.championId);
-		players[i].summ1 = participant.spell1Id;
-		players[i].summ2 = participant.spell2Id;
-		players[i].fbkill = participant.stats.firstBloodKill;
-		players[i].fbassist = participant.stats.firstBloodAssist;
-		players[i].role = participant.timeline.role;
-		players[i].lane = participant.timeline.lane;
-	});
-	const ourPlayer = players.find(player => player.id === playerId);
+  const ourPlayer = players.find(player => player.id === playerId);
 	const enemies = players.filter(
 		player =>
 			player.lane === ourPlayer.lane && player.teamId !== ourPlayer.teamId,
 	);
-	const lane = (await findLane(ourPlayer.lane))!;
-	const queue = (await findQueue(ourPlayer.queue))!;
+	const lane = await findLane(ourPlayer?.lane);
+  const queue = await findQueue(ourPlayer?.queue);
 
 	const embed = new Discord.MessageEmbed()
 		.setColor(`0x${COLORS.embed.main}`)
@@ -205,8 +205,8 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 		)
 		.setTimestamp(new Date(matchBaseData.timestamp))
 		.setFooter(
-			`${queue.map}, ${queue.queue}`,
-			ourPlayer.champion ? ourPlayer.champion.img : lane.icon,
+			`${queue?.map ?? 'UNKNOWN'}, ${queue?.queue ?? 'UNKNOWN'}`,
+			ourPlayer.champion ? ourPlayer.champion.img : lane?.icon,
 		);
 
 	if (enemies.length === 0) {
@@ -231,23 +231,24 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 				sprintf(
 					'%s vs %s',
 					ourPlayer.champion?.name.toUpperCase() ?? '???',
-					enemies.map(e => e.champion?.name.toUpperCase() ?? '???').join(' '),
+					enemies.map(e => e.champion?.name.toUpperCase() ?? '???').join(', '),
 				),
 			)
 			.setDescription(
 				sprintf(
 					"**%s's** %s %s vs %s in %d minutes",
-					ourPlayer.name,
-					ourPlayer.champion?.name.toUpperCase() ?? '???',
-					ourPlayer.win ? 'wins' : 'loses',
+					ourPlayer?.name ?? '???',
+					ourPlayer?.champion?.name.toUpperCase() ?? '???',
+					ourPlayer?.win ? 'wins' : 'loses',
 					enemies
-						.map(e => {
+						.map(enemy => {
 							return sprintf(
-								"**%s's** %s",
-								e.champion?.name.toUpperCase() ?? '???',
+                "**%s's** %s",
+                enemy.name ?? '???',
+								enemy.champion?.name.toUpperCase() ?? '???',
 							);
 						})
-						.join(' '),
+						.join(', '),
 					Math.round(parseInt(lastGameData.data.gameDuration) / 60),
 				),
 			);
@@ -256,7 +257,7 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 			if (lastGameTimeline.data.frames[minute]) {
 				const timeline = lastGameTimeline.data.frames[minute].participantFrames;
 				const player: any = Object.values(timeline).find(
-					(player: any) => player.participantId === ourPlayer.gameId,
+					(player: any) => player.participantId === ourPlayer.participantId,
 				);
 
 				gameFrames[`min${minute}`] = {
@@ -272,10 +273,10 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 
 				enemies.map((enemy: any) => {
 					const player: any = Object.values(timeline).find(
-						(player: any) => player.participantId === enemy.gameId,
+						(player: any) => player.participantId === enemy.participantId,
 					);
 					gameFrames[`min${minute}`].enemies.push({
-						id: enemy.gameId,
+						id: enemy.participantId,
 						cs: player.minionsKilled + player.jungleMinionsKilled,
 						gold: player.totalGold,
 						level: player.level,
@@ -284,7 +285,7 @@ export const lastlane = async (msg: Discord.Message): Promise<void> => {
 
 				Object.values(timeline).map((player: any) => {
 					const currentPlayer = players.find(
-						(p: any) => p.gameId === player.participantId,
+						(p: any) => p.participantId === player.participantId,
 					);
 					if (
 						currentPlayer &&
