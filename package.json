@@ -39,7 +39,7 @@
 		"uuid": "^3.4.0"
 	},
 	"devDependencies": {
-		"@types/mongodb": "^3.5.25",
+		"@types/mongodb": "^3.6.18",
 		"@types/node-fetch": "^2.5.7",
 		"@typescript-eslint/eslint-plugin": "^3.7.1",
 		"@typescript-eslint/parser": "^3.7.1",
