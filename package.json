@@ -30,7 +30,7 @@
 		"emoji-regex": "^9.0.0",
 		"jsdom": "^16.4.0",
 		"moment": "^2.29.0",
-		"mongodb": "^3.5.9",
+		"mongodb": "^3.6.10",
 		"node-fetch": "^2.6.1",
 		"rimraf": "^3.0.2",
 		"saslprep": "^1.0.3",
