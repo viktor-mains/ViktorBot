@@ -1,13 +1,13 @@
 {
 	"name": "viktorbot",
-	"version": "4.0.2",
+	"version": "4.0.3",
 	"description": "Viktor Mains Discord Bot",
 	"main": "viktor.js",
 	"scripts": {
 		"test": "test",
 		"build": "rimraf dist/ && tsc -p ./ --outDir dist/",
 		"start": "node dist/viktor.js",
-		"viktor": "npm run build && npm run start",
+		"viktor": "yarn run build && yarn start",
 		"build:watch": "tsc --watch -p ./",
 		"check-types": "tsc",
 		"check-types-git": "tsc",

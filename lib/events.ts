@@ -341,14 +341,17 @@ export const handleUserNotInDatabase = async (
 	};
 
 	const memberInDataBase = await findUserByDiscordId(member.id);
-	if (memberInDataBase === undefined) {
-		// user not in database at all
-		if (member) update(user, initData(member));
-		if (msg && msg.member) update(user, initData(null, msg.member.id));
-		if (msg && !msg.member) update(user, initData(null, msg.author.id, msg));
+	if (memberInDataBase) {
+		update(user, memberInDataBase);
+		return;
 	}
-	// user in database
-	else update(user, memberInDataBase);
+	// user not in database at all
+	if (msg) {
+		const newUserId = msg.member?.id ?? msg.author?.id;
+		const newUser = initData(null, newUserId, msg);
+		update(user, newUser);
+		return;
+	}
 };
 
 export const handlePossibleMembershipRole = async (
