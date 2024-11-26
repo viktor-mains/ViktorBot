@@ -1,6 +1,15 @@
 {
     "keywords": [
         {
+            "id": "arcane",
+            "list": [
+                "arcane",
+                "hextor",
+                "hector",
+                "hektor"
+            ]
+        },
+        {
             "id": "arcyanswers",
             "list": [
                 "arcy",
