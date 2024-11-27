@@ -2,6 +2,7 @@
 import { format as sprintf } from 'util';
 import { Request, default as fetch } from 'node-fetch';
 import { env } from '../env';
+import { URL } from 'url'
 
 export class RiotClient {
 	#token: string;

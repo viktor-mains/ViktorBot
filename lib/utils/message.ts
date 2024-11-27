@@ -10,7 +10,7 @@ import { chooseRandom, happensWithAChanceOf } from './rng';
 import { Command } from '../commands/list';
 import { IReactionDetails } from '../types/reaction';
 
-import dearViktor from '../../data/global/dearviktor.json';
+import dearViktor from '../data/dearviktor.json';
 import {
 	findCommandByKeyword,
 	findReactionsById,

@@ -8,6 +8,7 @@ import { log } from '../../utils/log';
 import { findOption } from '../../storage/db';
 import { COLORS } from '../../utils/colors';
 import { env } from '../../env';
+import { URL } from 'url';
 import fetch from 'node-fetch';
 
 async function get<T>(url: URL): Promise<T> {
