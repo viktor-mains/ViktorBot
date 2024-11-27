@@ -6,16 +6,15 @@ import {
 	handleUserNotInDatabase,
 	handlePossibleMembershipRole,
 } from './events';
-import { chooseRandom, happensWithAChanceOf } from './rng';
+import { happensWithAChanceOf } from './rng';
 import { Command } from '../commands/list';
 import { IReactionDetails } from '../types/reaction';
-
-import dearViktor from '../data/dearviktor.json';
 import {
 	findCommandByKeyword,
 	findReactionsById,
 	findAllReactionsInMessage,
 } from '../storage/db';
+import { answerDearVictor, answerDearViktor } from 'commands/reactions/dearViktor';
 
 const minimumRantLength = 20;
 // LOGIC
@@ -39,27 +38,9 @@ const isMessageDearViktor = (msg: Discord.Message) =>
 const isMessageDearVictor = (msg: Discord.Message) =>
 	msg.content.toLowerCase().startsWith('dear victor');
 
-const answer = (msg: Discord.Message, answer: string) =>
+export const answer = (msg: Discord.Message, answer: string) =>
 	msg.channel.send(answer);
-const answerDearViktor = (msg: Discord.Message) => {
-	if (msg.content.endsWith('?')) {
-		const keywordDetected = dearViktor.keywords.find((category: any) =>
-			category.list.find((keyword: string) =>
-				msg.content.toLowerCase().includes(keyword),
-			),
-		);
-		keywordDetected
-			? answer(msg, chooseRandom(dearViktor.answers[keywordDetected.id]))
-			: answer(msg, chooseRandom(dearViktor.answers.yesno));
-		return;
-	}
-	answer(msg, "_That_ doesn't look like question to me.");
-};
-const answerDearVictor = (msg: Discord.Message) =>
-	answer(
-		msg,
-		'...what have you just called me. <:SilentlyJudging:288396957922361344>',
-	);
+
 const answerCommand = async (msg: Discord.Message) => {
 	const command = await findCommandByKeyword(getKeyword(msg));
 	if (command === undefined) {

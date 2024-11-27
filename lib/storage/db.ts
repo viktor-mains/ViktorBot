@@ -251,3 +251,13 @@ export async function findAllReactionsInMessage(
 		return words.length === r.keywords.length;
 	});
 }
+
+interface DearViktor {
+	id:string;
+	answers:	string[];
+	triggers: string[];
+}
+export const getAllDearViktor = async (): Promise<DearViktor[]> => {
+  const dearViktor = await db.collection<DearViktor>('dearViktor').find({}).toArray();
+  return dearViktor;
+}
