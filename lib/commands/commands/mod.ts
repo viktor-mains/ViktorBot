@@ -1,7 +1,7 @@
 import Discord from 'discord.js';
-import { log } from '../../log';
-import { removeKeyword, extractArguments, createEmbed } from '../../helpers';
-import { chooseRandom } from '../../rng';
+import { log } from '../../utils/log';
+import { removeKeyword, extractArguments, createEmbed } from '../../utils/helpers';
+import { chooseRandom } from '../../utils/rng';
 import { upsertUser, findUserByDiscordId, findOption } from '../../storage/db';
 import {
 	setBotPresence,

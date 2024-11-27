@@ -1,7 +1,7 @@
 import { Client, TextChannel, User } from 'discord.js';
-import { msgEdit, msgDelete, userJoin, userLeave, botJoin } from './events';
-import { classifyMessage } from './message';
-import { log } from './log';
+import { msgEdit, msgDelete, userJoin, userLeave, botJoin } from './utils/events';
+import { classifyMessage } from './utils/message';
+import { log } from './utils/log';
 
 // Mutable module state sucks, but this is the easiest way to migrate what we already have
 let bot: Client;

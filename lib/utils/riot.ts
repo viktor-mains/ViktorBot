@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { format as sprintf } from 'util';
 import { Request, default as fetch } from 'node-fetch';
-import * as Config from './config';
+import { env } from '../env';
 
 export class RiotClient {
 	#token: string;
@@ -39,7 +39,7 @@ export class RiotClient {
 	}
 }
 
-export const client = new RiotClient(Config.get('RIOT_API_TOKEN'));
+export const client = new RiotClient(env.RIOT_API_TOKEN);
 
 interface Response<T> {
 	data: T;

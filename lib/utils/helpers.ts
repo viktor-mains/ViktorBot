@@ -1,8 +1,8 @@
 import Discord from 'discord.js';
 import moment from 'moment';
-import { IEmbedField } from './types/command';
-import { findOption } from './storage/db';
-import { COLORS } from './modules/colors';
+import { IEmbedField } from '../types/command';
+import { findOption } from '../storage/db';
+import { COLORS } from '../utils/colors';
 
 export const getCommandSymbol = async (): Promise<string | undefined> =>
 	await findOption('commandSymbol');

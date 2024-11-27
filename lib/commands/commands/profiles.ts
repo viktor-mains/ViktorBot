@@ -2,8 +2,8 @@ import Discord, { Message } from 'discord.js';
 import v4 from 'uuid/v4';
 import { format as sprintf } from 'util';
 import { orderBy } from 'lodash';
-import { log } from '../../log';
-import { initData, descriptionChange } from '../../events';
+import { log } from '../../utils/log';
+import { initData, descriptionChange } from '../../utils/events';
 import {
 	upsertUser,
 	findUserByDiscordId,
@@ -20,7 +20,7 @@ import {
 	modifyInput,
 	extractArguments,
 	toMMSS,
-} from '../../helpers';
+} from '../../utils/helpers';
 import { getSummonerId, getPlatform, getHost } from './riot';
 import {
 	client,
@@ -28,9 +28,9 @@ import {
 	getLeagues,
 	fetchMasteryByChampion,
 	compareVerificationCode,
-} from '../../riot';
+} from '../../utils/riot';
 import { isBotUser } from '../../bot';
-import { COLORS } from '../../modules/colors';
+import { COLORS } from '../../utils/colors';
 
 const timeout = 900000;
 
@@ -511,10 +511,11 @@ export const description = async (msg: Discord.Message): Promise<void> => {
 		if (!initUser) return;
 		userData = initUser;
 	}
-	userData.description = description;
+
+	userData!.description = description;
 
 	try {
-		await upsertUser(msg.author.id, userData);
+		await upsertUser(msg.author.id, userData!);
 	} catch (err) {
 		log.WARN(err);
 		msg.channel.send(

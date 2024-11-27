@@ -5,10 +5,13 @@
 	"main": "viktor.js",
 	"scripts": {
 		"test": "test",
-		"build": "rimraf dist/ && tsc -p ./ --outDir dist/",
-		"start": "node dist/viktor.js",
-		"viktor": "yarn run build && yarn start",
-		"build:watch": "tsc --watch -p ./",
+		"build:dev": "env ENV=dev tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+		"build:prod": "env ENV=prod tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+		"dev": "env ENV=dev npx tsx lib/viktor.ts",
+		"dev:watch": "env ENV=dev nodemon --exec npx tsx lib/viktor.ts",
+		"prod": "env ENV=prod npx tsx lib/viktor.ts",
+		"prod:watch": "env ENV=prod nodemon --exec npx tsx lib/viktor.ts",
+		"viktor": "node dist/viktor.js",
 		"check-types": "tsc",
 		"check-types-git": "tsc",
 		"check-lint": "eslint . --ext .ts"
@@ -27,14 +30,13 @@
 		"@types/node": "^14.11.2",
 		"d3": "^6.2.0",
 		"discord.js": "^12.5.1",
+		"dotenv": "^16.4.5",
 		"emoji-regex": "^9.0.0",
 		"jsdom": "^16.4.0",
 		"moment": "^2.29.0",
 		"mongodb": "^3.5.9",
 		"node-fetch": "^2.6.1",
-		"rimraf": "^3.0.2",
 		"saslprep": "^1.0.3",
-		"sharp": "^0.26.1",
 		"tinyurl": "^1.1.7",
 		"uuid": "^3.4.0"
 	},
@@ -44,6 +46,7 @@
 		"@typescript-eslint/eslint-plugin": "^3.7.1",
 		"@typescript-eslint/parser": "^3.7.1",
 		"eslint": "^7.5.0",
+		"tsc-alias": "^1.8.10",
 		"typescript": "^3.9.7"
 	}
 }

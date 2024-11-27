@@ -2,13 +2,12 @@ import Discord from 'discord.js';
 import { uniq } from 'lodash';
 import emojiRegex from 'emoji-regex/es2015/index.js';
 import emojiRegexText from 'emoji-regex/es2015/text.js';
-import { removeKeyword, toDDHHMMSS, createEmbed } from '../../helpers';
-import { chooseRandom } from '../../rng';
-import { log } from '../../log';
-import BotGraph from '../../graphs';
+import { removeKeyword, toDDHHMMSS, createEmbed } from '../../utils/helpers';
+import { chooseRandom } from '../../utils/rng';
+import { log } from '../../utils/log';
 import { findOption } from '../../storage/db';
-import { COLORS } from '../../modules/colors';
-import * as Config from '../../config';
+import { COLORS } from '../../utils/colors';
+import { env } from '../../env';
 import fetch from 'node-fetch';
 
 async function get<T>(url: URL): Promise<T> {
@@ -18,7 +17,7 @@ async function get<T>(url: URL): Promise<T> {
 
 export const meow = async (msg: Discord.Message): Promise<void> => {
 	msg.channel.startTyping();
-	const token = Config.get('CAT_API_TOKEN');
+	const token = env.CAT_API_TOKEN;
 	const url = new URL('/v1/images/search', 'https://api.thecatapi.com');
 	url.searchParams.set('api_key', token);
 	try {
@@ -101,10 +100,7 @@ export const gibeskin = async (msg: Discord.Message): Promise<void> => {
 
 	const creatorDate = skins.find(skin => skin.key === 'Creator')!.value;
 	const deathSwornDate = skins.find(skin => skin.key === 'Death Sworn')!.value;
-	const graph = new BotGraph({ width: 500, height: 300 });
-	const graphAttachment: Discord.MessageAttachment = await graph.generate(
-		skins,
-	);
+
 	const embed = new Discord.MessageEmbed()
 		.setTitle('<:vikSalty:289489052212789250> Viktor skin')
 		.setTimestamp(new Date())
@@ -113,7 +109,6 @@ export const gibeskin = async (msg: Discord.Message): Promise<void> => {
 			'https://cdn.discordapp.com/emojis/232941841815830536.png',
 		)
 		.setColor(`0x${COLORS.embed.main}`)
-		.attachFiles([graphAttachment])
 		.setImage('attachment://graph.png')
 		.addField(
 			`\_\_\_`,
@@ -127,8 +122,7 @@ export const gibeskin = async (msg: Discord.Message): Promise<void> => {
 					creatorDate,
 				).toLocaleDateString()}, what would make it exactly **${toDDHHMMSS(
 					new Date(creatorDate),
-				)}** without a decent skin.\n\n` +
-				`And now have a nice graph comparing that with some Riot's poster children:`,
+				)}** without a decent skin.`
 		);
 	msg.channel.send(embed);
 };

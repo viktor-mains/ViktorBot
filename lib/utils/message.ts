@@ -1,21 +1,21 @@
 import Discord from 'discord.js';
-import { TextCommand, EmbedCommand } from './commands/logic';
-import { Reaction } from './commands/reactions';
+import { TextCommand, EmbedCommand } from '../commands/logic';
+import { Reaction } from '../commands/reactions';
 import { getKeyword, getCommandSymbol } from './helpers';
 import {
 	handleUserNotInDatabase,
 	handlePossibleMembershipRole,
 } from './events';
 import { chooseRandom, happensWithAChanceOf } from './rng';
-import { Command } from './commands/list';
-import { IReactionDetails } from './types/reaction';
+import { Command } from '../commands/list';
+import { IReactionDetails } from '../types/reaction';
 
-import dearViktor from '../data/global/dearviktor.json';
+import dearViktor from '../../data/global/dearviktor.json';
 import {
 	findCommandByKeyword,
 	findReactionsById,
 	findAllReactionsInMessage,
-} from './storage/db';
+} from '../storage/db';
 
 const minimumRantLength = 20;
 // LOGIC

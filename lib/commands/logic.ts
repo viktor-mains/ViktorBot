@@ -6,10 +6,10 @@ import {
 	IExecuteEmbed,
 	IEmbed,
 } from '../types/command';
-import { botRefuses } from '../rng';
-import { isUserAdmin } from '../message';
-import { replaceAll } from '../helpers';
-import { COLORS } from '../modules/colors';
+import { botRefuses } from '../utils/rng';
+import { isUserAdmin } from '../utils/message';
+import { replaceAll } from '../utils/helpers';
+import { COLORS } from '../utils/colors';
 
 class Command {
 	public channel: Discord.TextChannel | Discord.DMChannel | Discord.NewsChannel;

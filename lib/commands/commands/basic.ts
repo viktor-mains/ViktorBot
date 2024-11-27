@@ -1,12 +1,12 @@
 import Discord from 'discord.js';
-import { isUserAdmin } from '../../message';
-import { chooseRandom } from '../../rng';
+import { isUserAdmin } from '../../utils/message';
+import { chooseRandom } from '../../utils/rng';
 import {
 	extractNicknameAndServer,
 	createEmbed,
 	getCommandSymbol,
 	splitArrayByObjectKey,
-} from '../../helpers';
+} from '../../utils/helpers';
 import {
 	findOption,
 	findModCommands,

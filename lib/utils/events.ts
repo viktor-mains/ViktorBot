@@ -8,10 +8,10 @@ import {
 	findUserByDiscordId,
 	User,
 	findOption,
-} from './storage/db';
+} from '../storage/db';
 import { createEmbed, toDDHHMMSS, removeKeyword, replaceAll } from './helpers';
-import { findTextChannel } from './bot';
-import { COLORS } from './modules/colors';
+import { findTextChannel } from '../bot';
+import { COLORS } from '../utils/colors';
 
 type LogRoom = 'room_log_msgs' | 'room_log_users';
 

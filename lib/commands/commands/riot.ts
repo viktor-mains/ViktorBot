@@ -14,7 +14,7 @@ import {
 	extractNicknameAndServer,
 	createEmbed,
 	extractArguments,
-} from '../../helpers';
+} from '../../utils/helpers';
 import {
 	client,
 	fetchChampions,
@@ -26,9 +26,9 @@ import {
 	Summoner,
 	fetchSummonerMasteries,
 	getSummonerBySummonerId,
-} from '../../riot';
+} from '../../utils/riot';
 import { format as sprintf } from 'util';
-import { COLORS } from '../../modules/colors';
+import { COLORS } from '../../utils/colors';
 
 export const getPlatform = async (server?: string): Promise<string> => {
 	const { platform } = await findServerByName(server);
