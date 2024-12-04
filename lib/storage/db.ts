@@ -233,6 +233,7 @@ export interface Reaction {
 	id: string;
 	keywords: string[];
 	reactionList: any[];
+	strategy: "any"|"all"
 }
 
 export async function findReactionsById(id: string): Promise<Reaction[]> {
@@ -248,7 +249,12 @@ export async function findAllReactionsInMessage(
 	return reactions.filter((r: Reaction) => {
 		const words = r.keywords.filter(keyword => content.includes(keyword));
 		// all of the keywords must be present in the sentence at once
-		return words.length === r.keywords.length;
+		if (r.strategy === "all") {
+			return words.length === r.keywords.length;
+		}
+		if (r.strategy === "any") {
+			return words.length > 0;
+		}
 	});
 }
 
